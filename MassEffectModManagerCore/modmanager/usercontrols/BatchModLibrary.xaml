@@ -1,8 +1,15 @@
 ﻿<usercontrols:MMBusyPanelBase
     x:Class="ME3TweaksModManager.modmanager.usercontrols.BatchModLibrary"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
+    xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" 
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" 
+    xmlns:ui="clr-namespace:ME3TweaksModManager.ui" 
+    xmlns:fa5="http://schemas.fontawesome.com/icons/"
     xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
+    MinWidth="700"
     MinHeight="550">
     <DockPanel>
         <TextBlock
@@ -24,6 +31,12 @@
                 DockPanel.Dock="Left"
                 Command="{Binding EditGroupCommand}"
                 Margin="0,0,5,0" />
+
+            <Button
+                HorizontalAlignment="Left"
+                Content="Duplicate group"
+                Margin="0,0,5,0" 
+                Command="{Binding DuplicateGroupCommand}" />
             <Button
                 Content="{DynamicResource string_deleteGroup}"
                 DockPanel.Dock="Left"
@@ -33,6 +46,7 @@
                 HorizontalAlignment="Left"
                 Content="{DynamicResource string_createANewInstallGroup}"
                 Command="{Binding CreateNewGroupCommand}" />
+
             <Button
                 DockPanel.Dock="Left"
                 HorizontalAlignment="Right"
@@ -52,7 +66,7 @@
                 BorderThickness="1"
                 IsTextSearchEnabled="True"
                 TextSearch.TextPath="QueueName"
-                Width="180"
+                Width="250"
                 MinHeight="280">
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type batch:BatchLibraryInstallQueue}">

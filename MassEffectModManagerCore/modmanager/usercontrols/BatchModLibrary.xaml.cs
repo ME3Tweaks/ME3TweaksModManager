@@ -45,6 +45,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand CreateNewGroupCommand { get; private set; }
         public ICommand InstallGroupCommand { get; private set; }
         public ICommand EditGroupCommand { get; private set; }
+        public ICommand DuplicateGroupCommand { get; private set; }
         public ICommand DeleteGroupCommand { get; private set; }
         public bool CanCompressPackages => SelectedBatchQueue != null && SelectedBatchQueue.Game is MEGame.ME2 or MEGame.ME3;
 
@@ -55,6 +56,48 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             InstallGroupCommand = new GenericCommand(InstallGroup, CanInstallGroup);
             EditGroupCommand = new GenericCommand(EditGroup, BatchQueueSelected);
             DeleteGroupCommand = new GenericCommand(DeleteGroup, BatchQueueSelected);
+            DuplicateGroupCommand = new GenericCommand(DuplicateGroup, BatchQueueSelected);
+        }
+
+        private void DuplicateGroup()
+        {
+            if (SelectedBatchQueue == null) return;
+
+            var result = PromptDialog.Prompt(window, "Enter a new name for the duplicated install group.", "Enter new name",
+                            $"{SelectedBatchQueue.QueueName} - Duplicate", true);
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                var originalQueue = SelectedBatchQueue; // Cache in event we lose reference to this after possible reload. We don't want to set name on wrong object.
+                var originalName = SelectedBatchQueue.QueueName;
+                try
+                {
+                    var destPath = Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(),
+                        result + Path.GetExtension(SelectedBatchQueue.BackingFilename));
+                    if (!File.Exists(destPath))
+                    {
+                        SelectedBatchQueue.QueueName = result;
+                        SelectedBatchQueue.Save(false, destPath);
+                        parseBatchFiles(destPath);
+                    }
+                    else
+                    {
+                        M3L.ShowDialog(window, "An install group with this name already exists.", "Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception e)
+                {
+                    M3Log.Exception(e, @"Error duplicating batch queue: ");
+                    M3L.ShowDialog(window, $"Error duplicating install group: {e.Message}", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    // If we reload list this variable may become null.
+                    originalQueue.QueueName = originalName; // Restore if we had an error
+                }
+            }
+
         }
 
         private void DeleteGroup()

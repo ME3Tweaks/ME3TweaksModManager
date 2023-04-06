@@ -260,7 +260,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// Save this queue to disk
         /// </summary>
         /// <returns></returns>
-        internal string Save(bool canOverwrite)
+        internal string Save(bool canOverwrite, string newName = null)
         {
             // Prepare for save
             foreach (var m in ModsToInstall)
@@ -273,7 +273,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             // Commit
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
 
-            var savePath = getSaveName(QueueName, canOverwrite);
+            var savePath = getSaveName(newName ?? QueueName, canOverwrite);
             File.WriteAllText(savePath, json);
 
             SerializeOnly_MEMFilePaths = null; // Clear
