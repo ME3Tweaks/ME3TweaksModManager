@@ -989,7 +989,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 foreach (var dlcFolderInstalled in addedDLCFolders)
                 {
-                    ConfigMerge.PerformDLCMerge(M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget), dlcFolderInstalled);
+                    ConfigMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget), Path.GetFileName(dlcFolderInstalled));
                 }
             }
 
