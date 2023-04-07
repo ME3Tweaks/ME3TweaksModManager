@@ -45,7 +45,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static void InstallHeadMorphTest_Click(MainWindow window)
         {
-            SaveSelectorUI ssui = new SaveSelectorUI();
+            SaveSelectorUI ssui = new SaveSelectorUI(window.SelectedGameTarget);
             ssui.Show();
             ssui.Closed += ((sender, args) =>
             {

@@ -14,6 +14,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal.Classes;
+using ME3TweaksCore.Config;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
@@ -235,10 +236,10 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     {
                         if (x.InstancedFullPath.CaseInsensitiveEquals(exportPath))
                         {
-  //                          Debug.WriteLine($"Loading {x.InstancedFullPath}");
+                            //                          Debug.WriteLine($"Loading {x.InstancedFullPath}");
                             return true;
                         }
-//                        Debug.WriteLine($"Not loading {x.InstancedFullPath}, needs {exportPath}");
+                        //                        Debug.WriteLine($"Not loading {x.InstancedFullPath}, needs {exportPath}");
                         return false;
                     });
                     var tex = package.FindExport(exportPath);
@@ -298,9 +299,11 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
 
         public BitmapSource CurrentSaveImage { get; set; }
+        public GameTarget Target { get; }
 
-        public SaveSelectorUI()
+        public SaveSelectorUI(GameTarget target)
         {
+            Target = target;
             LoadingSaves = true;
             LoadCommands();
             InitializeComponent();
@@ -414,6 +417,10 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         {
             Task.Run(() =>
             {
+                // Load game information
+                var gameConfig = ConfigTools.GetMergedBundle(Target);
+
+
                 // Load saves
                 var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", GetSaveSubDir(CurrentGame));
 
@@ -422,7 +429,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 foreach (var saveDir in saveDirs)
                 {
                     int numLoaded = 0;
-                    foreach (var sf in Directory.GetFiles(saveDir, @"*.pcsav").OrderByDescending(x=>new FileInfo(x).LastWriteTime))
+                    foreach (var sf in Directory.GetFiles(saveDir, @"*.pcsav").OrderByDescending(x => new FileInfo(x).LastWriteTime))
                     {
                         if (numLoaded > 50)
                             break; // Don't load more

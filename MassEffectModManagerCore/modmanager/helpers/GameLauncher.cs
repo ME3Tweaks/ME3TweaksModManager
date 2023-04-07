@@ -23,6 +23,15 @@ namespace ME3TweaksModManager.modmanager.helpers
     {
         private const string AUTOBOOT_KEY_NAME = @"LEAutobootArgs"; // DO NOT CHANGE - USED FOR AUTOBOOT IN BINK DLL
 
+        public static void SetAutoresumeSave(GameTargetWPF wpf)
+        {
+
+            // How to hijack LE3's -RESUME for a specific numbered save
+/*          var localProf = LocalProfile.DeserializeLocalProfile(LE3Directory.LocalProfilePath, MEGame.LE3);
+            localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame].Data = 2;
+            localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer].Data = "Jane_31_Soldier_200122_4a61af6";
+            localProf.Serialize().WriteToFile(LE3Directory.LocalProfilePath);*/
+        }
 
         public static void LaunchGame(GameTargetWPF target, LaunchOptionsPackage LaunchPackage)
         {

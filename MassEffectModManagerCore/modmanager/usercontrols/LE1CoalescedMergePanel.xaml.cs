@@ -45,7 +45,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             M3Log.Information($@"Performing Coaleseced Merge for game: {target.TargetPath}");
             var coalescedStream = M3Utilities.ExtractInternalFileToStream("ME3TweaksModManager.modmanager.merge.coalesced.LE1.Coalesced_INT.bin");
-            var configBundle = ConfigMerge.ConfigAssetBundle.FromSingleStream(MEGame.LE1, coalescedStream);
+            var configBundle = ConfigAssetBundle.FromSingleStream(MEGame.LE1, coalescedStream);
 
             var dlcMountsInOrder = MELoadedDLC.GetDLCNamesInMountOrder(target.Game, target.TargetPath);
             foreach (var dlc in dlcMountsInOrder)
