@@ -343,7 +343,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                         numLoaded++;
 
                         using var saveFileS = File.OpenRead(sf);
-                        var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, sf);
+                        var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf);
                         if (!charNameCareers.TryGetValue(saveFile.Proxy_PlayerRecord.Proxy_FirstName, out var list))
                         {
                             list = new List<ISaveFile>();

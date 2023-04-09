@@ -22,7 +22,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         public TimeSpan BindableTimePlayed => TimeSpan.FromSeconds(SecondsPlayed);
         public string Proxy_DebugName => DebugName;
         public MEGame Game { get; set; }
-        public string SaveFilePath { get; }
+        public string SaveFilePath { get; set; }
 
         // Metadata
         public string FileName { get; set; }
@@ -149,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         [UnrealFieldDisplayName("Dependent DLC")]
         public List<Save.DependentDLC> DependentDLC;
 
-        protected void Serialize(IUnrealStream stream)
+        public void Serialize(IUnrealStream stream)
         {
             stream.Serialize(ref this.DebugName);
             stream.Serialize(ref this.SecondsPlayed);

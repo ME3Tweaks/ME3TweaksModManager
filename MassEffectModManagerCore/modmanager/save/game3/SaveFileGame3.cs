@@ -62,7 +62,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 return MEGame.Unknown;
             }
         }
-        public string SaveFilePath { get; init; }
+        public string SaveFilePath { get; set; }
         #region Fields
         public int SaveNumber { get; set; }
         public ESFXSaveGameType SaveGameType { get; set; }
@@ -653,61 +653,11 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
         #endregion
 
-        public static ISaveFile Read(Stream input, string fileName = null, MEGame expectedGame = MEGame.Unknown)
-        {
-
-            if (input == null)
-            {
-                throw new ArgumentNullException("input");
-            }
-
-            var save = new LE2SaveFile()
-            {
-                SaveFilePath = fileName
-            };
-
-            if (fileName != null)
-            {
-                // Setup save params
-                var sgName = Path.GetFileNameWithoutExtension(fileName);
-                if (sgName.StartsWith("Save_"))
-                {
-                    // Parse number
-                    var numStr = sgName.Substring(sgName.IndexOf("_") + 1);
-                    if (int.TryParse(numStr, out var saveNum))
-                    {
-                        save.SaveNumber = saveNum;
-                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Manual;
-                    }
-                }
-                else if (sgName.StartsWith("AutoSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
-                }
-                else if (sgName.StartsWith("ChapterSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Chapter;
-                }
-                else if (sgName.StartsWith("QuickSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
-                }
-            }
-            
-
-            var reader = new UnrealStream(input, true, 30);
-            save.Serialize(reader);
-
-            if (input.Position != input.Length)
-            {
-                throw new FormatException("did not consume entire file");
-            }
-
-            return save;
-        }
+        
 
         public static void Write(SaveFileGame3 save, Stream output)
         {
+            throw new Exception("This is not propertly implemented right now");
             if (save == null)
             {
                 throw new ArgumentNullException("save");
