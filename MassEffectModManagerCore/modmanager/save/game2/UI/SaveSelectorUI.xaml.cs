@@ -77,8 +77,6 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         public ISaveFile SelectedSaveFile { get; set; }
 
-        public MEGame CurrentGame { get; set; } = MEGame.LE3; // debug
-
         public Dictionary<MEGame, CaseInsensitiveDictionary<BitmapSource>> LevelImageCache { get; } = new();
 
         public void OnSelectedSaveFileChanged()
@@ -94,7 +92,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 SelectedLevelText = GetTlkStringForLevelName(SelectedSaveFile.Proxy_BaseLevelName);
 
                 var sfname = SelectedSaveFile.Proxy_BaseLevelName.ToLower();
-                if (LevelImageCache.TryGetValue(CurrentGame, out var cache) && cache.TryGetValue(sfname, out var cachedImage))
+                if (LevelImageCache.TryGetValue(Target.Game, out var cache) && cache.TryGetValue(sfname, out var cachedImage))
                 {
                     CurrentSaveImage = cachedImage;
                 }
@@ -102,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 {
                     // Load into cache
                     LoadSaveImageCache(sfname);
-                    if (LevelImageCache.TryGetValue(CurrentGame, out var cache2) && cache2.TryGetValue(sfname, out var cachedImage2))
+                    if (LevelImageCache.TryGetValue(Target.Game, out var cache2) && cache2.TryGetValue(sfname, out var cachedImage2))
                     {
                         CurrentSaveImage = cachedImage2;
                     }
@@ -153,13 +151,13 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         private void LoadSaveImageCache(string mapName)
         {
-            if (!LevelImageCache.TryGetValue(CurrentGame, out _))
+            if (!LevelImageCache.TryGetValue(Target.Game, out _))
             {
                 // Initialize
-                LevelImageCache[CurrentGame] = new CaseInsensitiveDictionary<BitmapSource>();
+                LevelImageCache[Target.Game] = new CaseInsensitiveDictionary<BitmapSource>();
             }
 
-            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(CurrentGame);
+            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(Target.Game);
             if (mapToImageAssetMap.TryGetValue(mapName, out var saveImageInfo) && loadedFiles.TryGetValue(saveImageInfo.PackageName, out var packagePath))
             {
                 using var package = MEPackageHandler.UnsafePartialLoad(packagePath, x =>
@@ -188,7 +186,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     var memory = new MemoryStream(bitmap.Height * bitmap.Width * 4 + 54);
                     bitmap.Save(memory, ImageFormat.Bmp);
                     memory.Position = 0;
-                    LevelImageCache[CurrentGame][mapName] = (BitmapSource)new ImageSourceConverter().ConvertFrom(memory);
+                    LevelImageCache[Target.Game][mapName] = (BitmapSource)new ImageSourceConverter().ConvertFrom(memory);
                 }
             }
         }
@@ -329,7 +327,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 LoadTLKs();
 
                 // Load saves
-                var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", GetSaveSubDir(CurrentGame));
+                var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", GetSaveSubDir(Target.Game));
 
                 var saveDirs = Directory.GetDirectories(savePath);
                 Dictionary<string, List<ISaveFile>> charNameCareers = new Dictionary<string, List<ISaveFile>>();
