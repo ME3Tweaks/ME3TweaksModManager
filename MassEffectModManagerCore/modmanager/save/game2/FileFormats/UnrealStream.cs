@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 
 namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
+    [DebuggerDisplay("UnrealStream | Position 0x{Stream.Position.ToString(\"X8\")} Length 0x{Stream.Length.ToString(\"X8\")}")]
     public class UnrealStream : IUnrealStream
     {
         public Stream Stream { get; }
@@ -826,6 +828,99 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             }
         }
 
+        public void Serialize(ref string[] array, int numElements = -1)
+        {
+            if (array == null)
+            {
+                if (!Loading)
+                    throw new ArgumentNullException("array", "serializable array should not be null");
+
+                if (numElements == -1)
+                    numElements = Stream.ReadInt32();
+                array = new string[numElements];
+            }
+
+            this.ReadBasicArray(array, r => (string)r.Stream.ReadUnrealString(), numElements);
+        }
+
+        public void Serialize(ref int[] array, int numElements = -1)
+        {
+            if (array == null)
+            {
+                if (!Loading)
+                    throw new ArgumentNullException("array", "serializable array should not be null");
+
+                if (numElements == -1)
+                    numElements = Stream.ReadInt32();
+                array = new int[numElements];
+            }
+
+            this.ReadBasicArray(array, r => (int)r.Stream.ReadInt32(), numElements);
+        }
+
+        public void Serialize(ref uint[] array, int numElements = -1)
+        {
+            if (array == null)
+            {
+                if (!Loading)
+                    throw new ArgumentNullException("array", "serializable array should not be null");
+
+                if (numElements == -1)
+                    numElements = Stream.ReadInt32();
+                array = new uint[numElements];
+            }
+
+            this.ReadBasicArray(array, r => (uint)r.Stream.ReadUInt32(), numElements);
+        }
+
+        public void Serialize(ref float[] array, int numElements = -1)
+        {
+            if (array == null)
+            {
+                if (!Loading)
+                    throw new ArgumentNullException("array", "serializable array should not be null");
+
+                if (numElements == -1)
+                    numElements = Stream.ReadInt32();
+                array = new float[numElements];
+            }
+
+            this.ReadBasicArray(array, r => (int)r.Stream.ReadFloat(), numElements);
+        }
+
+        public void Serialize(ref bool[] array, int numElements = -1)
+        {
+            if (array == null)
+            {
+                if (!Loading)
+                    throw new ArgumentNullException("array", "serializable array should not be null");
+
+                if (numElements == -1)
+                    numElements = Stream.ReadInt32();
+                array = new bool[numElements];
+            }
+
+            this.ReadBasicArray(array, r => (bool)r.Stream.ReadBoolByte(), numElements);
+        }
+
+        private void ReadBasicArray<TType>(TType[] list, Func<IUnrealStream, TType> readValue, int amountToRead = -1)
+        {
+            var count = amountToRead >= 0 ? amountToRead : this.Stream.ReadInt32();
+            if (count >= 0x7FFFFF)
+            {
+                throw new FormatException("too many items in array");
+            }
+
+            for (uint i = 0; i < count; i++)
+            {
+                list[i] = readValue(this);
+            }
+        }
+
+
+
+
+
         public void Serialize(ref BitArray values)
         {
             if (this.Loading == true)
@@ -877,6 +972,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             }
         }
 
+
+
         public void Serialize<TFormat>(ref TFormat value)
             where TFormat : IUnrealSerializable, new()
         {
@@ -924,6 +1021,44 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
                 }
 
                 this.Stream.WriteInt32(values.Count);
+                foreach (TFormat value in values)
+                {
+                    value.Serialize(this);
+                }
+            }
+        }
+
+        public void Serialize<TFormat>(ref TFormat[] values)
+            where TFormat : IUnrealSerializable, new()
+        {
+            if (this.Loading == true)
+            {
+                uint count = this.Stream.ReadUInt32();
+
+                if (count >= 0x7FFFFF)
+                {
+                    throw new Exception("sanity check");
+                }
+
+                TFormat[] list = new TFormat[count];
+
+                for (uint i = 0; i < count; i++)
+                {
+                    TFormat value = new TFormat();
+                    value.Serialize(this);
+                    list[i] = value;
+                }
+
+                values = list;
+            }
+            else
+            {
+                if (values == null)
+                {
+                    throw new ArgumentNullException("values");
+                }
+
+                this.Stream.WriteInt32(values.Length);
                 foreach (TFormat value in values)
                 {
                     value.Serialize(this);
