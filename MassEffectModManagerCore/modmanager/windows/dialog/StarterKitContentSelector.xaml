@@ -1,0 +1,26 @@
+﻿<Window x:Class="ME3TweaksModManager.modmanager.windows.dialog.StarterKitContentSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.windows"
+        xmlns:starterkit="clr-namespace:ME3TweaksModManager.modmanager.objects.starterkit"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Title="Starter Kit Addins" Height="450" Width="800">
+    <Window.Style>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
+    <Grid>
+        <ItemsControl ItemsSource="{Binding AvailableFeatures}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type starterkit:StarterKitAddinFeature}">
+                    <Button Content="{Binding DisplayString}" Command="{Binding AddFeatureCommand}" Margin="0,5"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>

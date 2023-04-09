@@ -8,13 +8,17 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Textures;
+using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal.Classes;
 using ME3TweaksCore.Config;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
@@ -87,7 +91,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             }
             else
             {
-                SelectedLevelText = LevelNameStringConverter.StaticConvert(SelectedSaveFile.Game, SelectedSaveFile.Proxy_BaseLevelName);
+                SelectedLevelText = GetTlkStringForLevelName(SelectedSaveFile.Proxy_BaseLevelName);
 
                 var sfname = SelectedSaveFile.Proxy_BaseLevelName.ToLower();
                 if (LevelImageCache.TryGetValue(CurrentGame, out var cache) && cache.TryGetValue(sfname, out var cachedImage))
@@ -108,187 +112,85 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             }
         }
 
-        private static CaseInsensitiveDictionary<string> ME3MapToTextureNames = new()
+        private string GetTlkStringForLevelName(string proxyBaseLevelName)
         {
-
-            { @"Biop_Nor", @"GUI_SF_SaveLoad_Images.Elevators.LVL_NorCIC_512x256" },
-            { @"Biop_ProEar", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Earth_512x256" },
-            { @"Biop_ProMar", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Mars_512x256" },
-            { @"Biop_ProCit", @"GUI_SF_SaveLoad_Images.Elevators.LVL_CitHosp_512x256" },
-            { @"Biop_Gth001", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Geth01_512x256" },
-            { @"Biop_Gth002", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Geth02_512x256" },
-            { @"Biop_GthN7a", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_GethAdmiral_512x256" },
-            { @"Biop_GthLeg", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_GethLegion_512x256" },
-            { @"Biop_KroGar", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Garrus_512x256" },
-            { @"Biop_Kro001", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Geno01_512x256" },
-            { @"Biop_Kro002", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Geno02_512x256" },
-            { @"Biop_KroN7a", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_GenoRescue_512x256" },
-            { @"Biop_KroN7b", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_GenoBomb_512x256" },
-            { @"Biop_KroGru", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_GenoGrunt_512x256" },
-            { @"Biop_Cat002", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Cat2Thessia_512x256" },
-            { @"Biop_Cat003", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Cat3Coup_512x256" },
-            { @"Biop_CerMir", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Miranda_512x256" },
-            { @"Biop_CerJcb", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Jacob_512x256" },
-            { @"Biop_CitHub", @"GUI_SF_SaveLoad_Images.Elevators.LVL_CitCommon_512x256" },
-            { @"Biop_CitSam", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Samara_512x256" },
-            { @"Biop_OmgJck", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Grissom_512x256" },
-            { @"Biop_SPDish", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_FBDagger_512x256" },
-            { @"Biop_SPSlum", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_FBGhost_512x256" },
-            { @"Biop_SPTowr", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_FBGiant_512x256" },
-            { @"Biop_SPCer", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_FBGlacier_512x256" },
-            { @"Biop_SPRctr", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_FBReactor_512x256" },
-            { @"Biop_SPNov", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_FBWhite_512x256" },
-            { @"Biop_Cat004", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Cat4Illusive_512x256" },
-            { @"Biop_End001", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_EndEarth_512x256" },
-            { @"Biop_End002", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_EndCitadel_512x256" },
-            { @"Biop_End003", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_EndCitadel_512x256" },
-
-            // From Ashes
-            { @"Biop_Cat001", @"GUI_PR_Images.LVL_Prothean_512x256" },
-
-            // Leviathan
-            { @"Biop_Lev001", @"GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev001" },
-            { @"Biop_Lev002", @"GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev002" },
-            { @"Biop_Lev003", @"GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev003" },
-            { @"Biop_Lev004", @"GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev004" },
-
-            // Omega
-            //{ @"Biop_Omg000", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission01" },
-            { @"Biop_Omg001", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission01" },
-            { @"Biop_Omg02a", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission02" },
-            { @"Biop_Omg003", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission03" },
-            { @"Biop_Omg004", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission04" },
-            { @"Biop_OmgHub", @"BIOG_GUI_SAVE_GAME_ICONS.OmgMissionHub" },
-
-            // Citadel
-            { @"Biop_Cit001", @"DLC_MPImages.SaveLoad.LVL_Cit_Sushi_512x256" },
-            { @"Biop_Cit002", @"DLC_MPImages.SaveLoad.LVL_Cit_Casino_512x256" },
-            { @"Biop_Cit003", @"DLC_MPImages.SaveLoad.LVL_Cit_Archives_512x256" },
-            { @"Biop_Cit004", @"DLC_MPImages.SaveLoad.LVL_Cit_Docks_512x256" },
-            { @"Biop_CitHot", @"DLC_MPImages.SaveLoad.LVL_Cit_Street_512x256" },
-            { @"Biop_CitApt", @"DLC_MPImages.SaveLoad.LVL_Cit_Apartmnt_512x256" },
-            { @"Biop_CitStart", @"DLC_MPImages.SaveLoad.LVL_Cit_Apartmnt_512x256" },
-        };
-
-        private string ConvertLevelToImageName(MEGame game, string baselevelname)
-        {
-            if (game.IsGame2())
+            if (mapToImageAssetMap.TryGetValue(proxyBaseLevelName, out var saveInfo))
             {
-                return baselevelname + "_IMG";
-            }
-            else if (game.IsGame3())
-            {
-                ME3MapToTextureNames.TryGetValue(baselevelname, out var result);
-                if (result != null)
-                    return result;
+                foreach (var tlk in TlkFiles)
+                {
+                    var data = tlk.FindDataById(saveInfo.TlkStringId, returnNullIfNotFound: true, noQuotes: true);
+                    if (data != null) return data;
+                }
             }
 
-            return "";
+            return $"Unknown map: {proxyBaseLevelName}";
+        }
+
+
+        private string LangCode = "INT"; // Todo: Support changing this
+        private List<ME2ME3LazyTLK> TlkFiles { get; } = new();
+        private void LoadTLKs()
+        {
+            // Load basegame
+            var baseTlk = new ME2ME3LazyTLK();
+            baseTlk.LoadTlkData(Path.Combine(Target.GetCookedPath(), $"BIOGame_{LangCode}.tlk"));
+            TlkFiles.Add(baseTlk);
+
+            // Load DLC
+            var dlcs = Target.GetInstalledDLCByMountPriority();
+            foreach (var dlc in dlcs)
+            {
+                var dlcFolderPath = Path.Combine(Target.GetDLCPath(), dlc, Target.Game.CookedDirName());
+                var tlks = Directory.EnumerateFiles(dlcFolderPath, $"*{LangCode}.tlk", SearchOption.AllDirectories);
+                foreach (var tlk in tlks)
+                {
+                    var dlcTlk = new ME2ME3LazyTLK();
+                    dlcTlk.LoadTlkData(tlk);
+                    TlkFiles.Add(dlcTlk);
+                }
+            }
         }
 
         private void LoadSaveImageCache(string mapName)
         {
-            var imagePackages = new List<string>();
             if (!LevelImageCache.TryGetValue(CurrentGame, out _))
             {
                 // Initialize
                 LevelImageCache[CurrentGame] = new CaseInsensitiveDictionary<BitmapSource>();
             }
-            switch (CurrentGame)
-            {
-                case MEGame.LE2:
-                case MEGame.ME2:
-                    imagePackages.Add(@"GUI_SF_SaveLoad_Images.pcc");
-                    break;
-                case MEGame.ME3:
-                    imagePackages.Add(@"SFXImages_SaveLoad_1.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_2.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_3.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_4.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_5.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_6.pcc");
-                    break;
-                case MEGame.LE3:
-                    imagePackages.Add(@"SFXGUIData_ElevatorImages.pcc"); // Normandy, Citadel
-
-                    imagePackages.Add(@"SFXImages_SaveLoad_1.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_2.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_3.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_4.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_5.pcc");
-                    imagePackages.Add(@"SFXImages_SaveLoad_6.pcc");
-
-                    imagePackages.Add(@"SFX_GUI_PR_SaveLoadImages_1.pcc"); // Prothean
-                    imagePackages.Add(@"SFXImages_SaveLoad_Lev.pcc"); // Leviathan
-                    imagePackages.Add(@"SFXImages_OMG_SaveLoad.pcc"); // Omega
-                    imagePackages.Add(@"SFXImages_DLCCit_SaveLoad.pcc"); // Citadel
-                    break;
-            }
 
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(CurrentGame);
-            foreach (var imagePackageName in imagePackages)
+            if (mapToImageAssetMap.TryGetValue(mapName, out var saveImageInfo) && loadedFiles.TryGetValue(saveImageInfo.PackageName, out var packagePath))
             {
-                if (loadedFiles.TryGetValue(imagePackageName, out var imagePackagePath))
+                using var package = MEPackageHandler.UnsafePartialLoad(packagePath, x =>
                 {
-                    var exportPath = ConvertLevelToImageName(CurrentGame, mapName);
-
-                    using var package = MEPackageHandler.UnsafePartialLoad(imagePackagePath, x =>
+                    if (x.InstancedFullPath.CaseInsensitiveEquals(saveImageInfo.FullInstancePath))
                     {
-                        if (x.InstancedFullPath.CaseInsensitiveEquals(exportPath))
-                        {
-                            //                          Debug.WriteLine($"Loading {x.InstancedFullPath}");
-                            return true;
-                        }
-                        //                        Debug.WriteLine($"Not loading {x.InstancedFullPath}, needs {exportPath}");
-                        return false;
-                    });
-                    var tex = package.FindExport(exportPath);
-
-                    if (tex != null)
-                    {
-                        if (!tex.IsDataLoaded())
-                        {
-                            Debugger.Break();
-                        }
-                        Texture2D t2d = new Texture2D(tex);
-                        // NOTE: Set 'ClearAlpha' to false to make image support transparency!
-                        var bitmap = Image.convertRawToBitmapARGB(
-                            t2d.GetImageBytesForMip(t2d.GetTopMip(), t2d.Export.Game, true, out _),
-                            t2d.GetTopMip().width, t2d.GetTopMip().height, Image.getPixelFormatType(t2d.TextureFormat),
-                            true);
-                        //var bitmap = DDSImage.ToBitmap(imagebytes, fmt, mipToLoad.width, mipToLoad.height, CurrentLoadedExport.FileRef.Platform.ToString());
-                        var memory = new MemoryStream(bitmap.Height * bitmap.Width * 4 + 54);
-                        bitmap.Save(memory, ImageFormat.Bmp);
-                        memory.Position = 0;
-                        LevelImageCache[CurrentGame][GetLevelNameFromTexturePath(tex.InstancedFullPath, CurrentGame)] =
-                            (BitmapSource)new ImageSourceConverter().ConvertFrom(memory);
-                        break;
+                        return true;
                     }
-                }
-            }
-        }
+                    return false;
+                });
+                var tex = package.FindExport(saveImageInfo.FullInstancePath);
 
-        private string GetLevelNameFromTexturePath(string texInstancedFullPath, MEGame currentGame)
-        {
-            if (currentGame.IsGame2())
-            {
-                //return ME2
-                texInstancedFullPath = texInstancedFullPath.Split('.').Last();
-                return texInstancedFullPath.Substring(0, texInstancedFullPath.IndexOf("_IMG"));
-            }
-            if (currentGame.IsGame3())
-            {
-                var kvp = ME3MapToTextureNames.FirstOrDefault(x => x.Value.Equals(texInstancedFullPath, StringComparison.InvariantCultureIgnoreCase));
-                if (kvp.Key != null)
+                if (tex != null)
                 {
-                    // Workaround for duplicates
-                    if (kvp.Key == @"biop_Omg000")
-                        return @"biop_Omg001";
-                    return kvp.Key;
+                    if (!tex.IsDataLoaded())
+                    {
+                        Debugger.Break();
+                    }
+                    Texture2D t2d = new Texture2D(tex);
+                    // NOTE: Set 'ClearAlpha' to false to make image support transparency!
+                    var bitmap = Image.convertRawToBitmapARGB(
+                        t2d.GetImageBytesForMip(t2d.GetTopMip(), t2d.Export.Game, true, out _),
+                        t2d.GetTopMip().width, t2d.GetTopMip().height, Image.getPixelFormatType(t2d.TextureFormat),
+                        true);
+                    //var bitmap = DDSImage.ToBitmap(imagebytes, fmt, mipToLoad.width, mipToLoad.height, CurrentLoadedExport.FileRef.Platform.ToString());
+                    var memory = new MemoryStream(bitmap.Height * bitmap.Width * 4 + 54);
+                    bitmap.Save(memory, ImageFormat.Bmp);
+                    memory.Position = 0;
+                    LevelImageCache[CurrentGame][mapName] = (BitmapSource)new ImageSourceConverter().ConvertFrom(memory);
                 }
             }
-
-            return "";
         }
 
         /// <summary>
@@ -420,6 +322,11 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 // Load game information
                 var gameConfig = ConfigTools.GetMergedBundle(Target);
 
+                // Build save game image map
+                BuildUIAssetMap(gameConfig);
+
+                // Load strings for UI
+                LoadTLKs();
 
                 // Load saves
                 var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", GetSaveSubDir(CurrentGame));
@@ -458,6 +365,101 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 SaveCareers.ReplaceAll(result.Result.Select(x => new Career(x.Value, x.Key)));
                 LoadingSaves = false;
             });
+        }
+
+        private class SaveImageAsset2
+        {
+            public string FullInstancePath { get; set; }
+
+            public string PackageName { get; set; }
+
+            public int TlkStringId { get; set; }
+        }
+
+        private CaseInsensitiveDictionary<SaveImageAsset2> mapToImageAssetMap = new();
+
+        /// <summary>
+        /// Builds the save-image map from the bundle
+        /// </summary>
+        /// <param name="getAsset"></param>
+        private void BuildUIAssetMap(ConfigAssetBundle bundle)
+        {
+            //bundle.CommitDLCAssets(@"B:\test");
+            // Temp dictionaries as we cross entries mapping seek free entries
+            var mapToAssetNameMap = new CaseInsensitiveDictionary<string>();
+            var assetNameToSourcePackageMap = new CaseInsensitiveDictionary<string>();
+            var mapToStrRefName = new CaseInsensitiveDictionary<int>();
+
+
+            var bioui = bundle.GetAsset(@"BioUI", false);
+            var saveload = bioui.GetOrAddSection(@"sfxgame.sfxsfhandler_save");
+            if (saveload.TryGetValue(@"areadata", out var areadata))
+            {
+                foreach (var mapEntry in areadata)
+                {
+                    var parms = StringStructParser.GetCommaSplitValues(mapEntry.Value, canBeCaseInsensitive: true);
+                    var isUsable = parms.TryGetValue(@"AreaName", out var areaname);
+                    isUsable &= parms.TryGetValue(@"ImageName", out var imagename);
+                    parms.TryGetValue(@"AreaStrRef", out var areaStrRefStr);
+
+                    if (isUsable)
+                    {
+                        mapToAssetNameMap[areaname] = imagename;
+                        if (int.TryParse(areaStrRefStr, out var strRef))
+                        {
+                            mapToStrRefName[areaname] = strRef;
+                        }
+                    }
+                }
+            }
+
+            if (Target.Game.IsGame2())
+            {
+                // Game2 uses a prefix property - in OT it overrode package ever DLC release, LE uses just base package of 
+                // GUI_SF_SaveLoad
+                foreach (var sf in mapToAssetNameMap)
+                {
+                    mapToImageAssetMap[sf.Key] = new SaveImageAsset2() { FullInstancePath = sf.Value, PackageName = @"GUI_SF_SaveLoad_Images.pcc" };
+                }
+            }
+            else if (Target.Game.IsGame3())
+            {
+                // Game 3 uses seek free package mapping
+                var bioengine = bundle.GetAsset(@"BioEngine", false);
+                var sfxengine = bioengine.GetOrAddSection("sfxgame.sfxengine");
+
+                if (sfxengine.TryGetValue(@"dynamicloadmapping", out var dynamicLoadMapping))
+                {
+                    // Build a temporary map of all entries so we only enumerate twice
+                    foreach (var dlm in dynamicLoadMapping)
+                    {
+                        var parms = StringStructParser.GetCommaSplitValues(dlm.Value, canBeCaseInsensitive: true);
+                        assetNameToSourcePackageMap[parms[@"ObjectName"]] = parms[@"SeekFreePackageName"];
+                    }
+                }
+
+                // Now build a final lookup cache
+
+                foreach (var mapEntry in mapToAssetNameMap)
+                {
+                    if (assetNameToSourcePackageMap.TryGetValue(mapEntry.Value, out var packageName))
+                    {
+                        // Found
+                        Debug.WriteLine($"Found {mapEntry.Key}");
+                        var saveEntry = new SaveImageAsset2() { FullInstancePath = mapEntry.Value, PackageName = packageName + @".pcc" };
+                        if (mapToStrRefName.TryGetValue(mapEntry.Key, out var strId))
+                        {
+                            saveEntry.TlkStringId = strId;
+                        }
+
+                        mapToImageAssetMap[mapEntry.Key] = saveEntry;
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"MISS {mapEntry.Key}");
+                    }
+                }
+            }
         }
 
         private string GetSaveSubDir(MEGame currentGame)

@@ -313,7 +313,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
 
         private static string GetHumanName(string henchName)
         {
-            if (henchName == "Marine") return "James";
+            if (henchName == @"Marine") return @"James";
             return henchName;
         }
 
@@ -922,8 +922,6 @@ namespace ME3TweaksModManager.modmanager.starterkit
             }
         }
 
-        #endregion
-
         /// <summary>
         /// The class text for the custom menu class, split to its own func for clarity
         /// </summary>
@@ -933,7 +931,11 @@ namespace ME3TweaksModManager.modmanager.starterkit
         {
             return $@"Class SFXGUIData_ModSettings_{dlcName} extends SFXGUIData_ModSettings editinlinenew perobjectconfig config(UI); defaultproperties {{ }}";
         }
+        #endregion
 
+        #region Coalesced conveniences
+
+        #endregion
         // Might need to port TLK Handler from ME2R...
     }
 }

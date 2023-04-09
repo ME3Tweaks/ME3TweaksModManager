@@ -279,7 +279,7 @@
 		<Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="modmanager\windows\DeploymentListDialog.xaml">
+		<Page Update="modmanager\windows\dialog\DeploymentListDialog.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		  <SubType>Designer</SubType>
 		</Page>

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Management;
 using System.Runtime;
 using System.Threading;
@@ -28,24 +24,17 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
-using ME3TweaksCore.Services.Backup;
-using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksCore.Targets;
-using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
@@ -64,15 +53,13 @@ using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
-using Extensions = WinCopies.Util.Extensions;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
-using XCopy = ME3TweaksCore.Helpers.XCopy;
+using StarterKitContentSelector = ME3TweaksModManager.modmanager.windows.dialog.StarterKitContentSelector;
 
 namespace ME3TweaksModManager
 {
@@ -681,6 +668,7 @@ namespace ME3TweaksModManager
         public ICommand CloseModSearchBoxCommand { get; set; }
         public ICommand InstallMEMFileCommand { get; set; }
         public ICommand TrilogySaveEditorCommand { get; set; }
+        public ICommand AddStarterKitContentCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -697,12 +685,11 @@ namespace ME3TweaksModManager
             ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
             BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
             RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
-            DeployModCommand = new GenericCommand(ShowDeploymentPane, CanShowDeploymentPane);
+            DeployModCommand = new GenericCommand(ShowDeploymentPane, IsModSelectedInDevMode);
             DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibraryWrapper, CanDeleteModFromLibrary);
             ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
             SubmitTelemetryForModCommand = new GenericCommand(SubmitTelemetryForMod, CanSubmitTelemetryForMod);
-            SelectedModCheckForUpdatesCommand =
-                new GenericCommand(CheckSelectedModForUpdate, SelectedModIsME3TweaksUpdatable);
+            SelectedModCheckForUpdatesCommand = new GenericCommand(CheckSelectedModForUpdate, SelectedModIsME3TweaksUpdatable);
             RestoreModFromME3TweaksCommand = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new RelayCommand(RunAutoTOCOnGame, HasGameTarget);
@@ -726,13 +713,10 @@ namespace ME3TweaksModManager
             LaunchEGMSettingsLECommand = new GenericCommand(() => LaunchEGMSettingsLE(), CanLaunchEGMSettingsLE);
             LaunchFVBCCUCommand = new GenericCommand(() => LaunchFVBCCU(), CanLaunchFVBCCU);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
-            CheckAllModsForUpdatesCommand =
-                new GenericCommand(CheckAllModsForUpdatesWrapper, () => M3LoadedMods.Instance.ModsLoaded);
-            CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector,
-                () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any(x => x.Game == MEGame.ME3));
+            CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => M3LoadedMods.Instance.ModsLoaded);
+            CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any(x => x.Game == MEGame.ME3));
             ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
-            OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler,
-                () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any());
+            OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any());
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => TutorialService.ServiceLoaded);
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
@@ -741,6 +725,13 @@ namespace ME3TweaksModManager
             InstallMEMFileCommand = new GenericCommand(InstallMEMFile, CanInstallMEMFile);
             ChangeCurrentLaunchConfigCommand = new GenericCommand(OpenLaunchOptionSelector, () => SelectedGameTarget?.Game.IsLEGame() ?? false);
             TrilogySaveEditorCommand = new GenericCommand(OpenTSE);
+            AddStarterKitContentCommand = new GenericCommand(OpenStarterKitContentSelector, IsModSelectedInDevMode);
+        }
+
+        private void OpenStarterKitContentSelector()
+        {
+            var starterKitSelector = new StarterKitContentSelector(this, SelectedMod);
+            starterKitSelector.ShowDialog();
         }
 
         private void OpenTSE()
@@ -1582,7 +1573,7 @@ namespace ME3TweaksModManager
             ShowBusyControl(updateCompletedPanel);
         }
 
-        private bool CanShowDeploymentPane()
+        private bool IsModSelectedInDevMode()
         {
             return SelectedMod != null && Settings.DeveloperMode;
         }
@@ -2282,6 +2273,14 @@ namespace ME3TweaksModManager
             if (SelectedGameTarget.Game != SelectedMod.Game)
             {
                 ApplyModButtonText = M3L.GetString(M3L.string_cannotInstallToThisGame);
+                return false;
+            }
+
+            // Check we have 'content' mod data to install
+            var nonDirectInstallJobs = SelectedMod.InstallationJobs.Where(x => x.Header != ModJob.JobHeader.TEXTUREMODS && x.Header != ModJob.JobHeader.HEADMORPHS).ToList();
+            if (nonDirectInstallJobs.Count == 0)
+            {
+                ApplyModButtonText = "Not a content mod";
                 return false;
             }
 
