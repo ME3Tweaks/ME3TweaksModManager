@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -461,7 +462,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
             int[] BoolVariables;
             int[] IntVariables;
             float[] FloatVariables;
-            int[] QuestProgressCounter;
+            int QuestProgressCounter;
             PlotQuestSaveRecord[] QuestProgress;
             int[] QuestIds;
             PlotCodexSaveRecord[] CodexEntries;
@@ -487,6 +488,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
 
             public void Serialize(IUnrealStream stream)
             {
+                Debug.WriteLine($"At {stream.Stream.Position:X8}");
                 stream.Serialize(ref PlanetID);
                 stream.Serialize(ref bVisited);
                 stream.Serialize(ref Probes);
