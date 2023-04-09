@@ -389,7 +389,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
                 stream.Serialize(ref Appearance);
                 stream.Serialize(ref Powers);
                 stream.Serialize(ref Weapons);
-                stream.Serialize(ref LoadoutWeapons); // 6 items);
+                stream.Serialize(ref LoadoutWeapons, numValues: 6); // 6 items with no count
                 stream.Serialize(ref HotKeys);
                 stream.Serialize(ref Credits);
                 stream.Serialize(ref Medigel);
@@ -419,7 +419,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
                 stream.Serialize(ref Powers);
                 stream.Serialize(ref CharacterLevel);
                 stream.Serialize(ref TalentPoints);
-                stream.Serialize(ref LoadoutWeapons); // 6 items);
+                stream.Serialize(ref LoadoutWeapons, numValues: 6); // 6 items with no count
                 stream.Serialize(ref MappedPower);
             }
         }
@@ -554,18 +554,18 @@ namespace ME3TweaksModManager.modmanager.save.game2
         DoorSaveRecord[] DoorRecords;
 
         // Dead pawn guids
-        Guid PawnRecords;
+        Guid[] PawnRecords;
 
         PlayerRecord PlayerData;
 
-        HenchmanSaveRecord HenchmanData;
+        HenchmanSaveRecord[] HenchmanData;
 
         PlotTableSaveRecord PlotRecord;
         ME1PlotTableRecord ME1PlotRecord;
 
         GalaxyMapSaveRecord GalaxyMapRecord;
 
-        DependentDLCRecord DependentDLC;
+        DependentDLCRecord[] DependentDLC;
         public void Serialize(IUnrealStream stream)
         {
             stream.Serialize(ref SaveFormatVersion);

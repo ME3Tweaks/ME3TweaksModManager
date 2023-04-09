@@ -32,16 +32,18 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         void Serialize(ref BitArray values);
 
         // Arrays of primitive types
-        void Serialize(ref bool[] values);
-        void Serialize(ref int[] values);
-        void Serialize(ref uint[] values);
-        void Serialize(ref float[] values);
-        void Serialize(ref string[] values);
+        // you can specify a count if you know exactly how many items are supposed to
+        // be in the array
+        void Serialize(ref bool[] values, int numValues = -1);
+        void Serialize(ref int[] values, int numValues = -1);
+        void Serialize(ref uint[] values, int numValues = -1);
+        void Serialize(ref float[] values, int numValues = -1);
+        void Serialize(ref string[] values, int numValues = -1);
 
         // Serializables
         void Serialize<TFormat>(ref TFormat value)
             where TFormat : IUnrealSerializable, new();
-        
+
         // Serializable List
         void Serialize<TFormat>(ref List<TFormat> values)
             where TFormat : IUnrealSerializable, new();
