@@ -303,19 +303,21 @@ namespace ME3TweaksModManager.modmanager.save.game3
             }
         }
 
-        public void SetMorphHead(IMorphHead morphHead)
-        {
-            if (morphHead is MorphHead head)
-            {
-                Appearance.MorphHead = head;
-                Appearance.HasMorphHead = true;
-            }
-            else
-            {
-                Appearance.MorphHead = null;
-                Appearance.HasMorphHead = false;
-            }
-        }
+        // We are not going to support this in M3,
+        // we will let TSE handle it
+        //public void SetMorphHead(IMorphHead morphHead)
+        //{
+        //    if (morphHead is MorphHead head)
+        //    {
+        //        Appearance.MorphHead = head;
+        //        Appearance.HasMorphHead = true;
+        //    }
+        //    else
+        //    {
+        //        Appearance.MorphHead = null;
+        //        Appearance.HasMorphHead = false;
+        //    }
+        //}
 
         public int LastName
         {

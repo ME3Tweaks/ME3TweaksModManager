@@ -65,6 +65,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         public string SaveFilePath { get; set; }
         #region Fields
         public int SaveNumber { get; set; }
+        public bool IsValid { get; set; }
         public ESFXSaveGameType SaveGameType { get; set; }
 
         public IPlayerRecord Proxy_PlayerRecord => Player;

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
@@ -87,12 +88,22 @@ namespace ME3TweaksModManager.modmanager.save
 
             var reader = new UnrealStream(input, true, 30);
             save.Serialize(reader);
-
+            var crc = input.ReadUInt32();
             if (input.Position != input.Length)
             {
+                save.IsValid = false;
+#if DEBUG
                 throw new FormatException("did not consume entire file");
+#endif
+                return save;
             }
+            input.Position = 0;
 
+            var calculatedCRC = Crc32.Compute(input.ReadToBuffer(input.Length - 4));
+            if (crc != calculatedCRC)
+            {
+                save.IsValid = false;
+            }
             return save;
         }
     }

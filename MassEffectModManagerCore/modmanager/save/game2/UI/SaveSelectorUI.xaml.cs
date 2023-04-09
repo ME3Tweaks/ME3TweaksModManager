@@ -417,7 +417,14 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 // GUI_SF_SaveLoad
                 foreach (var sf in mapToAssetNameMap)
                 {
-                    mapToImageAssetMap[sf.Key] = new SaveImageAsset2() { FullInstancePath = sf.Value, PackageName = @"GUI_SF_SaveLoad_Images.pcc" };
+                    var saveEntry = new SaveImageAsset2() { FullInstancePath = sf.Value, PackageName = @"GUI_SF_SaveLoad_Images.pcc" };
+                    if (mapToStrRefName.TryGetValue(sf.Key, out var strId))
+                    {
+                        saveEntry.TlkStringId = strId;
+                    }
+
+                    mapToImageAssetMap[sf.Key] = saveEntry;
+
                 }
             }
             else if (Target.Game.IsGame3())

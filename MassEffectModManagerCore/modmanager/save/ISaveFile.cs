@@ -16,5 +16,10 @@ namespace ME3TweaksModManager.modmanager.save
         public ESFXSaveGameType SaveGameType { get; set; }
         public uint Version { get; }
         public int SaveNumber { get; set; }
+
+        /// <summary>
+        /// If save fully serialized and CRC check passed
+        /// </summary>
+        bool IsValid { get; set; }
     }
 }

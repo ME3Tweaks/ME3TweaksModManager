@@ -332,7 +332,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
                 stream.Serialize(ref BonusRenegade);
             }
         }
-        class PlayerRecord : IUnrealSerializable
+        class PlayerRecord : IUnrealSerializable, IPlayerRecord
         {
             int bIsFemale;
             string PlayerClassName;
@@ -403,6 +403,17 @@ namespace ME3TweaksModManager.modmanager.save.game2
                 stream.Serialize(ref FaceCode);
                 stream.Serialize(ref ClassFriendlyName);
                 stream.Serialize(ref ME1ImportBonuses);
+            }
+
+            public bool Proxy_IsFemale
+            {
+                get => bIsFemale != 0;
+                set => bIsFemale = value ? 1 : 0;
+            }
+            public string Proxy_FirstName
+            {
+                get => FirstName;
+                set => FirstName = value;
             }
         }
         class HenchmanSaveRecord : IUnrealSerializable
@@ -600,10 +611,11 @@ namespace ME3TweaksModManager.modmanager.save.game2
         public string SaveFilePath { get; set; }
         public DateTime Proxy_TimeStamp => DateTime.Now; // Todo: IMPLEMENT
         public string Proxy_DebugName => DebugName;
-        public IPlayerRecord Proxy_PlayerRecord { get; }
+        public IPlayerRecord Proxy_PlayerRecord => PlayerData;
         public string Proxy_BaseLevelName => BaseLevelName;
         public ESFXSaveGameType SaveGameType { get; set; }
         public uint Version => 30; // File save will always be version 30
         public int SaveNumber { get; set; }
+        public bool IsValid { get; set; }
     };
 }

@@ -33,6 +33,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             DebugName = BindableDebugName;
         }
         public int SaveNumber { get; set; }
+        public bool IsValid { get; set; }
         public ESFXSaveGameType SaveGameType { get; set; }
 
 

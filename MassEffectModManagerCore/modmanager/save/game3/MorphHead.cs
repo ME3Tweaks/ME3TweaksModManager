@@ -28,7 +28,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     [OriginalName("MorphHeadSaveRecord")]
-    public class MorphHead : IUnrealSerializable, INotifyPropertyChanged, IMorphHead
+    public class MorphHead : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
         [OriginalName("HairMesh")]
