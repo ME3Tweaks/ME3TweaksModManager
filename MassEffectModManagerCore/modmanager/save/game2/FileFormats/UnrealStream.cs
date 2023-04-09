@@ -356,7 +356,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             this.ReadBasicList(list, r => (byte)r.Stream.ReadByte());
         }
 
-        private void ReadBasicList<TType>(List<TType> list, Func<IUnrealStream, TType> readValue)
+       private void ReadBasicList<TType>(List<TType> list, Func<IUnrealStream, TType> readValue)
         {
             var count = this.Stream.ReadUInt32();
             if (count >= 0x7FFFFF)
@@ -826,6 +826,74 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             }
         }
 
+        public void Serialize(ref string[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array", "serializable array should not be null");
+            }
+
+            this.ReadBasicArray(array, r => (string)r.Stream.ReadUnrealString());
+        }
+
+        public void Serialize(ref int[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array", "serializable array should not be null");
+            }
+
+            this.ReadBasicArray(array, r => (int)r.Stream.ReadInt32());
+        }
+
+        public void Serialize(ref uint[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array", "serializable array should not be null");
+            }
+
+            this.ReadBasicArray(array, r => (uint)r.Stream.ReadUInt32());
+        }
+
+        public void Serialize(ref float[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array", "serializable array should not be null");
+            }
+
+            this.ReadBasicArray(array, r => (int)r.Stream.ReadFloat());
+        }
+
+        public void Serialize(ref bool[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array", "serializable array should not be null");
+            }
+
+            this.ReadBasicArray(array, r => (bool)r.Stream.ReadBoolByte());
+        }
+
+        private void ReadBasicArray<TType>(TType[] list, Func<IUnrealStream, TType> readValue)
+        {
+            var count = this.Stream.ReadUInt32();
+            if (count >= 0x7FFFFF)
+            {
+                throw new FormatException("too many items in array");
+            }
+
+            for (uint i = 0; i < count; i++)
+            {
+                list[i] = readValue(this);
+            }
+        }
+
+
+
+
+
         public void Serialize(ref BitArray values)
         {
             if (this.Loading == true)
@@ -877,6 +945,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             }
         }
 
+
+
         public void Serialize<TFormat>(ref TFormat value)
             where TFormat : IUnrealSerializable, new()
         {
@@ -924,6 +994,44 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
                 }
 
                 this.Stream.WriteInt32(values.Count);
+                foreach (TFormat value in values)
+                {
+                    value.Serialize(this);
+                }
+            }
+        }
+
+        public void Serialize<TFormat>(ref TFormat[] values)
+            where TFormat : IUnrealSerializable, new()
+        {
+            if (this.Loading == true)
+            {
+                uint count = this.Stream.ReadUInt32();
+
+                if (count >= 0x7FFFFF)
+                {
+                    throw new Exception("sanity check");
+                }
+
+                TFormat[] list = new TFormat[count];
+
+                for (uint i = 0; i < count; i++)
+                {
+                    TFormat value = new TFormat();
+                    value.Serialize(this);
+                    list[i] = value;
+                }
+
+                values = list;
+            }
+            else
+            {
+                if (values == null)
+                {
+                    throw new ArgumentNullException("values");
+                }
+
+                this.Stream.WriteInt32(values.Length);
                 foreach (TFormat value in values)
                 {
                     value.Serialize(this);

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using ME3TweaksModManager.modmanager.save.game2.FileFormats.Save;
 
 namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
@@ -30,6 +31,13 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         void Serialize(ref List<Guid> values);
         void Serialize(ref BitArray values);
 
+        // Arrays of primitive types
+        void Serialize(ref bool[] values);
+        void Serialize(ref int[] values);
+        void Serialize(ref uint[] values);
+        void Serialize(ref float[] values);
+        void Serialize(ref string[] values);
+
         // Serializables
         void Serialize<TFormat>(ref TFormat value)
             where TFormat : IUnrealSerializable, new();
@@ -40,6 +48,10 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 
         void Serialize<TType>(ref BindingList<TType> list) where TType : class, IUnrealSerializable, new();
         // void Serialize(ref IUnrealSerializable value);
+
+        // Array
+        void Serialize<TFormat>(ref TFormat[] values)
+            where TFormat : IUnrealSerializable, new();
 
         // Enum
         void SerializeEnum<TEnum>(ref TEnum value);

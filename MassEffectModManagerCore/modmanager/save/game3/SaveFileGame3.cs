@@ -30,6 +30,7 @@ using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksModManager.modmanager.save.game2;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 
 namespace ME3TweaksModManager.modmanager.save.game3
@@ -652,7 +653,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
         #endregion
 
-        public static SaveFileGame3 Read(Stream input, string fileName = null, MEGame expectedGame = MEGame.Unknown)
+        public static ISaveFile Read(Stream input, string fileName = null, MEGame expectedGame = MEGame.Unknown)
         {
 
             if (input == null)
@@ -660,9 +661,8 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 throw new ArgumentNullException("input");
             }
 
-            var save = new SaveFileGame3()
+            var save = new LE2SaveFile()
             {
-                _Version = input.ReadUInt32(),
                 SaveFilePath = fileName
             };
 
@@ -693,39 +693,16 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
                 }
             }
+            
 
-            if (save._Version != 29 && save._Version.Swap() != 29 &&
-                save._Version != 59 && save._Version.Swap() != 59)
-            {
-                throw new FormatException("unexpected version");
-            }
-            var endian = save._Version == 29 || save._Version == 59
-                             ? Endian.Little
-                             : Endian.Big;
-            if (endian == Endian.Big)
-            {
-                save._Version = save._Version.Swap();
-            }
-
-            var reader = new UnrealStream(input, true, save._Version);
+            var reader = new UnrealStream(input, true, 30);
             save.Serialize(reader);
-
-            if (save._Version >= 27)
-            {
-                if (input.Position != input.Length - 4)
-                {
-                    throw new FormatException("bad checksum position");
-                }
-
-                save._Checksum = input.ReadUInt32();
-            }
 
             if (input.Position != input.Length)
             {
                 throw new FormatException("did not consume entire file");
             }
 
-            save.Endian = endian;
             return save;
         }
 
