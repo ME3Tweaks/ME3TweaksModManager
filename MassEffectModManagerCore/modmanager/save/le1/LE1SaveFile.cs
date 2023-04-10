@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats.Save;
 
 namespace ME3TweaksModManager.modmanager.save.le1
@@ -14,33 +15,49 @@ namespace ME3TweaksModManager.modmanager.save.le1
     class LE1SaveFile
     {
 
-        class SaveTimeStamp
+        class SaveTimeStamp : IUnrealSerializable
         {
             int Seconds;
             int Day;
             int Month;
             int Year;
-        };
 
-        class PlotQuestSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class PlotQuestSaveRecord : IUnrealSerializable
         {
             int QuestCounter;
             int bQuestUpdated;
             int[] History;
-        };
 
-        class PlotCodexPageSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class PlotCodexPageSaveRecord : IUnrealSerializable
         {
             int Page;
             int bNew;
-        };
 
-        class PlotCodexSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class PlotCodexSaveRecord : IUnrealSerializable
         {
             PlotCodexPageSaveRecord[] Pages;
-        };
 
-        class PlotTableSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class PlotTableSaveRecord : IUnrealSerializable
         {
             int[] BoolVariables;
             int[] IntVariables;
@@ -50,47 +67,75 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int[] QuestIds;
             PlotCodexSaveRecord[] CodexEntries;
             int[] CodexIds;
-        };
 
-        class MorphFeatureSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class MorphFeatureSaveRecord : IUnrealSerializable
         {
-            String Feature;
+            string Feature;
             float Offset;
-        };
 
-        class OffsetBoneSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class OffsetBoneSaveRecord : IUnrealSerializable
         {
-            String Name;
+            string Name;
             Vector Offset;
-        };
 
-        class ScalarParameterSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class ScalarParameterSaveRecord : IUnrealSerializable
         {
-            String Name;
+            string Name;
             float Value;
-        };
 
-        class LinearColor
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LinearColor : IUnrealSerializable
         {
             float R, G, B, A;
-        };
 
-        class VectorParameterSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class VectorParameterSaveRecord : IUnrealSerializable
         {
-            String Name;
+            string Name;
             LinearColor Value;
-        };
 
-        class TextureParameterSaveRecord
-        {
-            String Name;
-            String Value;
-        };
+            public void Serialize(IUnrealStream stream)
+            {
 
-        class MorphHeadSaveRecord
+            }
+        }
+        class TextureParameterSaveRecord : IUnrealSerializable
         {
-            String HairMesh;
-            String[] AccessoryMeshes;
+            string Name;
+            string Value;
+
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class MorphHeadSaveRecord : IUnrealSerializable
+        {
+            string HairMesh;
+            string[] AccessoryMeshes;
             MorphFeatureSaveRecord[] MorphFeatures;
             OffsetBoneSaveRecord[] OffsetBones;
             Vector[] Lod0Vertices;
@@ -100,22 +145,34 @@ namespace ME3TweaksModManager.modmanager.save.le1
             ScalarParameterSaveRecord[] ScalarParameters;
             VectorParameterSaveRecord[] VectorParameters;
             TextureParameterSaveRecord[] TextureParameters;
-        };
 
-        class AppearanceSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class AppearanceSaveRecord : IUnrealSerializable
         {
             int bHasMorphHead;
             // Only serialized if bHasMorphHead is true
             MorphHeadSaveRecord MorphHead;
-        };
 
-        class SimpleTalentSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class SimpleTalentSaveRecord : IUnrealSerializable
         {
             int TalentID;
             int CurrentRank;
-        };
 
-        class ComplexTalentSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class ComplexTalentSaveRecord : IUnrealSerializable
         {
             int TalentID;
             int CurrentRank;
@@ -125,22 +182,30 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int VisualOrder;
             int[] PrereqIDs;
             int[] PrereqRanks;
-        };
 
-        class HotKeySaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class HotKeySaveRecord : IUnrealSerializable
         {
             int HotKeyPawn;
             int HotKeyEvent;
-        };
 
-        class PlayerRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class PlayerRecord : IUnrealSerializable, IPlayerRecord
         {
             int bIsFemale;
             int PlayerClassName;
             byte PlayerClass;
             int Level;
             float CurrentXP;
-            String FirstName;
+            string FirstName;
             int LastName;
             byte Origin;
             byte Notoriety;
@@ -148,7 +213,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
             byte SpectreRank;
             int TalentPoints;
             int TalentPoolPoints;
-            String MappedTalent;
+            string MappedTalent;
             AppearanceSaveRecord Appearance;
             SimpleTalentSaveRecord[] SimpleTalents;
             ComplexTalentSaveRecord[] ComplexTalents;
@@ -160,7 +225,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int Medigel;
             float Grenades;
             float Omnigel;
-            String FaceCode;
+            string FaceCode;
             int bArmorOverridden;
             int AutoLevelUpTemplateID;
             float HealthPerLevel;
@@ -184,22 +249,30 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int bHelmetShown;
             byte CurrentQuickSlot;
             byte LastQuickSlot;
-            String LastPower;
+            string LastPower;
             float HealthMax;
             HotKeySaveRecord[] HotKeys;
-            String PrimaryWeapon;
-            String SecondaryWeapon;
-        };
+            string PrimaryWeapon;
+            string SecondaryWeapon;
 
-        class ItemModSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class ItemModSaveRecord : IUnrealSerializable
         {
             int ItemId;
             byte Sophistication;
             int Manufacturer;
             int PlotConditionalId;
-        };
 
-        class ItemSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class ItemSaveRecord : IUnrealSerializable
         {
             int ItemId;
             byte Sophistication;
@@ -208,11 +281,15 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int bNewItem;
             int bJunkItem;
             ItemModSaveRecord[] XMods;
-        };
 
-        class HenchmanSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class HenchmanSaveRecord : IUnrealSerializable
         {
-            String Tag;
+            string Tag;
             SimpleTalentSaveRecord[] SimpleTalents;
             ComplexTalentSaveRecord[] ComplexTalents;
             ItemSaveRecord[] Equipment;
@@ -240,18 +317,26 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int bHelmetShown;
             byte CurrentQuickSlot;
             float HealthMax;
-        };
 
-        class LEGACY_BaseObjectSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
         {
-            String OwnerName;
+            string OwnerName;
             int bHasOwnerClass;
 
             // Only serialized if bHasOwnerClass is true
-            String OwnerClassName;
-        };
+            string OwnerClassName;
 
-        class LEGACY_ActorSaveRecord : LEGACY_BaseObjectSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_ActorSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
             Vector Location;
             Rotator Rotation;
@@ -262,7 +347,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int bStasis;
         };
 
-        class LEGACY_BioPawnSaveRecord : LEGACY_ActorSaveRecord
+        class LEGACY_BioPawnSaveRecord : LEGACY_ActorSaveRecord, IUnrealSerializable
         {
             float GrimeLevel;
             float GrimeDirtLevel;
@@ -270,58 +355,62 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int bHeadGearVisiblePreference;
         };
 
-        class LEGACY_ActorBehaviorSaveRecord : LEGACY_BaseObjectSaveRecord
+        class LEGACY_ActorBehaviorSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
             int bIsDead;
             int bGeneratedTreasure;
             int bChallengeScaled;
             int bHasOwner;
             // Only serialized if bHasOwner is true
-            String ClassName;
+            string ClassName;
             // Only serialized if bHasOwner is true, Owner is fully serialized into the actor behavior
             LEGACY_BaseObjectSaveRecord Owner;
         };
 
-        class LEGACY_ArtPlaceableSaveRecord : LEGACY_ActorBehaviorSaveRecord
+        class LEGACY_ArtPlaceableSaveRecord : LEGACY_ActorBehaviorSaveRecord, IUnrealSerializable
         {
             float Health;
             float CurrentHealth;
             int bEnabled;
-            String CurrentFSMStateName;
+            string CurrentFSMStateName;
             int bIsDestroyed;
-            String State0;
-            String State1;
+            string State0;
+            string State1;
             byte UseCase;
             int bUseCaseOverride;
             int bPlayerOnly;
             byte SkillDifficulty;
             int bHasInventory;
             // Only serialized if bHasInventory is true
-            String ClassName;
+            string ClassName;
             // Only serialized if bHasInventory is true, Inventory is fully serialized into the art placeable
             LEGACY_BaseObjectSaveRecord Inventory;
             int bSkilGameFailed;
             int bSkillGameXPAwarded;
         };
 
-        class LEGACY_EpicPawnBehaviorSaveRecord : LEGACY_ActorBehaviorSaveRecord
+        class LEGACY_EpicPawnBehaviorSaveRecord : LEGACY_ActorBehaviorSaveRecord, IUnrealSerializable
         {
             float HealthCurrent;
             float ShieldCurrent;
-            String FirstName;
+            string FirstName;
             int LastName;
             float HealthMax;
             float HealthRegenRate;
             float RadarRange;
         };
 
-        class LEGACY_SimpleTalentSaveRecord
+        class LEGACY_SimpleTalentSaveRecord : IUnrealSerializable
         {
             int TalentId;
             int Ranks;
-        };
 
-        class LEGACY_ComplexTalentSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_ComplexTalentSaveRecord : IUnrealSerializable
         {
             int TalentId;
             int Ranks;
@@ -331,27 +420,39 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int VisualOrder;
             int[] PrereqTalendIdArray;
             int[] PrereqTalentRankArray;
-        };
 
-        class LEGACY_QuickSlotSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_QuickSlotSaveRecord : IUnrealSerializable
         {
             int bHasQuickSlot;
             // Only serialized if bHasQuickSlot is true
-            String ClassName;
+            string ClassName;
             // Only serialized if bHasQuickSlot is true, quick slot item is fully serialized into the quickslot record
             LEGACY_BaseObjectSaveRecord Item;
-        };
 
-        class LEGACY_EquipmentSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_EquipmentSaveRecord : IUnrealSerializable
         {
             int bHasEquipment;
             // Only serialized if bHasEquipment is true
-            String ClassName;
+            string ClassName;
             // Only serialized if bHasEquipment is true
             LEGACY_BaseObjectSaveRecord Item;
-        };
 
-        class LEGACY_BioPawnBehaviorSaveRecord : LEGACY_EpicPawnBehaviorSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_BioPawnBehaviorSaveRecord : LEGACY_EpicPawnBehaviorSaveRecord, IUnrealSerializable
         {
             int XPLevel;
             float HealthPerLevel;
@@ -366,14 +467,14 @@ namespace ME3TweaksModManager.modmanager.save.le1
             byte QuickSlotCurrent;
             int bHasSquad;
             // Only serialized if bHasSquad is true
-            String ClassName;
+            string SquadObjectClassName;
             // Only serialized if bHasSquad is true    
             LEGACY_BaseObjectSaveRecord Squad;
             int bHasInventory;
             // Only serialized if bHasInventory is true
-            //String ClassName;
-            
-            
+            string InventoryObjectClassName;
+
+
             // Only serialized if bHasInventory is true    
             LEGACY_BaseObjectSaveRecord Inventory;
 
@@ -404,16 +505,16 @@ namespace ME3TweaksModManager.modmanager.save.le1
             LEGACY_EquipmentSaveRecord[] Equipment;
         };
 
-        class LEGACY_ItemSaveRecord : LEGACY_BaseObjectSaveRecord
+        class LEGACY_ItemSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
-            String ClassName;
+            string ClassName;
             int Id;
             byte Sophistication;
             int Manufacturer;
             int PlotConditionalId;
         };
 
-        class LEGACY_PlotItemSaveRecord
+        class LEGACY_PlotItemSaveRecord : IUnrealSerializable
         {
             int LocalizedName;
             int LocalizedDesc;
@@ -421,29 +522,37 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int BasePrice;
             int ShopGUIImageId;
             int PlotConditionalId;
-        };
 
-        class LEGACY_ItemXModSaveRecord : LEGACY_ItemSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_ItemXModSaveRecord : LEGACY_ItemSaveRecord, IUnrealSerializable
         {
             int bHasMod;
             // Only serialized if bHasMod is true
-            String ClassName;
+            string ClassName;
             // Only serialized if bHasMod is true
             int Type;
         };
 
-        class LEGACY_XModdableSlotSpecRecord
+        class LEGACY_XModdableSlotSpecRecord : IUnrealSerializable
         {
             int Type;
             LEGACY_ItemXModSaveRecord[] XMods;
-        };
 
-        class LEGACY_ItemXModdableSaveRecord : LEGACY_ItemSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_ItemXModdableSaveRecord : LEGACY_ItemSaveRecord, IUnrealSerializable
         {
             LEGACY_XModdableSlotSpecRecord[] SlotSpec;
         };
 
-        class LEGACY_InventorySaveRecord : LEGACY_BaseObjectSaveRecord
+        class LEGACY_InventorySaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
             LEGACY_ItemSaveRecord[] Items;
             LEGACY_PlotItemSaveRecord[] PlotItems;
@@ -453,16 +562,16 @@ namespace ME3TweaksModManager.modmanager.save.le1
             float Salvage;
         };
 
-        class LEGACY_BaseSquadSaveRecord : LEGACY_BaseObjectSaveRecord
+        class LEGACY_BaseSquadSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
             int bHasInventory;
             // Only serialized if bHasInventory is true
-            String ClassName;
+            string ClassName;
             // Only serialized if bHasInventory is true, Inventory is fully serialized into the squad
             LEGACY_BaseObjectSaveRecord Inventory;
         };
 
-        class LEGACY_BioSquadSaveRecord : LEGACY_BaseSquadSaveRecord
+        class LEGACY_BioSquadSaveRecord : LEGACY_BaseSquadSaveRecord, IUnrealSerializable
         {
             int SquadXP;
             int MaxLevel;
@@ -470,32 +579,36 @@ namespace ME3TweaksModManager.modmanager.save.le1
             int SquadLevel;
         };
 
-        class LEGACY_PlayerVehicleSaveRecord : LEGACY_BaseObjectSaveRecord
+        class LEGACY_PlayerVehicleSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
-            String ActorType;
+            string ActorType;
             int bPowertrainEnabled;
             int bVehicleFunctionEnabled;
         };
 
-        class LEGACY_ShopSaveRecord : LEGACY_BaseObjectSaveRecord
+        class LEGACY_ShopSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
             int LastPlayerLevel;
             int bIsInitialized;
             LEGACY_BaseObjectSaveRecord[] Inventory;
         };
 
-        class LEGACY_WorldStreamingStateRecord
+        class LEGACY_WorldStreamingStateRecord : IUnrealSerializable
         {
-            String Name;
+            string Name;
             int bEnabled;
-        };
 
-        class LEGACY_WorldSaveRecord : LEGACY_BaseObjectSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_WorldSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
             LEGACY_WorldStreamingStateRecord[] StreamingStates;
-            String DestinationAreaMap;
+            string DestinationAreaMap;
             Vector Destination;
-            String CinematicsSeen;
+            string CinematicsSeen;
             int[] ScannedClusters;
             int[] ScannedSystems;
             int[] ScannedPlanets;
@@ -511,38 +624,54 @@ namespace ME3TweaksModManager.modmanager.save.le1
             byte[] BrowserAlerts; // SIZE 8
             int bHasLoot;
             // Only serialized if bHasLoot is true
-            String ClassName;
+            string ClassName;
             // Only serailized if bHasLoot is true, Item is fully serialized into the world save object
             LEGACY_BaseObjectSaveRecord PendingLoot;
-        };
 
-        class LEGACY_LevelSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_LevelSaveRecord : IUnrealSerializable
         {
-            String Name;
+            string Name;
             LEGACY_BaseObjectSaveRecord[] LevelObjects;
-        };
 
-        class LEGACY_MapSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LEGACY_MapSaveRecord : IUnrealSerializable
         {
-            String[] Keys;
+            string[] Keys;
             LEGACY_LevelSaveRecord[] LevelData;
-        };
 
-        class VehicleSaveRecord
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class VehicleSaveRecord : IUnrealSerializable
         {
-            String FirstName;
+            string FirstName;
             int LastName;
             float HealthCurrent;
             float ShieldCurrent;
-        };
 
-        class ME1Savegame
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
+        class LE1Savegame : IUnrealSerializable
         {
             // If the top 16 bits have any value set (is not 0), the serialization should be byte swapped. In practice this shouldn't be the case for the released version of the game
             // Valid shipping ME1 save version should be 50
             int Version;
 
-            String CharacterID;
+            string CharacterID;
 
             // When was the career created
             SaveTimeStamp CreatedDate;
@@ -555,23 +684,28 @@ namespace ME3TweaksModManager.modmanager.save.le1
 
             PlayerRecord PlayerData;
 
-            String BaseLevelName;
-            String MapName;
-            String ParentMapName;
+            string BaseLevelName;
+            string MapName;
+            string ParentMapName;
 
             Vector Location;
             Rotator Rotation;
 
             HenchmanSaveRecord[] HenchmanData;
 
-            String DisplayName;
-            String Filename;
+            string DisplayName;
+            string Filename;
 
             // The rest of the data in the savegame only serialized for normal savegames, *not* for character export
             // This legacy data is largely unused but is included here for completeness
             LEGACY_MapSaveRecord[] MapData;
 
             VehicleSaveRecord[] VehicleData;
-        };
+
+            public void Serialize(IUnrealStream stream)
+            {
+
+            }
+        }
     }
 }
