@@ -34,6 +34,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         // Arrays of primitive types
         // you can specify a count if you know exactly how many items are supposed to
         // be in the array
+        void Serialize(ref byte[] values, int numValues = -1);
         void Serialize(ref bool[] values, int numValues = -1);
         void Serialize(ref int[] values, int numValues = -1);
         void Serialize(ref uint[] values, int numValues = -1);

@@ -129,22 +129,30 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         private List<ME2ME3LazyTLK> TlkFiles { get; } = new();
         private void LoadTLKs()
         {
-            // Load basegame
-            var baseTlk = new ME2ME3LazyTLK();
-            baseTlk.LoadTlkData(Path.Combine(Target.GetCookedPath(), $"BIOGame_{LangCode}.tlk"));
-            TlkFiles.Add(baseTlk);
-
-            // Load DLC
-            var dlcs = Target.GetInstalledDLCByMountPriority();
-            foreach (var dlc in dlcs)
+            if (Target.Game == MEGame.LE1)
             {
-                var dlcFolderPath = Path.Combine(Target.GetDLCPath(), dlc, Target.Game.CookedDirName());
-                var tlks = Directory.EnumerateFiles(dlcFolderPath, $"*{LangCode}.tlk", SearchOption.AllDirectories);
-                foreach (var tlk in tlks)
+                // oh lord.
+
+            }
+            else if (Target.Game.IsGame2() || Target.Game.IsGame3())
+            {
+                // Load basegame
+                var baseTlk = new ME2ME3LazyTLK();
+                baseTlk.LoadTlkData(Path.Combine(Target.GetCookedPath(), $@"BIOGame_{LangCode}.tlk"));
+                TlkFiles.Add(baseTlk);
+
+                // Load DLC
+                var dlcs = Target.GetInstalledDLCByMountPriority();
+                foreach (var dlc in dlcs)
                 {
-                    var dlcTlk = new ME2ME3LazyTLK();
-                    dlcTlk.LoadTlkData(tlk);
-                    TlkFiles.Add(dlcTlk);
+                    var dlcFolderPath = Path.Combine(Target.GetDLCPath(), dlc, Target.Game.CookedDirName());
+                    var tlks = Directory.EnumerateFiles(dlcFolderPath, $@"*{LangCode}.tlk", SearchOption.AllDirectories);
+                    foreach (var tlk in tlks)
+                    {
+                        var dlcTlk = new ME2ME3LazyTLK();
+                        dlcTlk.LoadTlkData(tlk);
+                        TlkFiles.Add(dlcTlk);
+                    }
                 }
             }
         }

@@ -828,6 +828,20 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             }
         }
 
+        public void Serialize(ref byte[] array, int numElements = -1)
+        {
+            if (array == null)
+            {
+                if (!Loading)
+                    throw new ArgumentNullException("array", "serializable array should not be null");
+
+                if (numElements == -1)
+                    numElements = Stream.ReadInt32();
+                array = new byte[numElements];
+            }
+
+            this.ReadBasicArray(array, r => (byte)r.Stream.ReadByte(), numElements);
+        }
         public void Serialize(ref string[] array, int numElements = -1)
         {
             if (array == null)
