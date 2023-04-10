@@ -14,7 +14,11 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Textures;
+using LegendaryExplorerCore.TLK;
+using LegendaryExplorerCore.TLK.ME1;
 using LegendaryExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.Unreal.Classes;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
@@ -25,6 +29,8 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 using ME3TweaksModManager.modmanager.save.game3;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Win32Native;
+using Pathoschild.FluentNexus.Models;
 using PropertyChanged;
 using Path = System.IO.Path;
 
@@ -104,9 +110,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     {
                         CurrentSaveImage = cachedImage2;
                     }
-
                 }
-
             }
         }
 
@@ -114,10 +118,22 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         {
             if (mapToImageAssetMap.TryGetValue(proxyBaseLevelName, out var saveInfo))
             {
-                foreach (var tlk in TlkFiles)
+                if (Target.Game == MEGame.LE1)
                 {
-                    var data = tlk.FindDataById(saveInfo.TlkStringId, returnNullIfNotFound: true, noQuotes: true);
-                    if (data != null) return data;
+                    // Look in LE1 TLKs
+                    foreach (var tlk in TlkFilesLE1)
+                    {
+                        var data = tlk.FindDataById(saveInfo.TlkStringId, returnNullIfNotFound: true, noQuotes: true);
+                        if (data != null) return data;
+                    }
+                }
+                else
+                {
+                    foreach (var tlk in TlkFiles)
+                    {
+                        var data = tlk.FindDataById(saveInfo.TlkStringId, returnNullIfNotFound: true, noQuotes: true);
+                        if (data != null) return data;
+                    }
                 }
             }
 
@@ -127,12 +143,50 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         private string LangCode = "INT"; // Todo: Support changing this
         private List<ME2ME3LazyTLK> TlkFiles { get; } = new();
+        private List<ME1TalkFile> TlkFilesLE1 { get; } = new();
         private void LoadTLKs()
         {
             if (Target.Game == MEGame.LE1)
             {
                 // oh lord.
 
+                // Load basegame
+                var baseTlk = LoadTlkFromPackage(Path.Combine(Target.GetCookedPath(), $@"Startup_{LangCode}.pcc"), @"GlobalTlk.GlobalTlk_tlk");
+                if (baseTlk != null)
+                    TlkFilesLE1.Add(baseTlk);
+
+                var dlcs = Target.GetInstalledDLCByMountPriority();
+                var loadedFiles = Target.GetFilesLoadedInGame();
+
+                foreach (var dlc in dlcs)
+                {
+                    var dlcFolderRoot = Path.Combine(Target.GetDLCPath(), dlc);
+                    var autoLoadIni = DuplicatingIni.LoadIni(Path.Combine(dlcFolderRoot, @"AutoLoad.ini"));
+
+                    var packages = autoLoadIni.GetOrAddSection(@"Packages");
+                    int i = 1;
+                    while (true)
+                    {
+                        var twoDKey = $@"GlobalTalkTable{i}";
+                        var path = packages.GetValue(twoDKey);
+                        if (path == null)
+                            break;
+
+                        if (path.Value.IndexOf('.') == 0)
+                            break; // This won't work
+
+                        var packageName = path.Value.Substring(0, path.Value.IndexOf('.')) + @".pcc";
+                        var ifp = path.Value.Substring(path.Value.IndexOf('.') + 1);
+                        if (loadedFiles.TryGetValue(packageName, out var packagePath))
+                        {
+                            var dlcTlk = LoadTlkFromPackage(packagePath, ifp);
+                            if (dlcTlk != null)
+                                TlkFilesLE1.Add(dlcTlk);
+                        }
+
+                        i++;
+                    }
+                }
             }
             else if (Target.Game.IsGame2() || Target.Game.IsGame3())
             {
@@ -157,6 +211,18 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             }
         }
 
+        private ME1TalkFile LoadTlkFromPackage(string filePath, string instancedFullPath)
+        {
+            using var pack = MEPackageHandler.UnsafePartialLoad(filePath, x => x.ClassName == @"BioTlkFile");
+            var tlk = pack.FindExport(instancedFullPath);
+            if (tlk != null)
+            {
+                return new ME1TalkFile(tlk);
+            }
+
+            return null; // Not found
+        }
+
         private void LoadSaveImageCache(string mapName)
         {
             if (!LevelImageCache.TryGetValue(Target.Game, out _))
@@ -176,7 +242,53 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     }
                     return false;
                 });
+
+
+
                 var tex = package.FindExport(saveImageInfo.FullInstancePath);
+                if (tex == null)
+                {
+                    // We might have to lop-off and update the package name
+                    var dotIndex = saveImageInfo.FullInstancePath.IndexOf('.');
+                    if (dotIndex > 0)
+                    {
+                        var seekFreePackageName = saveImageInfo.FullInstancePath.Substring(0, dotIndex) + @".pcc";
+                        var ifp = saveImageInfo.FullInstancePath.Substring(dotIndex + 1);
+                        if (loadedFiles.TryGetValue(seekFreePackageName, out var seekFreePath))
+                        {
+                            using var seekFreePackage = MEPackageHandler.UnsafePartialLoad(seekFreePath, x =>
+                            {
+                                if (x.InstancedFullPath.CaseInsensitiveEquals(ifp))
+                                {
+                                    return true;
+                                }
+                                return false;
+                            });
+                            tex = seekFreePackage.FindExport(ifp);
+                        }
+                    }
+                }
+
+
+                if (tex != null && tex.ClassName == @"GFxMovieInfo")
+                {
+                    // We need to do a secondary read on file to get actual data
+                    // Sadly we can't do this in one pass without extensive changes
+                    // to how unsafe partial load works
+                    var refs = tex.GetProperty<ArrayProperty<ObjectProperty>>(@"References").Select(x => x.ResolveToEntry(tex.FileRef).InstancedFullPath).ToList();
+                    if (refs.Count == 1)
+                    {
+                        using var package2 = MEPackageHandler.UnsafePartialLoad(tex.FileRef.FilePath, x =>
+                        {
+                            return refs.Contains(x.InstancedFullPath); // Load our references
+                        });
+                        tex = package2.FindExport(refs[0]); // Use this texture instead.
+                    }
+
+
+
+                }
+
 
                 if (tex != null)
                 {
@@ -326,10 +438,23 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             Task.Run(() =>
             {
                 // Load game information
-                var gameConfig = ConfigTools.GetMergedBundle(Target);
+                var game = Target.Game;
+                if (game == MEGame.LE1)
+                {
+                    // Good old 2DA
+                    BuildUIAssetMapLE1();
+                }
+                else if (game.IsGame2() || game.IsGame3())
+                {
+                    var gameConfig = ConfigTools.GetMergedBundle(Target);
 
-                // Build save game image map
-                BuildUIAssetMap(gameConfig);
+                    // Build save game image map
+                    BuildUIAssetMap(gameConfig);
+                }
+                else
+                {
+                    throw new Exception($@"SSUI does not work for game {game}");
+                }
 
                 // Load strings for UI
                 LoadTLKs();
@@ -344,6 +469,13 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     int numLoaded = 0;
                     foreach (var sf in Directory.GetFiles(saveDir, @"*.pcsav").OrderByDescending(x => new FileInfo(x).LastWriteTime))
                     {
+                        if (game == MEGame.LE1)
+                        {
+                            var fname = Path.GetFileName(sf);
+                            if (fname.CaseInsensitiveEquals(@"GamerProfile.pcsav"))
+                                continue; // We do not work on these save files (in this UI anyways)
+                        }
+
                         if (numLoaded > 50)
                             break; // Don't load more
                         numLoaded++;
@@ -371,6 +503,67 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 SaveCareers.ReplaceAll(result.Result.Select(x => new Career(x.Value, x.Key)));
                 LoadingSaves = false;
             });
+        }
+
+        private void BuildUIAssetMapLE1()
+        {
+            var loadedFiles = Target.GetFilesLoadedInGame();
+            var twoDAsToInspect = new SortedSet<string>(); // In case duplicates are added somehow
+
+            // Basegame
+            twoDAsToInspect.Add(loadedFiles[@"Engine.pcc"]);
+            twoDAsToInspect.Add(loadedFiles[@"BIOG_2DA_UNC_AreaMap_X.pcc"]); // Bring Down the Sky
+
+            // Get DLC 2DA packages
+            var dlcs = Target.GetInstalledDLCByMountPriority();
+            foreach (var dlc in dlcs)
+            {
+                var dlcFolderRoot = Path.Combine(Target.GetDLCPath(), dlc);
+                var autoLoadIni = DuplicatingIni.LoadIni(Path.Combine(dlcFolderRoot, @"AutoLoad.ini"));
+
+                var packages = autoLoadIni.GetOrAddSection(@"Packages");
+                int i = 1;
+                while (true)
+                {
+                    var twoDKey = $@"2DA{i}";
+                    var path = packages.GetValue(twoDKey);
+                    if (path == null)
+                        break;
+
+                    var filename = path.Value + @".pcc";
+                    if (loadedFiles.TryGetValue(filename, out var fullPath))
+                    {
+                        twoDAsToInspect.Add(fullPath); // Inspect this 2DA package from the DLC
+                    }
+
+                    i++;
+                }
+            }
+
+
+            foreach (var twoDA in twoDAsToInspect)
+            {
+                // Load areamap
+                using var package = MEPackageHandler.UnsafePartialLoad(twoDA,
+                    x => x.ClassName == @"Bio2DANumberedRows" && x.ObjectName.Instanced.Contains(@"AreaMap_AreaMap", StringComparison.InvariantCultureIgnoreCase));
+                foreach (var exp in package.Exports.Where(x => x.IsDataLoaded()))
+                {
+                    var parsed2DA = new Bio2DA(exp);
+
+                    for (int i = 0; i < parsed2DA.RowCount; i++)
+                    {
+
+                        var asset = new SaveImageAsset2()
+                        {
+                            TlkStringId = parsed2DA[i, @"SaveGameStringRef"].IntValue,
+                            FullInstancePath = parsed2DA[i, @"SaveGameImage"].NameValue,
+                            PackageName = @"Startup_INT.pcc" // Default to this, we will failover if not found to trying to find it via non-forced export
+                        };
+
+                        mapToImageAssetMap[parsed2DA[i, @"Label"].NameValue] = asset;
+                    }
+                }
+            }
         }
 
         private class SaveImageAsset2
@@ -419,9 +612,9 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 }
             }
 
-            if (Target.Game.IsGame2())
+            else if (Target.Game.IsGame2())
             {
-                // Game2 uses a prefix property - in OT it overrode package ever DLC release, LE uses just base package of 
+                // Game2 uses a prefix property - in OT it overrode package every DLC release, LE uses just base package of 
                 // GUI_SF_SaveLoad
                 foreach (var sf in mapToAssetNameMap)
                 {
@@ -432,14 +625,13 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     }
 
                     mapToImageAssetMap[sf.Key] = saveEntry;
-
                 }
             }
             else if (Target.Game.IsGame3())
             {
                 // Game 3 uses seek free package mapping
                 var bioengine = bundle.GetAsset(@"BioEngine", false);
-                var sfxengine = bioengine.GetOrAddSection("sfxgame.sfxengine");
+                var sfxengine = bioengine.GetOrAddSection(@"sfxgame.sfxengine");
 
                 if (sfxengine.TryGetValue(@"dynamicloadmapping", out var dynamicLoadMapping))
                 {

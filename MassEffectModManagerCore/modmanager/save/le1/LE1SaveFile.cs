@@ -518,7 +518,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
                 // Only serialized if bHasOwnerClass is true
                 //if (bHasOwnerClass != 0)
                 //{
-                    stream.Serialize(ref OwnerClassName);
+                stream.Serialize(ref OwnerClassName);
                 //}
             }
         }
@@ -1118,26 +1118,54 @@ namespace ME3TweaksModManager.modmanager.save.le1
 
         class LEGACY_LevelSaveRecord : IUnrealSerializable
         {
-            string Name;
-            LEGACY_WorldSaveRecord[] LevelObjects;
+            string Name; // The name of the level object in memory (Level xxx:persistentlevel)
+            LEGACY_WorldSaveRecord[] LevelObjects; // Objects stored within the level
 
             public void Serialize(IUnrealStream stream)
             {
                 stream.Serialize(ref Name);
+                Debug.WriteLine($"Read {Name} ending at 0x{stream.Stream.Position:X8}");
                 stream.Serialize(ref LevelObjects);
+                stream.Stream.ReadInt32(); // Not sure what this integer is...
             }
         }
 
         class LEGACY_MapSaveRecord : IUnrealSerializable
         {
-            string[] Keys;
-            LEGACY_LevelSaveRecord[] LevelData;
+            string[] Keys; // Map names (e.g. BIOA_PRO00)
+            LEGACY_LevelSaveRecord[] LevelData; // The list of level objects in the map (e.g. a DSG)
 
             public void Serialize(IUnrealStream stream)
             {
-                Debug.WriteLine("hi");
                 stream.Serialize(ref Keys);
                 stream.Serialize(ref LevelData);
+
+                //// This is a map of data
+                //// We use parse the key and then choose the data type to deserialize it as
+
+                //// Serialized as:
+                //// INT COUNT
+                //// for count
+                ////     (4 BYTE LEN) STRING
+                ////     LevelRecord
+                //int count = 0;
+                //stream.Serialize(ref count);
+
+                //string recordType = null;
+                //stream.Serialize(ref recordType);
+
+                ////LEGACY_Leve
+                ////if (stream.Loading)
+                ////{
+
+                ////}
+                ////else
+                ////{
+                ////    stream.Serialize();
+                ////}
+                ////Debug.WriteLine("hi");
+                ////stream.Serialize(ref Keys);
+                ////stream.Serialize(ref LevelData);
             }
         }
 
@@ -1240,16 +1268,10 @@ namespace ME3TweaksModManager.modmanager.save.le1
                         uncompressedSaveData.Write(decomp);
                     }
 
-                    uint checksum = 0;
-                    uint compressionFlag = 0; // 1 = ZLIB
-                    uint uncompressedSize = 0;
-
-                    // Do we care about this?
-                    stream.Serialize(ref checksum);
-                    stream.Serialize(ref compressionFlag);
-                    stream.Serialize(ref uncompressedSize);
-
                     uncompressedSaveData.Position = 0;
+
+                    // You can edit this to save the decompressed data to a file for testing.
+                    //uncompressedSaveData.WriteToFile(@"B:\UserProfile\Documents\BioWare\Mass Effect Legendary Edition\Save\ME1\Jlock00\Jlock_00_01.decompressed");
                     stream = new UnrealStream(uncompressedSaveData, true, stream.Version);
                 }
                 else
@@ -1274,8 +1296,11 @@ namespace ME3TweaksModManager.modmanager.save.le1
             stream.Serialize(ref HenchmanData);
             stream.Serialize(ref DisplayName);
             stream.Serialize(ref Filename);
-            stream.Serialize(ref MapData);
-            stream.Serialize(ref VehicleData);
+
+            // This stuff doesn't work... will need to figure out why later
+            //Debug.WriteLine($@"MapData begins at 0x{stream.Stream.Position:X8}");
+            //stream.Serialize(ref MapData);
+            //stream.Serialize(ref VehicleData);
 
             if (!stream.Loading)
             {
@@ -1289,7 +1314,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
         public DateTime Proxy_TimeStamp => DateTime.Now; // Todo: Implement
         public string Proxy_DebugName => null; // LE1 does not support these
         public IPlayerRecord Proxy_PlayerRecord => PlayerData;
-        public string Proxy_BaseLevelName => BaseLevelName;
+        public string Proxy_BaseLevelName => MapName;
         public ESFXSaveGameType SaveGameType { get; set; }
         public uint Version => SaveFormatVersion;
         public int SaveNumber { get; set; }

@@ -75,49 +75,81 @@ namespace ME3TweaksModManager.modmanager.save
             {
                 // Setup save params
                 var sgName = Path.GetFileNameWithoutExtension(fileName);
-                if (sgName.StartsWith(@"Save_"))
+
+                if (expectedGame == MEGame.LE1)
                 {
-                    // Parse number
-                    var numStr = sgName.Substring(sgName.IndexOf("_") + 1);
-                    if (int.TryParse(numStr, out var saveNum))
+                    if (sgName.EndsWith(@"AutoSave"))
                     {
-                        save.SaveNumber = saveNum;
-                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Manual;
+                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
+                    }
+                    else
+                    {
+                        // Parse number
+                        var numStr = sgName.Substring(sgName.LastIndexOf("_") + 1);
+                        if (int.TryParse(numStr, out var saveNum))
+                        {
+                            save.SaveNumber = saveNum;
+                            save.SaveGameType = ESFXSaveGameType.SaveGameType_Manual;
+                        }
                     }
                 }
-                else if (sgName.StartsWith(@"AutoSave"))
+                else
                 {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
-                }
-                else if (sgName.StartsWith(@"ChapterSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Chapter;
-                }
-                else if (sgName.StartsWith(@"QuickSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
+                    if (sgName.StartsWith(@"Save_"))
+                    {
+                        // Parse number
+                        var numStr = sgName.Substring(sgName.IndexOf("_") + 1);
+                        if (int.TryParse(numStr, out var saveNum))
+                        {
+                            save.SaveNumber = saveNum;
+                            save.SaveGameType = ESFXSaveGameType.SaveGameType_Manual;
+                        }
+                    }
+                    else if (sgName.StartsWith(@"AutoSave"))
+                    {
+                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
+                    }
+                    else if (sgName.StartsWith(@"ChapterSave"))
+                    {
+                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Chapter;
+                    }
+                    else if (sgName.StartsWith(@"QuickSave"))
+                    {
+                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
+                    }
                 }
             }
 
 
             var reader = new UnrealStream(input, true, 0);
             save.Serialize(reader);
+
+            // Have to figure out how to handle this later since it has decompression.
+
+            var finalPos = input.Position;
             var crc = input.ReadUInt32();
+            if (expectedGame == MEGame.LE1)
+            {
+                input.ReadInt32(); // Compression Flag (should be ZLib 0)
+                input.ReadInt32(); // Uncompressed Size
+            }
+
             if (input.Position != input.Length)
             {
                 save.IsValid = false;
 #if DEBUG
                 throw new FormatException("did not consume entire file");
 #endif
-                return save;
             }
+
             input.Position = 0;
 
-            var calculatedCRC = Crc32.Compute(input.ReadToBuffer(input.Length - 4));
+            var calculatedCRC = Crc32.Compute(input.ReadToBuffer(finalPos));
             if (crc != calculatedCRC)
             {
                 save.IsValid = false;
             }
+
             return save;
         }
     }
