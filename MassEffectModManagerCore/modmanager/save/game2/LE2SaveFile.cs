@@ -5,7 +5,9 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksCore.Save;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats.Save;
 using Microsoft.WindowsAPICodePack.Sensors;
@@ -616,6 +618,8 @@ namespace ME3TweaksModManager.modmanager.save.game2
         public ESFXSaveGameType SaveGameType { get; set; }
         public uint Version => 30; // File save will always be version 30
         public int SaveNumber { get; set; }
+        public string Proxy_TimePlayed => SaveShared.GetTimePlayed((int)SecondsPlayed);
+        public string Proxy_Difficulty => MSaveShared.GetDifficultyString((int)Difficulty, MEGame.LE2);
         public bool IsValid { get; set; }
     };
 }

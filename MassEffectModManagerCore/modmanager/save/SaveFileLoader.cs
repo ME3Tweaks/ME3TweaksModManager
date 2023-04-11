@@ -53,16 +53,24 @@ namespace ME3TweaksModManager.modmanager.save
             }
 
             ISaveFile save = null;
+            uint saveVersion = 0;
             switch (expectedGame)
             {
                 case MEGame.LE1:
+                    saveVersion = 50;
                     save = new LE1SaveFile();
                     break;
+                case MEGame.ME2:
+                    saveVersion = 29;
+                    save = new SaveFileGame2();
+                    break;
                 case MEGame.LE2:
+                    saveVersion = 30;
                     save = new LE2SaveFile();
                     break;
                 case MEGame.ME3:
                 case MEGame.LE3:
+                    saveVersion = 59;
                     save = new SaveFileGame3();
                     break;
                 default:
@@ -121,7 +129,7 @@ namespace ME3TweaksModManager.modmanager.save
             }
 
 
-            var reader = new UnrealStream(input, true, 0);
+            var reader = new UnrealStream(input, true, saveVersion);
             save.Serialize(reader);
 
             // Have to figure out how to handle this later since it has decompression.

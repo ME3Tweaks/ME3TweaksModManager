@@ -74,6 +74,7 @@
 		<None Remove="images\steam.png" />
 		<None Remove="images\terminal.png" />
 		<None Remove="images\unknown.png" />
+		<None Remove="images\unknownmap.png" />
 		<None Remove="images\windowicon.png" />
 		<None Remove="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
@@ -146,6 +147,7 @@
 
 	<ItemGroup>
 		<Resource Include="images\asi.png" />
+		<EmbeddedResource Include="images\unknownmap.png" />
 		<EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />

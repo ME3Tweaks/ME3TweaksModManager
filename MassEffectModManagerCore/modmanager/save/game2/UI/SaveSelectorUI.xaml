@@ -19,7 +19,6 @@
     </Window.Style>
     <Window.Resources>
         <ui:DifficultyStringConverter x:Key="DifficultyStringConverter"/>
-        <ui:LevelNameStringConverter x:Key="LevelNameStringConverter"/>
         <ui:SaveGameNameConverter x:Key="SaveGameNameConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullVisibilityConverter x:Key="NullVisibility"/>
@@ -70,7 +69,7 @@
                        FontWeight="Bold"
                        FontSize="16"
                        Margin="0,0,0,5"/>
-                <TextBlock TextAlignment="Center" Text="{Binding SelectedSaveFile.BindableTimestamp}"
+                <TextBlock TextAlignment="Center" Text="{Binding SelectedSaveFile.Proxy_TimeStamp}"
                        FontSize="16"
                        Margin="0,0,0,5"/>
                 <TextBlock TextAlignment="Center" Text="Time played:"
@@ -79,20 +78,14 @@
                        Margin="0,0,0,5"/>
                 <TextBlock TextAlignment="Center" 
                        FontSize="16"
-                       Margin="0,0,0,5">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0} hour(s) {1} minute(s)">
-                            <Binding Path="SelectedSaveFile.BindableTimePlayed.Hours"/>
-                            <Binding Path="SelectedSaveFile.BindableTimePlayed.Minutes"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                       Margin="0,0,0,5"
+                       Text="{Binding SelectedSaveFile.Proxy_TimePlayed}"/>
                 <TextBlock TextAlignment="Center" Text="Difficulty:"
                        FontWeight="Bold"
                        FontSize="16"
                        Margin="0,0,0,5"/>
 
-                <TextBlock Text="{Binding SelectedSaveFile.BindableDifficulty, Converter={StaticResource DifficultyStringConverter}}"
+                <TextBlock Text="{Binding SelectedSaveFile.Proxy_Difficulty}"
                        TextAlignment="Center" 
                        FontSize="16"
                        Margin="0,0,0,5"/>

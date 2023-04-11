@@ -54,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public override string ToString()
         {
-            return string.Format("{0}/{1}/{2} {3}:{4:D2}",
+            return string.Format("{0}/{1}/{2} {3}:{3:D2}",
                                  this.Day,
                                  this.Month,
                                  this.Year,

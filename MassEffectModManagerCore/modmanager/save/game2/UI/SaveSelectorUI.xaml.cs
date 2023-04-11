@@ -110,8 +110,32 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     {
                         CurrentSaveImage = cachedImage2;
                     }
+                    else
+                    {
+                        // Unknown map image
+                        // Load the placeholder
+                        CurrentSaveImage = GetDefaultMapImage();
+                    }
                 }
             }
+        }
+
+        private BitmapImage UnknownMapImage;
+
+        private BitmapImage GetDefaultMapImage()
+        {
+            if (UnknownMapImage != null) return UnknownMapImage;
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            UnknownMapImage = new BitmapImage();
+            using (var stream = M3Utilities.GetResourceStream("ME3TweaksModManager.images.unknownmap.png"))
+            {
+                UnknownMapImage.BeginInit();
+                UnknownMapImage.StreamSource = stream;
+                UnknownMapImage.CacheOption = BitmapCacheOption.OnLoad;
+                UnknownMapImage.EndInit();
+            }
+
+            return UnknownMapImage;
         }
 
         private string GetTlkStringForLevelName(string proxyBaseLevelName)
@@ -347,7 +371,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         private bool CanSelectSave()
         {
-            return SaveIsSelected() && (SelectedSaveFile.Game.IsGame2() || SelectedSaveFile.Game.IsGame3());
+            return SaveIsSelected() && (SelectedSaveFile.Game == MEGame.LE1 || SelectedSaveFile.Game.IsGame2() || SelectedSaveFile.Game.IsGame3());
         }
 
         //        private void RefundPlayerHenchTalents()
@@ -612,7 +636,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 }
             }
 
-            else if (Target.Game.IsGame2())
+            if (Target.Game.IsGame2())
             {
                 // Game2 uses a prefix property - in OT it overrode package every DLC release, LE uses just base package of 
                 // GUI_SF_SaveLoad

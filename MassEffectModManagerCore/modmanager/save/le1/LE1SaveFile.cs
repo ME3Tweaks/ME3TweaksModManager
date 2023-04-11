@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksCore.Save;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats.Save;
 
@@ -18,24 +20,6 @@ namespace ME3TweaksModManager.modmanager.save.le1
 
     class LE1SaveFile : ISaveFile
     {
-
-        class SaveTimeStamp : IUnrealSerializable
-        {
-            int Seconds;
-            int Day;
-            int Month;
-            int Year;
-
-            public void Serialize(IUnrealStream stream)
-            {
-                stream.Serialize(ref Seconds);
-                stream.Serialize(ref Day);
-                stream.Serialize(ref Month);
-                stream.Serialize(ref Year);
-
-            }
-        }
-
         class PlotQuestSaveRecord : IUnrealSerializable
         {
             int QuestCounter;
@@ -317,7 +301,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
             float ShieldCurrent;
             int XPLevel;
             int bIsDriving;
-            int[] GameOptions;
+            public int[] GameOptions;
             int bHelmetShown;
             byte CurrentQuickSlot;
             byte LastQuickSlot;
@@ -1271,7 +1255,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
                     uncompressedSaveData.Position = 0;
 
                     // You can edit this to save the decompressed data to a file for testing.
-                    //uncompressedSaveData.WriteToFile(@"B:\UserProfile\Documents\BioWare\Mass Effect Legendary Edition\Save\ME1\Jlock00\Jlock_00_01.decompressed");
+                    uncompressedSaveData.WriteToFile(@"B:\UserProfile\Documents\BioWare\Mass Effect Legendary Edition\Save\ME1\Jlock00\Jlock_00_01.decompressed");
                     stream = new UnrealStream(uncompressedSaveData, true, stream.Version);
                 }
                 else
@@ -1311,10 +1295,12 @@ namespace ME3TweaksModManager.modmanager.save.le1
         // ISaveFile for unified interface
         public MEGame Game => MEGame.LE1;
         public string SaveFilePath { get; set; }
-        public DateTime Proxy_TimeStamp => DateTime.Now; // Todo: Implement
+        public DateTime Proxy_TimeStamp => TimeStamp.ToDate(); // Todo: Implement
+        public string Proxy_TimePlayed => SaveShared.GetTimePlayed(SecondsPlayed);
+        public string Proxy_Difficulty => MSaveShared.GetDifficultyString(PlayerData.GameOptions[0], MEGame.LE1);
         public string Proxy_DebugName => null; // LE1 does not support these
         public IPlayerRecord Proxy_PlayerRecord => PlayerData;
-        public string Proxy_BaseLevelName => MapName;
+        public string Proxy_BaseLevelName => MapName ?? BaseLevelName; // We failover to BaseLevelName if unknown map is found like BIOA_CRD00
         public ESFXSaveGameType SaveGameType { get; set; }
         public uint Version => SaveFormatVersion;
         public int SaveNumber { get; set; }

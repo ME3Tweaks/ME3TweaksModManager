@@ -33,7 +33,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.UpdateMD5DB_MenuItem)) UpdateMD5Map(window);
             if (sender == nameof(MainWindow.StampCurrentTargetWithALOTMarker_MenuItem)) StampCurrentTargetWithALOT_Click(window);
             if (sender == nameof(MainWindow.StripCurrentTargetWithALOTMarker_MenuItem)) StripCurrentTargetALOTMarker_Click(window);
-            if (sender == nameof(MainWindow.InstallHeadMorph_MenuItem)) InstallHeadMorphTest_Click(window);
             if (sender == nameof(MainWindow.ShowWelcomePanel_MenuItem)) ShowWelcomePanel_Click(window);
 #endif
         }
@@ -41,25 +40,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private static void ShowWelcomePanel_Click(MainWindow window)
         {
             window.ShowFirstRunPanel();
-        }
-
-        private static void InstallHeadMorphTest_Click(MainWindow window)
-        {
-            SaveSelectorUI ssui = new SaveSelectorUI(window.SelectedGameTarget);
-            ssui.Show();
-            ssui.Closed += ((sender, args) =>
-            {
-                if (ssui.SaveWasSelected && ssui.SelectedSaveFile != null)
-                {
-                    Task.Run(() =>
-                    {
-                        var task = BackgroundTaskEngine.SubmitBackgroundJob("HeadmorphInstall", "Installing headmorph",
-                            "Installed headmorph to save");
-                        var installed = HeadmorphInstaller.InstallHeadmorph(@"Z:\ModLibrary\LE3\Fanciful EDI Armor Variations\Headmorphs\gamora.me3headmorph", ssui.SelectedSaveFile.SaveFilePath, task).Result;
-                        BackgroundTaskEngine.SubmitJobCompletion(task);
-                    });
-                }
-            });
         }
 
 #if DEBUG

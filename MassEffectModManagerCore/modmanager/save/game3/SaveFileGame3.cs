@@ -29,7 +29,9 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksCore.Save;
 using ME3TweaksModManager.modmanager.save.game2;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 
@@ -65,6 +67,8 @@ namespace ME3TweaksModManager.modmanager.save.game3
         public string SaveFilePath { get; set; }
         #region Fields
         public int SaveNumber { get; set; }
+        public string Proxy_TimePlayed => SaveShared.GetTimePlayed((int)SecondsPlayed);
+        public string Proxy_Difficulty => MSaveShared.GetDifficultyString((int)Difficulty, MEGame.LE3);
         public bool IsValid { get; set; }
         public ESFXSaveGameType SaveGameType { get; set; }
 
@@ -165,6 +169,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public void Serialize(IUnrealStream stream)
         {
+            stream.Serialize(ref this._Version);
             stream.Serialize(ref this._DebugName);
             stream.Serialize(ref this._SecondsPlayed);
             stream.Serialize(ref this._Disc);
@@ -654,7 +659,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
         #endregion
 
-        
+
 
         public static void Write(SaveFileGame3 save, Stream output)
         {

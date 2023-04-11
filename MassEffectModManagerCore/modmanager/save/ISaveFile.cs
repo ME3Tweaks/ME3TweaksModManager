@@ -18,6 +18,16 @@ namespace ME3TweaksModManager.modmanager.save
         public int SaveNumber { get; set; }
 
         /// <summary>
+        /// Returns the time played in the form '0h 1m' where 0 and 1 are numbers.
+        /// </summary>
+        public string Proxy_TimePlayed { get; }
+
+        /// <summary>
+        /// Returns the difficulty as a string
+        /// </summary>
+        public string Proxy_Difficulty { get; }
+
+        /// <summary>
         /// If save fully serialized and CRC check passed
         /// </summary>
         bool IsValid { get; set; }

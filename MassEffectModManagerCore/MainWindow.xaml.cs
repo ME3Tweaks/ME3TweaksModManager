@@ -48,6 +48,8 @@ using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.tlk;
+using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.save.game2.UI;
 using ME3TweaksModManager.modmanager.squadmates;
 using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols;
@@ -669,6 +671,7 @@ namespace ME3TweaksModManager
         public ICommand InstallMEMFileCommand { get; set; }
         public ICommand TrilogySaveEditorCommand { get; set; }
         public ICommand AddStarterKitContentCommand { get; set; }
+        public ICommand InstallHeadmorphCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -726,6 +729,56 @@ namespace ME3TweaksModManager
             ChangeCurrentLaunchConfigCommand = new GenericCommand(OpenLaunchOptionSelector, () => SelectedGameTarget?.Game.IsLEGame() ?? false);
             TrilogySaveEditorCommand = new GenericCommand(OpenTSE);
             AddStarterKitContentCommand = new GenericCommand(OpenStarterKitContentSelector, IsModSelectedInDevMode);
+            InstallHeadmorphCommand = new GenericCommand(BeginInstallingHeadmorph, CanInstallHeadmorph);
+        }
+
+        private bool CanInstallHeadmorph()
+        {
+            return SelectedGameTarget != null && SelectedGameTarget.Game.IsMEGame() && SelectedGameTarget.Game != MEGame.ME1;
+        }
+
+        private void BeginInstallingHeadmorph()
+        {
+            if (SelectedGameTarget == null || !SelectedGameTarget.Game.IsMEGame() ||
+                SelectedGameTarget.Game == MEGame.ME1) return;
+
+            // Select headmorph file
+
+
+            string filter = @"*.ron";
+            if (SelectedGameTarget.Game.IsGame2())
+                filter += @";*.me2headmorph";
+            if (SelectedGameTarget.Game.IsGame3())
+                filter += @";*.me3headmorph";
+
+            OpenFileDialog m = new OpenFileDialog
+            {
+                Title = "Select headmorph file",
+                Filter = "Headmorph files" + $@"|{filter}"
+            };
+            var result = m.ShowDialog(this);
+            if (result != true)
+                return;
+
+
+
+            // Select save to install to
+            SaveSelectorUI ssui = new SaveSelectorUI(SelectedGameTarget);
+            ssui.Show();
+            ssui.Closed += (sender, args) =>
+            {
+
+                if (ssui.SaveWasSelected && ssui.SelectedSaveFile != null)
+                {
+                    Task.Run(() =>
+                    {
+                        M3Log.Information($@"Installing headmorph {m.FileName} to {ssui.SelectedSaveFile.SaveFilePath}");
+                        var task = BackgroundTaskEngine.SubmitBackgroundJob(@"HeadmorphInstall", "Installing headmorph", "Installed headmorph to save");
+                        var installed = HeadmorphInstaller.InstallHeadmorph(m.FileName, ssui.SelectedSaveFile.SaveFilePath, task).Result;
+                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                    });
+                }
+            };
         }
 
         private void OpenStarterKitContentSelector()
@@ -772,8 +825,7 @@ namespace ME3TweaksModManager
 
         private bool CanInstallMEMFile()
         {
-            return SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame() &&
-                   !M3Utilities.IsGameRunning(SelectedGameTarget.Game);
+            return SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame() && !M3Utilities.IsGameRunning(SelectedGameTarget.Game);
         }
 
         private void DecompileCoalesced(object obj)
@@ -2023,7 +2075,7 @@ namespace ME3TweaksModManager
                 args.Add(@"REG_SZ");
                 args.Add(@"/d");
                 args.Add($"{target.TargetPath.TrimEnd('\\')}\\\\"); // do not localize
-                // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
+                                                                    // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
                 args.Add(@"/f");
 
                 return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);

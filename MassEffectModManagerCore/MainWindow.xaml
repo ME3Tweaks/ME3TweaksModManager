@@ -1354,6 +1354,9 @@
                     <MenuItem
                         Header="{DynamicResource string_installMemFile}"
                         Command="{Binding InstallMEMFileCommand}" />
+                    <MenuItem
+                        Header="{DynamicResource string_installHeadmorph}"
+                        Command="{Binding InstallHeadmorphCommand}" />
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
@@ -1419,10 +1422,6 @@
                     <MenuItem
                         Header="{DynamicResource string_showBackupNag}"
                         Name="ShowBackupNag_MenuItem"
-                        Click="RouteDebugCall" />
-                    <MenuItem
-                        Header="{DynamicResource string_installHeadmorph}"
-                        Name="InstallHeadMorph_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
                         Header="{DynamicResource string_mEMVanillaDBViewer}"
