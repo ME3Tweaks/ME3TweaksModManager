@@ -650,8 +650,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"DLCRequirements", DLCRequirementsForManual},
             };
 
-            BuildSharedParameterMap(parameterDictionary);
-
+            BuildSharedParameterMap(mod, parameterDictionary);
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }

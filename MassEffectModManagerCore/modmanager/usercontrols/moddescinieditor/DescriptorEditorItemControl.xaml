@@ -49,7 +49,7 @@
                                  IsEnabled="{Binding ReadOnly, Converter={StaticResource BoolToEnabledConverter}, ConverterParameter='Not'}"
                                  AcceptsReturn="{Binding AcceptsNewLines}" 
                                  TextWrapping="Wrap" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
-                        <ComboBox Grid.Column="1" ItemsSource="{Binding AllowedValues}" SelectedItem="{Binding Value}" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding AllowedValues}" SelectedItem="{Binding Value}" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}}" DropDownOpened="AllowedValuesDropdown_Opened"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

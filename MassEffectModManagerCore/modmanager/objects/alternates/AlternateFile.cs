@@ -576,7 +576,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 { @"FlattenMultiListOutput", new MDParameter(@"FlattenMultiListOutput", FlattenMultilistOutput, false)},
             };
 
-            BuildSharedParameterMap(parameterDictionary);
+            BuildSharedParameterMap(mod, parameterDictionary);
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }

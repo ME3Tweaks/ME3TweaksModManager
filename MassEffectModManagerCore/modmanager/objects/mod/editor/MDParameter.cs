@@ -116,6 +116,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
         public bool ReadOnly { get; set; } = false;
 
         /// <summary>
+        /// Function that can be invoked to change the list of allowed values when the editor dropdown is opened
+        /// </summary>
+        public Func<List<string>> AllowedValuesPopulationFunc { get; set; }
+
+        /// <summary>
         /// Maps a mapping of strings to strings into a list of MDParameter objects.
         /// </summary>
         /// <param name="parameterDictionary"></param>

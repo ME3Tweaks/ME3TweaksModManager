@@ -167,7 +167,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 {FILENAME_PARM, RelativeFileName},
                 {TITLE_PARM, Title},
                 {DESCRIPTION_PARM, Description},
-                {IMAGE_PARM, ImageAsset},
+                {IMAGE_PARM, new MDParameter(@"string", IMAGE_PARM, ImageAsset, new [] {@""}, "") { AllowedValuesPopulationFunc = mod.PopulateImageOptions}}, // Uses image population function
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));

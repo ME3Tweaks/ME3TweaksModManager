@@ -47,7 +47,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {@"updatecode", ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
                 {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", string.Join(';',RequiredDLC.Select(x=>x.Serialize(false)).Concat(OptionalSingleRequiredDLC.Select(x=>x.Serialize(true))))},
-                {@"bannerimagename", BannerImageName},
+                {@"bannerimagename", new MDParameter(@"string", @"bannerimagename", BannerImageName, new [] {@""}, "") {Header = @"ModInfo", AllowedValuesPopulationFunc = PopulateImageOptions}}, // Uses image population function
                 {@"sortalternates", new MDParameter(@"string", @"sortalternates", SortAlternateOptions ? @"" : @"False", new [] {@"", @"True", @"False"}, "") {Header = @"ModInfo"}}, //don't put checkedbydefault in if it is not set to true. // do not localize
                 {@"requiresenhancedbink", new MDParameter(@"string", @"requiresenhancedbink", !RequiresEnhancedBink ? @"" : @"False", new [] {@"", @"True", @"False"}, "") {Header = @"ModInfo"}}, // don't populate if not used
             };
@@ -84,6 +84,20 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             };
 
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"UPDATES"));
+        }
+
+        /// <summary>
+        /// Gets a list of available image options in the M3Images folder. This method does NOT work if this mod is loaded from an archive
+        /// </summary>
+        /// <returns></returns>
+        internal List<string> PopulateImageOptions()
+        {
+            if (FilesystemInterposer.DirectoryExists(ModImageAssetsPath))
+            {
+                return FilesystemInterposer.DirectoryGetFiles(ModImageAssetsPath).Where(IsAllowedM3ImageType).Select(x => x.Substring(ModImageAssetsPath.Length + 1)).Prepend(@"").ToList();
+            }
+
+            return new List<string>();
         }
 
         public bool Equals(Mod other)

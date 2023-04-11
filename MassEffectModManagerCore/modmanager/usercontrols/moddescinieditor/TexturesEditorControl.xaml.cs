@@ -201,7 +201,5 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                 }
             }
         }
-
-
     }
 }

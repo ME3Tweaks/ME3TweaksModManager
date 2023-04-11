@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using ME3TweaksModManager.modmanager.objects.mod.editor;
 using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
@@ -87,7 +88,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
+
+        private void AllowedValuesDropdown_Opened(object sender, EventArgs e)
+        {
+            if (sender is ComboBox cb && cb.DataContext is MDParameter md && md.AllowedValuesPopulationFunc != null)
+            {
+                // Repopulate
+                md.AllowedValues.ReplaceAll(md.AllowedValuesPopulationFunc.Invoke());
+            }
+        }
     }
 }

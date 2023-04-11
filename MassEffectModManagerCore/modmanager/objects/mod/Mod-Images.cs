@@ -138,5 +138,18 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
             }
         }
+
+        private static bool IsAllowedM3ImageType(string filename)
+        {
+            var extension = Path.GetExtension(filename);
+            switch (extension)
+            {
+                case @".png":
+                case @".jpg":
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

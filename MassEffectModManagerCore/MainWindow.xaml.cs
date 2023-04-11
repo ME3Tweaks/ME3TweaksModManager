@@ -763,7 +763,7 @@ namespace ME3TweaksModManager
 
 
             // Select save to install to
-            SaveSelectorUI ssui = new SaveSelectorUI(SelectedGameTarget);
+            SaveSelectorUI ssui = new SaveSelectorUI(this, SelectedGameTarget);
             ssui.Show();
             ssui.Closed += (sender, args) =>
             {

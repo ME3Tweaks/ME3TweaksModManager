@@ -635,7 +635,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// Installs shared options into the parameter map for moddesc.ini editor
         /// </summary>
         /// <param name="parameterMap"></param>
-        public void BuildSharedParameterMap(Dictionary<string, object> parameterMap)
+        public void BuildSharedParameterMap(Mod mod, Dictionary<string, object> parameterMap)
         {
             var dependsActions = Enum.GetValues<EDependsOnAction>().Where(x => x != EDependsOnAction.ACTION_INVALID).Select(x => x.ToString()).Prepend("").ToList();
 
@@ -658,7 +658,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 { @"NotApplicableAutoText", NotApplicableAutoTextRaw},
 
                 // Images
-                { @"ImageAssetName", ImageAssetName },
+                // { @"ImageAssetName", ImageAssetName },
+                {@"ImageAssetName", new MDParameter(@"string", @"ImageAssetName", ImageAssetName, new [] {@""}, "") { AllowedValuesPopulationFunc = mod.PopulateImageOptions}}, // Uses image population function
                 { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null },
 
                 // DependsOn
