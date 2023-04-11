@@ -345,8 +345,9 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         public BitmapSource CurrentSaveImage { get; set; }
         public GameTarget Target { get; }
 
-        public SaveSelectorUI(GameTarget target)
+        public SaveSelectorUI(Window owner, GameTarget target)
         {
+            Owner = owner;
             Target = target;
             LoadingSaves = true;
             LoadCommands();

@@ -89,7 +89,7 @@
                        TextAlignment="Center" 
                        FontSize="16"
                        Margin="0,0,0,5"/>
-                <Button Content="Install headmorph" Command="{Binding SelectSaveCommand}"/>
+                <Button Content="Select this save" Command="{Binding SelectSaveCommand}" HorizontalAlignment="Center" Padding ="25,10"/>
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}}">
