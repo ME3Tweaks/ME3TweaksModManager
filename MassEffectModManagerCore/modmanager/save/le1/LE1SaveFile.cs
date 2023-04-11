@@ -304,8 +304,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
             public int[] GameOptions;
             int bHelmetShown;
             byte CurrentQuickSlot;
-            byte LastQuickSlot;
-            byte[] UNKNOWN; // 3 bytes of unknown data (BioWare ME1SaveGame.h is off by 3 bytes)
+            int LastQuickSlot;
             string LastPower;
             float HealthMax;
             HotKeySaveRecord[] HotKeys;
@@ -363,7 +362,6 @@ namespace ME3TweaksModManager.modmanager.save.le1
                 stream.Serialize(ref bHelmetShown);
                 stream.Serialize(ref CurrentQuickSlot);
                 stream.Serialize(ref LastQuickSlot);
-                stream.Serialize(ref UNKNOWN, 3); // We don't know what this is right now
                 stream.Serialize(ref LastPower);
                 stream.Serialize(ref HealthMax);
                 stream.Serialize(ref HotKeys);
@@ -1296,7 +1294,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
         public MEGame Game => MEGame.LE1;
         public string SaveFilePath { get; set; }
         public DateTime Proxy_TimeStamp => TimeStamp.ToDate(); // Todo: Implement
-        public string Proxy_TimePlayed => SaveShared.GetTimePlayed(SecondsPlayed);
+        public string Proxy_TimePlayed => MSaveShared.GetTimePlayed(SecondsPlayed);
         public string Proxy_Difficulty => MSaveShared.GetDifficultyString(PlayerData.GameOptions[0], MEGame.LE1);
         public string Proxy_DebugName => null; // LE1 does not support these
         public IPlayerRecord Proxy_PlayerRecord => PlayerData;
