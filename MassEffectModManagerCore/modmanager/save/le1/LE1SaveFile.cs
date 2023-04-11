@@ -485,25 +485,25 @@ namespace ME3TweaksModManager.modmanager.save.le1
             }
         }
 
-        class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
+class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
+{
+    string OwnerName;
+    int bHasOwnerClass; // BioWare has this in their ME1SaveGame.h but that doesn't seem accurate
+
+    // Only serialized if bHasOwnerClass is true
+    string OwnerClassName;
+
+    public void Serialize(IUnrealStream stream)
+    {
+        stream.Serialize(ref OwnerName);
+        stream.Serialize(ref bHasOwnerClass);
+        // Only serialized if bHasOwnerClass is true
+        if (bHasOwnerClass != 0)
         {
-            string OwnerName;
-            int bHasOwnerClass; // BioWare has this in their ME1SaveGame.h but that doesn't seem accurate
-
-            // Only serialized if bHasOwnerClass is true
-            string OwnerClassName;
-
-            public void Serialize(IUnrealStream stream)
-            {
-                stream.Serialize(ref OwnerName);
-                // stream.Serialize(ref bHasOwnerClass);
-                // Only serialized if bHasOwnerClass is true
-                //if (bHasOwnerClass != 0)
-                //{
-                stream.Serialize(ref OwnerClassName);
-                //}
-            }
+            stream.Serialize(ref OwnerClassName);
         }
+    }
+}
 
         class LEGACY_ActorSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
@@ -1112,15 +1112,31 @@ namespace ME3TweaksModManager.modmanager.save.le1
             }
         }
 
-        class LEGACY_MapSaveRecord : IUnrealSerializable
+        class HACK_LevelRecord : IUnrealSerializable
         {
-            string[] Keys; // Map names (e.g. BIOA_PRO00)
-            LEGACY_LevelSaveRecord[] LevelData; // The list of level objects in the map (e.g. a DSG)
+            string Key;
+            LEGACY_LevelSaveRecord[] LevelData;
 
             public void Serialize(IUnrealStream stream)
             {
-                stream.Serialize(ref Keys);
+                stream.Serialize(ref Key);
                 stream.Serialize(ref LevelData);
+            }
+        }
+
+        class LEGACY_MapSaveRecord : IUnrealSerializable
+        {
+            HACK_LevelRecord[] LevelRecords;
+            
+            //string[] Keys; // Map names (e.g. BIOA_PRO00)
+            //LEGACY_LevelSaveRecord[] LevelData; // The list of level objects in the map (e.g. a DSG)
+
+            public void Serialize(IUnrealStream stream)
+            {
+                // Special serialization
+                stream.Serialize(ref LevelRecords);
+                //stream.Serialize(ref Keys);
+                //stream.Serialize(ref LevelData);
 
                 //// This is a map of data
                 //// We use parse the key and then choose the data type to deserialize it as
@@ -1280,8 +1296,8 @@ namespace ME3TweaksModManager.modmanager.save.le1
             stream.Serialize(ref Filename);
 
             // This stuff doesn't work... will need to figure out why later
-            //Debug.WriteLine($@"MapData begins at 0x{stream.Stream.Position:X8}");
-            //stream.Serialize(ref MapData);
+            Debug.WriteLine($@"MapData begins at 0x{stream.Stream.Position:X8}");
+            stream.Serialize(ref MapData);
             //stream.Serialize(ref VehicleData);
 
             if (!stream.Loading)

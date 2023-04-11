@@ -618,7 +618,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
         public ESFXSaveGameType SaveGameType { get; set; }
         public uint Version => 30; // File save will always be version 30
         public int SaveNumber { get; set; }
-        public string Proxy_TimePlayed => SaveShared.GetTimePlayed((int)SecondsPlayed);
+        public string Proxy_TimePlayed => MSaveShared.GetTimePlayed((int)SecondsPlayed);
         public string Proxy_Difficulty => MSaveShared.GetDifficultyString((int)Difficulty, MEGame.LE2);
         public bool IsValid { get; set; }
     };
