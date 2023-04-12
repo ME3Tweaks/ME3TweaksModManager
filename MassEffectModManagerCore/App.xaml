@@ -12,6 +12,7 @@
                 <!-- Don't comment this duplicate out! It makes the app work for some reason. -->
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
                 <ResourceDictionary Source="/ui/MMStyles.xaml"/>
+                <ResourceDictionary Source="/ui/ProgressRing.xaml"/>
                 <ResourceDictionary Source="/modmanager/localizations/int.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

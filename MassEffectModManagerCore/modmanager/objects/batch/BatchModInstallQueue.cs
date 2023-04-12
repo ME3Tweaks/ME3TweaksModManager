@@ -319,6 +319,20 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             }
         }
 
+        /// <summary>
+        /// If this queue has recorded any options in the chosen values for validation
+        /// </summary>
+        /// <returns></returns>
+        public bool HasAnyRecordedOptions()
+        {
+            foreach (var mod in ModsToInstall)
+            {
+                if (mod.AllChosenOptionsForValidation.Any())
+                    return true;
+            }
+
+            return false;
+        }
     }
 
 }

@@ -1226,11 +1226,11 @@ namespace ME3TweaksModManager
                             if (queue.ASIModsToInstall.Any())
                             {
                                 ShowRunAndDone(() => InstallBatchASIs(target, queue), M3L.GetString(M3L.string_installingASIMods),
-                                    M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(queue));
+                                    M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
                             }
                             else
                             {
-                                HandleBatchTextureInstall(queue);
+                                HandleBatchTextureInstall(target, queue);
                             }
                         }
                         else
@@ -1246,11 +1246,11 @@ namespace ME3TweaksModManager
             ShowBusyControl(batchLibrary);
         }
 
-        private void HandleBatchTextureInstall(BatchLibraryInstallQueue queue)
+        private void HandleBatchTextureInstall(GameTarget target, BatchLibraryInstallQueue queue)
         {
             if (queue.TextureModsToInstall.Any())
             {
-                TextureInstallerPanel tip = new TextureInstallerPanel(queue.TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList());
+                TextureInstallerPanel tip = new TextureInstallerPanel(target, queue.TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList());
                 tip.Close += (sender, args) =>
                 {
                     ReleaseBusyControl();
@@ -1267,7 +1267,7 @@ namespace ME3TweaksModManager
 
         private void FinishBatchInstall(BatchLibraryInstallQueue queue)
         {
-            if (!queue.UseSavedOptions)
+            if (!queue.UseSavedOptions && queue.HasAnyRecordedOptions())
             {
                 var shouldSave = M3L.ShowDialog(this, M3L.GetString(M3L.string_saveChosenOptionsToThisBatchGroup),
                     M3L.GetString(M3L.string_saveOptions), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;

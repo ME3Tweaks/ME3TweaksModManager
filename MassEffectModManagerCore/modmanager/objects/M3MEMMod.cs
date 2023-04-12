@@ -75,7 +75,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <returns></returns>
         public override string GetFilePathToMEM()
         {
-            if (ModdescMod != null) return FilesystemInterposer.PathCombine(ModdescMod.IsInArchive, ModdescMod.ModPath, RelativeFileName);
+            if (ModdescMod != null) return FilesystemInterposer.PathCombine(ModdescMod.IsInArchive, ModdescMod.ModPath, Mod.TEXTUREMOD_FOLDER_NAME, RelativeFileName);
             return Path.Combine(M3LoadedMods.GetCurrentModLibraryDirectory(), FilePath); // Mod library
         }
 
@@ -118,13 +118,21 @@ namespace ME3TweaksModManager.modmanager.objects
                 {
                     if (imageHeight < 1)
                     {
+                        M3Log.Error($@"{IMAGE_HEIGHT_PARM} value must be an integer greater than 0.");
                         ValidationFailedReason = $"{IMAGE_HEIGHT_PARM} value must be an integer greater than 0.";
+                        return;
                     }
                     ImageHeight = imageHeight;
                 }
             }
 
             ModdescMod = mod;
+
+            if (!ModdescMod.IsInArchive)
+            {
+                // Do a parse of the data
+                ParseMEMData();
+            }
         }
 
         /// <summary>

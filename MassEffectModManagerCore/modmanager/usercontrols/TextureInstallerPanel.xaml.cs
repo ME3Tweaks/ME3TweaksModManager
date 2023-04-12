@@ -7,6 +7,7 @@ using ME3TweaksCore.Helpers.MEM;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using PropertyChanged;
@@ -20,9 +21,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class TextureInstallerPanel : MMBusyPanelBase
     {
-        private readonly BackgroundTask BGTask;
+        /// <summary>
+        /// Background task for this installation
+        /// </summary>
+        private BackgroundTask BGTask;
+
+        /// <summary>
+        /// The text shown in the panel
+        /// </summary>
         public string ActionText { get; private set; }
 
+        /// <summary>
+        /// The percentage reported by MEM
+        /// </summary>
         public int PercentDone { get; set; }
 
         /// <summary>
@@ -31,23 +42,30 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <returns></returns>
         private string GetMEMMFLPath() => Path.Combine(M3Filesystem.GetTempPath(), @"meminstalllist.mfl");
 
-        private MEGame Game { get; }
 
-        public TextureInstallerPanel(List<string> memFilesToInstall)
+        /// <summary>
+        /// Target we are installing textures to
+        /// </summary>
+        public GameTarget Target { get; set; }
+
+        /// <summary>
+        /// List of files to install
+        /// </summary>
+        private readonly List<string> MEMFilesToInstall;
+
+        public TextureInstallerPanel(GameTarget target, List<string> memFilesToInstall)
         {
+            if (File.Exists(GetMEMMFLPath()))
+                File.Delete(GetMEMMFLPath());
+
             // Write out the MFL file
+            Target = target;
             ActionText = "Preparing to install textures";
-            File.WriteAllLines(GetMEMMFLPath(), memFilesToInstall);
 
-            int i = 0;
-            while (Game == MEGame.Unknown && i < memFilesToInstall.Count)
-            {
-                Game = ModFileFormats.GetGameMEMFileIsFor(memFilesToInstall[i]);
-                i++;
-            }
+            MEMFilesToInstall = memFilesToInstall;
 
-            File.WriteAllLines(GetMEMMFLPath(), memFilesToInstall); // Write the MFL
         }
+
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -58,22 +76,47 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InitializeComponent();
 
-            if (Game == MEGame.Unknown)
+            if (!Target.Game.IsMEGame())
             {
                 M3Log.Information(@"TextureInstallerPanel: Could not determine the game for any mem mods, skipping install.");
                 OnClosing(DataEventArgs.Empty);
                 return;
             }
 
+            // Validate installation
+            bool canInstall = true;
+            foreach (var memFile in MEMFilesToInstall)
+            {
+                var game = ModFileFormats.GetGameMEMFileIsFor(memFile);
+                if (game != Target.Game)
+                {
+                    // Abort here
+                    canInstall = false;
+                    M3Log.Error($@"Cannot install {memFile} to {Target.Game}, it is for {game}");
+                }
+            }
+
+            if (!canInstall)
+            {
+                M3L.ShowDialog(window, $"Cannot install texture mods:\nNot all .mem files selected for install are for {Target.Game}.");
+                OnClosing(DataEventArgs.Empty);
+                return;
+            }
+
+            // Write MFL
+            File.WriteAllLines(GetMEMMFLPath(), MEMFilesToInstall);
+
+            // Perform the installation
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TextureInstaller");
             nbw.DoWork += (a, b) =>
             {
+                BGTask = BackgroundTaskEngine.SubmitBackgroundJob("TextureInstall", "Installing texture mods", "Installed texture mods");
                 bool hasMem = MEMNoGuiUpdater.UpdateMEM(false, false, setPercentDone, failedToExtractMEM, currentTaskCallback);
                 if (hasMem)
                 {
                     // Todo: Figure out how to make MEM take a game path to support targets
 
-                    MEMIPCHandler.InstallMEMFiles(Game, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x);
+                    b.Result = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x);
                     Result.ReloadTargets = true;
                 }
             };
@@ -84,6 +127,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     // Logging is handled in nbw
                     Result.Error = b.Error;
+                }
+                else if (b.Result is MEMInstallResult mir)
+                {
+                    var errors = mir.GetErrors();
+                    if (errors.Any())
+                    {
+                        if (BGTask != null)
+                        {
+                            BGTask.FinishedUIText = "Texture installation failed";
+                        }
+
+                        ListDialog ld = new ListDialog(errors.ToList(), "Texture install errors", "The following errors were reported when Mass Effect Modder installed textures. More information can be found in Mod Manager's application log.\nMass Effect Modder is not developed by ME3Tweaks.", window);
+                        ld.ShowDialog();
+                    }
+                    else if (mir.ExitCode != 0)
+                    {
+                        // Handle here
+                    }
                 }
 
                 if (BGTask != null)
