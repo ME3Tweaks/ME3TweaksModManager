@@ -54,6 +54,14 @@
 		<DefineConstants>DEBUG;AZURE</DefineConstants>
 	</PropertyGroup>
 
+	<!--Fody code generator to allow us to access OnPropertyChanged-->
+	<PropertyGroup>
+		<PropertyChangedAnalyzerConfiguration>
+			<IsCodeGeneratorDisabled>false</IsCodeGeneratorDisabled>
+			<EventInvokerName>OnPropertyChanged</EventInvokerName>
+		</PropertyChangedAnalyzerConfiguration>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>$(AssemblyName).Tests</_Parameter1>

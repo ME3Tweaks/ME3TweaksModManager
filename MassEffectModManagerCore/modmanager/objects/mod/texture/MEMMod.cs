@@ -17,6 +17,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
     /// </summary>
     public class MEMMod : M3ValidateOnLoadObject, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private string _displayString;
 
         /// <summary>
@@ -30,7 +32,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
                 if (_displayString != null) return _displayString;
                 return Path.GetFileName(FilePath);
             }
-            set => SetField(ref _displayString, value);
+            set
+            {
+                if (_displayString != value)
+                {
+                    _displayString = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayString)));
+                }
+            }
         }
 
         /// <summary>
@@ -139,27 +148,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             return ModifiedExportNames;
         }
 
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            OnPropertyChanged(propertyName);
-            return true;
-        }
-
         #region NEWTONSOFT STUFF
-
-        public bool ShouldSerializeFilePath()
+        public virtual bool ShouldSerializeFilePath()
         {
-            if (this is M3MEMMod) return false; // M3MEMMod files should not serialize this variable
             return true;
         }
         #endregion

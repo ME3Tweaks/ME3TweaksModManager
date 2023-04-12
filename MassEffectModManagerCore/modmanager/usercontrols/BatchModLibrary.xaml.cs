@@ -180,6 +180,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void ClosePanel()
         {
+            // Release all assets
+            var memMods = M3LoadedMods.GetAllM3ManagedMEMs();
+            foreach (var memMod in memMods)
+            {
+                memMod.ImageBitmap = null; // Lose reference so GC can take it
+            }
+            
             OnClosing(DataEventArgs.Empty);
         }
 

@@ -129,6 +129,11 @@
                         BorderThickness="1"
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="ModName">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel
@@ -153,25 +158,47 @@
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="Name"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                        ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
                         ItemsSource="{Binding VisibleFilteredASIMods}"
                         HorizontalContentAlignment="Stretch"
-                        SelectedItem="{Binding SelectedAvailableASIMod}" />
+                        ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
+                        SelectedItem="{Binding SelectedAvailableASIMod}">
+                    </ListBox>
                 </TabItem>
                 <TabItem
                     Header="Texture mods">
                     <DockPanel>
-                        <Button HorizontalAlignment="Right" Margin="5,8,-8,-8" DockPanel.Dock="Bottom" Content="Locate custom file" Command="{Binding AddCustomMEMModCommand}"/>
+                        <Button HorizontalAlignment="Right" Margin="5,8,-8,-8" Height="24"  DockPanel.Dock="Bottom" Command="{Binding AddCustomMEMModCommand}">
+                            <Button.Content>
+                                <StackPanel
+                                    Orientation="Horizontal">
+                                    <fa5:ImageAwesome
+                                        Icon="Solid_Plus"
+                                        Width="12"
+                                        Height="12"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,5,0"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    <TextBlock
+                                        Text="Locate custom file" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button.Content>
+
+                        </Button>
                         <ListBox
                         BorderThickness="1"
                         Margin="-8"
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="Name"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                        ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
                         ItemsSource="{Binding VisibleFilteredMEMMods}"
                         HorizontalContentAlignment="Stretch"
-                        SelectedItem="{Binding SelectedAvailableMEMMod}" />
+                        SelectedItem="{Binding SelectedAvailableMEMMod}">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
                     </DockPanel>
                 </TabItem>
             </TabControl>
@@ -335,6 +362,11 @@
                         BorderThickness="1"
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="ModName">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListBox.Resources>
                             <DataTemplate
                                 DataType="{x:Type batch:BatchMod}">

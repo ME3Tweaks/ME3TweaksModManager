@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.helpers;
@@ -11,6 +12,7 @@ using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using Newtonsoft.Json;
 using WinCopies.Util;
 using static ME3TweaksModManager.modmanager.objects.alternates.AlternateDLC;
@@ -21,12 +23,8 @@ namespace ME3TweaksModManager.modmanager.objects
     /// <summary>
     /// Contains M3-specific data about a texture mod, along with the MEMMod object.
     /// </summary>
-    public class M3MEMMod : MEMMod
+    public class M3MEMMod : MEMMod, IM3ImageEnabled
     {
-
-        /// <summary>
-        /// The associated moddesc mod, if any. If this is null, then the filepath is relative to the root of the mod library.
-        /// </summary>
         [JsonIgnore]
         public Mod ModdescMod { get; set; }
 
@@ -53,15 +51,22 @@ namespace ME3TweaksModManager.modmanager.objects
         public string Description { get; set; }
 
         /// <summary>
+        /// The height of the image to display when shown in a tooltip
+        /// </summary>
+        [JsonIgnore]
+        public int ImageHeight { get; set; }
+
+        /// <summary>
         /// The image asset to show in the the user interface when this texture mod is presented to the user, perhaps as an option.
         /// </summary>
         [JsonProperty(@"imageasset")]
-        public string ImageAsset { get; set; }
+        public string ImageAssetName { get; set; }
 
         private const string FILENAME_PARM = @"Filename";
         private const string TITLE_PARM = @"Title";
         private const string DESCRIPTION_PARM = @"Description";
         private const string IMAGE_PARM = @"ImageAsset";
+        private const string IMAGE_HEIGHT_PARM = @"ImageHeight";
         #endregion
 
         /// <summary>
@@ -82,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public string GetRelativePathToMEM()
         {
             if (ModdescMod == null)
-                throw new Exception("Cannot get relative path to a M3MEMMod object that is not part of a moddesc mod!");
+                throw new Exception(@"Cannot get relative path to a M3MEMMod object that is not part of a moddesc mod!");
 
             return Mod.TEXTUREMOD_FOLDER_NAME + Path.DirectorySeparatorChar + RelativeFileName;
         }
@@ -106,9 +111,17 @@ namespace ME3TweaksModManager.modmanager.objects
             Title = parms[TITLE_PARM];
 
             Description = parms.ContainsKey(DESCRIPTION_PARM) ? parms[DESCRIPTION_PARM] : null;
-            if (parms.ContainsKey(IMAGE_PARM) && ValidateImageParameter(mod, nameof(M3MEMMod), parms, IMAGE_PARM, false, false)) // Should headmorphs be installable directly from archive...?
+            if (parms.ContainsKey(IMAGE_PARM) && ValidateImageParameter(mod, nameof(M3MEMMod), parms, IMAGE_PARM, false, false, additionalRequiredParam: IMAGE_HEIGHT_PARM)) // Should headmorphs be installable directly from archive...?
             {
-                ImageAsset = parms[IMAGE_PARM];
+                ImageAssetName = parms[IMAGE_PARM];
+                if (int.TryParse(parms[IMAGE_HEIGHT_PARM], out var imageHeight))
+                {
+                    if (imageHeight < 1)
+                    {
+                        ValidationFailedReason = $"{IMAGE_HEIGHT_PARM} value must be an integer greater than 0.";
+                    }
+                    ImageHeight = imageHeight;
+                }
             }
 
             ModdescMod = mod;
@@ -124,6 +137,8 @@ namespace ME3TweaksModManager.modmanager.objects
             Title = other.Title;
             Description = other.Description;
             ModdescMod = other.ModdescMod;
+            ImageAssetName = other.ImageAssetName;
+            ImageHeight = other.ImageHeight;
         }
 
         /// <summary>
@@ -167,7 +182,8 @@ namespace ME3TweaksModManager.modmanager.objects
                 {FILENAME_PARM, RelativeFileName},
                 {TITLE_PARM, Title},
                 {DESCRIPTION_PARM, Description},
-                {IMAGE_PARM, new MDParameter(@"string", IMAGE_PARM, ImageAsset, new [] {@""}, "") { AllowedValuesPopulationFunc = mod.PopulateImageOptions}}, // Uses image population function
+                {IMAGE_PARM, new MDParameter(@"string", IMAGE_PARM, ImageAssetName, new [] {@""}, "") { AllowedValuesPopulationFunc = mod.PopulateImageOptions}}, // Uses image population function
+                {IMAGE_HEIGHT_PARM, ImageHeight},
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
@@ -186,6 +202,17 @@ namespace ME3TweaksModManager.modmanager.objects
             m.Title = Path.GetFileNameWithoutExtension(memFile);
             m.ModdescMod = editingMod;
             return m;
+        }
+
+        /// <summary>
+        /// The image asset, if loaded.
+        /// </summary>
+        [JsonIgnore]
+        public BitmapSource ImageBitmap { get; set; }
+
+        public override bool ShouldSerializeFilePath()
+        {
+            return false; // M3MEMMod files should not serialize this variable
         }
     }
 }

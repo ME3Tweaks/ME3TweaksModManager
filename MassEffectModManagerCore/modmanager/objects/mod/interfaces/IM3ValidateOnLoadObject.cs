@@ -90,8 +90,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
         /// <param name="imageParmName"></param>
         /// <param name="required"></param>
         /// <param name="canBeAccessedViaArchiveMod"></param>
+        /// <param name="additionalRequiredParam"></param>
         /// <returns>True if validation succeeded, false otherwise</returns>
-        public bool ValidateImageParameter(Mod mod, string structName, Dictionary<string, string> parms, string imageParmName, bool required = true, bool canBeAccessedViaArchiveMod = true)
+        public bool ValidateImageParameter(Mod mod, string structName, Dictionary<string, string> parms,
+            string imageParmName, bool required = true, bool canBeAccessedViaArchiveMod = true,
+            string additionalRequiredParam = null)
         {
             if (!parms.ContainsKey(imageParmName) || string.IsNullOrWhiteSpace(parms[imageParmName]))
             {
@@ -105,6 +108,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
                 {
                     return true; // Nothing set, nothing to validate.
                 }
+            }
+
+            if (additionalRequiredParam != null && (!parms.ContainsKey(additionalRequiredParam) || string.IsNullOrWhiteSpace(parms[additionalRequiredParam])))
+            {
+                M3Log.Error($@"{structName} is missing required image parameter '{additionalRequiredParam}'.");
+                ValidationFailedReason = $"{structName} is missing required image parameter '{additionalRequiredParam}'.";
+                return false;
             }
 
             // Verify asset exists.
