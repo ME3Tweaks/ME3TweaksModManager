@@ -52,9 +52,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 var dlcCookedPath = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName());
 
-
+                M3Log.Information($@"Looking for ConfigDelta-*.m3cd files in {dlcCookedPath}", Settings.LogModInstallation);
                 var m3cds = Directory.GetFiles(dlcCookedPath, @"*" + ConfigMerge.CONFIG_MERGE_EXTENSION, SearchOption.TopDirectoryOnly)
                     .Where(x => Path.GetFileName(x).StartsWith(ConfigMerge.CONFIG_MERGE_PREFIX)).ToList(); // Find CoalescedMerge-*.m3cd files
+                M3Log.Information($@"Found {m3cds.Count} m3cd files to apply", Settings.LogModInstallation);
 
                 foreach (var m3cd in m3cds)
                 {
