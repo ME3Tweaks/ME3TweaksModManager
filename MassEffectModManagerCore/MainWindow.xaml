@@ -1610,6 +1610,15 @@
                         <Button
                             MinWidth="70"
                             Padding="10,7"
+                            Content="Install headmorph"
+                            Command="{Binding ApplyM3HeadmorphCommand}"
+                            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
+                            ToolTip="Installs a headmorph from this mod into an existing save game"
+                            ui:SharedUIBindings.VisibilityToEnabled="True"/>
+                        <Button
+                            MinWidth="70"
+                            Padding="10,7"
+                            Margin="5,0,0,0"
                             Content="{Binding ApplyModButtonText}"
                             Command="{Binding ApplyModCommand}"
                             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"

@@ -672,6 +672,7 @@ namespace ME3TweaksModManager
         public ICommand TrilogySaveEditorCommand { get; set; }
         public ICommand AddStarterKitContentCommand { get; set; }
         public ICommand InstallHeadmorphCommand { get; set; }
+        public ICommand ApplyM3HeadmorphCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -730,6 +731,36 @@ namespace ME3TweaksModManager
             TrilogySaveEditorCommand = new GenericCommand(OpenTSE);
             AddStarterKitContentCommand = new GenericCommand(OpenStarterKitContentSelector, IsModSelectedInDevMode);
             InstallHeadmorphCommand = new GenericCommand(BeginInstallingHeadmorph, CanInstallHeadmorph);
+            ApplyM3HeadmorphCommand = new GenericCommand(BeginInstallingM3Headmorph, CanInstallM3Headmorph);
+        }
+
+        private void BeginInstallingM3Headmorph()
+        {
+            if (!CanInstallM3Headmorph()) return;
+
+            // Show dialog
+            var selectorDialog = new HeadmorphSelectorDialog(this, SelectedMod);
+            if (selectorDialog.ShowDialog() == true)
+            {
+                var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME, selectorDialog.SelectedHeadmorph.FileName);
+                if (File.Exists(headmorphFilepath))
+                {
+                    InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
+                }
+                else
+                {
+                    M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
+                }
+            }
+        }
+
+        private bool CanInstallM3Headmorph()
+        {
+            if (!CanInstallHeadmorph()) return false;
+            if (SelectedMod == null) return false;
+            var headmorphJob = SelectedMod.GetJob(ModJob.JobHeader.HEADMORPHS);
+            if (headmorphJob == null || !headmorphJob.HeadMorphFiles.Any()) return false;
+            return true;
         }
 
         private bool CanInstallHeadmorph()
@@ -739,8 +770,7 @@ namespace ME3TweaksModManager
 
         private void BeginInstallingHeadmorph()
         {
-            if (SelectedGameTarget == null || !SelectedGameTarget.Game.IsMEGame() ||
-                SelectedGameTarget.Game == MEGame.ME1) return;
+            if (!CanInstallHeadmorph()) return;
 
             // Select headmorph file
 
@@ -760,10 +790,13 @@ namespace ME3TweaksModManager
             if (result != true)
                 return;
 
+            InstallHeadmorphToTarget(m.FileName, SelectedGameTarget);
+        }
 
-
+        private void InstallHeadmorphToTarget(string mFileName, GameTarget selectedGameTarget)
+        {
             // Select save to install to
-            SaveSelectorUI ssui = new SaveSelectorUI(this, SelectedGameTarget);
+            SaveSelectorUI ssui = new SaveSelectorUI(this, selectedGameTarget);
             ssui.Show();
             ssui.Closed += (sender, args) =>
             {
@@ -772,9 +805,13 @@ namespace ME3TweaksModManager
                 {
                     Task.Run(() =>
                     {
-                        M3Log.Information($@"Installing headmorph {m.FileName} to {ssui.SelectedSaveFile.SaveFilePath}");
+                        M3Log.Information($@"Installing headmorph {mFileName} to {ssui.SelectedSaveFile.SaveFilePath}");
                         var task = BackgroundTaskEngine.SubmitBackgroundJob(@"HeadmorphInstall", "Installing headmorph", "Installed headmorph to save");
-                        var installed = HeadmorphInstaller.InstallHeadmorph(m.FileName, ssui.SelectedSaveFile.SaveFilePath, task).Result;
+                        var installed = HeadmorphInstaller.InstallHeadmorph(mFileName, ssui.SelectedSaveFile.SaveFilePath, task).Result;
+                        if (!installed)
+                        {
+                            task.FinishedUIText = "Failed to install headmorph";
+                        }
                         BackgroundTaskEngine.SubmitJobCompletion(task);
                     });
                 }
