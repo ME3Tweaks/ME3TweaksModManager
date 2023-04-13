@@ -153,7 +153,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // Logging is handled in nbw
                     Result.Error = b.Error;
                 }
-                else if (b.Result is MEMInstallResult mir)
+                else if (b.Result is MEMSessionResult mir)
                 {
                     var errors = mir.GetErrors();
                     if (errors.Any())
