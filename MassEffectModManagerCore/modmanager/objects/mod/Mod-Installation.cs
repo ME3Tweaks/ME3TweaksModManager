@@ -289,6 +289,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     // We don't parse this here
                     #endregion
                 }
+                else if (job.Header == ModJob.JobHeader.HEADMORPHS)
+                {
+                    // Do nothing
+                }
+                else if (job.Header == ModJob.JobHeader.TEXTUREMODS)
+                {
+                    // Do nothing
+                }
                 else
                 {
                     //?? Header
@@ -319,7 +327,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 Archive.DisposeObjectOnly();
             }
- 
+
             // Reopen archive if we need to
             if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
             {
