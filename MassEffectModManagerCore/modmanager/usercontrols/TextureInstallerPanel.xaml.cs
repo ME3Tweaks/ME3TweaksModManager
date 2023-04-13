@@ -114,9 +114,34 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 bool hasMem = MEMNoGuiUpdater.UpdateMEM(false, false, setPercentDone, failedToExtractMEM, currentTaskCallback);
                 if (hasMem)
                 {
-                    // Todo: Figure out how to make MEM take a game path to support targets
+                    // Check for markers
+                    var markerResult = MEMIPCHandler.CheckForMarkers(Target, x => ActionText = x, x => PercentDone = x);
+                    if (markerResult != null)
+                    {
+                        if (markerResult.HasAnyErrors())
+                        {
+                            M3Log.Error($@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
 
-                    b.Result = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x);
+                            if (Settings.LogModInstallation || markerResult.GetErrors().Count < 30)
+                            {
+                                foreach (var file in markerResult.GetErrors())
+                                {
+                                    M3Log.Error($@" - {file}");
+                                }
+                            }
+                            else
+                            {
+                                M3Log.Error(@"Turn on mod install logging in the options to log them.");
+                            }
+
+                            // Todo: Backup service specific strings.
+                            markerResult.AddFirstError("The following files are leftover from a different texture installation. This is not supported; reset your game to vanilla, reinstall your non-texture mods, then install textures again.");
+                            b.Result = markerResult;
+                            return;
+                        }
+                    }
+
+                    b.Result = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
                     Result.ReloadTargets = true;
                 }
             };

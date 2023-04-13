@@ -142,6 +142,10 @@
             </DoubleAnimation.EasingFunction>
         </DoubleAnimation>
     </Storyboard>
+    <Storyboard x:Key="OpacityPulseElement">
+        <DoubleAnimation To="0.75" Duration="0:0:0.5" Storyboard.TargetProperty="(FrameworkElement.Opacity)" AutoReverse="True" RepeatBehavior="Forever"/>
+    </Storyboard>
+
 
     <!--<LinearGradientBrush x:Key="LEModBrush"  StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="#33000088" Offset="0.0" />

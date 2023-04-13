@@ -12,7 +12,13 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel VerticalAlignment="Center">
         <Grid>
-            <Image Source="/modmanager/toolicons/masseffectmodder_big.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Image Source="/modmanager/toolicons/masseffectmodder_big.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image.Triggers>
+                    <EventTrigger RoutedEvent="Image.Loaded">
+                        <BeginStoryboard Storyboard="{StaticResource OpacityPulseElement}"/>
+                    </EventTrigger>
+                </Image.Triggers>
+            </Image>
             <ui:ProgressRing IsActive="True"
                              EllipseDiameterScale=".9"
                              Visibility="Visible"
