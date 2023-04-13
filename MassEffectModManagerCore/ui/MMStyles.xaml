@@ -12,7 +12,8 @@
                     xmlns:nativeMods="clr-namespace:ME3TweaksCore.NativeMods;assembly=ME3TweaksCore"
                     xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
                     xmlns:texture="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.texture"
-                    xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects">
+                    xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
+                    xmlns:headmorph="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.headmorph">
     <converters1:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters1:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters1:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -251,6 +252,53 @@
                 Margin="0,0,5,0"
                 RenderOptions.BitmapScalingMode="HighQuality" />
             <TextBlock Text="{Binding Path=DisplayString}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+        </DockPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type headmorph:M3Headmorph}">
+        <DockPanel
+            Background="Transparent"
+            ToolTipService.InitialShowDelay="0"
+            ToolTipService.BetweenShowDelay="0"
+            ToolTipService.IsEnabled="{Binding ImageAssetName, Converter={StaticResource NotNullToBoolConverter}}"
+            ToolTipOpening="LoadImageAsset_TooltipOpening">
+
+            <fa5:ImageAwesome
+                DockPanel.Dock="Right"
+                Icon="Solid_Image"
+                Height="16"
+                Margin="10,0"
+                Opacity="0.75"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                Visibility="{Binding ImageAssetName, Converter={StaticResource NullVisibilityConverter}}" />
+
+            <DockPanel HorizontalAlignment="Stretch">
+                <fa5:ImageAwesome
+                    DockPanel.Dock="Left"
+                    Icon="Solid_TheaterMasks"
+                    Height="16"
+                    Margin="0,0,5,0"
+                    Opacity="0.75"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding Path=Title}" TextWrapping="Wrap" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Path=Description}" TextWrapping="Wrap"/>
+            </DockPanel>
+
+            <DockPanel.ToolTip>
+                <ToolTip
+                        DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                        Placement="Right"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                        BorderThickness="0"
+                        VerticalOffset="{Binding ImageHeight, Converter={StaticResource ImageTooltipVerticalOffsetConverter}}">
+                    <DockPanel>
+                        <Image
+                                Source="{Binding ImageBitmap}"
+                                Height="{Binding ImageHeight}" />
+                    </DockPanel>
+                </ToolTip>
+            </DockPanel.ToolTip>
         </DockPanel>
     </DataTemplate>
     <!-- Do not change to GameTargetWPF. Property lookups will still find it and we want to use base class due to m3c possibly passing around a non-wpf target. -->
