@@ -13,6 +13,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
@@ -87,7 +88,6 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         public void OnSelectedSaveFileChanged()
         {
-            var csi = "";
             if (SelectedSaveFile == null)
             {
                 SelectedLevelText = "Select a save file";
@@ -484,8 +484,35 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 // Load strings for UI
                 LoadTLKs();
 
-                // Load saves
+                // Load profile to find latest save, so we can pre-select it in the UI
                 var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", GetSaveSubDir(Target.Game));
+
+
+                string resumeSavePath = null;
+                try
+                {
+                    // LE1 stores path directly.
+
+                    if (Target.Game == MEGame.LE2 || Target.Game == MEGame.LE3)
+                    {
+                        // Todo: 1 once we parse a bit more... I think?
+                        var profileFile = MEDirectories.GetProfileSave(Target.Game);
+                        if (File.Exists(profileFile))
+                        {
+                            LocalProfile lp = LocalProfile.DeserializeLocalProfile(profileFile, Target.Game);
+                            var lastSaveCareer = lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer].DataAsString;
+                            var lastSaveNumeral = lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame].DataAsInt;
+                            resumeSavePath = BuildLastSavePath(savePath, lastSaveCareer, lastSaveNumeral);
+                        }
+                    }
+                }
+                catch
+                {
+                    M3Log.Warning(@"Failed to get latest save information from game local profile. Skipping auto-selection");
+                }
+
+
+                // Load saves
 
                 var saveDirs = Directory.GetDirectories(savePath);
                 Dictionary<string, List<ISaveFile>> charNameCareers = new Dictionary<string, List<ISaveFile>>();
@@ -502,7 +529,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                         }
 
                         if (numLoaded > 50)
-                            break; // Don't load more
+                            break; // Don't load more for now... maybe make this configurable
                         numLoaded++;
 
                         using var saveFileS = File.OpenRead(sf);
@@ -514,6 +541,11 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                         }
 
                         list.Add(saveFile);
+
+                        if (resumeSavePath != null && sf.CaseInsensitiveEquals(resumeSavePath))
+                        {
+                            SelectedSaveFile = saveFile;
+                        }
                     }
                 }
 
@@ -526,8 +558,38 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             }).ContinueWithOnUIThread(result =>
             {
                 SaveCareers.ReplaceAll(result.Result.Select(x => new Career(x.Value, x.Key)));
+                if (SelectedSaveFile != null)
+                {
+                    SelectedCareer = SaveCareers.FirstOrDefault(x => x.SaveFiles.Contains(SelectedSaveFile));
+                }
                 LoadingSaves = false;
             });
+        }
+
+        // This is only used for LE2/LE3 as LE1 stores the full filename
+        private string BuildLastSavePath(string savePath, string lastSaveCareer, int lastSaveNumeral)
+        {
+            var fSavePath = Path.Combine(savePath, lastSaveCareer);
+
+            // Determine save game type
+            var saveGameType = lastSaveNumeral / 1000000;
+            switch (saveGameType)
+            {
+                case 0: // Manual
+                    return Path.Combine(fSavePath, $@"Save_{lastSaveNumeral.ToString().PadLeft(4, '0')}.pcsav");
+                case 1: // Quicksave
+                    return Path.Combine(fSavePath, @"QuickSave.pcsav");
+                case 2: // Auto
+                    return Path.Combine(fSavePath, @"AutoSave.pcsav");
+                case 3: // Chapter
+                    return Path.Combine(fSavePath, @"ChapterSave.pcsav");
+                case 4: // Export
+                    return Path.Combine(fSavePath, @"NewGamePlusSave.pcsav"); // Not entirely sure this is what 'Export' means
+                case 5: // Legend
+                    return Path.Combine(fSavePath, @"LegendSave.pcsav");
+            }
+
+            return null;
         }
 
         private void BuildUIAssetMapLE1()
