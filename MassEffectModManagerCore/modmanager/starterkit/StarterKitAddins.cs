@@ -12,11 +12,11 @@ using LegendaryExplorerCore.Unreal.Classes;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
 using ME3TweaksModManager.modmanager.windows;
 using Microsoft.WindowsAPICodePack.NativeAPI.Consts;
 using Newtonsoft.Json;
-using Pathoschild.FluentNexus.Models;
 using static LegendaryExplorerCore.Unreal.CNDFile;
 
 namespace ME3TweaksModManager.modmanager.starterkit
@@ -794,7 +794,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
         #endregion
 
         #region LE3 Mod Settings Menu
-        public static void AddModSettingsMenu(MEGame game, string dlcFolderPath, List<Action<IniData>> moddescAddinDelegates)
+        public static void AddModSettingsMenu(Mod mod, MEGame game, string dlcFolderPath, List<Action<IniData>> moddescAddinDelegates)
         {
             if (game != MEGame.LE3)
                 return; // Do nothing. Maybe in future this will be something that can be used.
@@ -886,39 +886,69 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 // Add the dynamic load mapping for our class.
                 Dictionary<string, string> dlm = new CaseInsensitiveDictionary<string>
                 {
-                    { @"ObjectName", modSettingsClassPath},
-                    { @"SeekFreePackageName", Path.GetFileNameWithoutExtension(guiDataFName)}
+                    { @"ObjectName", modSettingsClassPath },
+                    { @"SeekFreePackageName", Path.GetFileNameWithoutExtension(guiDataFName) }
                 };
-                AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"sfxgame.sfxengine", @"dynamicloadmapping", StringStructParser.BuildCommaSeparatedSplitValueList(dlm, dlm.Keys.ToArray()), CoalesceParseAction.AddUnique);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"sfxgame.sfxengine",
+                    @"dynamicloadmapping",
+                    StringStructParser.BuildCommaSeparatedSplitValueList(dlm, dlm.Keys.ToArray()),
+                    CoalesceParseAction.AddUnique);
 
                 // Add BioUI references so our menu loads
-                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"confirmationmessageatextoverride", @"247370", CoalesceParseAction.New);
-                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_sratext", @"247370", CoalesceParseAction.New);
-                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_srbtext", @"576055", CoalesceParseAction.New);
-                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_srtitle", @"3248043", CoalesceParseAction.New); // Point to mod TLK ID?
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath,
+                    @"confirmationmessageatextoverride", @"247370", CoalesceParseAction.New);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_sratext",
+                    @"247370", CoalesceParseAction.New);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_srbtext",
+                    @"576055", CoalesceParseAction.New);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_srtitle",
+                    @"3248043", CoalesceParseAction.New); // Point to mod TLK ID?
 
                 // Add root menu reference to our menu
                 Dictionary<string, string> msmr = new CaseInsensitiveDictionary<string>
                 {
-                    { @"SubMenuClassName", modSettingsClassPath},
-                    { @"ChoiceEntry", StringStructParser.BuildCommaSeparatedSplitValueList(new CaseInsensitiveDictionary<string>()
+                    { @"SubMenuClassName", modSettingsClassPath },
                     {
-                        {@"srChoiceName", mf.TLKID.ToString()}, // These strings need added to the TLK
-                        {@"srChoiceDescription", "3248042"}, // These strings need added to the TLK
-                    })},
-                    { @"Images[0]", modSettingsClassPath},
+                        @"ChoiceEntry", StringStructParser.BuildCommaSeparatedSplitValueList(
+                            new CaseInsensitiveDictionary<string>()
+                            {
+                                { @"srChoiceName", mf.TLKID.ToString() }, // These strings need added to the TLK
+                                { @"srChoiceDescription", "3248042" }, // These strings need added to the TLK
+                            })
+                    },
+                    { @"Images[0]", modSettingsClassPath },
                 };
-                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", @"sfxgamecontent.sfxguidata_modsettings_root", @"modsettingitemarray", StringStructParser.BuildCommaSeparatedSplitValueList(msmr, @"SubMenuClassName", @"Images[0]"), CoalesceParseAction.AddUnique);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI",
+                    @"sfxgamecontent.sfxguidata_modsettings_root", @"modsettingitemarray",
+                    StringStructParser.BuildCommaSeparatedSplitValueList(msmr, @"SubMenuClassName", @"Images[0]"),
+                    CoalesceParseAction.AddUnique);
 
 
-                // Mod has a dependency on LE3 Comm Patch so we add that to the moddesc
-                moddescAddinDelegates.Add(x =>
+                // Add DLC requirements
+                // If mod is null, we haven't generated mod yet, so it will say there is no dependency on this yet.
+                bool requiresLE3Patch = mod != null && mod.RequiredDLC.Any(x => x.DLCFolderName.CaseInsensitiveEquals(@"DLC_MOD_LE3Patch"));
+                bool requiresLE3Framework = mod != null && mod.RequiredDLC.Any(x => x.DLCFolderName.CaseInsensitiveEquals(@"DLC_MOD_LE3Patch"));
+                if (!requiresLE3Framework || !requiresLE3Patch)
                 {
-                    var reqDlc = x[@"ModInfo"][@"requireddlc"];
-                    if (!string.IsNullOrWhiteSpace(reqDlc)) reqDlc += @";";
-                    reqDlc += @"DLC_MOD_LE3Patch;DLC_MOD_Framework";
-                    x[@"ModInfo"][@"requireddlc"] = reqDlc;
-                });
+                    // Mod has a dependency on LE3 Comm Patch so we add that to the moddesc
+                    moddescAddinDelegates.Add(x =>
+                    {
+                        var reqDlc = x[@"ModInfo"][@"requireddlc"];
+                        if (!requiresLE3Patch)
+                        {
+                            if (!string.IsNullOrWhiteSpace(reqDlc)) reqDlc += @";";
+                            reqDlc += @"DLC_MOD_LE3Patch";
+                        }
+
+                        if (!requiresLE3Framework)
+                        {
+                            if (!string.IsNullOrWhiteSpace(reqDlc)) reqDlc += @";";
+                            reqDlc += @"DLC_MOD_Framework";
+                        }
+                        
+                        x[@"ModInfo"][@"requireddlc"] = reqDlc;
+                    });
+                }
             }
         }
 

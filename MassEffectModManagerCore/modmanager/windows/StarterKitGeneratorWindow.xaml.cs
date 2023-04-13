@@ -750,7 +750,7 @@ namespace ME3TweaksModManager.modmanager.windows
             if (skOption.AddModSettingsMenu)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Mod Settings Menu");
-                StarterKitAddins.AddModSettingsMenu(skOption.ModGame, contentDirectory, moddescAddinDelegates);
+                StarterKitAddins.AddModSettingsMenu(null, skOption.ModGame, contentDirectory, moddescAddinDelegates);
             }
 
             if (skOption.Blank2DAsToGenerate.Any())

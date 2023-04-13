@@ -785,6 +785,10 @@ namespace ME3TweaksModManager
         {
             var starterKitSelector = new StarterKitContentSelector(this, SelectedMod);
             starterKitSelector.ShowDialog();
+            if (starterKitSelector.ReloadMod)
+            {
+                M3LoadedMods.Instance.LoadMods(SelectedMod, gamesToLoad: new[] { SelectedMod.Game });
+            }
         }
 
         private void OpenTSE()

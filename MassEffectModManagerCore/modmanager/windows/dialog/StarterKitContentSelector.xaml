@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.windows"
         xmlns:starterkit="clr-namespace:ME3TweaksModManager.modmanager.objects.starterkit"
+        xmlns:dialog="clr-namespace:ME3TweaksModManager.modmanager.windows.dialog"
+        xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -14,11 +16,21 @@
             TargetType="Window"
             BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
+    <Window.Resources>
+        <converters:StarterKitAddinAvailableConverter x:Key="StarterKitAddinAvailableConverter"/>
+        <converters:ConverterBindableParameter x:Key="ConverterBindableParameter"/>
+    </Window.Resources>
     <Grid>
         <ItemsControl ItemsSource="{Binding AvailableFeatures}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type starterkit:StarterKitAddinFeature}">
-                    <Button Content="{Binding DisplayString}" Command="{Binding AddFeatureCommand}" Margin="0,5"/>
+                    <Button Content="{Binding DisplayString}" Command="{Binding AddFeatureCommand}" Margin="0,5">
+                        <Button.Visibility>
+                            <converters:ConverterBindableParameter Binding="{Binding SelectedMod.Game, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type dialog:StarterKitContentSelector}}}"
+                                                                             Converter="{StaticResource StarterKitAddinAvailableConverter}"
+                                                                             ConverterParameter="{Binding ValidGames}" />
+                        </Button.Visibility>
+                    </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

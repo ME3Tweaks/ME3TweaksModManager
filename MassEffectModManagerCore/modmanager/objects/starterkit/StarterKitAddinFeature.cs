@@ -16,12 +16,16 @@ namespace ME3TweaksModManager.modmanager.objects.starterkit
         }
     }
 
+    /// <summary>
+    /// A feature with a command so that starter kit items can be shared in multiple places
+    /// </summary>
     public class StarterKitAddinFeature
     {
-        public StarterKitAddinFeature(string title, Action execute, Func<bool> canExecute = null)
+        public StarterKitAddinFeature(string title, Action execute, Func<bool> canExecute = null, MEGame[] validGames = null)
         {
             DisplayString = title;
             AddFeatureCommand = new GenericCommand(execute, canExecute);
+            ValidGames = validGames;
         }
 
         public StarterKitAddinFeature(string title, Action<object> execute, Func<object, bool> canExecute = null)
@@ -40,6 +44,9 @@ namespace ME3TweaksModManager.modmanager.objects.starterkit
         /// </summary>
         public ICommand AddFeatureCommand { get; init; }
 
-
+        /// <summary>
+        /// Games this feature is available for
+        /// </summary>
+        public MEGame[] ValidGames { get; init; }
     }
 }
