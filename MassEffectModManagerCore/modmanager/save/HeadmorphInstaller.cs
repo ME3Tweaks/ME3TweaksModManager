@@ -19,35 +19,32 @@ namespace ME3TweaksModManager.modmanager.save
         {
             void DownloadProgress(long downloaded, long total)
             {
-                Debug.WriteLine($@"Downloading TSE {downloaded}/{total}");
+                M3Log.Information($@"Downloading TSECLI {downloaded}/{total} bytes");
             }
 
             var tseAvailable = await TrilogySaveEditorCLIUpdater.UpdateTSECLI(DownloadProgress);
             if (!tseAvailable)
             {
+                M3Log.Error(@"TSECLI is not available. Cannot install headmorphs");
                 return false;
             }
 
             var tseCliToolFolder = ExternalToolLauncher.GetToolStoragePath(ExternalToolLauncher.TRILOGYSAVEEDITOR_CMD);
-            var tseCliToolPath = Path.Combine(tseCliToolFolder,
-                ExternalToolLauncher.ToolNameToExeName(ExternalToolLauncher.TRILOGYSAVEEDITOR_CMD));
+            var tseCliToolPath = Path.Combine(tseCliToolFolder, ExternalToolLauncher.ToolNameToExeName(ExternalToolLauncher.TRILOGYSAVEEDITOR_CMD));
 
-            await RunTSECLIImportHeadmorph(tseCliToolPath, morphFilename, destSavename);
+            var exitCode = await RunTSECLIImportHeadmorph(tseCliToolPath, morphFilename, destSavename);
 
-            return true;
+            return exitCode == 0;
         }
 
         private static async Task<int> RunTSECLIImportHeadmorph(string tseCliFilePath, string headMorphFile,
             string existingSave)
         {
             int exitCode = -1;
-            Version v = new Version(0, 0);
-
             string newSaveName = Path.Combine(Directory.GetParent(existingSave).FullName, GetNewSaveName(existingSave));
-            M3Log.Information($"Installing headmorph {headMorphFile} into save {existingSave}, result will be saved to {newSaveName}");
+            M3Log.Information($@"Installing headmorph {headMorphFile} into save {existingSave}, result will be saved to {newSaveName}");
             var cmd = Cli.Wrap(tseCliFilePath)
-                .WithArguments(
-                    $"import-head-morph --input \"{headMorphFile}\" --output \"{newSaveName}\"  \"{existingSave}\"")
+                .WithArguments($"import-head-morph --input \"{headMorphFile}\" --output \"{newSaveName}\"  \"{existingSave}\"")
                 .WithValidation(CommandResultValidation.None); // do not localize
             await foreach (var cmdEvent in cmd.ListenAsync())
 
@@ -55,17 +52,16 @@ namespace ME3TweaksModManager.modmanager.save
                 switch (cmdEvent)
                 {
                     case StartedCommandEvent started:
+                        M3Log.Information($@"TSECLI: Process started with id {started.ProcessId}");
                         break;
                     case StandardOutputCommandEvent stdOut:
-#if DEBUG
-                        Debug.WriteLine(stdOut.Text);
-#endif
+                        M3Log.Information($@"TSECLI: {stdOut.Text}");
                         break;
                     case StandardErrorCommandEvent stdErr:
-                        Debug.WriteLine(@"STDERR " + stdErr.Text);
-                        M3Log.Fatal($@"{stdErr.Text}");
+                        M3Log.Error($@"TSECLI: {stdErr.Text}");
                         break;
                     case ExitedCommandEvent exited:
+                        M3Log.Information($@"TSECLI: Process exited with code {exited.ExitCode}");
                         exitCode = exited.ExitCode;
                         break;
                 }
@@ -94,8 +90,8 @@ namespace ME3TweaksModManager.modmanager.save
                 }
 
             }
-         
-            
+
+
             return existingSave; // Overwrite - might be dangerous?
         }
     }
