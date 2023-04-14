@@ -27,6 +27,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore;
+using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
@@ -740,16 +741,78 @@ namespace ME3TweaksModManager
 
             // Show dialog
             var selectorDialog = new HeadmorphSelectorDialog(this, SelectedMod);
-            if (selectorDialog.ShowDialog() == true)
+            if (selectorDialog.ShowDialog() == true && selectorDialog.SelectedHeadmorph != null)
             {
-                var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME, selectorDialog.SelectedHeadmorph.FileName);
-                if (File.Exists(headmorphFilepath))
+                var morph = selectorDialog.SelectedHeadmorph;
+                if (morph.RequiredDLC.Any())
                 {
-                    InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
-                }
-                else
-                {
-                    M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
+                    // We must check DLC first
+                    var installedDLC = SelectedGameTarget.GetMetaMappedInstalledDLC();
+                    foreach (var dlc in morph.RequiredDLC)
+                    {
+                        var modNameStr =
+                            TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName, SelectedGameTarget.Game)?.modname ??
+                            dlc.DLCFolderName;
+                        if (installedDLC.TryGetValue(dlc.DLCFolderName, out MetaCMM metaCmm))
+                        {
+                            if (dlc.MinVersion != null)
+                            {
+                                // No version info found
+                                if (metaCmm == null)
+                                {
+                                    // DLC installed but not by mod manager
+                                    M3Log.Error(
+                                        $@"Required DLC {dlc.DLCFolderName} is installed but Mod Manager could not read the version information; the mod may not have been installed by Mod Manager. We cannot verify this requirement is met; thus we are rejecting the install");
+                                    M3L.ShowDialog(this,
+                                        $"This headmorph requires {modNameStr} version {dlc.MinVersion} or higher to be installed, but Mod Manager could not determine the installed version. Install {modNameStr} with Mod Manager, then install this headmorph.",
+                                        "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    return;
+                                }
+
+                                // We could not parse the version
+                                if (!Version.TryParse(metaCmm.Version, out var modVersion))
+                                {
+                                    M3Log.Error(
+                                        $@"Required DLC {dlc.DLCFolderName} is installed but could not parse its version: {metaCmm.Version}. We cannot verify this requirement is met; thus we are rejecting the install");
+                                    M3L.ShowDialog(this,
+                                        $"This headmorph requires {modNameStr} version {dlc.MinVersion} or higher to be installed, but Mod Manager could not determine the installed version from its version string {metaCmm.Version}. Contact the developer of this mod to fix this issue.",
+                                        "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    return;
+                                }
+
+                                // We do not meet the version
+                                if (modVersion < dlc.MinVersion)
+                                {
+                                    M3Log.Error(
+                                        $@"Required DLC {dlc.DLCFolderName} is installed but does not meet the minimum version requirement. Installed version: {modVersion}, required version: {dlc.MinVersion}");
+                                    M3L.ShowDialog(this,
+                                        $"This headmorph requires {modNameStr} version {dlc.MinVersion} or higher to be installed. The current installed version does not meet this requirement.\n\nInstalled version: {modVersion}\nMinimum version required: {dlc.MinVersion}",
+                                        "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            M3Log.Error(
+                                $@"Required DLC for headmorph is not installed in game: {dlc.DLCFolderName}{(dlc.MinVersion != null ? @" with minimum version " + dlc.MinVersion : null)}");
+                            M3L.ShowDialog(this,
+                                $"This headmorph requires the following mod to be installed:\n{modNameStr}\n\nThis mod must be installed prior to installing this headmorph.",
+                                "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                    }
+
+                    var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME,
+                        selectorDialog.SelectedHeadmorph.FileName);
+                    if (File.Exists(headmorphFilepath))
+                    {
+                        InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
+                    }
+                    else
+                    {
+                        M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
+                    }
                 }
             }
         }
@@ -1294,8 +1357,8 @@ namespace ME3TweaksModManager
                 TextureInstallerPanel tip = new TextureInstallerPanel(target, queue.TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList());
                 tip.Close += (sender, args) =>
                 {
-                    ReleaseBusyControl();
-                    FinishBatchInstall(queue);
+                    ReleaseBusyControl(); // This is so the panel is closed
+                    FinishBatchInstall(queue); // This can throw a dialog. So it will have to manually trigger the batch panel result as none may be showing.
                 };
                 ShowBusyControl(tip);
             }
@@ -1319,7 +1382,9 @@ namespace ME3TweaksModManager
                 }
             }
 
+            // This ensures final result is handled
             HandleBatchPanelResult = true;
+            HandlePanelResult(BatchPanelResult);
         }
 
         private void InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
@@ -2417,9 +2482,8 @@ namespace ME3TweaksModManager
                         {
 
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                            installCompletedCallback?.Invoke(mi.InstallationSucceeded);
+                            installCompletedCallback?.Invoke(mi.InstallationSucceeded && !mi.InstallationCancelled);
                             ReleaseBusyControl();
-                            // Todo: Batch mode?
                         };
                         ShowBusyControl(mi);
                     }

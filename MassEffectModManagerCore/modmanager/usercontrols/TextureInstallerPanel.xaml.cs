@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
+using AdonisUI.Controls;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Helpers.MEM;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -12,6 +13,9 @@ using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using PropertyChanged;
 using MEMIPCHandler = ME3TweaksCore.Helpers.MEM.MEMIPCHandler;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxImage = System.Windows.MessageBoxImage;
+using MessageBoxResult = System.Windows.MessageBoxResult;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -103,6 +107,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
+            if (!Target.TextureModded)
+            {
+                // Show the big scary warning
+                if (!ShowTextureInstallWarning())
+                {
+                    M3Log.Information(@"User declined to install texture after warning");
+                    OnClosing(DataEventArgs.Empty);
+                    return;
+                }
+            }
+
             // Write MFL
             File.WriteAllLines(GetMEMMFLPath(), MEMFilesToInstall);
 
@@ -114,8 +129,37 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 bool hasMem = MEMNoGuiUpdater.UpdateMEM(false, false, setPercentDone, failedToExtractMEM, currentTaskCallback);
                 if (hasMem)
                 {
+                    MEMIPCHandler.SetGamePath(Target);
+
+                    // Precheck: Texture map consistency
+                    var conistencyResult = MEMIPCHandler.CheckTextureMapConsistency(Target, x => ActionText = x, x => PercentDone = x, setGamePath: false);
+                    if (conistencyResult != null)
+                    {
+                        if (conistencyResult.HasAnyErrors())
+                        {
+                            M3Log.Error($@"{conistencyResult.GetErrors().Count} files have changed since the texture scan took place. You cannot modify game files outside of using Mass Effect Modder after installing textures.");
+                            if (Settings.LogModInstallation || conistencyResult.GetErrors().Count < 30)
+                            {
+                                foreach (var file in conistencyResult.GetErrors())
+                                {
+                                    M3Log.Error($@" - {file}");
+                                }
+                            }
+                            else
+                            {
+                                M3Log.Error(@"Turn on mod install logging in the options to log them.");
+                            }
+
+                            conistencyResult.AddFirstError("The following files are no longer in sync with the texture scan that took place when textures were first installed onto this game installation.");
+                            b.Result = conistencyResult;
+                            return;
+                        }
+                    }
+
+
+
                     // Check for markers
-                    var markerResult = MEMIPCHandler.CheckForMarkers(Target, x => ActionText = x, x => PercentDone = x);
+                    var markerResult = MEMIPCHandler.CheckForMarkers(Target, x => ActionText = x, x => PercentDone = x, setGamePath: false);
                     if (markerResult != null)
                     {
                         if (markerResult.HasAnyErrors())
@@ -151,6 +195,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (b.Error != null)
                 {
                     // Logging is handled in nbw
+                    BGTask.FinishedUIText = "Error occurred in texture installer thread";
                     Result.Error = b.Error;
                 }
                 else if (b.Result is MEMSessionResult mir)
@@ -182,14 +227,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerAsync();
         }
 
+        private bool ShowTextureInstallWarning()
+        {
+            var result = M3L.ShowDialog(window,
+                "Once you install textures, you cannot install more content mods without restoring the entire game from backup. This includes installing updates to mods. Mod Manager will warn you if you attempt to install a mod that violates these procedures to prevent game instability.\n\nENSURED YOU HAVE INSTALLED ALL NON-TEXTURE MODS AT THIS POINT.\n\nAre you sure you wish to continue?",
+                "Texture installation warning", MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                System.Windows.MessageBoxResult.No);
+
+            return result == MessageBoxResult.Yes;
+        }
+
         private void currentTaskCallback(string text)
         {
             ActionText = text;
         }
 
-        private void failedToExtractMEM(Exception obj)
+        private void failedToExtractMEM(Exception exception)
         {
-
+            M3Log.Exception(exception, @"Failed to extract MassEffectModderNoGui:");
         }
 
         private void setPercentDone(long done, long total)
