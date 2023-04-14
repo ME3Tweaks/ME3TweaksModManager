@@ -177,6 +177,11 @@ namespace ME3TweaksModManager.modmanager.windows
         private void SerializeData_Click(object sender, RoutedEventArgs e)
         {
             var ini = SerializeData();
+
+#if DEBUG
+            //Uncomment this to debug serializer
+            // Clipboard.SetText(ini.ToString());
+#endif
             // Load the moddesc.ini as if it was in the library at the original mod folder location
             var m = new Mod(ini, EditingMod.ModPath, null);
 
