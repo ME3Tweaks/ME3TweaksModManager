@@ -18,7 +18,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     case ESFXSaveGameType.SaveGameType_Auto:
                         return "Auto Save";
                     case ESFXSaveGameType.SaveGameType_Quick:
-                        return "Auto Save";
+                        return "Quick Save";
                     case ESFXSaveGameType.SaveGameType_Chapter:
                         return "Restart Mission";
                     case ESFXSaveGameType.SaveGameType_Manual:

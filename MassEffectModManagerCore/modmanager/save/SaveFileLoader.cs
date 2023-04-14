@@ -90,6 +90,10 @@ namespace ME3TweaksModManager.modmanager.save
                     {
                         save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
                     }
+                    else if (sgName.EndsWith(@"QuickSave"))
+                    {
+                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
+                    }
                     else
                     {
                         // Parse number

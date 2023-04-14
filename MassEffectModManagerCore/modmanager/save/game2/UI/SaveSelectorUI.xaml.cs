@@ -1,39 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Textures;
-using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
-using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.Unreal.Classes;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
-using ME3TweaksModManager.modmanager.save.game2.FileFormats;
-using ME3TweaksModManager.modmanager.save.game3;
-using ME3TweaksModManager.ui;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Win32Native;
-using Pathoschild.FluentNexus.Models;
-using PropertyChanged;
-using Path = System.IO.Path;
 
 namespace ME3TweaksModManager.modmanager.save.game2.UI
 {
@@ -491,24 +474,34 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 string resumeSavePath = null;
                 try
                 {
-                    // LE1 stores path directly.
-
-                    if (Target.Game == MEGame.LE2 || Target.Game == MEGame.LE3)
+                    var profileFile = MEDirectories.GetProfileSave(Target.Game);
+                    if (File.Exists(profileFile))
                     {
-                        // Todo: 1 once we parse a bit more... I think?
-                        var profileFile = MEDirectories.GetProfileSave(Target.Game);
-                        if (File.Exists(profileFile))
+                        if (Target.Game == MEGame.LE1)
+                        {
+                            // LE1 stores path directly.
+                            var lp = LocalProfileLE1.DeserializeLocalProfile(profileFile);
+                            var lastSaveCareer = lp.GamerProfile.LastPlayedCharacterID;
+                            var lastSaveName = lp.GamerProfile.LastSaveGame;
+                            resumeSavePath = BuildLastSavePathLE1(savePath, lastSaveCareer, lastSaveName);
+                        }
+                        else if (Target.Game == MEGame.LE2 || Target.Game == MEGame.LE3)
                         {
                             LocalProfile lp = LocalProfile.DeserializeLocalProfile(profileFile, Target.Game);
-                            var lastSaveCareer = lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer].DataAsString;
-                            var lastSaveNumeral = lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame].DataAsInt;
+                            var lastSaveCareer =
+                                lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer]
+                                    .DataAsString;
+                            var lastSaveNumeral =
+                                lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame]
+                                    .DataAsInt;
                             resumeSavePath = BuildLastSavePath(savePath, lastSaveCareer, lastSaveNumeral);
                         }
                     }
                 }
                 catch
                 {
-                    M3Log.Warning(@"Failed to get latest save information from game local profile. Skipping auto-selection");
+                    M3Log.Warning(
+                        @"Failed to get latest save information from game local profile. Skipping auto-selection");
                 }
 
 
@@ -531,20 +524,26 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                         if (numLoaded > 50)
                             break; // Don't load more for now... maybe make this configurable
                         numLoaded++;
-
-                        using var saveFileS = File.OpenRead(sf);
-                        var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf);
-                        if (!charNameCareers.TryGetValue(saveFile.Proxy_PlayerRecord.Proxy_FirstName, out var list))
+                        try
                         {
-                            list = new List<ISaveFile>();
-                            charNameCareers[saveFile.Proxy_PlayerRecord.Proxy_FirstName] = list;
+                            using var saveFileS = File.OpenRead(sf);
+                            var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf);
+                            if (!charNameCareers.TryGetValue(saveFile.Proxy_PlayerRecord.Proxy_FirstName, out var list))
+                            {
+                                list = new List<ISaveFile>();
+                                charNameCareers[saveFile.Proxy_PlayerRecord.Proxy_FirstName] = list;
+                            }
+
+                            list.Add(saveFile);
+
+                            if (resumeSavePath != null && sf.CaseInsensitiveEquals(resumeSavePath))
+                            {
+                                SelectedSaveFile = saveFile;
+                            }
                         }
-
-                        list.Add(saveFile);
-
-                        if (resumeSavePath != null && sf.CaseInsensitiveEquals(resumeSavePath))
+                        catch (Exception ex)
                         {
-                            SelectedSaveFile = saveFile;
+                            M3Log.Warning($@"Error parsing save file: {sf}. This may be due to bugs in the save parsing code (it's still new). This save will be skipped.");
                         }
                     }
                 }
@@ -564,6 +563,11 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 }
                 LoadingSaves = false;
             });
+        }
+
+        private string BuildLastSavePathLE1(string savePath, string lastSaveCareer, string lastSaveName)
+        {
+            return Path.Combine(savePath, lastSaveCareer, lastSaveName + @".pcsav");
         }
 
         // This is only used for LE2/LE3 as LE1 stores the full filename
