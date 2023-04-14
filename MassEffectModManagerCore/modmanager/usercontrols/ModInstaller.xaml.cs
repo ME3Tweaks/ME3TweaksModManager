@@ -371,8 +371,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             var res = M3L.ShowDialog(Window.GetWindow(this),
                                 M3L.GetString(M3L.string_warningTexturesAreInstalled),
                                 M3L.GetString(M3L.string_warningTextureModsAreInstalled),
-                                MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel);
-                            cancel = res != MessageBoxResult.OK;
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                            cancel = res == MessageBoxResult.No;
                         });
                         if (cancel)
                         {
