@@ -1296,7 +1296,7 @@ class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
             stream.Serialize(ref Filename);
 
             // This stuff doesn't work... will need to figure out why later
-            Debug.WriteLine($@"MapData begins at 0x{stream.Stream.Position:X8}");
+            // Debug.WriteLine($@"MapData begins at 0x{stream.Stream.Position:X8}");
             //stream.Serialize(ref MapData);
             //stream.Serialize(ref VehicleData);
 
