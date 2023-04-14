@@ -43,27 +43,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// MergeMods folder. Do not change
         /// </summary>
-        public const string MergeModFolderName = @"MergeMods";
-
-        /// <summary>
-        /// Textures folder. Do not change
-        /// </summary>
-        public const string TEXTUREMOD_FOLDER_NAME = @"Textures";
-
-        /// <summary>
-        /// Headmorphs folder. Do not change
-        /// </summary>
-        public const string HEADMORPHS_FOLDER_NAME = @"Headmorphs";
+        public const string MergeModFolderName = @"MergeMods";  // DO NOT CHANGE THIS VALUE
 
         /// <summary>
         /// The folder that contains the TLK files for the GAME1_EMBEDDED_TLK feature. DO NOT CHANGE.
         /// </summary>
-        public const string Game1EmbeddedTlkFolderName = @"GAME1_EMBEDDED_TLK";
+        public const string Game1EmbeddedTlkFolderName = @"GAME1_EMBEDDED_TLK";  // DO NOT CHANGE THIS VALUE
 
         /// <summary>
         /// The filename of the combined compressed TLK info for moddesc > 8 GAME1_EMBEDDED_TLK
         /// </summary>
-        public const string Game1EmbeddedTlkCompressedFilename = @"CombinedTLKMergeData.m3za";
+        public const string Game1EmbeddedTlkCompressedFilename = @"CombinedTLKMergeData.m3za";  // DO NOT CHANGE THIS VALUE
 
         /// <summary>
         /// The numerical ID for a mod on the respective game's NexusMods page. This is automatically parsed from the ModWebsite if this is not explicitly set and the ModWebsite attribute is a nexusmods url.
@@ -855,7 +845,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 if (!string.IsNullOrWhiteSpace(BannerImageName))
                 {
-                    var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.ModImageAssetFolderName, BannerImageName);
+                    var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.M3IMAGES_FOLDER_NAME, BannerImageName);
                     if (!FilesystemInterposer.FileExists(fullPath, Archive))
                     {
                         M3Log.Error($@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");

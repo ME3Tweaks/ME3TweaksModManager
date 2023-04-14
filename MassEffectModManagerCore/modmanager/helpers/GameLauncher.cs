@@ -175,7 +175,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 #endif
                 }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
-                commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());
+                commandLineArgs.Add((target.Game.ToMEMGameNum()).ToString()); // MEM Game Num is 1-3
                 commandLineArgs.Add(@"-autoterminate");
 
             }

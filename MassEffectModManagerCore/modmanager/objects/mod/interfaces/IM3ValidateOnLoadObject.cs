@@ -119,7 +119,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
 
             // Verify asset exists.
             var imageAsset = parms[imageParmName];
-            var fullPath = FilesystemInterposer.PathCombine(mod.Archive != null, mod.ModPath, Mod.ModImageAssetFolderName, imageAsset);
+            var fullPath = FilesystemInterposer.PathCombine(mod.Archive != null, mod.ModPath, Mod.M3IMAGES_FOLDER_NAME, imageAsset);
             if (!FilesystemInterposer.FileExists(fullPath, mod.Archive))
             {
                 M3Log.Error($@"{structName} references imageasset {imageAsset}, but this file does not exist under the M3Images directory.");

@@ -216,7 +216,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             // Banner Image
             if (!string.IsNullOrWhiteSpace(BannerImageName))
             {
-                references.Add(FilesystemInterposer.PathCombine(IsInArchive, Mod.ModImageAssetFolderName, BannerImageName));
+                references.Add(FilesystemInterposer.PathCombine(IsInArchive, Mod.M3IMAGES_FOLDER_NAME, BannerImageName));
             }
 
             if (includeModdesc && GetJob(ModJob.JobHeader.ME2_RCWMOD) == null)

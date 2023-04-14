@@ -14,8 +14,7 @@ namespace ME3TweaksModManager.modmanager.save
 {
     internal class HeadmorphInstaller
     {
-        public static async Task<bool> InstallHeadmorph(string morphFilename, string destSavename,
-            BackgroundTask installingTask)
+        public static async Task<bool> InstallHeadmorph(string morphFilename, string destSavename, BackgroundTask installingTask)
         {
             void DownloadProgress(long downloaded, long total)
             {

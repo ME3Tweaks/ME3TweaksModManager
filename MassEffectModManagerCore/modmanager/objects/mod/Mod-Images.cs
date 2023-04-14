@@ -12,14 +12,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         private const double RequiredAspectRatioTolerance = 0.08;
 
         /// <summary>
-        /// The images folder for a mod
+        /// The images folder for a mod. Do not change
         /// </summary>
-        public const string ModImageAssetFolderName = @"M3Images"; // DO NOT CHANGE THIS VALUE
+        public const string M3IMAGES_FOLDER_NAME = @"M3Images"; // DO NOT CHANGE THIS VALUE
 
         /// <summary>
         /// Gets the full path to the image asset folder
         /// </summary>
-        public string ModImageAssetsPath => FilesystemInterposer.PathCombine(Archive != null, ModPath, ModImageAssetFolderName);
+        public string ModImageAssetsPath => FilesystemInterposer.PathCombine(Archive != null, ModPath, M3IMAGES_FOLDER_NAME);
 
         /// <summary>
         /// Bitmap data for the banner of the mod
@@ -137,6 +137,24 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets a list of available image options in the M3Images folder. This method does NOT work if this mod is loaded from an archive
+        /// </summary>
+        /// <returns></returns>
+        internal List<string> PopulateImageFileOptions()
+        {
+            if (!IsInArchive)
+            {
+                if (FilesystemInterposer.DirectoryExists(ModImageAssetsPath))
+                {
+                    return FilesystemInterposer.DirectoryGetFiles(ModImageAssetsPath).Where(IsAllowedM3ImageType)
+                        .Select(x => x.Substring(ModImageAssetsPath.Length + 1)).Prepend(@"").ToList();
+                }
+            }
+
+            return new List<string>();
         }
 
         private static bool IsAllowedM3ImageType(string filename)

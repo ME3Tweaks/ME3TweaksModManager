@@ -424,9 +424,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
                     if (!FilesystemInterposer.FileExists(iap, modForValidating.Archive))
                     {
-                        M3Log.Error($@"Alternate {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mod's {Mod.ModImageAssetFolderName} directory.");
+                        M3Log.Error($@"Alternate {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mod's {Mod.M3IMAGES_FOLDER_NAME} directory.");
                         ValidAlternate = false;
-                        LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetNotFound, FriendlyName, ImageAssetName, Mod.ModImageAssetFolderName);
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetNotFound, FriendlyName, ImageAssetName, Mod.M3IMAGES_FOLDER_NAME);
                         return false;
                     }
 
@@ -659,7 +659,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                 // Images
                 // { @"ImageAssetName", ImageAssetName },
-                {@"ImageAssetName", new MDParameter(@"string", @"ImageAssetName", ImageAssetName, new [] {@""}, "") { AllowedValuesPopulationFunc = mod.PopulateImageOptions}}, // Uses image population function
+                {@"ImageAssetName", new MDParameter(@"string", @"ImageAssetName", ImageAssetName, mod.PopulateImageFileOptions(), "") { AllowedValuesPopulationFunc = mod.PopulateImageFileOptions}}, // Uses image population function
                 { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null },
 
                 // DependsOn
