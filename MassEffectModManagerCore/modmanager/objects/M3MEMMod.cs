@@ -187,10 +187,10 @@ namespace ME3TweaksModManager.modmanager.objects
             var parameterDictionary = new Dictionary<string, object>()
             {
                 // List of available parameters for this object
-                {FILENAME_PARM, RelativeFileName},
+                {FILENAME_PARM, new MDParameter(@"string", FILENAME_PARM, RelativeFileName, mod.PopulateTextureFileOptions(), "") { AllowedValuesPopulationFunc = mod.PopulateTextureFileOptions}}, // Uses population function
                 {TITLE_PARM, Title},
                 {DESCRIPTION_PARM, Description},
-                {IMAGE_PARM, new MDParameter(@"string", IMAGE_PARM, ImageAssetName, new [] {@""}, "") { AllowedValuesPopulationFunc = mod.PopulateImageOptions}}, // Uses image population function
+                {IMAGE_PARM, new MDParameter(@"string", IMAGE_PARM, ImageAssetName, mod.PopulateImageFileOptions(), "") { AllowedValuesPopulationFunc = mod.PopulateImageFileOptions}}, // Uses image population function
                 {IMAGE_HEIGHT_PARM, ImageHeight},
             };
 
