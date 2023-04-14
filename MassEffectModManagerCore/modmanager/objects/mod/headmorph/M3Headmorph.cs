@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Objects;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using Newtonsoft.Json;
+using Pathoschild.FluentNexus.Models;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
 {
@@ -45,6 +49,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
         /// </summary>
         public string ImageAssetName { get; set; }
 
+        public List<DLCRequirement> RequiredDLC { get; } = new(0); // Init so serializer doesn't fail
+
         /// <summary>
         /// The height of the image to display when shown in a tooltip
         /// </summary>
@@ -58,7 +64,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
         private const string DESCRIPTION_PARM = @"Description";
         private const string IMAGE_PARM = @"ImageAsset";
         private const string IMAGE_HEIGHT_PARM = @"ImageHeight";
-
+        private const string REQUIRED_DLC_PARM = @"RequiredDLC";
         #endregion
 
         /// <summary>
@@ -102,6 +108,31 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
                     }
 
                     ImageHeight = imageHeight;
+                }
+            }
+
+            // Parse required DLC (if any)
+            if (parms.TryGetValue(REQUIRED_DLC_PARM, out var requiredDLCText) && !string.IsNullOrWhiteSpace(requiredDLCText))
+            {
+                var requiredDlcsSplit = requiredDLCText.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                foreach (var reqDLC in requiredDlcsSplit)
+                {
+                    if (MEDirectories.OfficialDLC(mod.Game).Contains(reqDLC, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        M3Log.Error($@"Headmorphs cannot mark themselves as dependent on DLC included with the game. Invalid value: {reqDLC}");
+                        ValidationFailedReason = $"Headmorphs cannot mark themselves as dependent on DLC included with the game. Invalid value: {reqDLC}";
+                        return;
+                    }
+
+                    if (!reqDLC.StartsWith(@"DLC_"))
+                    {
+                        M3Log.Error($@"Required DLC does not start with DLC_: {reqDLC}");
+                        ValidationFailedReason = $@"Headmorph {Title} has a DLC requirement that does not start with DLC_: {reqDLC}";
+                        return;
+                    }
+
+                    M3Log.Information($@"Adding DLC requirement to {nameof(M3Headmorph)}: {reqDLC}", Settings.LogModStartup);
+                    RequiredDLC.Add(DLCRequirement.ParseRequirement(reqDLC, true));
                 }
             }
 
@@ -150,15 +181,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
             var parameterDictionary = new Dictionary<string, object>()
             {
                 // List of available parameters for this object
-                { FILENAME_PARM, FileName },
+                { FILENAME_PARM, new MDParameter(@"string", FILENAME_PARM, FileName, mod.PopulateHeadmorphFileOptions(), "") { AllowedValuesPopulationFunc = mod.PopulateHeadmorphFileOptions}}, // Uses population function
                 { TITLE_PARM, Title },
                 { DESCRIPTION_PARM, Description },
-                {
-                    IMAGE_PARM,
-                    new MDParameter(@"string", IMAGE_PARM, ImageAssetName, new[] { @"" }, "")
-                        { AllowedValuesPopulationFunc = mod.PopulateImageOptions }
-                }, // Uses image population function
+                { IMAGE_PARM, new MDParameter(@"string", IMAGE_PARM, ImageAssetName, mod.PopulateImageFileOptions(), ""){ AllowedValuesPopulationFunc = mod.PopulateImageFileOptions } }, // Uses image population function
                 { IMAGE_HEIGHT_PARM, ImageHeight },
+                { REQUIRED_DLC_PARM, string.Join(';',RequiredDLC.Select(x=>x.Serialize(false)))},
+
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
