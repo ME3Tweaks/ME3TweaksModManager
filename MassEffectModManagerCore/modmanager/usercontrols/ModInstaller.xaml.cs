@@ -839,6 +839,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     ModdescSourcePath = InstallOptionsPackage.ModBeingInstalled.ModDescPath,
                     ModName = assignedDLCName ?? InstallOptionsPackage.ModBeingInstalled.ModName,
                     Version = InstallOptionsPackage.ModBeingInstalled.ModVersionString,
+                    InstallTime = DateTime.Now,
                 };
 
                 // Metacmm uses observable collections because in some apps it's binded to the interface
