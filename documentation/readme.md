@@ -23,6 +23,10 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains all the options available for use in alternative installations, such as automatic patch installs
 - [moddesc.ini: Localization mods](localizations.md)
    - Contains information about how to make a localization TLK mod for ME2 and ME3 mods
+- [moddesc.ini: Headmorphs](headmorphs.md)
+   - Contains information on how to include headmorphs in your mod
+- [moddesc.ini: Texture mods](texturemods.md)
+   - Contains information on how to include .mem texture mods in your mod
 - [Merge Mods: Creating an .m3m file](merge_mods.md)
    - Contains information on how to create a merge mod, a format which can update individual exports in common basegame files with few compatibility issues.
 - [Overriding Conditionals with .pmu Files](pmu_files.md)
@@ -33,7 +37,8 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information about the squadmate merge feature, and how to use it so you can add outfits without replacing existing ones for Mass Effect 3 (OT + LE)
 - [Adding emails in Game 2 using Game 2 Email Merge](game2_email_merge.md)
    - Contains information on using the Game 2 email merge feature
-
+- [M3 Coalesced Delta - Merging config files in Legendary Edition](configmerge.md)
+   - Contains information on using the M3CD feature, which allows LE1 basegame Coalesced changes, and delta changes to LE2/LE3 DLC configuration files upon installation
 
 Mod Manager includes a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
 
