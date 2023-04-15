@@ -234,6 +234,7 @@ The format for a full asset update. This format will fully replace the basegame 
 | ------------- | ------ | ------------------------------------------------------------ |
 | assetname     | string | The filename of a package file that contains the updated export. |
 | entryname     | string | The full instanced path of the updated asset in your asset file. |
+| canmergeasnew | bool   | If the referenced export can be pulled into the target file without it already existing. This flag is only read if the containing mod targets moddesc 8.1 or higher. |
 
 **Example:**
 
