@@ -24,7 +24,10 @@ M3CD files are basic ini files that must follow the following specification in o
 - They must be named in the following format: `ConfigMerge-*.m3cd`, where * is whatever you want. If your file does not match this name, Mod Manger will ignore it.
 - Section headers in this ini file use the following format:
    - [INIFILENAME SECTIONAME]
-   - For example, 
+   - For example, `[BioUI.ini sfxgame.biosfhandler_browserwheel]`
+     - This targets the BioUI.ini file
+     - This targets the sfxgame.biosfhandler_browserwheel section in that file
+     - You must use .ini files - even in LE3! Internally they are labeled as .ini. Do not use .xml as our decompilation tools use. 
 
 ## M3CD ini typings
 Similar to ME2/LE2 DLC ini files, m3cd files also use _typings_ to control how the ini file is merged. Due to the M3CD feature supporting all three games, there are some differences from ME2/LE2's format, so use the following reference when designing your m3cd files.
