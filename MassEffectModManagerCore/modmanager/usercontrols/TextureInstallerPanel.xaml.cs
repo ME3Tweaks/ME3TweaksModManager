@@ -131,13 +131,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     MEMIPCHandler.SetGamePath(Target);
 
-                    // Precheck: Texture map consistency
-                    var conistencyResult = MEMIPCHandler.CheckTextureMapConsistency(Target, x => ActionText = x, x => PercentDone = x, setGamePath: false);
+                    // Precheck: Texture map consistency (only on already texture modded game)
+                    var conistencyResult = MEMIPCHandler.CheckTextureMapConsistencyAddedRemoved(Target,
+                        x => ActionText = x, x => PercentDone = x, setGamePath: false);
                     if (conistencyResult != null)
                     {
                         if (conistencyResult.HasAnyErrors())
                         {
-                            M3Log.Error($@"{conistencyResult.GetErrors().Count} files have changed since the texture scan took place. You cannot modify game files outside of using Mass Effect Modder after installing textures.");
+                            M3Log.Error(
+                                $@"{conistencyResult.GetErrors().Count} files have changed since the texture scan took place. You cannot modify game files outside of using Mass Effect Modder after installing textures.");
                             if (Settings.LogModInstallation || conistencyResult.GetErrors().Count < 30)
                             {
                                 foreach (var file in conistencyResult.GetErrors())
@@ -150,7 +152,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 M3Log.Error(@"Turn on mod install logging in the options to log them.");
                             }
 
-                            conistencyResult.AddFirstError("The following files are no longer in sync with the texture scan that took place when textures were first installed onto this game installation.");
+                            conistencyResult.AddFirstError("The following files are no longer in sync with the texture scan that took place when textures were first installed onto this game installation. Do not install or remove package files after installing textures.");
                             b.Result = conistencyResult;
                             return;
                         }
@@ -185,8 +187,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
                     }
 
-                    b.Result = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
-                    Result.ReloadTargets = true;
+                    var installResult = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
+                    if (installResult != null)
+                    {
+                        // If 'installation' occurred (e.g. it got past scan) we need to reload the game target to ensure consistency in the UI
+                        Result.ReloadTargets = installResult.IsInstallSession;
+                    }
+                    b.Result = installResult;
                 }
             };
 
@@ -200,15 +207,31 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (b.Result is MEMSessionResult mir)
                 {
+                    if (mir.ExitCode != 0)
+                    {
+                        // This is kind of technical, but will also catch some strange edge cases user may face if MEM unexpectedly dies.
+                        mir.AddFirstError($"MassEffectModder ended with non-zero exit code: {(mir.ExitCode?.ToString() ?? "[no exit code]")}. This indicates something went wrong.");
+                    }
+
                     var errors = mir.GetErrors();
-                    if (errors.Any())
+                    if (errors.Any() || mir.ExitCode != 0)
                     {
                         if (BGTask != null)
                         {
                             BGTask.FinishedUIText = "Texture installation failed";
                         }
 
-                        ListDialog ld = new ListDialog(errors.ToList(), "Texture install errors", "The following errors were reported when Mass Effect Modder installed textures. More information can be found in Mod Manager's application log.\nMass Effect Modder is not developed by ME3Tweaks.", window);
+                        ListDialog ld = null;
+                        if (mir.IsInstallSession)
+                        {
+                            // Messages are different.
+                            ld = new ListDialog(errors.ToList(), "Texture install errors", "The following errors were reported during Mass Effect Modder texture installation. More information can be found in Mod Manager's application log.\nYour game may be in a broken state due to these errors.", window, width: 800);
+                        }
+                        else
+                        {
+                            // Game has not been modified
+                            ld = new ListDialog(errors.ToList(), "Cannot install textures", "The following issues were detected with your game installation prior to installing textures. More information can be found in Mod Manager's application log.\nYour game has not been modified.", window, width: 800);
+                        }
                         ld.ShowDialog();
                     }
                     else if (mir.ExitCode != 0)
@@ -245,6 +268,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void failedToExtractMEM(Exception exception)
         {
             M3Log.Exception(exception, @"Failed to extract MassEffectModderNoGui:");
+            // Should probably have a more useful message than this.
         }
 
         private void setPercentDone(long done, long total)

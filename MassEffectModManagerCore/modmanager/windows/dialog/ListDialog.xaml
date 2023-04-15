@@ -6,7 +6,8 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-        Width="640" Height="480">
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Width="{Binding StartingWidth}" Height="{Binding StartingHeight}">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>

@@ -10,8 +10,12 @@ namespace ME3TweaksModManager.modmanager.windows
     /// <summary>
     /// Dialog that has copy button, designed for showing lists of short lines of text
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class ListDialog : Window
     {
+        public int StartingHeight { get; set; } = 480;
+        public int StartingWidth { get; set; } = 640;
+
         List<string> items;
         public ListDialog(List<string> listItems, string title, string message, Window owner, int width = 0, int height = 0)
         {
@@ -21,11 +25,11 @@ namespace ME3TweaksModManager.modmanager.windows
             items = listItems;
             if (width != 0)
             {
-                Width = width;
+                StartingWidth = width;
             }
             if (height != 0)
             {
-                Height = height;
+                StartingHeight = height;
             }
             foreach (string str in listItems)
             {
