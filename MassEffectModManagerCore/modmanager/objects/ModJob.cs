@@ -672,6 +672,8 @@ namespace ME3TweaksModManager.modmanager.objects
                 case JobHeader.ME1_CONFIG:
                 case JobHeader.ME2_RCWMOD:
                 case JobHeader.BALANCE_CHANGES:
+                case JobHeader.TEXTUREMODS:
+                case JobHeader.HEADMORPHS:
                     return null; // There are no scopes for these headers.
             }
 
