@@ -674,6 +674,7 @@ namespace ME3TweaksModManager
         public ICommand AddStarterKitContentCommand { get; set; }
         public ICommand InstallHeadmorphCommand { get; set; }
         public ICommand ApplyM3HeadmorphCommand { get; set; }
+        public ICommand LE1CoalescedMergeCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -699,6 +700,7 @@ namespace ME3TweaksModManager
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new RelayCommand(RunAutoTOCOnGame, HasGameTarget);
             SyncPlotManagerCommand = new RelayCommand(SyncPlotManagerForGame, HasGameTarget);
+            LE1CoalescedMergeCommand = new GenericCommand(RunLE1CoalescedMerge, CanRunLE1CoalescedMerge);
             ConsoleKeyKeybinderCommand = new GenericCommand(OpenConsoleKeyKeybinder, CanOpenConsoleKeyKeybinder);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
@@ -733,6 +735,18 @@ namespace ME3TweaksModManager
             AddStarterKitContentCommand = new GenericCommand(OpenStarterKitContentSelector, IsModSelectedInDevMode);
             InstallHeadmorphCommand = new GenericCommand(BeginInstallingHeadmorph, CanInstallHeadmorph);
             ApplyM3HeadmorphCommand = new GenericCommand(BeginInstallingM3Headmorph, CanInstallM3Headmorph);
+        }
+
+        private bool CanRunLE1CoalescedMerge()
+        {
+            return InstallationTargets.Any(x => x.Game == MEGame.LE1);
+        }
+
+        private void RunLE1CoalescedMerge()
+        {
+            var target = GetCurrentTarget(MEGame.LE1);
+            if (target == null) return;
+            MergeLE1CoalescedForTarget(target);
         }
 
         private void BeginInstallingM3Headmorph()
