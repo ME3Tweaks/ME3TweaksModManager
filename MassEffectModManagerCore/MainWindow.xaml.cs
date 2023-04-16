@@ -4662,13 +4662,39 @@ namespace ME3TweaksModManager
 
         private void InstallMEMFile()
         {
-            // Todo: Fix me (lol i'll forget for sure)
-            //TextureInstallerPanel tip = new TextureInstallerPanel();
-            //tip.Close += (a, b) =>
-            //{
-            //    ReleaseBusyControl();
-            //};
-            //ShowBusyControl(tip);
+            string filter = "Mass Efect Modder files" + @"|*.mem";
+            OpenFileDialog m = new OpenFileDialog
+            {
+                Title = "Select .mem file",
+                Filter = filter,
+            };
+            var result = m.ShowDialog(this);
+            if (result != true)
+                return;
+
+            var game = ModFileFormats.GetGameMEMFileIsFor(m.FileName);
+            if (!game.IsLEGame())
+            {
+                M3Log.Error($@"User attempting to install mem to unsupported game: {game}");
+                M3L.ShowDialog(this, $"Mod Manager does not support installing .mem files for {game}.", "Unsupported game", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var target = GetCurrentTarget(game);
+            if (target == null)
+            {
+                M3Log.Error($@"User attempting to install mem to game that is not currently a target: {game}");
+                M3L.ShowDialog(this, $"Mod Manager does not have an installation target available for {game}.", "Game not available", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+
+            TextureInstallerPanel tip = new TextureInstallerPanel(target, new List<string>(new[] { m.FileName }));
+            tip.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(tip);
         }
 
         private void OnWindowLostFocus(object sender, RoutedEventArgs e)
