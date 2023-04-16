@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Targets;
+using ME3TweaksModManager.me3tweakscoreextended;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge
 {
@@ -29,7 +30,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         /// <param name="associatedMod">The mod that is installing this merge mod</param>
         /// <param name="target">The target to be applied to</param>
         /// <returns></returns>
-        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, Action<int> mergeWeightDelegate, Action<string, string> addBasegameTrackedFile);
+        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, Action<int> mergeWeightDelegate, Action<string, string> addBasegameTrackedFile, CaseInsensitiveConcurrentDictionary<string> originalFileMD5Map);
         /// <summary>
         /// Get the number of total merge operations this mod can apply
         /// </summary>

@@ -901,20 +901,25 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
+            // We must have a list of records we use as initial lookups
+            // It is mapped filepath -> record
+            // This is so if we apply multiple m3m's to a single file 
+            // it does not wipe it out when it does the hash transition across
+            // two files but is not yet in the database
+            var originalRecords = new CaseInsensitiveConcurrentDictionary<string>();
             Percent = 0;
             foreach (var mergeMod in allMMs)
             {
                 try
                 {
                     Action = M3L.GetString(M3L.string_applyingMergemods);
-                    mergeMod.ApplyMergeMod(InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget, mergeWeightCompleted, addBasegameTrackedFile);
+                    mergeMod.ApplyMergeMod(InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget, mergeWeightCompleted, addBasegameTrackedFile, originalRecords);
                 }
                 catch (Exception ex)
                 {
                     // Error applying merge mod!
                     InstallationSucceeded = false;
-                    M3Log.Error($@"An error occurred installing mergemod {mergeMod.MergeModFilename}: {ex.Message}");
-                    M3Log.Error(ex.StackTrace);
+                    M3Log.Exception(ex, $@"An error occurred installing mergemod {mergeMod.MergeModFilename}: ");
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD;
                     if (Application.Current != null)
                     {
@@ -1073,7 +1078,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             M3Log.Information(@"<<<<<<< Finishing modinstaller");
             sw.Stop();
-            Debug.WriteLine($@"Elapsed: {sw.ElapsedMilliseconds}");
+            Debug.WriteLine($@"Installer took {sw.ElapsedMilliseconds}ms");
             //Submit basegame tracking in async way
             if (basegameFilesInstalled.Any() || basegameCloudDBUpdates.Any())
             {

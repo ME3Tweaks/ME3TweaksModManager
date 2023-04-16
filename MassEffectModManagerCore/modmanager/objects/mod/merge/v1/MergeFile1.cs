@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Targets;
+using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
@@ -44,9 +46,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         /// <param name="loadedFiles"></param>
         /// <param name="associatedMod"></param>
         /// <param name="mergeWeightDelegate">Callback to submit completed weight for progress tracking</param>
-        /// <param name="mergeStatusDelegate">Callback to submit a new text string to display</param>
+        /// <param name="addTrackedFileDelegate">Callback to submit a new text string to display</param>
         /// <exception cref="Exception"></exception>
-        public void ApplyChanges(GameTarget gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, Action<int> mergeWeightDelegate, Action<string, string> addTrackedFileDelegate = null)
+        public void ApplyChanges(GameTarget gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, Action<int> mergeWeightDelegate, CaseInsensitiveConcurrentDictionary<string> originalFileMD5Map, Action<string, string> addTrackedFileDelegate = null)
         {
             var targetFiles = new SortedSet<string>();
             if (ApplyToAllLocalizations)
@@ -80,7 +82,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
 
             var mac = new MergeAssetCache1();
-            foreach (string f in targetFiles)
+
+            // Change 04/15/2023: Multi-core support for multiple changes from a single 'file'. If it has multiple localizations they will all be different
+            // So in theory this should work...
+            var numCores = !Settings.LogModInstallation ? 4 : 1;
+            var syncObj = new object();
+            Parallel.ForEach(targetFiles, new ParallelOptions() { MaxDegreeOfParallelism = numCores }, f =>
+            //{
+            //foreach (string f in targetFiles)
             {
                 M3Log.Information($@"Opening package {f}");
 #if DEBUG
@@ -89,7 +98,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 // Open as memorystream as we need to hash this file for tracking
                 using var ms = new MemoryStream(File.ReadAllBytes(f));
 
-                var existingMD5 = MUtilities.CalculateHash(ms);
+                if (!originalFileMD5Map.TryGetValue(f, out var existingMD5))
+                {
+                    existingMD5 = MUtilities.CalculateHash(ms);
+                    originalFileMD5Map[f] = existingMD5; // Set
+                }
+
                 var package = MEPackageHandler.OpenMEPackageFromStream(ms, f);
 #if DEBUG
                 Debug.WriteLine($@"Opening package {f} took {sw.ElapsedMilliseconds} ms");
@@ -104,7 +118,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 {
                     M3Log.Information($@"Saving package {package.FilePath}");
 #if DEBUG
-                    sw.Restart();
+                    sw.Stop();
 #endif
                     package.Save(savePath: f, compress: true);
 #if DEBUG
@@ -119,10 +133,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 if (track)
                 {
                     // Add to basegame database.
-                    addTrackedFileDelegate?.Invoke(existingMD5, f);
+                    // It uses a list. It is not thread safe. Use a lock
+                    lock (syncObj)
+                    {
+                        addTrackedFileDelegate?.Invoke(existingMD5, f);
+                    }
                 }
-
-            }
+            });
         }
 
         private bool addMergeTarget(string fileName, CaseInsensitiveDictionary<string> loadedFiles,
