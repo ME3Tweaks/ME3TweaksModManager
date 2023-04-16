@@ -249,6 +249,7 @@ namespace ME3TweaksModManager
 
                 if (signTime != null)
                 {
+                    BuildDateTime = signTime.Value;
                     BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy @ hh:mm");
                     var signer = info.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
                     if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
@@ -425,6 +426,11 @@ namespace ME3TweaksModManager
                 throw;
             }
         }
+
+        /// <summary>
+        /// A datetime object representing the signing date of this executable
+        /// </summary>
+        public static DateTime? BuildDateTime { get; set; }
 
         /// <summary>
         /// If a language localization is supported in M3 for use
