@@ -198,7 +198,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 else
                 {
                     // restore completed
-                    if (AvailableRestoreTargets.Count == 1 && RestoreTarget != null)
+                    if (AvailableRestoreTargets.Count(x => !x.IsCustomOption) == 1 && RestoreTarget != null)
                     {
                         // 04/16/2023: If we have only one target for this game,
                         // delete the basegame file database for this specific game
