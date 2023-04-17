@@ -7,19 +7,21 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.ui;
 using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic for MEMVanillaDBViewer.xaml
+    /// Interaction logic for BasegameFileIdentificationServicePanel.xaml
     /// </summary>
-    public partial class MEMVanillaDBViewer : MMBusyPanelBase
+    public partial class BasegameFileIdentificationServicePanel : MMBusyPanelBase
     {
-        public MemGameDB SelectedGame { get; set; }
-        public MEMVanillaDBViewer()
+        public BasegameGameDB SelectedGame { get; set; }
+        public BasegameFileIdentificationServicePanel()
         {
             DataContext = this;
             LoadCommands();
@@ -50,33 +52,55 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
-            LoadMEMDBs();
+            LoadBGFISDBs();
             LoadingInProgress = false;
         }
 
-        public ObservableCollectionExtended<MemGameDB> Games { get; } = new();
+        public ObservableCollectionExtended<BasegameGameDB> Games { get; } = new();
 
-        private void LoadMEMDBs()
+        private void LoadBGFISDBs()
         {
             var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LELauncher };
             foreach (var g in games)
             {
-                Games.Add(new MemGameDB(g));
+                Games.Add(new BasegameGameDB(g));
             }
         }
 
+        public class BasegameFileUIRecord
+        {
+            public ObservableCollectionExtended<BasegameFileRecord> Records { get; } = new();
+
+            public string Filename { get; }
+
+            public BasegameFileUIRecord(string relativeFilePath, List<BasegameFileRecord> records)
+            {
+                Filename = relativeFilePath;
+                Records.ReplaceAll(records);
+            }
+        }
+
+        /// <summary>
+        /// UI object that encapsulates a single game's entries from BGFIS
+        /// </summary>
         [AddINotifyPropertyChangedInterface]
-        public class MemGameDB
+        public class BasegameGameDB
         {
             public MEGame Game { get; }
             public string GameName => Game.ToGameName(true);
             public string SearchText { get; set; }
-            private ObservableCollectionExtended<VanillaEntry> Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
+            private ObservableCollectionExtended<BasegameFileUIRecord> Files { get; } = new();
             public ICollectionView FilesView => CollectionViewSource.GetDefaultView(Files);
-            public MemGameDB(MEGame game)
+            public BasegameGameDB(MEGame game)
             {
                 this.Game = game;
-                Files.ReplaceAll(getDBItems(VanillaDatabaseService.LoadDatabaseFor(Game, false)));
+
+                var mapping = BasegameFileIdentificationService.GetEntriesForGame(game);
+                foreach (var file in mapping)
+                {
+                    Files.Add(new BasegameFileUIRecord(file.Key, file.Value));
+                }
+
                 FilesView.Filter = FilterFiles;
             }
 
@@ -87,37 +111,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             private bool FilterFiles(object obj)
             {
-                if (!string.IsNullOrWhiteSpace(SearchText) && obj is VanillaEntry bobj)
+                if (!string.IsNullOrWhiteSpace(SearchText) && obj is BasegameFileUIRecord bobj)
                 {
-                    return bobj.Filepath.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
+                    return bobj.Filename.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
                 }
                 return true;
             }
-        }
-
-        private static IEnumerable<VanillaEntry> getDBItems(CaseInsensitiveDictionary<List<(int size, string md5)>> db)
-        {
-            var files = new List<VanillaEntry>();
-            foreach (var v in db)
-            {
-                foreach (var sf in v.Value)
-                {
-                    files.Add(new VanillaEntry
-                    {
-                        Filepath = v.Key,
-                        MD5 = sf.md5,
-                        Size = sf.size
-                    });
-                }
-            }
-            return files;
-        }
-
-        public class VanillaEntry
-        {
-            public string Filepath { get; set; }
-            public string MD5 { get; set; }
-            public int Size { get; set; }
         }
     }
 }

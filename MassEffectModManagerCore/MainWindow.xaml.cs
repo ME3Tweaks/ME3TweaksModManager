@@ -4301,7 +4301,7 @@ namespace ME3TweaksModManager
             }
         }
 
-        private void SyncPlotManagerForTarget(GameTargetWPF target)
+        private void SyncPlotManagerForTarget(GameTarget target)
         {
             var task = BackgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
                 M3L.GetString(M3L.string_interp_syncingPlotManagerForGame, target.Game.ToGameName()),
@@ -4315,8 +4315,14 @@ namespace ME3TweaksModManager
             ShowBusyControl(pmuUI);
         }
 
-        private void MergeLE1CoalescedForTarget(GameTargetWPF target)
+        private void MergeLE1CoalescedForTarget(GameTarget target)
         {
+            if (!Settings.EnableLE1CoalescedMerge)
+            {
+                M3Log.Warning(@"Cannot perform LE1 Coalesced Merge: feature is disabled by user request");
+                return;
+            }
+
             var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MergeLE1Coalesced", "Merging coalesced files",
                 "Merged coalesced files");
             var coalMergePanel = new LE1CoalescedMergePanel(target);

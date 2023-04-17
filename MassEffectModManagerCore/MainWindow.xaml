@@ -1444,6 +1444,10 @@
                         Name="ShowMEMDB_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
+                        Header="Show Basegame File Identification Service Viewer"
+                        Name="ShowBGFISDB_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
                         Header="{DynamicResource string_testCode}"
                         Name="TestCode_MenuItem"
                         Click="RouteDebugCall" />
