@@ -1,27 +1,11 @@
-﻿using System.Diagnostics;
-using System.Text;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
-using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
-using LegendaryExplorerCore.Unreal;
-using LegendaryExplorerCore.Unreal.BinaryConverters;
-using LegendaryExplorerCore.UnrealScript;
-using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
-using ME3TweaksCore.Services.BasegameFileIdentification;
-using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksCoreWPF.Targets;
-using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.objects;
-using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
-using Octokit;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -30,9 +14,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// </summary>
     public partial class LE1CoalescedMergePanel : MMBusyPanelBase
     {
-        private GameTargetWPF CoalescedMergeTarget;
+        private GameTarget CoalescedMergeTarget;
 
-        public LE1CoalescedMergePanel(GameTargetWPF target)
+        public LE1CoalescedMergePanel(GameTarget target)
         {
             if (target?.Game != MEGame.LE1)
             {
@@ -41,7 +25,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             this.CoalescedMergeTarget = target;
         }
 
-        public static bool RunCoalescedMerge(GameTargetWPF target)
+        public static bool RunCoalescedMerge(GameTarget target)
         {
             M3Log.Information($@"Performing Coaleseced Merge for game: {target.TargetPath}");
             var coalescedStream = M3Utilities.ExtractInternalFileToStream("ME3TweaksModManager.modmanager.merge.coalesced.LE1.Coalesced_INT.bin");

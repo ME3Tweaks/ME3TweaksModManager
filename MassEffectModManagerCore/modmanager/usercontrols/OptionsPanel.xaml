@@ -316,6 +316,21 @@
                             Text="{DynamicResource string_description_autobootLE}"
                             TextWrapping="Wrap" />
                     </StackPanel>
+                    <StackPanel
+                        ui:SharedUIBindings.GenerationLE="true"
+                        Margin="0,10,0,0"
+                        Grid.Row="7"
+                        Grid.Column="1">
+                        <CheckBox
+                            FontWeight="Bold"
+                            Content="LE1: Enable Coalesced Merge"
+                            DockPanel.Dock="Top"
+                            IsChecked="{Binding Path=(modmanager:Settings.EnableLE1CoalescedMerge)}" />
+                        <TextBlock
+                            Margin="0,0,10,0"
+                            Text="Turning this off will allow you to manually edit your Coalesced file, and will prevent .m3cd files from merging to the basegame Coalesced file. This may break some mods. Do not turn this off if you don't know what this means."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
                     <!-- OT OPTIONS MODMAKER -->
                     <TextBlock
                         ui:SharedUIBindings.GenerationOT="true"

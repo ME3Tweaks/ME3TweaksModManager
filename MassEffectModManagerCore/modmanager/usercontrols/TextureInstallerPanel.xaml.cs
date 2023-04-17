@@ -132,59 +132,70 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     MEMIPCHandler.SetGamePath(Target);
 
                     // Precheck: Texture map consistency (only on already texture modded game)
-                    var conistencyResult = MEMIPCHandler.CheckTextureMapConsistencyAddedRemoved(Target,
-                        x => ActionText = x, x => PercentDone = x, setGamePath: false);
-                    if (conistencyResult != null)
+                    if (Settings.EnableTextureSafetyChecks)
                     {
-                        if (conistencyResult.HasAnyErrors())
+                        var conistencyResult = MEMIPCHandler.CheckTextureMapConsistencyAddedRemoved(Target,
+                            x => ActionText = x, x => PercentDone = x, setGamePath: false);
+                        if (conistencyResult != null)
                         {
-                            M3Log.Error(
-                                $@"{conistencyResult.GetErrors().Count} files have changed since the texture scan took place. You cannot modify game files outside of using Mass Effect Modder after installing textures.");
-                            if (Settings.LogModInstallation || conistencyResult.GetErrors().Count < 30)
+                            if (conistencyResult.HasAnyErrors())
                             {
-                                foreach (var file in conistencyResult.GetErrors())
+                                M3Log.Error(
+                                    $@"{conistencyResult.GetErrors().Count} files have changed since the texture scan took place. You cannot modify game files outside of using Mass Effect Modder after installing textures.");
+                                if (Settings.LogModInstallation || conistencyResult.GetErrors().Count < 30)
                                 {
-                                    M3Log.Error($@" - {file}");
+                                    foreach (var file in conistencyResult.GetErrors())
+                                    {
+                                        M3Log.Error($@" - {file}");
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                M3Log.Error(@"Turn on mod install logging in the options to log them.");
-                            }
+                                else
+                                {
+                                    M3Log.Error(@"Turn on mod install logging in the options to log them.");
+                                }
 
-                            conistencyResult.AddFirstError("The following files are no longer in sync with the texture scan that took place when textures were first installed onto this game installation. Do not install or remove package files after installing textures.");
-                            b.Result = conistencyResult;
-                            return;
+                                conistencyResult.AddFirstError(
+                                    "The following files are no longer in sync with the texture scan that took place when textures were first installed onto this game installation. Do not install or remove package files after installing textures.");
+                                b.Result = conistencyResult;
+                                return;
+                            }
+                        }
+
+
+
+                        // Check for markers
+                        var markerResult = MEMIPCHandler.CheckForMarkers(Target, x => ActionText = x,
+                            x => PercentDone = x, setGamePath: false);
+                        if (markerResult != null)
+                        {
+                            if (markerResult.HasAnyErrors())
+                            {
+                                M3Log.Error(
+                                    $@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
+
+                                if (Settings.LogModInstallation || markerResult.GetErrors().Count < 30)
+                                {
+                                    foreach (var file in markerResult.GetErrors())
+                                    {
+                                        M3Log.Error($@" - {file}");
+                                    }
+                                }
+                                else
+                                {
+                                    M3Log.Error(@"Turn on mod install logging in the options to log them.");
+                                }
+
+                                // Todo: Backup service specific strings.
+                                markerResult.AddFirstError(
+                                    "The following files are leftover from a different texture installation. This is not supported; reset your game to vanilla, reinstall your non-texture mods, then install textures again.");
+                                b.Result = markerResult;
+                                return;
+                            }
                         }
                     }
-
-
-
-                    // Check for markers
-                    var markerResult = MEMIPCHandler.CheckForMarkers(Target, x => ActionText = x, x => PercentDone = x, setGamePath: false);
-                    if (markerResult != null)
+                    else
                     {
-                        if (markerResult.HasAnyErrors())
-                        {
-                            M3Log.Error($@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
-
-                            if (Settings.LogModInstallation || markerResult.GetErrors().Count < 30)
-                            {
-                                foreach (var file in markerResult.GetErrors())
-                                {
-                                    M3Log.Error($@" - {file}");
-                                }
-                            }
-                            else
-                            {
-                                M3Log.Error(@"Turn on mod install logging in the options to log them.");
-                            }
-
-                            // Todo: Backup service specific strings.
-                            markerResult.AddFirstError("The following files are leftover from a different texture installation. This is not supported; reset your game to vanilla, reinstall your non-texture mods, then install textures again.");
-                            b.Result = markerResult;
-                            return;
-                        }
+                        M3Log.Warning(@"Texture safety checks are disabled! Do not trust the results of this installation");
                     }
 
                     var installResult = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);

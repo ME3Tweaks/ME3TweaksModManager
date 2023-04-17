@@ -9,6 +9,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.Restore;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
@@ -193,6 +194,19 @@ namespace ME3TweaksModManager.modmanager.objects
                         M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_failedToRestoreGameDueToErrorX, x.Exception.Message),
                             M3L.GetString(M3L.string_fullGameRestore), MessageBoxButton.OK, MessageBoxImage.Error);
                     });
+                }
+                else
+                {
+                    // restore completed
+                    if (AvailableRestoreTargets.Count == 1 && RestoreTarget != null)
+                    {
+                        // 04/16/2023: If we have only one target for this game,
+                        // delete the basegame file database for this specific game
+                        // so that as new mods are installed we generate new entries
+                        // and stale ones are purged.
+
+                        BasegameFileIdentificationService.PurgeEntriesForGame(RestoreTarget.Game);
+                    }
                 }
             });
         }
