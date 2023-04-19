@@ -116,6 +116,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 UnknownMapImage.StreamSource = stream;
                 UnknownMapImage.CacheOption = BitmapCacheOption.OnLoad;
                 UnknownMapImage.EndInit();
+                UnknownMapImage.Freeze();
             }
 
             return UnknownMapImage;
@@ -148,11 +149,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         }
 
 
-        private string LangCode = "INT"; // Todo: Support changing this
+        private string LangCode = @"INT"; // Todo: Support changing this
         private List<ME2ME3LazyTLK> TlkFiles { get; } = new();
         private List<ME1TalkFile> TlkFilesLE1 { get; } = new();
         private void LoadTLKs()
         {
+            M3Log.Information($@"SSUI: Loading TLK data from game");
             if (Target.Game == MEGame.LE1)
             {
                 // oh lord.
@@ -238,6 +240,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 LevelImageCache[Target.Game] = new CaseInsensitiveDictionary<BitmapSource>();
             }
 
+            M3Log.Information($@"SSUI: Trying to load image for map {mapName}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(Target.Game);
             if (mapToImageAssetMap.TryGetValue(mapName, out var saveImageInfo) && loadedFiles.TryGetValue(saveImageInfo.PackageName, out var packagePath))
             {
@@ -282,6 +285,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     // We need to do a secondary read on file to get actual data
                     // Sadly we can't do this in one pass without extensive changes
                     // to how unsafe partial load works
+                    M3Log.Information($@"SSUI: Performing 'references' lookup for actual Texture2D");
+
                     var refs = tex.GetProperty<ArrayProperty<ObjectProperty>>(@"References").Select(x => x.ResolveToEntry(tex.FileRef).InstancedFullPath).ToList();
                     if (refs.Count == 1)
                     {
@@ -299,6 +304,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
                 if (tex != null)
                 {
+                    M3Log.Information($@"SSUI: Fetching texture data from export {tex.InstancedFullPath}");
                     if (!tex.IsDataLoaded())
                     {
                         Debugger.Break();
@@ -330,6 +336,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         public SaveSelectorUI(Window owner, GameTarget target)
         {
+            M3Log.Information($@"Opening SaveSelectorUI for target {target.TargetPath}");
             Owner = owner;
             Target = target;
             LoadingSaves = true;
@@ -349,6 +356,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         private void SelectSave()
         {
+            M3Log.Information($@"SSUI: Closing with save selected: {SelectedSaveFile.SaveFilePath}");
             SaveWasSelected = true;
             Close();
         }
@@ -445,6 +453,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         {
             Task.Run(() =>
             {
+                M3Log.Information($@"SSUI: Beginning content load");
+
                 // Load game information
                 var game = Target.Game;
                 if (game == MEGame.LE1)
@@ -469,7 +479,6 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
                 // Load profile to find latest save, so we can pre-select it in the UI
                 var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", GetSaveSubDir(Target.Game));
-
 
                 string resumeSavePath = null;
                 try
@@ -500,8 +509,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 }
                 catch
                 {
-                    M3Log.Warning(
-                        @"Failed to get latest save information from game local profile. Skipping auto-selection");
+                    M3Log.Warning(@"Failed to get latest save information from game local profile. Skipping auto-selection");
                 }
 
 
@@ -598,6 +606,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         private void BuildUIAssetMapLE1()
         {
+            M3Log.Information($@"SSUI: Building LE1 UI Asset Map");
+
             var loadedFiles = Target.GetFilesLoadedInGame();
             var twoDAsToInspect = new SortedSet<string>(); // In case duplicates are added somehow
 
@@ -624,6 +634,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     var filename = path.Value + @".pcc";
                     if (loadedFiles.TryGetValue(filename, out var fullPath))
                     {
+                        M3Log.Information($@"SSUI: LE1: Found 2DA to inspect: {filename}");
                         twoDAsToInspect.Add(fullPath); // Inspect this 2DA package from the DLC
                     }
 
@@ -635,6 +646,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             foreach (var twoDA in twoDAsToInspect)
             {
                 // Load areamap
+                M3Log.Information($@"SSUI: Looking for areamap 2DA data in {twoDA}");
+
                 using var package = MEPackageHandler.UnsafePartialLoad(twoDA,
                     x => x.ClassName == @"Bio2DANumberedRows" && x.ObjectName.Instanced.Contains(@"AreaMap_AreaMap", StringComparison.InvariantCultureIgnoreCase));
                 foreach (var exp in package.Exports.Where(x => x.IsDataLoaded()))
@@ -680,6 +693,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             var assetNameToSourcePackageMap = new CaseInsensitiveDictionary<string>();
             var mapToStrRefName = new CaseInsensitiveDictionary<int>();
 
+            M3Log.Information($@"SSUI: Building LE2/LE3 UI Asset Map");
 
             var bioui = bundle.GetAsset(@"BioUI", false);
             var saveload = bioui.GetOrAddSection(@"sfxgame.sfxsfhandler_save");

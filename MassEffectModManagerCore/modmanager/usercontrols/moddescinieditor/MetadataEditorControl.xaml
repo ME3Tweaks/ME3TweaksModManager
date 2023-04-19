@@ -20,6 +20,11 @@
                 HeaderText="ModManager"
                 Description="{DynamicResource string_mde_dec_header_metadata_modmanager}"
                 ItemsSource="{Binding ModManagerParameterMap}" />
+            <TextBlock 
+                Text="Your mod's cmmver value will be upgraded when serializing. This may require additional changes to properly work."
+                FontWeight="Bold"
+                Visibility="{Binding ModdescVersionChanging, Converter={StaticResource BoolToVisibilityConverter}}"
+                Foreground="Red"/>
             <moddescinieditor:DescriptorEditorItemsControl
                 HeaderText="ModInfo"
                 Description="{DynamicResource string_mde_dec_header_metadata_modinfo}"

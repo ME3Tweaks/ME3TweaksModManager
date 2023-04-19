@@ -1160,6 +1160,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     M3Log.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
                     InstallationJobs.Add(headerJob);
                 }
+
+                // 04/18/2023: Add check for 'mergemods' set in basegame job without a job header, make mod fail to load if 
+                // jobdir is not specified, as a way to cue user into needing a value for it
+                // This is
+                if (ModDescTargetVersion >= 8.1 && header == ModJob.JobHeader.BASEGAME && jobSubdirectory == null &&
+                    !string.IsNullOrWhiteSpace(iniData[headerAsString][@"mergemods"]))
+                {
+                    M3Log.Error(@"Mod specifies basegame mergemods descriptor but does not set basegame moddir, setting mod as invalid to prevent misleading behavior");
+                    LoadFailedReason = "[BASEGAME] 'mergemods' was specified, but 'moddir' was not - did you mean to set moddir to '.'? Merge mods will not work without settings a moddir value, use value '.' if you do not have other files to replace, or remove mergemods from this task header.";
+                    return;
+                }
             }
 
             #endregion

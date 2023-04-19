@@ -19,6 +19,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             InitializeComponent();
         }
 
+        public bool ModdescVersionChanging { get; set; }
         public ObservableCollectionExtended<MDParameter> ModManagerParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
         public ObservableCollectionExtended<MDParameter> ModInfoParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
         public ObservableCollectionExtended<MDParameter> UPDATESParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
@@ -31,6 +32,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                 ModManagerParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModManager"));
                 ModInfoParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModInfo"));
                 UPDATESParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"UPDATES"));
+                ModdescVersionChanging = App.HighestSupportedModDesc != EditingMod.ModDescTargetVersion;
                 HasLoaded = true;
             }
         }
@@ -39,7 +41,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             foreach (var v in EditingMod.ParameterMap) //references will still be same
             {
-                if (v.Header == @"ModInfo" && v.Key== @"requireddlc" && EditingMod.GetJob(ModJob.JobHeader.LOCALIZATION) != null)
+                if (v.Header == @"ModInfo" && v.Key == @"requireddlc" && EditingMod.GetJob(ModJob.JobHeader.LOCALIZATION) != null)
                 {
                     // Do not store RequiredDLC in localization mod.
                     continue;
