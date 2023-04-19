@@ -6,11 +6,13 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SevenZip;
@@ -43,6 +45,12 @@ namespace ME3TweaksModManager.Tests
             {
                 Console.WriteLine($"Found mod in archive: {m.ModName}");
                 modsFoundInArchive.Add(m);
+            }
+
+            void addTextureMod(MEMMod m)
+            {
+                Console.WriteLine($"Found texture mod in archive: {m.ModName}");
+                // Todo
             }
 
             void failedModCallback(Mod m)
@@ -96,7 +104,7 @@ namespace ME3TweaksModManager.Tests
                 modsFoundInArchive.Clear();
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
                 Console.WriteLine($@"Inspecting archive: { archive}");
-                ModArchiveImporter.InspectArchive(archive, addModCallback, failedModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
+                ModImport.FindModsInArchive(archive, addModCallback, failedModCallback, addTextureMod, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
                 var archiveZ = new SevenZipExtractor(archive);
                 foreach (var mod in modsFoundInArchive)
                 {
@@ -197,7 +205,7 @@ namespace ME3TweaksModManager.Tests
                     modsFoundInArchive.Clear();
                     //var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(exe);
                     Console.WriteLine($@"Inspecting exe: { exe}");
-                    ModArchiveImporter.InspectArchive(exe, addModCallback, failedModCallback, logMessageCallback);
+                    ModImport.FindModsInArchive(exe, addModCallback, failedModCallback, addTextureMod, logMessageCallback);
                     var archiveZ = new SevenZipExtractor(exe, InArchiveFormat.Nsis);
                     foreach (var mod in modsFoundInArchive)
                     {
