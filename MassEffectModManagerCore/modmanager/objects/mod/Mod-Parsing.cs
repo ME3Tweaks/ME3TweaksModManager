@@ -1,29 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using IniParser.Parser;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
-using ME3TweaksModManager.modmanager.objects.mod.texture;
-using Microsoft.AppCenter.Analytics;
-using PropertyChanged;
+using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using SevenZip;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -31,7 +23,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 {
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     [AddINotifyPropertyChangedInterface]
-    public partial class Mod
+    public partial class Mod : IImportableMod
     {
 
         private static readonly string[] DirectorySeparatorChars = new[] { @"\", @"/" };

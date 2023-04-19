@@ -9,13 +9,15 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using Newtonsoft.Json;
+using SevenZip;
+using SevenZip.EventArguments;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.texture
 {
     /// <summary>
     /// Describes a MEMMod, which is a containing object for a .mem file
     /// </summary>
-    public class MEMMod : M3ValidateOnLoadObject, INotifyPropertyChanged
+    public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -109,6 +111,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         public MEMMod(string filePath)
         {
             FilePath = filePath;
+            ModName = DisplayString;
         }
 
         public void ParseMEMData()
@@ -154,5 +157,66 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             return true;
         }
         #endregion
+
+        // IImportableMod Interface
+        public bool SelectedForImport { get; set; }
+        public string ModName { get; set; }
+        public bool ValidMod { get; set; } = true;
+        public long SizeRequiredtoExtract { get; set; }
+
+        public void ExtractFromArchive(string archivePath,
+            string unused0,
+            bool unused1,
+            Action<string> textUpdateCallback,
+            Action<DetailedProgressEventArgs> extractingCallback,
+            Action<string, int, int> unused2,
+            bool testMode,
+            Stream archiveStream)
+        {
+            if (archiveStream == null && !File.Exists(archivePath))
+            {
+                throw new Exception(M3L.GetString(M3L.string_interp_theArchiveFileArchivePathIsNoLongerAvailable, archivePath));
+            }
+
+            SevenZipExtractor archive;
+            bool closeStreamOnFinish = true;
+            if (archiveStream != null)
+            {
+                archive = new SevenZipExtractor(archiveStream);
+                closeStreamOnFinish = false;
+            }
+            else
+            {
+                archive = new SevenZipExtractor(archivePath);
+            }
+
+            var fileIndicesToExtract = archive.ArchiveFileData.Where(x => x.FileName == FilePath).Select(x => x.Index).ToArray();
+            void archiveExtractionProgress(object? sender, DetailedProgressEventArgs args)
+            {
+                extractingCallback?.Invoke(args);
+            }
+            archive.Progressing += archiveExtractionProgress;
+            M3Log.Information(@"Extracting files...");
+            archive.ExtractFiles(M3LoadedMods.GetTextureLibraryDirectory(), fileIndicesToExtract);
+            archive.Progressing -= archiveExtractionProgress;
+
+            // Done with archive
+            if (closeStreamOnFinish)
+            {
+                archive?.Dispose();
+            }
+            else
+            {
+                archive?.DisposeObjectOnly();
+            }
+
+            // Put into file directory
+            var memPath = Path.Combine(M3LoadedMods.GetTextureLibraryDirectory(), Path.GetFileName(FilePath));
+            var game = ModFileFormats.GetGameMEMFileIsFor(memPath);
+            var outputDir = Directory.CreateDirectory(M3LoadedMods.GetTextureLibraryDirectory(game)).FullName;
+            var outPath = Path.Combine(outputDir, Path.GetFileName(memPath));
+            M3Log.Information($@"Moving .mem file to final destination: {memPath} -> {outPath}");
+            File.Move(memPath, outPath, true);
+        }
     }
 }

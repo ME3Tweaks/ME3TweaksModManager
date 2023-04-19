@@ -7,6 +7,9 @@
     xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    xmlns:interfaces="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.interfaces"
+    xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
+    xmlns:texture="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.texture"
     mc:Ignorable="d"
     MinWidth="700"
     MinHeight="550"
@@ -134,8 +137,8 @@
                     ItemsSource="{Binding CompressedMods}"
                     SelectionChanged="SelectedMod_Changed"
                     IsEnabled="{Binding TaskRunning, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
+                    <ListBox.Resources>
+                        <DataTemplate DataType="{x:Type mod:Mod}">
                             <StackPanel
                                 Orientation="Horizontal"
                                 VerticalAlignment="Center">
@@ -162,8 +165,33 @@
                                     VerticalAlignment="Center" />
                             </StackPanel>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                    <ListBox.Resources>
+                        <DataTemplate DataType="{x:Type texture:MEMMod}">
+                            <StackPanel
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                                <CheckBox
+                                    IsChecked="{Binding SelectedForImport}"
+                                    VerticalContentAlignment="Center"
+                                    Visibility="{Binding ValidMod, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <Image
+                                    Source="/modmanager/toolicons/masseffectinimodder_32.png"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="5,0,5,0"
+                                    Visibility="{Binding ValidMod, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <fa5:ImageAwesome
+                                    Foreground="Red"
+                                    Icon="Solid_Ban"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="5,0,5,0"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding ValidMod, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
+                                <TextBlock
+                                    Text="{Binding ModName}"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
                         <Style
                             TargetType="ListBox"
                             BasedOn="{StaticResource {x:Type ListBox}}">

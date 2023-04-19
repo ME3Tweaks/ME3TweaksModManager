@@ -15,6 +15,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -74,6 +75,8 @@ namespace ME3TweaksModManager.modmanager.loaders
             // Mod Manager 8.0.1: Begin moving data that is portable across M3 installs to the library
             Directory.CreateDirectory(GetBatchInstallGroupsDirectory());
             Directory.CreateDirectory(GetLaunchOptionsDirectory());
+            Directory.CreateDirectory(GetTextureLibraryDirectory());
+
         }
 
         public static string GetBatchInstallGroupsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"BatchModQueues");
@@ -90,6 +93,12 @@ namespace ME3TweaksModManager.modmanager.loaders
         public static string GetLE2ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE2");
         public static string GetLE1ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE1");
         public static string GetLELauncherModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LELAUNCHER");
+        public static string GetTextureLibraryDirectory(MEGame? game = null)
+        {
+            if (game == null)
+                return Path.Combine(GetCurrentModLibraryDirectory(), @"Textures");
+            return Path.Combine(GetCurrentModLibraryDirectory(), @"Textures", game.ToString());
+        }
 
         #endregion
 
@@ -564,9 +573,9 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// </summary>
         /// <param name="game">The game to filter against</param>
         /// <returns>A list of paired moddesc mods and a paired texture mod</returns>
-        public static List<M3MEMMod> GetAllM3ManagedMEMs(MEGame game = MEGame.Unknown)
+        public static List<MEMMod> GetAllM3ManagedMEMs(MEGame game = MEGame.Unknown, bool m3mmOnly = false)
         {
-            var mm = new List<M3MEMMod>();
+            var mm = new List<MEMMod>();
             foreach (var mod in M3LoadedMods.Instance.AllLoadedMods)
             {
                 if (game != MEGame.Unknown && game != mod.Game) continue; // Skip over this non-matching game
@@ -577,9 +586,40 @@ namespace ME3TweaksModManager.modmanager.loaders
                 }
             }
 
-            // Todo: Add texture library lookup code.
+            if (m3mmOnly)
+                return mm;
+
+            // Generic mem files
+            var mems = Directory.GetFiles(Directory.CreateDirectory(GetTextureLibraryDirectory(game == MEGame.Unknown ? null : game)).FullName, @"*.mem", SearchOption.AllDirectories); // this uses a ? null check
+            foreach (var mem in mems)
+            {
+                if (game != MEGame.Unknown && ModFileFormats.GetGameMEMFileIsFor(mem) != game)
+                    continue; // Not for this list
+                mm.Add(new MEMMod(mem) { Game = game });
+            }
 
             return mm;
+        }
+
+
+        /// <summary>
+        /// Gets the base output directory for an IImportableMod object
+        /// </summary>
+        /// <param name="mod"></param>
+        /// <returns></returns>
+        public static string GetExtractionDirectoryForMod(IImportableMod mod)
+        {
+            if (mod is Mod m)
+            {
+                return GetModDirectoryForGame(m.Game);
+            }
+            if (mod is MEMMod texMod)
+            {
+                // We stage here before we analyze it for what folder it goes to
+                return GetTextureLibraryDirectory();
+            }
+
+            throw new Exception(@"Unsupported extraction object type!");
         }
     }
 }
