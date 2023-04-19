@@ -17,7 +17,6 @@ using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ME3TweaksModManager.modmanager.save.game2.UI
 {
