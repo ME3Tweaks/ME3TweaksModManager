@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
@@ -181,8 +182,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void ClosePanel()
         {
             // Release all assets
-            var memMods = M3LoadedMods.GetAllM3ManagedMEMs();
-            foreach (var memMod in memMods)
+            var memMods = M3LoadedMods.GetAllM3ManagedMEMs(m3mmOnly: true);
+            foreach (var memMod in memMods.OfType<M3MEMMod>())
             {
                 memMod.ImageBitmap = null; // Lose reference so GC can take it
             }
