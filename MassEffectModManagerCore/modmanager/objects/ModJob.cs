@@ -840,7 +840,7 @@ namespace ME3TweaksModManager.modmanager.objects
                     parameterDictionary[@"mergemods"] = string.Join(';', MergeMods.Select(x => x.MergeModFilename));
                 }
 
-                parameterDictionary[@"gamedirectorystructure"] = GameDirectoryStructureRaw ? @"True" : null;
+                parameterDictionary[@"gamedirectorystructure"] = new MDParameter(@"gamedirectorystructure", GameDirectoryStructureRaw, false);
                 parameterDictionary[@"jobdescription"] = RequirementText;
             }
             else if (Header == JobHeader.CUSTOMDLC)
