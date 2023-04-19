@@ -13,6 +13,7 @@ using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.tlk;
@@ -329,17 +330,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
 
             // Reopen archive if we need to
-            if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
+            if (SevenZipHelper.ReopenSevenZipArchive(ArchivePath, Archive))
             {
-                Debug.WriteLine(@"Re-opening file-based SVE archive");
-                Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
-            }
-            else if (Archive != null && Archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
-            {
-                var isExe = ArchivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
-                Debug.WriteLine(@"Re-opening memory SVE archive");
-                ms.Position = 0; // Ensure position is 0
-                Archive = isExe ? new SevenZipExtractor(ms, InArchiveFormat.Nsis) : new SevenZipExtractor(ms);
                 MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", new WeakReference(Archive));
             }
         }
