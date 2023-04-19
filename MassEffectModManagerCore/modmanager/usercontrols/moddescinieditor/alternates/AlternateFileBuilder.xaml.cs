@@ -96,7 +96,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
 
         private void AddAlternateFile()
         {
-            Alternates.Add(new AlternateFile(M3L.GetString(M3L.string_interp_alternateFileX, Alternates.Count + 1), AlternateFile.AltFileCondition.COND_MANUAL, AlternateFile.AltFileOperation.OP_NOTHING));
+            Alternates.Add(new AlternateFile(EditingMod, M3L.GetString(M3L.string_interp_alternateFileX, Alternates.Count + 1), AlternateFile.AltFileCondition.COND_MANUAL, AlternateFile.AltFileOperation.OP_NOTHING));
         }
 
 

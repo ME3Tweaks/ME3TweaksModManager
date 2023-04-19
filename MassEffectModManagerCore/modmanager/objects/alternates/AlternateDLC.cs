@@ -77,13 +77,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// ONLY FOR USE IN MODDESC.INI EDITOR
         /// Creates a new, blank Alternate DLC object
         /// </summary>
-        /// <param name="alternateDLCFriendlyName"></param>
-        public AlternateDLC(string friendlyName, AltDLCCondition condition, AltDLCOperation operation)
+        public AlternateDLC(Mod mod, string friendlyName, AltDLCCondition condition, AltDLCOperation operation)
         {
             FriendlyName = friendlyName;
             Condition = condition;
             Operation = operation;
-            BuildParameterMap(null); //Alternates don't need a mod, as nothing is game specific
+            BuildParameterMap(mod); 
         }
 
         public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
