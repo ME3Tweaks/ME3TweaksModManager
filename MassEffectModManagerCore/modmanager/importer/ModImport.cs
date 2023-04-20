@@ -201,7 +201,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     //found some texture-mod only files
                     foreach (var entry in textureModEntries)
                     {
-                        MEMMod memFile = new MEMMod(entry.FileName) {SizeRequiredtoExtract = (long) entry.Size};
+                        MEMMod memFile = new MEMMod(entry.FileName) {SizeRequiredtoExtract = (long) entry.Size, SelectedForImport = true};
                         addTextureMod(memFile);
                     }
                 }

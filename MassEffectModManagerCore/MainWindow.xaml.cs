@@ -4254,6 +4254,12 @@ namespace ME3TweaksModManager
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_cannotInstallModGameNotInstalled, compressedModToInstall.Game.ToGameName()), M3L.GetString(M3L.string_gameNotInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
+
+                if (modInspector.ImportedTextureMod)
+                {
+                    M3L.ShowDialog(this, "Texture mods must be installed through Batch Installer, which is available in the Mod Management menu. The files you have imported will be available in the install group editor.",
+                        "Texture mod(s) imported", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             };
 
             BatchPanelResult = new PanelResult();
