@@ -359,19 +359,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 TaskRunning = false;
-                if (b.Error == null && b.Result is List<Mod> modList)
+                if (b.Error == null && b.Result is List<IImportableMod> modList && modList.Any(x=>x is Mod))
                 {
                     Result.ReloadMods = true;
+                    var updatedContentMods = modList.OfType<Mod>().ToList();
 
                     // Make sure we submit all items here - the filtering for update checks
                     // will be handled by the updater system and this must be accurate or 
                     // mod loader won't work properly since it scopes the reload
-                    Result.ModsToCheckForUpdates.AddRange(modList);
+                    Result.ModsToCheckForUpdates.AddRange(updatedContentMods);
 
                     // If only one mod was imported, highlight it on reload
-                    if (modList.Count == 1)
+                    if (updatedContentMods.Count == 1)
                     {
-                        Result.ModToHighlightOnReload = modList[0];
+                        Result.ModToHighlightOnReload = updatedContentMods[0];
                     }
                 }
 
