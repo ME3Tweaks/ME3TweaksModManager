@@ -29,6 +29,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
 using ME3TweaksModManager.modmanager.squadmates;
@@ -37,7 +38,6 @@ using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
 using static ME3TweaksModManager.modmanager.usercontrols.BackupFileFetcher;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -245,7 +245,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public StarterKitGeneratorWindow(MEGame Game) : base()
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Starter Kit Window", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Starter Kit Window", this);
             M3Log.Information(@"Opening Starter Kit window");
 
             PendingGame = Game;

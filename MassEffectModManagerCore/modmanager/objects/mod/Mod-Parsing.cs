@@ -13,11 +13,11 @@ using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using SevenZip;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -443,7 +443,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             rcwJob.RCW = rcw;
             InstallationJobs.Add(rcwJob);
             ValidMod = true;
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, this);
         }
 
         /// <summary>
@@ -500,7 +500,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini, moddescArchiveEntry.FileName, e.Message);
             }
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, this);
 
             //Retain reference to archive as we might need this.
             //Archive = null; //dipose of the mod
@@ -524,7 +524,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingModdescini, filePath, e.Message);
             }
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Disk) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Disk) - " + ModName, this);
 
         }
 
@@ -560,7 +560,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (archive != null && ValidMod)
             {
                 SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
-                MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
+                M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, this);
             }
 
         }

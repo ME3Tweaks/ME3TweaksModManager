@@ -27,7 +27,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 #if DEBUG
             var methodInfo = new StackTrace().GetFrame(1).GetMethod();
             var className = methodInfo.ReflectedType.Name;
-            MemoryAnalyzer.AddTrackedMemoryItem($@"MMBPB: {className}", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem($@"MMBPB: {className}", this);
 
 #endif
             Loaded += UserControl_Loaded;

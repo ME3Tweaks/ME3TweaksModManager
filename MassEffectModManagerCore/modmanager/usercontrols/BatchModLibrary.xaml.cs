@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -24,7 +25,6 @@ using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -39,7 +39,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ObservableCollectionExtended<GameTargetWPF> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public BatchModLibrary()
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", this);
             LoadCommands();
         }
         public ICommand CloseCommand { get; private set; }

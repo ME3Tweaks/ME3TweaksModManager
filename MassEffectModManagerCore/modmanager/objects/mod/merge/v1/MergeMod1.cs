@@ -13,6 +13,7 @@ using ME3TweaksCore.Targets;
 using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -60,7 +61,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             //}
 
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifest);
-            MemoryAnalyzer.AddTrackedMemoryItem($@"MergeMod1 {mergeModName}", new WeakReference(mm));
+            M3MemoryAnalyzer.AddTrackedMemoryItem($@"MergeMod1 {mergeModName}", mm);
             mm.MergeModFilename = mergeModName;
 
             // setup links

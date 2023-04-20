@@ -24,10 +24,10 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -50,7 +50,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public MixinManager()
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Library Panel", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Library Panel", this);
             MixinHandler.LoadME3TweaksPackage();
             AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x => x.PatchName));
 

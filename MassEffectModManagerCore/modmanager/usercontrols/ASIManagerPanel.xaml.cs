@@ -16,6 +16,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
 using PropertyChanged;
@@ -47,7 +48,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         public ASIManagerPanel(GameTargetWPF preselectedTarget = null)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"ASI Manager", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"ASI Manager", this);
             M3Log.Information(@"Opening ASI Manager");
             Directory.CreateDirectory(ASIManager.CachedASIsFolder);
             LoadCommands();

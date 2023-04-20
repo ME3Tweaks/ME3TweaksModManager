@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.tlk;
@@ -332,7 +333,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             // Reopen archive if we need to
             if (SevenZipHelper.ReopenSevenZipArchive(ArchivePath, Archive))
             {
-                MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", new WeakReference(Archive));
+                M3MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", Archive);
             }
         }
 

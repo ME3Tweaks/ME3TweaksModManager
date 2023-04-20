@@ -18,6 +18,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
@@ -26,7 +27,6 @@ using ME3TweaksModManager.ui;
 using SevenZip;
 using SevenZip.EventArguments;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ObservableCollectionExtended<IImportableMod> CompressedMods { get; } = new();
         public ModArchiveImporter(string file, Stream archiveStream = null)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", this);
             ArchiveFilePath = file;
             ArchiveStream = archiveStream;
             LoadCommands();

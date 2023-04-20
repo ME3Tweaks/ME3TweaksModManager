@@ -18,10 +18,11 @@ using ME3TweaksModManager.ui;
 namespace ME3TweaksModManager.modmanager.memoryanalyzer
 {
     /// <summary>
-    /// Interaction logic for MemoryAnalyzer.xaml
+    /// Interaction logic for M3MemoryAnalyzer.xaml
     /// </summary>
     [Localizable(false)]
-    public partial class MemoryAnalyzer : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class M3MemoryAnalyzer : Window
     {
 
         #region Static Reference Adding
@@ -29,14 +30,14 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
 
         //All calls to this method will be removed in release builds
         [Conditional("DEBUG")]
-        public static void AddTrackedMemoryItem(string objectname, WeakReference reference)
+        public static void AddTrackedMemoryItem(string objectname, object reference)
         {
             //Force concurrency
             if (Application.Current != null)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    TrackedMemoryObjects.Add(new MemoryAnalyzerObject(objectname, reference));
+                    TrackedMemoryObjects.Add(new MemoryAnalyzerObject(objectname, new WeakReference(reference)));
                 });
             }
         }
@@ -47,12 +48,7 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
 
         readonly DispatcherTimer dispatcherTimer;
 
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
-
-        public MemoryAnalyzer()
+        public M3MemoryAnalyzer()
         {
             AddTrackedMemoryItem(@"Memory Analyzer", new WeakReference(this));
 

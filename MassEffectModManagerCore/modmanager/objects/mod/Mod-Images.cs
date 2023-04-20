@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -88,6 +89,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     bitmap.StreamSource = loadStream;
                     bitmap.EndInit();
                     bitmap.Freeze();
+                    M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod ({Game}: {ModName}) - LoadedImageAsset {imagePathFull}", bitmap);
 
                     LoadedImageAssets[assetName] = bitmap;
                     return bitmap; // This is so xaml doesn't trigger possibly before this code block has executed

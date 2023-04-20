@@ -18,10 +18,10 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.ui;
 using Octokit;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -33,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public OIGODisabler()
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Origin in-game overlay disabler panel", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Origin in-game overlay disabler panel", this);
             DataContext = this;
             LoadCommands();
         }
