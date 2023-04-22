@@ -13,11 +13,11 @@ using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using SevenZip;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -313,20 +313,50 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         /// <summary>
-        /// Get's the installation job associated with the header, or null if that job is not defined for this mod.
+        /// Gets the installation job associated with the header, or null if that job is not defined for this mod.
         /// </summary>
         /// <param name="header">Header to find job for</param>
         /// <returns>Associated job with this header, null otherwise</returns>
         public ModJob GetJob(ModJob.JobHeader header) => InstallationJobs.FirstOrDefault(x => x.Header == header);
 
+        /// <summary>
+        /// The raw string the mod sets as the version. Check <see cref="ParsedModVersion"/> for the parsed version.
+        /// </summary>
         public string ModVersionString { get; set; }
+        /// <summary>
+        /// The properly versioned mod version. Can be null if the developer does it wrong.
+        /// </summary>
         public Version ParsedModVersion { get; set; }
+
+        /// <summary>
+        /// The website the mod lists
+        /// </summary>
         public string ModWebsite { get; set; } = ""; //not null default I guess.
+
+        /// <summary>
+        /// The moddesc parser version 
+        /// </summary>
         public double ModDescTargetVersion { get; set; }
 
+        /// <summary>
+        /// List of DLC foldernames that will be offered for removal if found upon successful mod install
+        /// </summary>
+
         public List<string> OutdatedCustomDLC = new List<string>();
+
+        /// <summary>
+        /// List of DLC foldernames that will block install of this mod
+        /// </summary>
         public List<string> IncompatibleDLC = new List<string>();
+
+        /// <summary>
+        /// The updater service code for this mod
+        /// </summary>
         public int ModClassicUpdateCode { get; set; }
+
+        /// <summary>
+        /// The reason the mod failed to load
+        /// </summary>
         public string LoadFailedReason { get; set; }
 
         /// <summary>
@@ -343,9 +373,25 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// List of DLC, of which at least one must be installed
         /// </summary>
         public List<DLCRequirement> OptionalSingleRequiredDLC = new List<DLCRequirement>();
+
+        /// <summary>
+        /// List of additional folders to include in mod deployment
+        /// </summary>
         private List<string> AdditionalDeploymentFolders = new List<string>();
+
+        /// <summary>
+        /// List of additional files to include in mod deployment
+        /// </summary>
         private List<string> AdditionalDeploymentFiles = new List<string>();
+
+        /// <summary>
+        /// The path on disk to the root of the mod folder
+        /// </summary>
         public string ModPath { get; private set; }
+
+        /// <summary>
+        /// The archive this mod was loaded from, if loaded from archive
+        /// </summary>
         public SevenZipExtractor Archive;
         /// <summary>
         /// The full path to the moddesc.ini file
@@ -361,13 +407,28 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// </summary>
         public int MinimumSupportedBuild { get; set; }
         /// <summary>
-        /// If this mod was loaded using an autobuilt moddesc based on the DLC name in TPMI (ME3 only)
+        /// If this mod was loaded using a moddesc.ini from ME3Tweaks
         /// </summary>
         public bool IsVirtualized { get; private set; }
+
+        /// <summary>
+        /// The original hash of the archive this moddesc was imported from (NOT USED)
+        /// </summary>
         public string OriginalArchiveHash { get; private set; }
+
+        /// <summary>
+        /// What tool to launch after mod install
+        /// </summary>
         public string PostInstallToolLaunch { get; private set; }
 
+        /// <summary>
+        /// The virtualize ini text, if this mod was loaded from virtual
+        /// </summary>
         private readonly string VirtualizedIniText;
+
+        /// <summary>
+        /// The path to the archive file, if this mod was initialized from archive on disk
+        /// </summary>
         private readonly string ArchivePath;
 
         public Mod(RCWMod rcw)
@@ -382,7 +443,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             rcwJob.RCW = rcw;
             InstallationJobs.Add(rcwJob);
             ValidMod = true;
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, this);
         }
 
         /// <summary>
@@ -419,6 +480,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 if (updatedIni != null)
                 {
                     M3Log.Information(@"This moddesc is being updated by ME3Tweaks ModDesc Updater Service");
+                    VirtualizedIniText = updatedIni;
+                    IsVirtualized = true; // Mark virtualized so on extraction it works properly
                 }
             }
 
@@ -437,7 +500,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini, moddescArchiveEntry.FileName, e.Message);
             }
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, this);
 
             //Retain reference to archive as we might need this.
             //Archive = null; //dipose of the mod
@@ -461,7 +524,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingModdescini, filePath, e.Message);
             }
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Disk) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Disk) - " + ModName, this);
 
         }
 
@@ -497,7 +560,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (archive != null && ValidMod)
             {
                 SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
-                MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
+                M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, this);
             }
 
         }

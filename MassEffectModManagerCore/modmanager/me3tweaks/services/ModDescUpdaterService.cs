@@ -114,6 +114,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             return false;
         }
 
+        /// <summary>
+        /// Fetches a third party moddesc based on the provided (moddesc) hash
+        /// </summary>
+        /// <param name="moddescHash"></param>
+        /// <returns></returns>
         public static string FetchUpdatedModdesc(string moddescHash)
         {
             try

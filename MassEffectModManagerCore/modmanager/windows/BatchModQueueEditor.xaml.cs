@@ -17,6 +17,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.batch;
@@ -29,7 +30,6 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using PropertyChanged;
 using WinCopies.Util;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public BatchModQueueEditor(Window owner = null, BatchLibraryInstallQueue queueToEdit = null)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Queue Editor", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Queue Editor", this);
             Owner = owner;
             DataContext = this;
             LoadCommands();

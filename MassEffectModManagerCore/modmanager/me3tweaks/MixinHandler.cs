@@ -294,7 +294,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 MixinMemoryStreamManager = new RecyclableMemoryStreamManager(MB * 4, MB * 128, MB * 256);
                 MixinMemoryStreamManager.GenerateCallStacks = true;
                 MixinMemoryStreamManager.AggressiveBufferReturn = true;
-                MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Memory Stream Manager", new WeakReference(MixinMemoryStreamManager));
+                M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Memory Stream Manager", MixinMemoryStreamManager);
             }
 
             if (isResetting)

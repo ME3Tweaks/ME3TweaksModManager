@@ -33,6 +33,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
@@ -44,7 +45,6 @@ using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using SevenZip;
 using Extensions = WinCopies.Util.Extensions;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -84,7 +84,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <param name="package">The installation options package</param>
         public ModInstaller(ModInstallOptionsPackage package)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", this);
             M3Log.Information($@">>>>>>> Starting mod installer for mod: {package.ModBeingInstalled.ModName} {package.ModBeingInstalled.ModVersionString} for game {package.ModBeingInstalled.Game}. Install source: {(package.ModBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
             InstallOptionsPackage = package;
             LoadCommands();

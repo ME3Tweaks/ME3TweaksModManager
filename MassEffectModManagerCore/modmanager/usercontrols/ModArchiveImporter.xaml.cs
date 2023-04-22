@@ -18,6 +18,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
@@ -26,7 +27,6 @@ using ME3TweaksModManager.ui;
 using SevenZip;
 using SevenZip.EventArguments;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ObservableCollectionExtended<IImportableMod> CompressedMods { get; } = new();
         public ModArchiveImporter(string file, Stream archiveStream = null)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", this);
             ArchiveFilePath = file;
             ArchiveStream = archiveStream;
             LoadCommands();
@@ -359,19 +359,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 TaskRunning = false;
-                if (b.Error == null && b.Result is List<Mod> modList)
+                if (b.Error == null && b.Result is List<IImportableMod> modList && modList.Any(x=>x is Mod))
                 {
                     Result.ReloadMods = true;
+                    var updatedContentMods = modList.OfType<Mod>().ToList();
 
                     // Make sure we submit all items here - the filtering for update checks
                     // will be handled by the updater system and this must be accurate or 
                     // mod loader won't work properly since it scopes the reload
-                    Result.ModsToCheckForUpdates.AddRange(modList);
+                    Result.ModsToCheckForUpdates.AddRange(updatedContentMods);
 
                     // If only one mod was imported, highlight it on reload
-                    if (modList.Count == 1)
+                    if (updatedContentMods.Count == 1)
                     {
-                        Result.ModToHighlightOnReload = modList[0];
+                        Result.ModToHighlightOnReload = updatedContentMods[0];
                     }
                 }
 

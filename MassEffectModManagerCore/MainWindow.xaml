@@ -585,14 +585,7 @@
                                 RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem
-                        Header="{DynamicResource string_installMemFile}"
-                        Command="{Binding InstallMEMFileCommand}" 
-                        ui:SharedUIBindings.GenerationLE="True"/>
-                    <MenuItem
-                        Header="{DynamicResource string_installHeadmorph}"
-                        Command="{Binding InstallHeadmorphCommand}" 
-                        ui:SharedUIBindings.GenerationLE="True"/>
+                   
                     <MenuItem
                         Header="{DynamicResource string_libraryManagement}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
@@ -604,6 +597,38 @@
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
                                 Icon="Solid_FolderOpen"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="Install standalone files"
+                        Style="{StaticResource MenuItemHeaderStyle}" 
+                        ui:SharedUIBindings.GenerationLE="True"/>
+                    <MenuItem
+                        Header="{DynamicResource string_installMemFile}"
+                        Command="{Binding InstallMEMFileCommand}" 
+                        ui:SharedUIBindings.GenerationLE="True">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_FileImage"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_installHeadmorph}"
+                        Command="{Binding InstallHeadmorphCommand}" 
+                        ui:SharedUIBindings.GenerationLE="True">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_User"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
