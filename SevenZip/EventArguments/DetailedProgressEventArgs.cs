@@ -7,6 +7,7 @@ namespace SevenZip.EventArguments
     /// <summary>
     /// Event args that pass a ulong total and a ulong completed value, that can be interpreted by the receiver.
     /// </summary>
+    [CLSCompliant(false)]
     public sealed class DetailedProgressEventArgs : EventArgs
     {
         private readonly ulong _amountedCompleted;
