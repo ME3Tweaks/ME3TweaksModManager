@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace ME3TweaksModManager.modmanager.objects.batch
 {
     [AddINotifyPropertyChangedInterface]
-    public class BatchMod
+    public class BatchMod : IBatchQueueMod
     {
         public BatchMod() { }
 
@@ -84,6 +84,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             get
             {
+                if (Mod != null && Mod.InstallationJobs.Sum(x => x.GetAllAlternates().Count) == 0) return "Standalone";
                 if (!HasChosenOptions) return M3L.GetString(M3L.string_notConfigured);
                 if (ChosenOptionsDesync) return M3L.GetString(M3L.string_reconfigurationRequired);
                 return M3L.GetString(M3L.string_interp_configuredTimestamp, ConfigurationTime.ToString(@"d"));
@@ -137,6 +138,11 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             {
                 ModDescHash = MUtilities.CalculateHash(Mod.ModDescPath);
             }
+        }
+
+        public bool IsAvailableForInstall()
+        {
+            return Mod != null;
         }
     }
 }

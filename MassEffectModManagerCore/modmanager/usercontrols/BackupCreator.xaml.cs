@@ -87,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             OnBackupStatusChanged();
         }
 
-        private void BackupServiceStateChanged(object? sender, EventArgs eventArgs)
+        private void BackupServiceStateChanged(object sender, EventArgs eventArgs)
         {
             OnBackupStatusChanged();
         }

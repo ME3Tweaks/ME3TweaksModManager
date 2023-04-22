@@ -164,7 +164,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanInstallGroup()
         {
-            return SelectedGameTarget != null && SelectedBatchQueue != null;
+            if (SelectedGameTarget == null || SelectedBatchQueue == null) return false;
+            return SelectedBatchQueue.AllModsToInstall.Any(x => x.IsAvailableForInstall());
         }
 
         private void CreateNewGroup()
@@ -187,7 +188,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 memMod.ImageBitmap = null; // Lose reference so GC can take it
             }
-            
+
             OnClosing(DataEventArgs.Empty);
         }
 
@@ -315,7 +316,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (SelectedModInGroup is MEMMod mm)
                 {
-                    ModDescriptionText = $"This texture mod modifies the following textures:\n{string.Join('\n', mm.GetModifiedExportNames())}";
+                    ModDescriptionText = mm.FileExists ? $"This texture mod modifies the following textures:\n{string.Join('\n', mm.GetModifiedExportNames())}" : M3L.GetString(M3L.string_modNotAvailableForInstall); ;
                 }
                 else
                 {

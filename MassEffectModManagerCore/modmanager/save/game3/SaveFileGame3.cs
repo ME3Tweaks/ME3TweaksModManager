@@ -663,7 +663,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public static void Write(SaveFileGame3 save, Stream output)
         {
-            throw new Exception("This is not propertly implemented right now");
+            throw new Exception(@"This is not propertly implemented right now");
             if (save == null)
             {
                 throw new ArgumentNullException("save");

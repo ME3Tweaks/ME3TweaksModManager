@@ -44,7 +44,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static Version GetLatestVersionOfModOnUpdaterService(int updatecode)
         {
             if (updatecode <= 0) return null; //invalid
-            string updateFinalRequest = UpdaterServiceManifestEndpoint;
 
             // Setup json variables
             var requestData = new Dictionary<string, object>(); // Converted to json and posted to the server

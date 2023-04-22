@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using Newtonsoft.Json;
 using SevenZip;
@@ -17,7 +18,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
     /// <summary>
     /// Describes a MEMMod, which is a containing object for a .mem file
     /// </summary>
-    public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged
+    public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged, IBatchQueueMod
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -217,6 +218,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             var outPath = Path.Combine(outputDir, Path.GetFileName(memPath));
             M3Log.Information($@"Moving .mem file to final destination: {memPath} -> {outPath}");
             File.Move(memPath, outPath, true);
+        }
+
+        public bool IsAvailableForInstall()
+        {
+            return FileExists;
         }
     }
 }
