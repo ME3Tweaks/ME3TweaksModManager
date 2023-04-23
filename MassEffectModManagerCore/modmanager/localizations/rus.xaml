@@ -486,8 +486,8 @@
 	<system:String x:Key="string_modsInInstallGroup">Моды в группе установки</system:String>
 	<system:String x:Key="string_directionsInstallGroupEditor">Моды будут установлены в данном порядке. Моды, настраивающие себя на базе других модов, должны быть установлены последними.</system:String>
 	<system:String x:Key="string_removeModFromInstallGroup">Удалить мод из группы установки</system:String>
-	<system:String x:Key="string_moveDown">Вверх</system:String>
-	<system:String x:Key="string_moveUp">Вниз</system:String>
+	<system:String x:Key="string_moveDown">Вниз</system:String>
+	<system:String x:Key="string_moveUp">Вверх</system:String>
 	<system:String x:Key="string_contentMods">Контент-моды</system:String>
 	<system:String x:Key="string_aSIMods">ASI-моды</system:String>
 	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Восстановление файлов при установленных текстурных модах запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
