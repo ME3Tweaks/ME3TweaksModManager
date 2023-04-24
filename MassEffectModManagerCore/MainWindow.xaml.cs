@@ -816,17 +816,17 @@ namespace ME3TweaksModManager
                             return;
                         }
                     }
+                }
 
-                    var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME,
+                var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME,
                         selectorDialog.SelectedHeadmorph.FileName);
-                    if (File.Exists(headmorphFilepath))
-                    {
-                        InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
-                    }
-                    else
-                    {
-                        M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
-                    }
+                if (File.Exists(headmorphFilepath))
+                {
+                    InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
+                }
+                else
+                {
+                    M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
                 }
             }
         }
