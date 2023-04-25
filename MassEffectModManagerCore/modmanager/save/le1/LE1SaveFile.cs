@@ -485,25 +485,25 @@ namespace ME3TweaksModManager.modmanager.save.le1
             }
         }
 
-class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
-{
-    string OwnerName;
-    int bHasOwnerClass; // BioWare has this in their ME1SaveGame.h but that doesn't seem accurate
-
-    // Only serialized if bHasOwnerClass is true
-    string OwnerClassName;
-
-    public void Serialize(IUnrealStream stream)
-    {
-        stream.Serialize(ref OwnerName);
-        stream.Serialize(ref bHasOwnerClass);
-        // Only serialized if bHasOwnerClass is true
-        if (bHasOwnerClass != 0)
+        class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
         {
-            stream.Serialize(ref OwnerClassName);
+            string OwnerName;
+            int bHasOwnerClass; // BioWare has this in their ME1SaveGame.h but that doesn't seem accurate
+
+            // Only serialized if bHasOwnerClass is true
+            string OwnerClassName;
+
+            public void Serialize(IUnrealStream stream)
+            {
+                stream.Serialize(ref OwnerName);
+                stream.Serialize(ref bHasOwnerClass);
+                // Only serialized if bHasOwnerClass is true
+                if (bHasOwnerClass != 0)
+                {
+                    stream.Serialize(ref OwnerClassName);
+                }
+            }
         }
-    }
-}
 
         class LEGACY_ActorSaveRecord : LEGACY_BaseObjectSaveRecord, IUnrealSerializable
         {
@@ -1127,7 +1127,7 @@ class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
         class LEGACY_MapSaveRecord : IUnrealSerializable
         {
             HACK_LevelRecord[] LevelRecords;
-            
+
             //string[] Keys; // Map names (e.g. BIOA_PRO00)
             //LEGACY_LevelSaveRecord[] LevelData; // The list of level objects in the map (e.g. a DSG)
 
@@ -1309,9 +1309,10 @@ class LEGACY_BaseObjectSaveRecord : IUnrealSerializable
         // ISaveFile for unified interface
         public MEGame Game => MEGame.LE1;
         public string SaveFilePath { get; set; }
-        public DateTime Proxy_TimeStamp => TimeStamp.ToDate(); // Todo: Implement
+        public DateTime Proxy_TimeStamp => TimeStamp.ToDate(); 
         public string Proxy_TimePlayed => MSaveShared.GetTimePlayed(SecondsPlayed);
         public string Proxy_Difficulty => MSaveShared.GetDifficultyString(PlayerData.GameOptions[0], MEGame.LE1);
+        public bool Proxy_IsFemale => PlayerData?.Proxy_IsFemale ?? false;
         public string Proxy_DebugName => null; // LE1 does not support these
         public IPlayerRecord Proxy_PlayerRecord => PlayerData;
         public string Proxy_BaseLevelName => MapName ?? BaseLevelName; // We failover to BaseLevelName if unknown map is found like BIOA_CRD00

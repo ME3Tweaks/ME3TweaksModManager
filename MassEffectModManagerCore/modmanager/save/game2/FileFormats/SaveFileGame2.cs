@@ -37,6 +37,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         public int SaveNumber { get; set; }
         public string Proxy_TimePlayed => MSaveShared.GetTimePlayed((int)SecondsPlayed);
         public string Proxy_Difficulty => MSaveShared.GetDifficultyString((int)Difficulty, MEGame.ME2);
+        public bool Proxy_IsFemale => PlayerRecord?.Proxy_IsFemale ?? false;
+
         public bool IsValid { get; set; }
         public ESFXSaveGameType SaveGameType { get; set; }
 

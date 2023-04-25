@@ -73,6 +73,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         public ESFXSaveGameType SaveGameType { get; set; }
 
         public IPlayerRecord Proxy_PlayerRecord => Player;
+        public bool Proxy_IsFemale => _Player.Proxy_IsFemale;
         public string Proxy_DebugName => DebugName;
 
         [OriginalName("DebugName")]
