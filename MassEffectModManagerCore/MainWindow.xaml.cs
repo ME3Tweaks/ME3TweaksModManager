@@ -202,11 +202,11 @@ namespace ME3TweaksModManager
                         {
                             // Open the file instead
                             fs.Dispose(); // Ensure it's closed
-                            openModImportUI(fs.Name, priority: true); // Open the archive itself
+                            openModImportUI(fs.Name, priority: true, sourceLink: npl); // Open the archive itself
                         }
                         else
                         {
-                            openModImportUI(ii.ModFile.FileName, ii.DownloadedStream, true);
+                            openModImportUI(ii.ModFile.FileName, ii.DownloadedStream, true, sourceLink: npl);
                         }
                     }
                 }
@@ -4219,10 +4219,10 @@ namespace ME3TweaksModManager
             }
         }
 
-        private void openModImportUI(string archiveFile, Stream archiveStream = null, bool priority = false)
+        private void openModImportUI(string archiveFile, Stream archiveStream = null, bool priority = false, NexusProtocolLink sourceLink = null)
         {
             M3Log.Information(@"Opening Mod Archive Importer for file " + archiveFile);
-            var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
+            var modInspector = new ModArchiveImporter(archiveFile, archiveStream, link: sourceLink);
             modInspector.Close += (a, b) =>
             {
                 if (!HasQueuedPanel())

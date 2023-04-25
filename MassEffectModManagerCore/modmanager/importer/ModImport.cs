@@ -430,7 +430,6 @@ namespace ME3TweaksModManager.modmanager.importer
 
                             virtualModDesc[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
                             virtualModDesc[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
-                            virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
 
                             var archiveSize = archive.ArchiveSize;
                             var importingInfos = TPIService.GetImportingInfosBySize(archiveSize);

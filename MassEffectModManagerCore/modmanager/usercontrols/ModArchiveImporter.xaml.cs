@@ -11,6 +11,7 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.gameini;
@@ -80,14 +81,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// List of mods listed in the importer panel
         /// </summary>
         public ObservableCollectionExtended<IImportableMod> CompressedMods { get; } = new();
-        public ModArchiveImporter(string file, Stream archiveStream = null)
+        public ModArchiveImporter(string file, Stream archiveStream = null, NexusProtocolLink link = null)
         {
             M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", this);
             ArchiveFilePath = file;
             ArchiveStream = archiveStream;
+            SourceNXMLink = link;
             LoadCommands();
         }
 
+        // Used to help build batch source database
+        /// <summary>
+        /// The NXM link that was used to produce this archive file for inspection
+        /// </summary>
+        public NexusProtocolLink SourceNXMLink { get; set; }
 
         /// <summary>
         /// Begins inspection of archive file. This method will spawn a background thread that will
@@ -119,6 +126,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
+
+                    // Todo: Change to link, maybe via NTFS streams?
+                    // To support other providers
+                    if (SourceNXMLink != null)
+                    {
+                        var downloadLink = SourceNXMLink.ToNexusDownloadPageLink();
+                        var dictionary = new CaseInsensitiveDictionary<string>();
+                        foreach (var mod in CompressedMods.OfType<Mod>())
+                        {
+                            dictionary[mod.ModDescHash] = downloadLink;
+                        }
+                        FileSourceService.AddFileSourceEntries(dictionary);
+                    }
+
 
                     ArchiveScanned = true;
                     TriggerPropertyChangedFor(nameof(CanCompressPackages));

@@ -47,5 +47,18 @@ namespace ME3TweaksModManager.modmanager.objects
         public int ModId { get; set; }
 
         public string Domain { get; set; }
+
+        public string ToNexusDownloadPageLink()
+        {
+            //https://www.nexusmods.com/masseffectlegendaryedition/mods/13?&file_id=6528
+            // Add nmm=1 to trigger nxm:// when user clicks
+            return $@"https://nexusmods.com/{Domain}/mods/{ModId}?tab=files&file_id={FileId}";
+        }
+
+        public static NexusProtocolLink FromNexusDownloadPageLink(string link)
+        {
+            // https://www.nexusmods.com/masseffectlegendaryedition/mods/13?&file_id=6528
+            return null; // Todo
+        }
     }
 }

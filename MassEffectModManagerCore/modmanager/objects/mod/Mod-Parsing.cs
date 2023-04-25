@@ -410,12 +410,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// If this mod was loaded using a moddesc.ini from ME3Tweaks
         /// </summary>
         public bool IsVirtualized { get; private set; }
-
-        /// <summary>
-        /// The original hash of the archive this moddesc was imported from (NOT USED)
-        /// </summary>
-        public string OriginalArchiveHash { get; private set; }
-
+        
         /// <summary>
         /// What tool to launch after mod install
         /// </summary>
@@ -472,14 +467,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // 06/14/2022 - ME3Tweaks Moddesc Updates 
             // This is for mods that might break when used on Mod Manager 8.0 and above due to alternate logic change
-            var moddescHash = MUtilities.CalculateHash(ms); //resets pos to 0
+            ModDescHash = MUtilities.CalculateHash(ms); //resets pos to 0
             string updatedIni = null;
-            if (ModDescUpdaterService.HasHash(moddescHash))
+            if (ModDescUpdaterService.HasHash(ModDescHash))
             {
-                updatedIni = ModDescUpdaterService.FetchUpdatedModdesc(moddescHash);
+                updatedIni = ModDescUpdaterService.FetchUpdatedModdesc(ModDescHash, out var localHash);
                 if (updatedIni != null)
                 {
                     M3Log.Information(@"This moddesc is being updated by ME3Tweaks ModDesc Updater Service");
+                    ModDescHash = localHash;
                     VirtualizedIniText = updatedIni;
                     IsVirtualized = true; // Mark virtualized so on extraction it works properly
                 }
@@ -505,6 +501,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             //Retain reference to archive as we might need this.
             //Archive = null; //dipose of the mod
         }
+
+        /// <summary>
+        /// Hash of the moddesc file. Only populated when loading from archive.
+        /// </summary>
+        public string ModDescHash { get; set; }
 
         /// <summary>
         /// Initializes a mod from a moddesc.ini file
@@ -1920,9 +1921,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     AdditionalDeploymentFiles = addlFileSplit;
                 }
             }
-
-            //Archive file hash for update checks. Not sure if this is actually useful to store.
-            OriginalArchiveHash = iniData[@"UPDATES"][@"originalarchivehash"];
 
             #endregion
 

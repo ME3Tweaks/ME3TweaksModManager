@@ -119,8 +119,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         /// </summary>
         /// <param name="moddescHash"></param>
         /// <returns></returns>
-        public static string FetchUpdatedModdesc(string moddescHash)
+        public static string FetchUpdatedModdesc(string moddescHash, out string downloadedHash)
         {
+            downloadedHash = null;
             try
             {
                 if (Database.TryGetValue(moddescHash, out var mappedName))
@@ -128,6 +129,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     var onDiskPath = Path.Combine(M3Filesystem.GetModDescUpdaterServiceFolder(), mappedName);
                     if (File.Exists(onDiskPath))
                     {
+                        downloadedHash = MUtilities.CalculateHash(onDiskPath);
                         return File.ReadAllText(onDiskPath);
                     }
 
@@ -136,6 +138,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     if (content != null)
                     {
                         File.WriteAllText(onDiskPath, content);
+                        downloadedHash = MUtilities.CalculateHash(onDiskPath);
                         return content;
                     }
                 }
