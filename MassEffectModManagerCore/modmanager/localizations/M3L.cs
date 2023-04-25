@@ -738,7 +738,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_warningUnableToParseBinary = "string_interp_warningUnableToParseBinary";
 		public const string string_interp_warningImportLinkOutideOfTables = "string_interp_warningImportLinkOutideOfTables";
 		public const string string_interp_dialog_dlcFolderNotInTPMI = "string_interp_dialog_dlcFolderNotInTPMI";
-		public const string string_interp_gamenameValidationTarget = "string_interp_gamenameValidationTarget";
+        public const string string_interp_gamenameValidationTarget = "string_interp_gamenameValidationTarget";
+        public const string string_validationTargetsCannotBeTextureModdedOT = "string_validationTargetsCannotBeTextureModdedOT";
 		public const string string_deploymentValidationTargetDesc = "string_deploymentValidationTargetDesc";
 		public const string string_interp_noValidationTarget = "string_interp_noValidationTarget";
 		public const string string_errorOccurredCheckingReferences = "string_errorOccurredCheckingReferences";

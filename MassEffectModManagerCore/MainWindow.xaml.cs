@@ -1710,7 +1710,7 @@ namespace ME3TweaksModManager
             var bup = BackupService.GetGameBackupPath(SelectedMod.Game);
             if (bup != null && Directory.Exists(bup))
             {
-                var archiveDeploymentPane = new ArchiveDeployment(SelectedMod);
+                var archiveDeploymentPane = new ArchiveDeploymentPanel(SelectedMod);
                 archiveDeploymentPane.Close += (a, b) =>
                 {
                     ReleaseBusyControl();

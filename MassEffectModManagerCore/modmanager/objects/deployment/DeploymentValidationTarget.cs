@@ -22,19 +22,22 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
     public class DeploymentValidationTarget
     {
         public MEGame Game { get; }
-        public GameTargetWPF SelectedTarget { get; set; }
+        public GameTarget SelectedTarget { get; set; }
         public string HeaderString { get; }
-        public ObservableCollectionExtended<GameTargetWPF> AvailableTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
-        public ArchiveDeployment DeploymentHost { get; set; }
+        public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ArchiveDeploymentPanel DeploymentPanelHost { get; set; }
 
-        public DeploymentValidationTarget(ArchiveDeployment deploymentHost, MEGame game, IEnumerable<GameTargetWPF> targets)
+        public DeploymentValidationTarget(ArchiveDeploymentPanel deploymentPanelHost, MEGame game, IEnumerable<GameTargetWPF> targets)
         {
-            DeploymentHost = deploymentHost;
+            DeploymentPanelHost = deploymentPanelHost;
             Game = game;
             HeaderString = M3L.GetString(M3L.string_interp_gamenameValidationTarget, game.ToGameName());
             foreach (var t in targets)
             {
-                if (t.TextureModded)
+                // 04/21/2023: LE targets can use texture modded
+                // targets as we check for MEM and MEM only does
+                // TFC appending
+                if (t.Game.IsOTGame() && t.TextureModded)
                 {
                     M3Log.Warning($@"Target is texture modded, cannot be used for validation: {t.TargetPath}, skipping...");
                     continue;
@@ -50,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
             if (before != null)
             {
                 //Target has changed
-                DeploymentHost.OnValidationTargetChanged((after as GameTarget).Game);
+                DeploymentPanelHost.OnValidationTargetChanged((after as GameTarget).Game);
             }
         }
     }

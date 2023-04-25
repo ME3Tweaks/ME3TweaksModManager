@@ -37,9 +37,9 @@ using SevenZip;
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic for ArchiveDeployment.xaml
+    /// Interaction logic for ArchiveDeploymentPanel.xaml
     /// </summary>
-    public partial class ArchiveDeployment : MMBusyPanelBase
+    public partial class ArchiveDeploymentPanel : MMBusyPanelBase
     {
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
@@ -49,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         // Mod that will be first added to the deployment when the UI is loaded
         private Mod initialMod;
 
-        public ArchiveDeployment(Mod mod)
+        public ArchiveDeploymentPanel(Mod mod)
         {
             M3Log.Information($@"Initiating deployment for mod {mod.ModName} {mod.ModVersionString}");
             TelemetryInterposer.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()

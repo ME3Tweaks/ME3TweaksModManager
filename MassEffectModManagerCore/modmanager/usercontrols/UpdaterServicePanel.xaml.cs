@@ -989,5 +989,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
+        // Disable the autosizer for the panel
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

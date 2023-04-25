@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         /// <summary>
         /// Target to validate against if needed
         /// </summary>
-        public GameTargetWPF internalValidationTarget { get; internal set; }
+        public GameTarget internalValidationTarget { get; internal set; }
 
         public DeploymentChecklistItem()
         {
