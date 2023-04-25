@@ -822,7 +822,7 @@ namespace ME3TweaksModManager
                         selectorDialog.SelectedHeadmorph.FileName);
                 if (File.Exists(headmorphFilepath))
                 {
-                    InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
+                    InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget, morph.Title);
                 }
                 else
                 {
@@ -870,10 +870,10 @@ namespace ME3TweaksModManager
             InstallHeadmorphToTarget(m.FileName, SelectedGameTarget);
         }
 
-        private void InstallHeadmorphToTarget(string mFileName, GameTarget selectedGameTarget)
+        private void InstallHeadmorphToTarget(string mFileName, GameTarget selectedGameTarget, string titleSuffix = null)
         {
             // Select save to install to
-            SaveSelectorUI ssui = new SaveSelectorUI(this, selectedGameTarget);
+            SaveSelectorUI ssui = new SaveSelectorUI(this, selectedGameTarget, titleSuffix ?? Path.GetFileName(mFileName));
             ssui.Show();
             ssui.Closed += (sender, args) =>
             {
@@ -3885,15 +3885,8 @@ namespace ME3TweaksModManager
             {
                 // Note that you can have more than one file.
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                bool isFirst = true;
                 foreach (var file in files)
                 {
-                    #region Remove once stable
-                    if (!Settings.BetaMode && !isFirst)
-                        return; // You can only do one file at a time right now if you're not in beta mode as this might have exceptions.
-                    isFirst = false;
-                    #endregion
-
                     string ext = Path.GetExtension(file).ToLower();
                     M3Log.Information(@"File dropped onto interface: " + file);
                     switch (ext)
