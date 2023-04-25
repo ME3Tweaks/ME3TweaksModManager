@@ -410,7 +410,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// If this mod was loaded using a moddesc.ini from ME3Tweaks
         /// </summary>
         public bool IsVirtualized { get; private set; }
-        
+
         /// <summary>
         /// What tool to launch after mod install
         /// </summary>
@@ -811,49 +811,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // Parsed here as it depends on the game
             #region NexusMods ID from URL
-
             if (NexusModID == 0 && ModModMakerID == 0 /*&& ModClassicUpdateCode == 0 */ &&
                 !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
             {
-                try
+                var nfi = NexusFileInfo.FromModSite(Game, ModWebsite);
+                if (nfi != null && nfi.ModId != 0)
                 {
-                    //try to extract nexus mods ID
-                    var nexusIndex = ModWebsite.IndexOf(@"nexusmods.com/", StringComparison.InvariantCultureIgnoreCase);
-                    if (nexusIndex > 0)
-                    {
-                        string nexusId = ModWebsite.Substring(nexusIndex + @"nexusmods.com/".Length); // http:/
-
-                        nexusId = nexusId.Substring(@"masseffect".Length);
-                        if (Game == MEGame.ME2 || Game == MEGame.ME3)
-                        {
-                            nexusId = nexusId.Substring(1); //number
-                        }
-                        else if (Game.IsLEGame())
-                        {
-                            nexusId = nexusId.Substring(16); // legendaryedition
-                        }
-
-                        nexusId = nexusId.Substring(6)
-                            .TrimEnd('/'); // /mods/ and any / after number in the event url has that in it.
-
-                        int questionMark = nexusId.IndexOf(@"?", StringComparison.InvariantCultureIgnoreCase);
-                        if (questionMark > 0)
-                        {
-                            nexusId = nexusId.Substring(0, questionMark);
-                        }
-
-                        if (int.TryParse(nexusId, out var nid))
-                        {
-                            NexusModID = nid;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    //don't bother.
+                    NexusModID = nfi.ModId;
                 }
             }
-
             #endregion
 
             if (ModDescTargetVersion < 2) //Mod Manager 1 (2012)

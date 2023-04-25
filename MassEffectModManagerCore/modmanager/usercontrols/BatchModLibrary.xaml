@@ -1,4 +1,5 @@
-﻿<usercontrols:MMBusyPanelBase
+﻿
+    <usercontrols:MMBusyPanelBase
     x:Class="ME3TweaksModManager.modmanager.usercontrols.BatchModLibrary"
     DataContext="{Binding RelativeSource={RelativeSource Self}}" 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
@@ -128,6 +129,8 @@
                             Height="*" />
                         <RowDefinition
                             Height="*" />
+                        <RowDefinition
+                            Height="Auto" />
                     </Grid.RowDefinitions>
                     <ListBox
                         Grid.Row="0"
@@ -236,6 +239,26 @@
                         extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
                         extensions:CursorSpotlightExtension.MaxBlurRadius="0"
                         Text="{Binding ModDescriptionText}" />
+                    <ui:Clipper
+                        Grid.Row="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Constraint="Width"
+                        DockPanel.Dock="Bottom">
+                        <TextBlock
+                            ToolTip="Click to go to download page for this mod"
+                            ui:Clipper.WidthFraction="1"
+                            ui:Clipper.HeightFraction="0"
+                            Name="VisitWebsitePanel"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom">
+                            <Hyperlink
+                                RequestNavigate="RequestNavigate"
+                                NavigateUri="{Binding SelectedUnavailableModLink}">
+                                <TextBlock Text="Download mod" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </ui:Clipper>
                 </Grid>
             </DockPanel>
         </DockPanel>

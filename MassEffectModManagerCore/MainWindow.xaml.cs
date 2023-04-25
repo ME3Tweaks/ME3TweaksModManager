@@ -228,6 +228,12 @@ namespace ME3TweaksModManager
                     muip.RefreshContentsOnDisplay();
                     return true;
                 }
+
+                if (sip2.Content is BatchModLibrary bml)
+                {
+                    bml.RefreshContentsOnDisplay();
+                    return true;
+                }
             }
 
             return false;

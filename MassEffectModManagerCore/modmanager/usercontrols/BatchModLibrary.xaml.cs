@@ -8,6 +8,8 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Misc;
+using ME3TweaksCore.Services;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
@@ -15,6 +17,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -203,7 +206,39 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
-            parseBatchFiles();
+            if (RefreshContentsOnVisible)
+            {
+                ReloadModData();
+            }
+            else
+            {
+                parseBatchFiles();
+            }
+
+            RefreshContentsOnVisible = false;
+        }
+
+        private void ReloadModData()
+        {
+            IsEnabled = false;
+            M3LoadedMods.ModsReloaded += OnModLibraryReloaded;
+            M3LoadedMods.Instance.LoadMods();
+        }
+
+        private void OnModLibraryReloaded(object sender, EventArgs e)
+        {
+            M3LoadedMods.ModsReloaded -= OnModLibraryReloaded;
+
+            foreach (var queue in AvailableBatchQueues)
+            {
+                foreach (var mod in queue.ModsToInstall)
+                {
+                    mod.Init();
+                }
+            }
+
+            OnSelectedModInGroupChanged(); // Refresh UI
+            IsEnabled = true;
         }
 
         private void parseBatchFiles(string pathToHighlight = null)
@@ -229,7 +264,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
             #endregion
-
 
             AvailableBatchQueues.ClearEx();
             var batchDir = M3LoadedMods.GetBatchInstallGroupsDirectory();
@@ -297,8 +331,45 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public string ModDescriptionText { get; set; }
 
+        /// <summary>
+        /// If the website panel is open or not
+        /// </summary>
+        private bool WebsitePanelStatus;
+
+        private void SetWebsitePanelVisibility(object mod)
+        {
+            bool open = false; // If panel is to open or not
+
+            if (mod is BatchMod bm && bm.Mod == null && bm.ModDescHash != null)
+            {
+                if (FileSourceService.TryGetSource(bm.ModDescHash, out var link))
+                {
+                    open = true;
+                    SelectedUnavailableModLink = link;
+                }
+            }
+
+
+            if (open != WebsitePanelStatus)
+            {
+                void done()
+                {
+                    WebsitePanelStatus = open;
+                }
+
+                ClipperHelper.ShowHideVerticalContent(VisitWebsitePanel, open, completionDelegate: done);
+            }
+        }
+
+        /// <summary>
+        /// The link that clicking the download link will go to
+        /// </summary>
+        public string SelectedUnavailableModLink { get; set; }
+
         public void OnSelectedModInGroupChanged()
         {
+            SelectedUnavailableModLink = null; // Reset
+            SetWebsitePanelVisibility(SelectedModInGroup); // Update state
             if (SelectedModInGroup == null)
             {
                 ModDescriptionText = "";
@@ -308,7 +379,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (SelectedModInGroup is BatchMod bm)
                 {
                     ModDescriptionText = bm.Mod?.DisplayedModDescription ?? M3L.GetString(M3L.string_modNotAvailableForInstall);
-
                 }
                 else if (SelectedModInGroup is BatchASIMod bam)
                 {
@@ -317,6 +387,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 else if (SelectedModInGroup is MEMMod mm)
                 {
                     ModDescriptionText = mm.FileExists ? $"This texture mod modifies the following textures:\n{string.Join('\n', mm.GetModifiedExportNames())}" : M3L.GetString(M3L.string_modNotAvailableForInstall); ;
+                    if (mm is M3MEMMod m3mm)
+                    {
+                        // Todo: Store hash of moddesc with the M3MM mod in the BIQ
+                        // Todo: Handle hash of standalone MEMMod objects for non-managed textures
+                        // SetWebsitePanelVisibility(m); // Show website link
+                    }
                 }
                 else
                 {
@@ -328,6 +404,27 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         // ISizeAdjustbale Interface
         public override double MaxWindowWidthPercent { get; set; } = 0.85;
         public override double MaxWindowHeightPercent { get; set; } = 0.85;
-    }
 
+        private void RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            if (SelectedUnavailableModLink == null) return;
+            var baseUrl = SelectedUnavailableModLink;
+            if (NexusModsUtilities.HasAPIKey)
+            {
+                baseUrl += @"&nmm=1";
+            }
+            M3Utilities.OpenWebpage(baseUrl);
+        }
+
+
+        private bool RefreshContentsOnVisible;
+
+        /// <summary>
+        /// Indicates the panel should have contents updated on display
+        /// </summary>
+        public void RefreshContentsOnDisplay()
+        {
+            RefreshContentsOnVisible = true;
+        }
+    }
 }

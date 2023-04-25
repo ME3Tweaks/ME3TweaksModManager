@@ -49,6 +49,11 @@ namespace ME3TweaksModManager.modmanager.loaders
             }
         }
 
+        /// <summary>
+        /// Invoked when the mod library has finished loading
+        /// </summary>
+        public static event EventHandler ModsReloaded;
+
         public static string GetModDirectoryForGame(MEGame game)
         {
             if (game == MEGame.ME1) return GetME1ModsDirectory();
@@ -435,6 +440,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 {
                     SelectModCallback?.Invoke(m);
                 }
+                ModsReloaded?.Invoke(this, EventArgs.Empty);
             };
             bw.RunWorkerAsync();
         }
