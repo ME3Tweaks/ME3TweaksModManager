@@ -1,6 +1,7 @@
 ﻿<Window
     x:Class="ME3TweaksModManager.modmanager.windows.HeadmorphSelectorDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:headmorph="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.headmorph"
     mc:Ignorable="d"
     WindowStartupLocation="CenterOwner"
     Height="450"
@@ -44,6 +45,7 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <EventSetter Event="MouseDoubleClick" Handler="HeadmorphList_MouseDoubleClick"/>
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>

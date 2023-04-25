@@ -403,12 +403,17 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         public BitmapSource CurrentSaveImage { get; set; }
         public GameTarget Target { get; }
 
-        public SaveSelectorUI(Window owner, GameTarget target)
+        public SaveSelectorUI(Window owner, GameTarget target, string titleTextSuffix = null)
         {
-            M3Log.Information($@"Opening SaveSelectorUI for target {target.TargetPath}");
+            M3Log.Information($@"Opening SaveSelectorUI for target {target.TargetPath}. Reason: {titleTextSuffix}");
             Owner = owner;
             Target = target;
             LoadingSaves = true;
+            Title = "Save Selector";
+            if (!string.IsNullOrWhiteSpace(titleTextSuffix))
+            {
+                Title += $@" - {titleTextSuffix}";
+            }
             LoadCommands();
             InitializeComponent();
 

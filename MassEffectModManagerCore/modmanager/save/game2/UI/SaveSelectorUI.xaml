@@ -14,7 +14,7 @@
         WindowStartupLocation="CenterOwner"
         ContentRendered="SSContent_Rendered"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="Save Selector" Height="550" Width="800">
+        Height="550" Width="800">
     <Window.Style>
         <Style
             TargetType="Window"

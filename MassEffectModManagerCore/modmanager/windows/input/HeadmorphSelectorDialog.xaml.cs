@@ -39,7 +39,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadCommands()
         {
-            SelectHeadmorphCommand = new GenericCommand(CommitMods, CanSelectheadmorph);
+            SelectHeadmorphCommand = new GenericCommand(SelectHeadmorph, CanSelectheadmorph);
             CancelCommand = new GenericCommand(Cancel);
         }
 
@@ -51,10 +51,15 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private bool CanSelectheadmorph() => SelectedHeadmorph != null;
 
-        private void CommitMods()
+        private void SelectHeadmorph()
         {
             DialogResult = true;
             Close();
+        }
+
+        private void HeadmorphList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (CanSelectheadmorph()) SelectHeadmorph();
         }
     }
 }
