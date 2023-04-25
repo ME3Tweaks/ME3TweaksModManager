@@ -108,7 +108,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ActionText = null;
                 M3Log.Information(@"Archive scan thread exited");
 
-                if (CompressedMods.Count > 0)
+                if (ScanFailureReason != null)
+                {
+                    NoModSelectedText = ScanFailureReason;
+                }
+                else if (CompressedMods.Count > 0)
                 {
                     ActionText = M3L.GetString(M3L.string_selectModsToImportIntoModManagerLibrary);
                     if (CompressedMods.Count == 1)
@@ -129,6 +133,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
+
                     ActionText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchive);
                     if (filepath.EndsWith(@".exe"))
                     {
@@ -177,6 +182,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
             nbw.RunWorkerAsync(filepath);
         }
+
+        /// <summary>
+        /// Reason the archive failed to scan
+        /// </summary>
+        public string ScanFailureReason { get; private set; }
 
 
         ///// <summary>
@@ -338,7 +348,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 });
             }
 
-            ModImport.FindModsInArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, AddTextureModCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
+            ScanFailureReason = ModImport.FindModsInArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, AddTextureModCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
         }
 
         protected override void OnClosing(DataEventArgs args)
@@ -359,7 +369,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 TaskRunning = false;
-                if (b.Error == null && b.Result is List<IImportableMod> modList && modList.Any(x=>x is Mod))
+                if (b.Error == null && b.Result is List<IImportableMod> modList && modList.Any(x => x is Mod))
                 {
                     Result.ReloadMods = true;
                     var updatedContentMods = modList.OfType<Mod>().ToList();

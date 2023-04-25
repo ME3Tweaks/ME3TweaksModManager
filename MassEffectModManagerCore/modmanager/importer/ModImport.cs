@@ -29,7 +29,7 @@ namespace ME3TweaksModManager.modmanager.importer
         /// <param name="addCompressedModCallback">Callback indicating that the mod should be added to the collection of found mods</param>
         /// <param name="currentOperationTextCallback">Callback to tell caller what's going on'</param>
         /// <param name="failedToLoadModCallback">Callback that returns a mod that failed to load</param>
-        public static void FindModsInArchive(string filepath,
+        public static string FindModsInArchive(string filepath,
             Action<Mod> addCompressedModCallback = null,
             Action<Mod> failedToLoadModCallback = null,
             Action<MEMMod> addTextureMod = null,
@@ -45,16 +45,30 @@ namespace ME3TweaksModManager.modmanager.importer
             SevenZipExtractor archiveFile = null;
 
             bool closeStreamOnComplete = true;
-            if (archiveStream != null)
+            try
             {
-                closeStreamOnComplete = false;
-                archiveStream.Position = 0;
-                archiveFile = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
-                archiveFile.SetFilename(filepath);
+                if (archiveStream != null)
+                {
+                    closeStreamOnComplete = false;
+                    archiveStream.Position = 0;
+                    archiveFile = isExe
+                        ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis)
+                        : new SevenZipExtractor(archiveStream);
+                    archiveFile.SetFilename(filepath);
+                }
+                else
+                {
+                    archiveFile = isExe
+                        ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis)
+                        : new SevenZipExtractor(filepath);
+                }
             }
-            else
+            catch (IOException ioException)
             {
-                archiveFile = isExe ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
+                // There was an error opening the archive
+                // Like a PUP (tested with eicar.7z)
+                M3Log.Error($@"Error opening archive: {ioException.Message}");
+                return ioException.Message;
             }
 #if DEBUG
             foreach (var v in archiveFile.ArchiveFileData)
@@ -116,7 +130,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     archiveFile?.DisposeObjectOnly();
 
                 }
-                return;
+                return null;
             }
 
 
@@ -201,7 +215,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     //found some texture-mod only files
                     foreach (var entry in textureModEntries)
                     {
-                        MEMMod memFile = new MEMMod(entry.FileName) {SizeRequiredtoExtract = (long) entry.Size, SelectedForImport = true};
+                        MEMMod memFile = new MEMMod(entry.FileName) { SizeRequiredtoExtract = (long)entry.Size, SelectedForImport = true };
                         addTextureMod(memFile);
                     }
                 }
@@ -217,7 +231,7 @@ namespace ME3TweaksModManager.modmanager.importer
                 if (importingInfo == null && isExe)
                 {
                     M3Log.Error(@"EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
-                    return;
+                    return null; // We don't want to tell user that we don't support it cause they'll just ask us to, which I don't want
                 }
 
                 ModArchiveImporter.ExeTransform transform = null;
@@ -252,7 +266,7 @@ namespace ME3TweaksModManager.modmanager.importer
                         M3Log.Information(@"Mod loaded from server moddesc.");
                         addCompressedModCallback?.Invoke(virutalCustomMod);
                         internalModList.Add(virutalCustomMod);
-                        return; //Don't do further parsing as this is custom written
+                        return null; //Don't do further parsing as this is custom written
                     }
                     else
                     {
@@ -278,7 +292,7 @@ namespace ME3TweaksModManager.modmanager.importer
                         {
                             archiveFile?.DisposeObjectOnly();
                         }
-                        return;
+                        return "An invalid server moddesc was provided for this archive file, please contact Mgamerz with the link to this file and this error message.";
                     }
                     //} else
                     //{
@@ -289,8 +303,7 @@ namespace ME3TweaksModManager.modmanager.importer
 
 
                 //Fully unofficial third party mod.
-
-                //ME3
+                //ME3 ONLY 
                 foreach (var sfarEntry in sfarEntries)
                 {
                     var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, md5);
@@ -302,18 +315,6 @@ namespace ME3TweaksModManager.modmanager.importer
                     }
                 }
 
-                //TODO: ME2 ?
-                //foreach (var entry in bioengineEntries)
-                //{
-                //    var vMod = AttemptLoadVirtualMod(entry, archiveFile, MEGame.ME2, md5);
-                //    if (vMod.ValidMod)
-                //    {
-                //        addCompressedModCallback?.Invoke(vMod);
-                //        internalModList.Add(vMod);
-                //    }
-                //}
-
-                //TODO: ME1 ?
 
                 if (importingInfo?.version != null)
                 {
@@ -378,6 +379,8 @@ namespace ME3TweaksModManager.modmanager.importer
             {
                 archiveFile?.DisposeObjectOnly();
             }
+
+            return null;
         }
 
         /// <summary>
