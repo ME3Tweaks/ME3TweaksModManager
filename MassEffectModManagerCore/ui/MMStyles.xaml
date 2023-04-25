@@ -8,7 +8,6 @@
                     xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
                     xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters"
                     xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
-                    xmlns:converters="clr-namespace:ME3TweaksCoreWPF.Converters;assembly=ME3TweaksCoreWPF"
                     xmlns:nativeMods="clr-namespace:ME3TweaksCore.NativeMods;assembly=ME3TweaksCore"
                     xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
                     xmlns:texture="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.texture"
@@ -245,14 +244,37 @@
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type texture:MEMMod}">
-        <DockPanel HorizontalAlignment="Stretch">
-            <Image
-                Source="/modmanager/toolicons/masseffectmodder_32.png"
-                Width="16"
-                Margin="0,0,5,0"
-                RenderOptions.BitmapScalingMode="HighQuality" />
-            <TextBlock Text="{Binding Path=DisplayString}" VerticalAlignment="Center" TextWrapping="Wrap"/>
-        </DockPanel>
+        <Grid>
+            <DockPanel>
+                <StackPanel
+                    DockPanel.Dock="Left"
+                    Orientation="Horizontal"
+                    Visibility="{Binding FileExists, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
+                    <fa5:FontAwesome
+                        Icon="Solid_Ban"
+                        Foreground="Red"
+                        Height="16"
+                        Margin="0,3,5,0"
+                        VerticalAlignment="Center" />
+                    <TextBlock
+                        Text="{DynamicResource string_modNotAvailable}"
+                        Margin="0,0,5,0"
+                        VerticalAlignment="Center" />
+                    <TextBlock
+                        Text="{Binding FilePath}"
+                        VerticalAlignment="Center" />
+                </StackPanel>
+            </DockPanel>
+            <DockPanel HorizontalAlignment="Stretch"
+                       Visibility="{Binding FileExists, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Image
+                    Source="/modmanager/toolicons/masseffectmodder_32.png"
+                    Width="16"
+                    Margin="0,0,5,0"
+                    RenderOptions.BitmapScalingMode="HighQuality" />
+                <TextBlock Text="{Binding Path=DisplayString}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </DockPanel>
+        </Grid>
     </DataTemplate>
     <DataTemplate DataType="{x:Type headmorph:M3Headmorph}">
         <DockPanel

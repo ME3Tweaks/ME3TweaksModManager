@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.GameFilesystem;
@@ -17,6 +20,7 @@ using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
+using static ME3TweaksModManager.modmanager.usercontrols.BackupFileFetcher;
 
 namespace ME3TweaksModManager.modmanager.save.game2.UI
 {
@@ -52,6 +56,16 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         /// </summary>
         public bool LoadingSaves { get; set; }
 
+        public bool LoadAllSaves { get; set; } = Settings.SSUILoadAllSaves;
+
+        public void OnLoadAllSavesChanged()
+        {
+            Settings.SSUILoadAllSaves = LoadAllSaves;
+            if (LoadAllSaves)
+            {
+                ReloadSaves();
+            }
+        }
 
         public ObservableCollectionExtended<Career> SaveCareers { get; } = new();
 
@@ -63,6 +77,15 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         public void OnSelectedCareerChanged()
         {
             SelectedSaveFile = SelectedCareer?.SaveFiles.FirstOrDefault();
+            if (SelectedCareer != null)
+            {
+                CareerSaveFiles.ReplaceAll(SelectedCareer.SaveFiles);
+            }
+            else
+            {
+                CareerSaveFiles.ClearEx();
+            }
+            SaveFilterText = @"";
         }
 
         public ISaveFile SelectedSaveFile { get; set; }
@@ -74,6 +97,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             if (SelectedSaveFile == null)
             {
                 SelectedLevelText = "Select a save file";
+                CurrentSaveImage = null;
                 // csi = MERUtilities.ListStaticAssets("saveimages", includemerPrefix: true).FirstOrDefault(x => x.EndsWith("nosave.png"));
             }
             else
@@ -102,6 +126,51 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 }
             }
         }
+
+        public string CareerFilterText { get; set; }
+        public void OnCareerFilterTextChanged() { SaveCareersView.Refresh(); }
+        public ICollectionView SaveCareersView => CollectionViewSource.GetDefaultView(SaveCareers);
+        private bool FilterCareers(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(CareerFilterText) && obj is Career bobj)
+            {
+                if (string.IsNullOrWhiteSpace(bobj.CharacterName)) return true; // If char is initialized with console commands this can be null
+
+                if (bobj.CharacterName.Contains(CareerFilterText, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            return true;
+        }
+
+        // This is not just bound to ISaveFile because we have to have a collection view over it
+        public ObservableCollectionExtended<ISaveFile> CareerSaveFiles { get; } = new();
+        public string SaveFilterText { get; set; }
+        public void OnSaveFilterTextChanged() { CareerSaveFilesView.Refresh(); }
+        public ICollectionView CareerSaveFilesView => CollectionViewSource.GetDefaultView(CareerSaveFiles);
+        private bool FilterSaves(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(SaveFilterText) && obj is ISaveFile isf)
+            {
+                if (SaveGameNameConverter.StaticConvert(isf).Contains(SaveFilterText, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+
+                if (!string.IsNullOrWhiteSpace(isf.Proxy_DebugName) &&
+                    isf.Proxy_DebugName.Contains(SaveFilterText, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+
+                if (!string.IsNullOrWhiteSpace(isf.Proxy_BaseLevelName) &&
+                    isf.Proxy_BaseLevelName.Contains(SaveFilterText, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+
+                return false;
+            }
+            return true;
+        }
+
 
         private BitmapImage UnknownMapImage;
 
@@ -241,7 +310,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             }
 
             M3Log.Information($@"SSUI: Trying to load image for map {mapName}");
-            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(Target.Game);
+            var loadedFiles = Target.GetFilesLoadedInGame();
             if (mapToImageAssetMap.TryGetValue(mapName, out var saveImageInfo) && loadedFiles.TryGetValue(saveImageInfo.PackageName, out var packagePath))
             {
                 using var package = MEPackageHandler.UnsafePartialLoad(packagePath, x =>
@@ -342,6 +411,9 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             LoadingSaves = true;
             LoadCommands();
             InitializeComponent();
+
+            SaveCareersView.Filter = FilterCareers;
+            CareerSaveFilesView.Filter = FilterSaves;
             OnSelectedSaveFileChanged();
         }
 
@@ -349,9 +421,17 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         private void LoadCommands()
         {
             SelectSaveCommand = new GenericCommand(SelectSave, CanSelectSave);
+            CancelSelectionCommand = new GenericCommand(CancelSelection);
             //RefundHenchTalentsCommand = new GenericCommand(RefundHenchTalents, SaveIsSelected);
             //RefundPlayerTalentsCommand = new GenericCommand(RefundPlayerHenchTalents, SaveIsSelected);
             //RefundHenchPlayerTalentsCommand = new GenericCommand(RefundHenchPlayerTalents, SaveIsSelected);
+        }
+
+        private void CancelSelection()
+        {
+            M3Log.Information($@"SSUI: Closing due to cancelation");
+            SaveWasSelected = false;
+            Close();
         }
 
         private void SelectSave()
@@ -445,18 +525,33 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         //        }
 
         public GenericCommand SelectSaveCommand { get; set; }
+        public ICommand CancelSelectionCommand { get; set; }
+
         public bool SaveWasSelected { get; set; }
 
         private bool SaveIsSelected() => SelectedSaveFile != null;
 
         private void SSContent_Rendered(object sender, EventArgs e)
         {
+            ReloadSaves();
+        }
+
+        private void ReloadSaves()
+        {
+            // Mark it here as well
+            LoadingSaves = true;
+            SelectedSaveFile = null;
+            SelectedCareer = null;
+
             Task.Run(() =>
             {
                 M3Log.Information($@"SSUI: Beginning content load");
 
                 // Load game information
                 var game = Target.Game;
+                Target.GetFilesLoadedInGame(forceReload: true); // Reload the list of files
+
+
                 if (game == MEGame.LE1)
                 {
                     // Good old 2DA
@@ -529,8 +624,11 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                                 continue; // We do not work on these save files (in this UI anyways)
                         }
 
-                        if (numLoaded > 50)
-                            break; // Don't load more for now... maybe make this configurable
+                        // Only load the most recent 50 saves if we are doing an optimized load
+                        // Cause this uses a ton of allocations
+                        if (!Settings.SSUILoadAllSaves && numLoaded > 50)
+                            break;
+
                         numLoaded++;
                         try
                         {
@@ -551,7 +649,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                         }
                         catch (Exception ex)
                         {
-                            M3Log.Warning($@"Error parsing save file: {sf}. This may be due to bugs in the save parsing code (it's still new). This save will be skipped.");
+                            M3Log.Warning($@"Error parsing save file: {sf}. This may be due to bugs in the save parsing code (it's still new). This save will be skipped: {ex.Message}");
                         }
                     }
                 }

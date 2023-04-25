@@ -9,10 +9,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols.generic
     public class ComboBoxTemplateSelector : DataTemplateSelector
     {
 
-        public DataTemplate? SelectedItemTemplate { get; set; }
-        public DataTemplateSelector? SelectedItemTemplateSelector { get; set; }
-        public DataTemplate? DropdownItemsTemplate { get; set; }
-        public DataTemplateSelector? DropdownItemsTemplateSelector { get; set; }
+        public DataTemplate SelectedItemTemplate { get; set; }
+        public DataTemplateSelector SelectedItemTemplateSelector { get; set; }
+        public DataTemplate DropdownItemsTemplate { get; set; }
+        public DataTemplateSelector DropdownItemsTemplateSelector { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -38,10 +38,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols.generic
     public class ComboBoxTemplateSelectorExtension : MarkupExtension
     {
 
-        public DataTemplate? SelectedItemTemplate { get; set; }
-        public DataTemplateSelector? SelectedItemTemplateSelector { get; set; }
-        public DataTemplate? DropdownItemsTemplate { get; set; }
-        public DataTemplateSelector? DropdownItemsTemplateSelector { get; set; }
+        public DataTemplate SelectedItemTemplate { get; set; }
+        public DataTemplateSelector SelectedItemTemplateSelector { get; set; }
+        public DataTemplate DropdownItemsTemplate { get; set; }
+        public DataTemplateSelector DropdownItemsTemplateSelector { get; set; }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
             => new ComboBoxTemplateSelector()

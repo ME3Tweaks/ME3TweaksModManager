@@ -87,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// Only used for UI binding!
         /// </summary>
         [JsonIgnore]
-        public ObservableCollectionExtended<object> AllModsToInstall { get; } = new ObservableCollectionExtended<object>();
+        public ObservableCollectionExtended<IBatchQueueMod> AllModsToInstall { get; } = new ObservableCollectionExtended<IBatchQueueMod>();
 
         /// <summary>
         /// USED FOR SAVING/LOADING FILE FROM DISK
@@ -183,6 +183,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                         if (matchingM3Entry == null)
                         {
                             MEMMod m = new MEMMod(texModPath);
+                            m.ParseMEMData();
                             modernQueue.TextureModsToInstall.Add(m);
                         }
                         else

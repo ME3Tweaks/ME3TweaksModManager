@@ -149,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
                         var fullurl = endpoint + @"tutorial/" + step.imagename;
                         M3Log.Information($@"Downloading {step.imagename} from endpoint {host}");
-                        var downloadedImage = MOnlineContent.DownloadToMemory(fullurl, null, step.imagemd5).Result;
+                        var downloadedImage = MOnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
                         if (downloadedImage.errorMessage == null)
                         {
                             try

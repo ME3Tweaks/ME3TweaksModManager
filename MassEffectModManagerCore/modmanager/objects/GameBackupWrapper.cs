@@ -316,7 +316,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public bool BackupOptionsVisible => BackupStatus.MarkedBackupLocation == null;
         //public bool BackupInProgress { get; set; }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
 }

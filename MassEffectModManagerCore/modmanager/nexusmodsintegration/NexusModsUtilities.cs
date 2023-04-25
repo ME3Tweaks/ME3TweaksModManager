@@ -40,7 +40,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
             // Create a new instance of the RNGCryptoServiceProvider.
             // Fill the array with a random value.
-            new RNGCryptoServiceProvider().GetBytes(entropy);
+            RandomNumberGenerator.Create().GetBytes(entropy);
 
             // Return the array.
             return entropy;

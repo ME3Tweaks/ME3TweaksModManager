@@ -194,57 +194,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             string moddesc = WebClientExtensions.DownloadStringAwareOfEncoding(wc, ExeTransformBaseURL + name);
             return moddesc;
         }
-             
-        public static bool EnsureCriticalFiles()
-        {
-            // This method does nothing currently but is left here as a stub
-            return true;
-            try
-            {
-                /*
-                //7-zip
-                string sevenZDLL = Utilities.Get7zDllPath();
-                if (!File.Exists(sevenZDLL) || Utilities.CalculateHash(sevenZDLL) != @"72491c7b87a7c2dd350b727444f13bb4")
-                {
-                    foreach (var staticurl in StaticFilesBaseEndpoints)
-                    {
-                        try
-                        {
-                            using var wc = new ShortTimeoutWebClient();
-                            {
-                                var fullURL = staticurl + @"7z.dll";
-                                M3Log.Information(@"Downloading 7z.dll: " + fullURL);
-                                wc.DownloadFile(fullURL, sevenZDLL);
-                                break; //No more loops
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            M3Log.Error($@"Could not download 7z.dll from endpoint {staticurl} {e.Message}");
-                        }
-                    }
-                }
-
-                if (File.Exists(sevenZDLL))
-                {
-                    M3Log.Information(@"Setting 7z dll path: " + sevenZDLL);
-                    var p = Path.GetFullPath(sevenZDLL);
-                    SevenZip.SevenZipBase.SetLibraryPath(sevenZDLL);
-                }
-                else
-                {
-                    M3Log.Fatal(@"Unable to load 7z dll! File doesn't exist: " + sevenZDLL);
-                    return false;
-                }*/
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Exception ensuring critical files: " + App.FlattenException(e));
-                return false;
-            }
-
-            return true;
-        }
 
         public static (MemoryStream result, string errorMessage) FetchString(string url)
         {

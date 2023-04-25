@@ -73,6 +73,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         public ESFXSaveGameType SaveGameType { get; set; }
 
         public IPlayerRecord Proxy_PlayerRecord => Player;
+        public bool Proxy_IsFemale => _Player.Proxy_IsFemale;
         public string Proxy_DebugName => DebugName;
 
         [OriginalName("DebugName")]
@@ -663,7 +664,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public static void Write(SaveFileGame3 save, Stream output)
         {
-            throw new Exception("This is not propertly implemented right now");
+            throw new Exception(@"This is not propertly implemented right now");
             if (save == null)
             {
                 throw new ArgumentNullException("save");

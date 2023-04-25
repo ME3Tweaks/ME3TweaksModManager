@@ -426,7 +426,7 @@ namespace ME3TweaksModManager
             ModUpdater.InitializeModUpdater(this);
         }
 
-        private void ModGameVisibilityChanged(object? sender, PropertyChangedEventArgs e)
+        private void ModGameVisibilityChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(GameFilter.IsEnabled))
             {
@@ -603,7 +603,7 @@ namespace ME3TweaksModManager
             Settings.StaticPropertyChanged += SettingChanged;
         }
 
-        private void SettingChanged(object? sender, PropertyChangedEventArgs e)
+        private void SettingChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Settings.GenerationSettingOT))
                 OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
@@ -816,17 +816,17 @@ namespace ME3TweaksModManager
                             return;
                         }
                     }
+                }
 
-                    var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME,
+                var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME,
                         selectorDialog.SelectedHeadmorph.FileName);
-                    if (File.Exists(headmorphFilepath))
-                    {
-                        InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
-                    }
-                    else
-                    {
-                        M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
-                    }
+                if (File.Exists(headmorphFilepath))
+                {
+                    InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget);
+                }
+                else
+                {
+                    M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
                 }
             }
         }
@@ -1324,13 +1324,11 @@ namespace ME3TweaksModManager
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
                             var bm = queue.ModsToInstall[modIndex];
-                            if (bm.Mod != null)
+                            if (bm.IsAvailableForInstall())
                             {
-                                M3Log.Information(
-                                    $@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].Mod.ModName}");
+                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].Mod.ModName}");
                                 bm.UseSavedOptions = queue.UseSavedOptions;
-                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed,
-                                    installCompletedCallback: modInstalled);
+                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             }
                             else
                             {
@@ -1366,9 +1364,9 @@ namespace ME3TweaksModManager
 
         private void HandleBatchTextureInstall(GameTarget target, BatchLibraryInstallQueue queue)
         {
-            if (queue.TextureModsToInstall.Any())
+            if (queue.TextureModsToInstall.Any(x => x.IsAvailableForInstall()))
             {
-                TextureInstallerPanel tip = new TextureInstallerPanel(target, queue.TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList());
+                TextureInstallerPanel tip = new TextureInstallerPanel(target, queue.TextureModsToInstall.Where(x => x.IsAvailableForInstall()).Select(x => x.GetFilePathToMEM()).ToList());
                 tip.Close += (sender, args) =>
                 {
                     ReleaseBusyControl(); // This is so the panel is closed
@@ -1405,9 +1403,13 @@ namespace ME3TweaksModManager
         {
             foreach (var asi in queue.ASIModsToInstall)
             {
-                if (asi.AssociatedMod != null)
+                if (asi.IsAvailableForInstall())
                 {
                     ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
+                }
+                else
+                {
+                    M3Log.Warning($@"Not installing ASI with update group {asi.UpdateGroup} - not found in manifest");
                 }
             }
         }
@@ -1990,7 +1992,6 @@ namespace ME3TweaksModManager
 
         private void ShowRunAndDone(Action action, string startStr, string endStr, Action finishAction = null)
         {
-            BackgroundTask task = null;
             var runAndDone = new RunAndDonePanel(action, startStr, endStr);
             runAndDone.Close += (a, b) =>
             {
@@ -4253,6 +4254,12 @@ namespace ME3TweaksModManager
                     {
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_cannotInstallModGameNotInstalled, compressedModToInstall.Game.ToGameName()), M3L.GetString(M3L.string_gameNotInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
+                }
+
+                if (modInspector.ImportedTextureMod)
+                {
+                    M3L.ShowDialog(this, "Texture mods must be installed through Batch Installer, which is available in the Mod Management menu. The files you have imported will be available in the install group editor.",
+                        "Texture mod(s) imported", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             };
 

@@ -436,6 +436,8 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             throw new Exception(@"SaveLegacy() is no longer supported");
 
+#if LEGACYCODE
+            // This is only here for reference of how it used to work
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(SelectedGame.ToString());
             sb.AppendLine(GroupName);
@@ -459,6 +461,7 @@ namespace ME3TweaksModManager.modmanager.windows
             var savePath = "";// getSaveName(GroupName);
             File.WriteAllText(savePath, sb.ToString());
             SavedPath = savePath;
+#endif
         }
 
 

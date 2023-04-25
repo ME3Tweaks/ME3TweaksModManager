@@ -28,6 +28,11 @@ namespace ME3TweaksModManager.modmanager.save
         public string Proxy_Difficulty { get; }
 
         /// <summary>
+        /// Returns if the player is female
+        /// </summary>
+        public bool Proxy_IsFemale { get; }
+
+        /// <summary>
         /// If save fully serialized and CRC check passed
         /// </summary>
         bool IsValid { get; set; }

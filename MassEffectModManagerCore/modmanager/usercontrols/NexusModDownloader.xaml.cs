@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Downloads.Clear(); // Ensure we have no references in event this window doesn't clean up for some reason (memory analyzer shows it is not reliable unless another window appears)
         }
 
-        private void ModDownloaded(object? sender, DataEventArgs e)
+        private void ModDownloaded(object sender, DataEventArgs e)
         {
             if (sender is ModDownload md)
             {
@@ -101,7 +101,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void ModInitialized(object? sender, EventArgs e)
+        private void ModInitialized(object sender, EventArgs e)
         {
             if (sender is ModDownload initializedItem)
             {
@@ -111,7 +111,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void DownloadError(object? sender, string e)
+        private void DownloadError(object sender, string e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

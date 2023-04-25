@@ -201,7 +201,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true; //has backup
         }
 
-        private async void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
+        private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
         {
             var sw = Stopwatch.StartNew();
             bool testrun = false; //change to true to test

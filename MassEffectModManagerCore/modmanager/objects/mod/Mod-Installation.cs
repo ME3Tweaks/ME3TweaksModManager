@@ -146,8 +146,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             }
 
                             if (altApplied) continue; //no further processing for file
-                            var relativeDestStartIndex = sourceFile.IndexOf(mapping.Value);
-                            string destPath = sourceFile.Substring(relativeDestStartIndex);
+                            var relativeDestStartIndex = sourceFile.IndexOf(mapping.Key); // Source file will use mod directory name, so it must use key, not value (dest)
+                            string destPath = mapping.Value + Path.DirectorySeparatorChar + sourceFile.Substring(relativeDestStartIndex + 1 + mapping.Key.Length);
                             installationMapping[destPath] = new InstallSourceFile(sourceFile); //destination is mapped to source file that will replace it.
                         }
 

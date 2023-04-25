@@ -210,7 +210,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SettingChanged(object? sender, PropertyChangedEventArgs e)
+        private void SettingChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Settings.GenerationSettingOT))
             {

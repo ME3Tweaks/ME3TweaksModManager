@@ -40,7 +40,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool TaskRunning { get; private set; }
         public string NoModSelectedText { get; set; } = M3L.GetString(M3L.string_selectAModOnTheLeftToViewItsDescription);
         public bool ArchiveScanned { get; set; }
-        public bool TextureFilesImported { get; set; }
+        public bool OTALOTTextureFilesImported { get; set; }
 
         // LE games do not even show this option
         public bool CanShowCompressPackages => CompressedMods.Any(x => x is Mod m && m.Game.IsOTGame());
@@ -120,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     TriggerPropertyChangedFor(nameof(CanCompressPackages));
                     TriggerPropertyChangedFor(nameof(CanShowCompressPackages));
                 }
-                else if (TextureFilesImported)
+                else if (OTALOTTextureFilesImported)
                 {
                     CancelButtonText = M3L.GetString(M3L.string_close);
                     NoModSelectedText = M3L.GetString(M3L.string_interp_dialogImportedALOTMainToTextureLibrary,
@@ -315,7 +315,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             void ShowALOTLauncher()
             {
-                TextureFilesImported = true;
+                OTALOTTextureFilesImported = true;
             }
 
             void AddTextureModCallback(MEMMod memFile)
@@ -580,6 +580,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 try
                 {
                     mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback, false, ArchiveStream);
+                    if (mod is MEMMod)
+                    {
+                        ImportedTextureMod = true;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -699,6 +703,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return M3L.GetString(M3L.string_install);
             }
         }
+
+        /// <summary>
+        /// If this UI imported a texture mod file
+        /// </summary>
+        public bool ImportedTextureMod { get; set; }
 
 
         private void LoadCommands()
