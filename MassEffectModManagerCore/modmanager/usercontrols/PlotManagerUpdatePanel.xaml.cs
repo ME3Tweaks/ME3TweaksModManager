@@ -174,6 +174,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 sw.Stop();
                 Debug.WriteLine($@"Took {sw.ElapsedMilliseconds}ms to load filelib");
 
+                bool relinkChain = false;
                 foreach (var v in funcMap)
                 {
                     var pmKey = $@"BioAutoConditionals.F{v.Key}";
@@ -190,6 +191,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
 
                         throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingFunctionReason, exp, string.Join('\n', log.AllErrors.Select(x => x.Message))));
+                        return false;
                     }
                 }
 
