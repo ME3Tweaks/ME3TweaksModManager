@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Newtonsoft.Json;
@@ -59,6 +60,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public bool ModMissing => Mod == null;
 
         /// <summary>
+        /// Link to where the asset that satisfies this mod can be found
+        /// </summary>
+        [JsonProperty("downloadlink")]
+        public string DownloadLink { get; set; }
+
+        /// <summary>
         /// List of user selections, in order
         /// </summary>
         [JsonProperty(@"userchosenoptions")]
@@ -91,10 +98,10 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             }
         }
 
-        [JsonIgnore]
         /// <summary>
         /// If the saved options for this batch mod should be used by the installer
         /// </summary>
+        [JsonIgnore]
         public bool UseSavedOptions { get; set; }
 
         /// <summary>
@@ -137,6 +144,10 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             if (Mod != null)
             {
                 ModDescHash = MUtilities.CalculateHash(Mod.ModDescPath);
+                if (DownloadLink == null && FileSourceService.TryGetSource(ModDescHash, out var sourceLink))
+                {
+                    DownloadLink = sourceLink;
+                }
             }
         }
 
