@@ -670,7 +670,8 @@ namespace ME3TweaksModManager
                 }
                 else
                 {
-                    M3Log.Information(@"Application exiting (duplicate instance)");
+                    // We don't log this anymore cause it causes too many duplicate log files to be opened
+                    //M3Log.Information(@"Application exiting (duplicate instance)");
                 }
 
                 Log.CloseAndFlush();
