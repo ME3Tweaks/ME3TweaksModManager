@@ -144,7 +144,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             if (Mod != null)
             {
                 ModDescHash = MUtilities.CalculateHash(Mod.ModDescPath);
-                if (DownloadLink == null && FileSourceService.TryGetSource(ModDescHash, out var sourceLink))
+                if (FileSourceService.TryGetSource(ModDescHash, out var sourceLink))
                 {
                     DownloadLink = sourceLink;
                 }
