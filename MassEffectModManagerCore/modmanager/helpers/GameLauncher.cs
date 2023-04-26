@@ -4,9 +4,13 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading;
+using System.Threading.Tasks;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Save;
+using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
@@ -15,6 +19,8 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
+using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.save.game2.UI;
 using Pathoschild.FluentNexus.Models;
 
 namespace ME3TweaksModManager.modmanager.helpers
@@ -23,23 +29,87 @@ namespace ME3TweaksModManager.modmanager.helpers
     {
         private const string AUTOBOOT_KEY_NAME = @"LEAutobootArgs"; // DO NOT CHANGE - USED FOR AUTOBOOT IN BINK DLL
 
-        public static void SetAutoresumeSave(GameTargetWPF wpf)
+        /// <summary>
+        /// Encodes a save file to a Bioware save file ID
+        /// </summary>
+        /// <param name="sf"></param>
+        /// <returns></returns>
+        private static int GetEncodedSaveId(ISaveFile sf)
+        {
+            switch (sf.SaveGameType)
+            {
+                case ESFXSaveGameType.SaveGameType_Manual:
+                    return sf.SaveNumber;
+                case ESFXSaveGameType.SaveGameType_Quick:
+                    return 1000000;
+                case ESFXSaveGameType.SaveGameType_Auto:
+                    return 2000000;
+                case ESFXSaveGameType.SaveGameType_Chapter:
+                    return 3000000;
+                case ESFXSaveGameType.SaveGameType_Export:
+                    return 4000000;
+                case ESFXSaveGameType.SaveGameType_Legend:
+                    return 5000000;
+            }
+            return 0; // Manual save
+        }
+
+        public static void SetAutoresumeSave(MainWindow window, GameTargetWPF SelectedGameTarget, Action autoresumeSaveChanged = null)
         {
 
             // How to hijack LE3's -RESUME for a specific numbered save
-/*          var localProf = LocalProfile.DeserializeLocalProfile(LE3Directory.LocalProfilePath, MEGame.LE3);
-            localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame].Data = 2;
-            localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer].Data = "Jane_31_Soldier_200122_4a61af6";
-            localProf.Serialize().WriteToFile(LE3Directory.LocalProfilePath);*/
+            /*          var localProf = LocalProfile.DeserializeLocalProfile(LE3Directory.LocalProfilePath, MEGame.LE3);
+                        localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame].Data = 2;
+                        localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer].Data = "Jane_31_Soldier_200122_4a61af6";
+                        localProf.Serialize().WriteToFile(LE3Directory.LocalProfilePath);*/
+
+            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedGameTarget, "Autoboot save");
+            ssui.Show();
+            ssui.Closed += (sender, args) =>
+            {
+                if (ssui.SaveWasSelected && ssui.SelectedSaveFile != null)
+                {
+                    Task.Run(() =>
+                    {
+                        M3Log.Information($@"Adjusting autoboot save for {SelectedGameTarget.Game} to {ssui.SelectedSaveFile.SaveFilePath}");
+                        var lpf = MEDirectories.GetProfileSave(SelectedGameTarget.Game);
+
+                        if (!File.Exists(lpf))
+                        {
+                            M3Log.Warning(@"Cannot adjust autoboot save: local profile doesn't exist");
+                            return;
+                        }
+
+                        var careerId = Directory.GetParent(ssui.SelectedSaveFile.SaveFilePath).Name; 
+                        if (SelectedGameTarget.Game == MEGame.LE1)
+                        {
+                            var lp = LocalProfileLE1.DeserializeLocalProfile(lpf);
+                            lp.GamerProfile.LastPlayedCharacterID = Directory.GetParent(ssui.SelectedSaveFile.SaveFilePath).Name;
+                            lp.GamerProfile.LastSaveGame = Path.GetFileNameWithoutExtension(ssui.SelectedSaveFile.SaveFilePath);
+                            lp.Serialize().WriteToFile(lpf);
+                        }
+                        else if (SelectedGameTarget.Game is MEGame.LE2 or MEGame.LE3)
+                        {
+                            var lp = LocalProfile.DeserializeLocalProfile(lpf, SelectedGameTarget.Game);
+                            var cSaveGameIdx = SelectedGameTarget.Game == MEGame.LE2 ? (int)LocalProfile.ELE2ProfileSetting.Setting_CurrentSaveGame : (int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame;
+                            var cCareerIdx = SelectedGameTarget.Game == MEGame.LE2 ? (int)LocalProfile.ELE2ProfileSetting.Setting_CurrentCareer : (int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer;
+                            lp.ProfileSettings[cSaveGameIdx].Data = GetEncodedSaveId(ssui.SelectedSaveFile);
+                            lp.ProfileSettings[cCareerIdx].Data = careerId;
+                            lp.Serialize().WriteToFile(lpf);
+                        }
+                        autoresumeSaveChanged?.Invoke();
+                    });
+                }
+            };
         }
 
-        public static void LaunchGame(GameTargetWPF target, LaunchOptionsPackage LaunchPackage)
+        public static void LaunchGame(GameTargetWPF target, LaunchOptionsPackage LaunchPackage, bool? skipLauncher = null, bool? autoresume = null)
         {
             if (!target.Game.IsLEGame()) return;
 
             string args = @"";
 
-            if (Settings.SkipLELauncher) // Autoboot
+            if (skipLauncher ?? Settings.SkipLELauncher) // Autoboot
             {
                 args += $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate";
 
@@ -61,7 +131,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                         args += @" -enableminidumps";
                     }
 
-                    if (LaunchPackage.AutoResumeSave)
+                    if (autoresume ?? LaunchPackage.AutoResumeSave)
                     {
                         args += @" -RESUME";
                     }

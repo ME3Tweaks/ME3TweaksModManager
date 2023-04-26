@@ -597,12 +597,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                         else if (Target.Game == MEGame.LE2 || Target.Game == MEGame.LE3)
                         {
                             LocalProfile lp = LocalProfile.DeserializeLocalProfile(profileFile, Target.Game);
-                            var lastSaveCareer =
-                                lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer]
-                                    .DataAsString;
-                            var lastSaveNumeral =
-                                lp.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame]
-                                    .DataAsInt;
+                            var lastSaveCareer = lp.ProfileSettings[game == MEGame.LE2 ? (int)LocalProfile.ELE2ProfileSetting.Setting_CurrentCareer : (int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer].DataAsString;
+                            var lastSaveNumeral = lp.ProfileSettings[game == MEGame.LE2 ? (int)LocalProfile.ELE2ProfileSetting.Setting_CurrentSaveGame : (int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame].DataAsInt;
                             resumeSavePath = BuildLastSavePath(savePath, lastSaveCareer, lastSaveNumeral);
                         }
                     }
@@ -631,7 +627,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
                         // Only load the most recent 50 saves if we are doing an optimized load
                         // Cause this uses a ton of allocations
-                        if (!Settings.SSUILoadAllSaves && numLoaded > 50)
+                        if (!Settings.SSUILoadAllSaves && numLoaded >= 50)
                             break;
 
                         numLoaded++;

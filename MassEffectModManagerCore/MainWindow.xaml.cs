@@ -24,6 +24,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore;
@@ -624,6 +625,7 @@ namespace ME3TweaksModManager
 
         }
 
+        public ICommand StartGameSpecificSaveCommand { get; set; }
         public ICommand ChangeCurrentLaunchConfigCommand { get; set; }
         public ICommand OpenASIManagerCommand { get; set; }
         public ICommand OpenTutorialCommand { get; set; }
@@ -741,6 +743,18 @@ namespace ME3TweaksModManager
             AddStarterKitContentCommand = new GenericCommand(OpenStarterKitContentSelector, IsModSelectedInDevMode);
             InstallHeadmorphCommand = new GenericCommand(BeginInstallingHeadmorph, CanInstallHeadmorph);
             ApplyM3HeadmorphCommand = new GenericCommand(BeginInstallingM3Headmorph, CanInstallM3Headmorph);
+            StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget.Game.IsLEGame());
+        }
+
+        private void SelectSpecificSaveForBoot()
+        {
+            // Select save to install to
+            GameLauncher.SetAutoresumeSave(this, SelectedGameTarget, autoresumeSaveChanged: StartGameWithResume);
+        }
+
+        private void StartGameWithResume()
+        {
+            InternalStartGame(SelectedGameTarget, skipLauncher: true, autoboot: true);
         }
 
         private bool CanRunLE1CoalescedMerge()
@@ -2101,7 +2115,7 @@ namespace ME3TweaksModManager
             InternalStartGame(SelectedGameTarget);
         }
 
-        internal void InternalStartGame(GameTargetWPF target, string customArguments = null)
+        internal void InternalStartGame(GameTargetWPF target, string customArguments = null, bool? skipLauncher = null, bool? autoboot = null)
         {
             var game = target.Game.ToGameName();
             BackgroundTask gameLaunch = BackgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch",
@@ -2113,7 +2127,7 @@ namespace ME3TweaksModManager
                 {
                     if (target.Game.IsLEGame())
                     {
-                        GameLauncher.LaunchGame(target, SelectedLaunchOption);
+                        GameLauncher.LaunchGame(target, SelectedLaunchOption, skipLauncher, autoboot);
                     }
                     else
                     {

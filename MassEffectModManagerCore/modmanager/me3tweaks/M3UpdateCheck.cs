@@ -51,7 +51,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                         window.ShowBusyControl(updateAvailableDialog, true);
                     });
                 }
-#if DEBUG
+#if !DEBUG
                 else if (latestServerBuildNumer == App.BuildNumber)
                 {
                     if (ServerManifest.TryGetString(ServerManifest.M3_BUILD_RERELEASE_MD5, out var md5) && !string.IsNullOrWhiteSpace(md5))

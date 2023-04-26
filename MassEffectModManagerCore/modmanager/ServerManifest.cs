@@ -67,7 +67,7 @@ namespace ME3TweaksModManager.modmanager
                 manifestRefreshTimer = new Timer();
                 manifestRefreshTimer.Elapsed += OnTimedEvent;
 #if DEBUG // This is so I don't accidentally screw this up in production
-                manifestRefreshTimer.Interval = 10000; //1000 * 60 * 60 * 4; // 4 hour manifest refresh. It's a lot less data than combined services
+                manifestRefreshTimer.Interval = 1000 * 60 * 60 * 4; // 4 hour manifest refresh. It's a lot less data than combined services
 #else
                 manifestRefreshTimer.Interval = 1000 * 60 * 60 * 4; // 4 hour manifest refresh. It's a lot less data than combined services
 #endif
