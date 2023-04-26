@@ -137,7 +137,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             dictionary[mod.ModDescHash] = downloadLink;
                         }
-                        FileSourceService.AddFileSourceEntries(dictionary);
+                        FileSourceService.AddFileSourceEntries(dictionary, Settings.EnableTelemetry ? ServerManifest.GetString(ServerManifest.SERVER_ALIGNMENT) : null);
                     }
 
 
