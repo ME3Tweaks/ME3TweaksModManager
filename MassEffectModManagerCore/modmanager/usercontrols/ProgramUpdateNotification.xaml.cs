@@ -30,6 +30,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ProgramUpdateNotification.xaml
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class ProgramUpdateNotification : MMBusyPanelBase
     {
         public string CurrentVersion => $@"{App.AppVersion} ({App.BuildDate}) Build {App.BuildNumber}";
@@ -49,28 +50,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             DataContext = this;
             try
             {
-                // Latest vesrion
-                if (App.ServerManifest.TryGetValue($@"latest_version_hr-{App.CurrentLanguage}",
-                    out var localizedLatestVersion))
+                // Latest version
+                if (ServerManifest.TryGetString(ServerManifest.M3_LATEST_VERSION_HUMAN_READABLE, out var localizedLatestVersion, App.CurrentLanguage))
                 {
                     LatestVersion = localizedLatestVersion;
                 }
-                else
-                {
-                    LatestVersion = App.ServerManifest[@"latest_version_hr"];
-                }
-
-                LatestVersion += $@" Build {App.ServerManifest[@"latest_build_number"]}"; //Do not localize this string.
+                
+                LatestVersion += $@" Build {ServerManifest.GetInt(ServerManifest.M3_LATEST_BUILD_NUMBER)}"; //Do not localize this string.
 
 
                 // Release notes
-                if (App.ServerManifest.TryGetValue($@"release_notes-{App.CurrentLanguage}", out var localizedChangelog))
+                if (ServerManifest.TryGetString(ServerManifest.M3_RELEASE_NOTES, out var localizedChangelog, App.CurrentLanguage))
                 {
                     Changelog = GetPlainTextFromHtml(localizedChangelog);
-                }
-                else
-                {
-                    Changelog = GetPlainTextFromHtml(App.ServerManifest[@"release_notes"]);
                 }
             }
             catch (Exception e)
@@ -78,9 +70,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 M3Log.Error($@"There was an exception parsing the version/changelog strings: {e.Message}");
             }
 
-            PrimaryDownloadLink = App.ServerManifest[@"download_link2"];
-            BackupDownloadLink = App.ServerManifest[@"download_link"];
-            App.ServerManifest.TryGetValue(@"changelog_link", out ChangelogLink);
+            PrimaryDownloadLink = ServerManifest.GetString(ServerManifest.M3_PRIMARY_FULL_UPDATE_LINK);
+            BackupDownloadLink = ServerManifest.GetString(ServerManifest.M3_FALLBACK_FULL_UPDATE_LINK);
+            ServerManifest.TryGetString(@"changelog_link", out ChangelogLink);
 
             M3Log.Information($@"Update available: {LatestVersion}. Prompting user");
             LoadCommands();
@@ -97,10 +89,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void LoadCommands()
         {
-            NotNowCommand = new GenericCommand(CloseDialog);
+            NotNowCommand = new GenericCommand(CloseDialog, CanDeclineUpdate);
             StartUpdateCommand = new GenericCommand(StartUpdate, CanStartUpdate);
             ViewChangelogCommand = new GenericCommand(ViewChangelog, CanViewChangelog);
         }
+
+        private bool CanDeclineUpdate() => UpdateInProgress == false;
 
         private bool CanViewChangelog() => ChangelogLink != null;
 
@@ -119,6 +113,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             UpdateInProgress = true;
         }
 
+        public void OnUpdateInProgressChanged()
+        {
+            ClipperHelper.ShowHideVerticalContent(UpdateInProgressPanel, true);
+        }
+
         private void DownloadAndApplyUpdate(object sender, DoWorkEventArgs e)
         {
             void pCallback(long done, long total)
@@ -133,9 +132,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             // PATCH UPDATE
             localExecutableHash ??= MUtilities.CalculateHash(App.ExecutableLocation);
-            if (App.ServerManifest.TryGetValue(@"build_md5", out var destMd5))
+            if (ServerManifest.TryGetString(ServerManifest.M3_BUILD_RERELEASE_MD5, out var destMd5))
             {
-                foreach (var item in App.ServerManifest.Where(x => x.Key.StartsWith(@"upd-") || x.Key.StartsWith(@"gh_upd-")))
+                foreach (var item in ServerManifest.GetValues(x => x.Key.StartsWith(ServerManifest.M3_ME3TWEAKS_PATCH_UPDATE_PREFIX) || x.Key.StartsWith(ServerManifest.M3_GITHUB_PATCH_UPDATE_PREFIX)))
                 {
                     var updateinfo = item.Key.Split(@"-");
                     if (updateinfo.Length >= 4)
@@ -154,14 +153,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 patchMappingSourceMd5ToLinks[sourceHash] = patchMappingList;
                             }
 
-                            if (item.Key.StartsWith(@"gh_upd-"))
+                            if (item.Key.StartsWith(ServerManifest.M3_GITHUB_PATCH_UPDATE_PREFIX))
                             {
                                 // Insert at front.
-                                patchMappingList.Insert(0, (downloadHash, item.Value, timestamp));
+                                patchMappingList.Insert(0, (downloadHash, item.Value as string, timestamp));
                             }
                             else
                             {
-                                patchMappingList.Add((downloadHash, item.Value, timestamp));
+                                patchMappingList.Add((downloadHash, item.Value as string, timestamp));
                             }
                         }
                     }
@@ -413,15 +412,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return false;
         }
 
-        private bool CanStartUpdate()
-        {
-            return true;
-        }
+        private bool CanStartUpdate() => UpdateInProgress == false;
 
         private string localExecutableHash;
 
         private void CloseDialog()
         {
+            M3UpdateCheck.SetUpdateDeclined();
             M3Log.Warning(@"Update was declined");
             OnClosing(DataEventArgs.Empty);
         }
