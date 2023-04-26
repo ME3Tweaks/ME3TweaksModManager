@@ -363,6 +363,8 @@ namespace ME3TweaksModManager.modmanager.windows
         private void RemoveContentModFromInstallGroup()
         {
             var m = SelectedInstallGroupMod;
+            var selectedIndex = ModsInGroup.IndexOf(m);
+
             if (SelectedInstallGroupMod is BatchMod bm && ModsInGroup.Remove(m))
             {
                 VisibleFilteredMods.Add(bm.Mod);
@@ -378,6 +380,16 @@ namespace ME3TweaksModManager.modmanager.windows
             else if (SelectedInstallGroupMod is MEMMod tai && ModsInGroup.Remove(tai))
             {
                 VisibleFilteredMEMMods.Add(tai);
+            }
+
+            // Select next object to keep UI working well
+            if (ModsInGroup.Count > selectedIndex)
+            {
+                SelectedInstallGroupMod = ModsInGroup[selectedIndex];
+            }
+            else
+            {
+                SelectedInstallGroupMod = ModsInGroup.LastOrDefault();
             }
         }
 
@@ -470,7 +482,7 @@ namespace ME3TweaksModManager.modmanager.windows
             if (string.IsNullOrWhiteSpace(GroupDescription)) return false;
             if (string.IsNullOrWhiteSpace(GroupName)) return false;
             if (!ModsInGroup.Any()) return false;
-            if (ModsInGroup.OfType<BatchMod>().Any(x => x.Mod == null)) return false; // A batch mod could not be found
+            //if (ModsInGroup.OfType<BatchMod>().Any(x => x.Mod == null)) return false; // A batch mod could not be found // Disabled 04/25/2023 - hopefully this works properly?
             if (ModsInGroup.OfType<BatchASIMod>().Any(x => x.AssociatedMod == null)) return false; // A batch asi mod could not be found
             return true;
         }

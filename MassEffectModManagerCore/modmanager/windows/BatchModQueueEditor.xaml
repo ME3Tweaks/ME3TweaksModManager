@@ -367,6 +367,11 @@
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             </Style>
                         </ListBox.ItemContainerStyle>
+                        <ListBox.InputBindings>
+                            <KeyBinding
+                                Key="Delete"
+                                Command="{Binding RemoveFromInstallGroupCommand}" />
+                        </ListBox.InputBindings>
                         <ListBox.Resources>
                             <DataTemplate
                                 DataType="{x:Type batch:BatchMod}">
