@@ -222,7 +222,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             IsEnabled = false;
             M3LoadedMods.ModsReloaded += OnModLibraryReloaded;
-            M3LoadedMods.Instance.LoadMods();
+            MEGame[] gamesToReload = null;
+            if (SelectedBatchQueue != null)
+            {
+                gamesToReload = new[] { SelectedBatchQueue.Game };
+            }
+            M3LoadedMods.Instance.LoadMods(gamesToLoad: gamesToReload);
         }
 
         private void OnModLibraryReloaded(object sender, EventArgs e)
