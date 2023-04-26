@@ -146,5 +146,10 @@ namespace ME3TweaksModManager.modmanager.windows
 
             Close();
         }
+
+        private void LaunchOptionsList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            SaveAndClose();
+        }
     }
 }

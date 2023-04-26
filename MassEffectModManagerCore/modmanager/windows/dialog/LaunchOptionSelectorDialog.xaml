@@ -63,6 +63,12 @@
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <EventSetter Event="MouseDoubleClick" Handler="LaunchOptionsList_MouseDoubleClick"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
         </ListBox>
     </DockPanel>
 </Window>
