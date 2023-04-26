@@ -24,15 +24,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
         #region FALLBACKS
         /// <summary>
-        /// Startup Manifest URLs
-        /// </summary>
-        private static FallbackLink StartupManifestURL = new FallbackLink()
-        {
-            MainURL = @"https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + @"&M3=true",
-            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/staticfiles/liveservices/services/startupmanifest.json"
-        };
-
-        /// <summary>
         /// Endpoint (base URL) for downloading static assets
         /// </summary>
         internal static FallbackLink StaticFileBaseEndpoints { get; } = new()
@@ -62,34 +53,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             var lastContentCheck = Settings.LastContentCheck;
             var timeNow = DateTime.Now;
             return (timeNow - lastContentCheck).TotalDays > 1;
-        }
-
-        public static Dictionary<string, string> FetchOnlineStartupManifest(bool betamode)
-        {
-            foreach (var staticurl in StartupManifestURL.GetAllLinks())
-            {
-                Uri myUri = new Uri(staticurl);
-                string host = myUri.Host;
-
-                var fetchUrl = staticurl;
-                if (betamode && host == @"me3tweaks.com") fetchUrl += @"&beta=true"; //only me3tweaks source supports beta. fallback will always just use whatever was live when it synced
-
-                try
-                {
-                    using var wc = new ShortTimeoutWebClient();
-                    string json = wc.DownloadString(fetchUrl);
-                    App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                    M3Log.Information($@"Fetched startup manifest from endpoint {host}");
-                    return App.ServerManifest;
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error($@"Unable to fetch startup manifest from endpoint {host}: {e.Message}");
-                }
-            }
-
-            M3Log.Error(@"Failed to fetch startup manifest.");
-            return new Dictionary<string, string>();
         }
 
         public static (MemoryStream download, string errorMessage) DownloadStaticAsset(string assetName, Action<long, long> progressCallback = null)

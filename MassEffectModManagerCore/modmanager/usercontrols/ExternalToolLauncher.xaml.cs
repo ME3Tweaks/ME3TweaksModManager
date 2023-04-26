@@ -714,7 +714,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 case LegendaryExplorer:
                     {
-                        if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorerstable_netversion", out var lexStableNetVersion) && int.TryParse(lexStableNetVersion, out netVersion))
+                        if (ServerManifest.TryGetInt(ServerManifest.LEX_STABLE_DOTNET_VERSION_REQ, out netVersion))
                         {
                             // Nothing here, we parsed it out
                         }
@@ -722,7 +722,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 case LegendaryExplorer_Beta:
                     {
-                        if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorernightly_netversion", out var lexBetaNetVersion) && int.TryParse(lexBetaNetVersion, out netVersion))
+                        if (ServerManifest.TryGetInt(ServerManifest.LEX_NIGHTLY_DOTNET_VERSION_REQ, out netVersion))
                         {
                             // Nothing here, we parsed it out
                         }
@@ -786,12 +786,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static Version me3tweaksToolGetLatestVersion(string tool)
         {
-            if (App.ServerManifest == null)
+            if (!ServerManifest.HasManifest)
                 return null;
             switch (tool)
             {
                 case LegendaryExplorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestversion", out var lexbVersion))
+                    if (ServerManifest.TryGetString(ServerManifest.LEX_NIGHTLY_LATEST_VERSION, out var lexbVersion))
                     {
                         return new Version(lexbVersion);
                     }
@@ -803,12 +803,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static string me3tweaksToolGetDownloadUrl(string tool)
         {
-            if (App.ServerManifest == null)
+            if (!ServerManifest.HasManifest)
                 return null;
             switch (tool)
             {
                 case LegendaryExplorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestlink", out var lexNightlyLatestLink))
+                    if (ServerManifest.TryGetString(ServerManifest.LEX_NIGHTLY_LATEST_DOWNLOADLINK, out var lexNightlyLatestLink))
                     {
                         return lexNightlyLatestLink;
                     }

@@ -3282,75 +3282,28 @@ namespace ME3TweaksModManager
                         M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        M3OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
-                        if (App.ServerManifest != null && int.TryParse(App.ServerManifest[@"latest_build_number"],
-                                out var latestServerBuildNumer))
-                        {
-                            if (latestServerBuildNumer > App.BuildNumber)
-                            {
-                                M3Log.Information(@"Found update for Mod Manager: Build " + latestServerBuildNumer);
-
-                                Application.Current.Dispatcher.Invoke(delegate
-                                {
-                                    var updateAvailableDialog = new ProgramUpdateNotification();
-                                    updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
-                                    ShowBusyControl(updateAvailableDialog, true);
-                                });
-                            }
-#if !DEBUG
-                            else if (latestServerBuildNumer == App.BuildNumber)
-                            {
-                                if (App.ServerManifest.TryGetValue(@"build_md5", out var md5) && !string.IsNullOrWhiteSpace(md5))
-                                {
-                                    var localmd5 = MUtilities.CalculateHash(App.ExecutableLocation);
-                                    if (localmd5 != md5)
-                                    {
-                                        //Update is available.
-                                        {
-                                            M3Log.Information(@"MD5 of local exe doesn't match server version, minor update detected.");
-                                            Application.Current.Dispatcher.Invoke(delegate
-                                            {
-                                                var updateAvailableDialog = new ProgramUpdateNotification(localmd5);
-                                                updateAvailableDialog.UpdateMessage =
- M3L.GetString(M3L.string_interp_minorUpdateAvailableMessage, App.BuildNumber.ToString());
-                                                updateAvailableDialog.Close +=
- (sender, args) => { ReleaseBusyControl(); };
-                                                ShowBusyControl(updateAvailableDialog, true);
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-#endif
-                            else
-                            {
-                                M3Log.Information(@"Mod Manager is up to date");
-                            }
-                        }
+                        ServerManifest.FetchOnlineStartupManifest(Settings.BetaMode, usePeriodicRefresh: true);
                     }
                     catch (Exception e)
                     {
                         //Error checking for updates!
-                        M3Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
+                        M3Log.Exception(e, @"Checking for updates failed: ");
                         updateCheckTask.FinishedUIText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
 
-                    BackgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
 
-                    if (App.ServerManifest != null)
-                    {
-                        M3ServiceLoader.TouchupServerManifest(this);
-                    }
-                    else
+                    if (!ServerManifest.HasManifest)
                     {
                         // load cached (will load nothing if there is no local file)
                         MixinHandler.LoadME3TweaksPackage();
                     }
+
+                    BackgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
                 }
 
                 #endregion
 
-                M3ServiceLoader.LoadServices(this, bw);
+                M3ServiceLoader.LoadServices(bw);
                 PropertyChanged?.Invoke(this,
                     new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
 
@@ -4712,6 +4665,21 @@ namespace ME3TweaksModManager
         private void OnWindowLostFocus(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine(@"Window has lost focus");
+        }
+
+        /// <summary>
+        /// Looks at the active panel, and any queued panels, and returns if the listed type is among any of them
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool HasAnyQueuedPanelsOfType(Type type)
+        {
+            if (BusyContentM3 is SingleItemPanel2 sip && sip.Content.GetType() == type)
+            {
+                return true;
+            }
+
+            return queuedUserControls.Any(x => x.GetType() == type);
         }
     }
 }

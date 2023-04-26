@@ -103,32 +103,29 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         /// <returns></returns>
         public static bool? HasUpdatedLocalization(string lang)
         {
-            if (App.ServerManifest != null)
+            if (ServerManifest.TryGetString($@"{ServerManifest.LIVE_LOCALIZATION_PREFIX}-{lang}", out var livelocmd5))
             {
-                if (App.ServerManifest.TryGetValue($@"livelocalization-{lang}", out var livelocmd5))
+                var locFile = M3Localization.GetCachedLocalizationFile(lang);
+                if (File.Exists(locFile))
                 {
-                    var locFile = M3Localization.GetCachedLocalizationFile(lang);
-                    if (File.Exists(locFile))
-                    {
-                        var md5 = MUtilities.CalculateHash(locFile);
-                        M3Log.Information($@"Found server livelocalization. HasUpdatedLocalization({lang}) result: {md5 != livelocmd5}");
-                        return md5 != livelocmd5;
-                    }
-                    M3Log.Information($@"Server has localization for {lang}, but we don't have a localization locally stored");
-                    return true; //There is online asset but we do not have it locally
+                    var md5 = MUtilities.CalculateHash(locFile);
+                    M3Log.Information($@"Found server livelocalization. HasUpdatedLocalization({lang}) result: {md5 != livelocmd5}");
+                    return md5 != livelocmd5;
                 }
+                M3Log.Information($@"Server has localization for {lang}, but we don't have a localization locally stored");
+                return true; //There is online asset but we do not have it locally
             }
             return null; //can't be found or no manifest
         }
 
         internal static bool DownloadLocalization(string lang)
         {
-            if (App.ServerManifest == null)
+            if (!ServerManifest.HasManifest)
             {
                 M3Log.Error(@"Server manifest is null; cannot download localization");
                 return false;
             }
-            var livelocmd5 = App.ServerManifest[$@"livelocalization-{lang}"]; // this was checked previously
+            var livelocmd5 = ServerManifest.GetString($@"{ServerManifest.LIVE_LOCALIZATION_PREFIX}-{lang}"); // this was checked previously
             var url = LocalizationEndpoint + $@"?lang={lang}&build={App.BuildNumber}";
             var result = M3OnlineContent.DownloadToMemory(url, hash: livelocmd5);
             if (result.errorMessage == null)

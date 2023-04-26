@@ -76,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         // Must be ME2 or ME3, cannot have a transform, we allow it, archive has been scanned, we haven't started an operation
         // Mods that use the updater service cannot be compressed to ensure the update checks are reliable
         // Excludes Legendary Edition games.
-        public bool CanCompressPackages => CompressedMods.Any(x => x is Mod m && m.Game is MEGame.ME2 or MEGame.ME3) && CompressedMods.All(x => x is Mod m && m.ExeExtractionTransform == null && m.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        public bool CanCompressPackages => CompressedMods.Any(x => x is Mod m && m.Game is MEGame.ME2 or MEGame.ME3) && CompressedMods.All(x => x is Mod m && m.ExeExtractionTransform == null && m.ModClassicUpdateCode == 0) && ArchiveScanned && !TaskRunning;
         /// <summary>
         /// List of mods listed in the importer panel
         /// </summary>

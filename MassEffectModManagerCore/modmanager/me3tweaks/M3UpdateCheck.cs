@@ -31,7 +31,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             }
 
             // Is the panel already showing, e.g. computer was left on overnight? We don't want to spam panels
-            if (window.HasAnyQueuedPanelsOftype(typeof(ProgramUpdateNotification)))
+            if (window.HasAnyQueuedPanelsOfType(typeof(ProgramUpdateNotification)))
             {
                 M3Log.Information(@"Program update notification panel is visible or queued; not showing again on periodic refresh");
                 return;

@@ -550,27 +550,6 @@ namespace ME3TweaksModManager
         /// </summary>
         internal static string CurrentLanguage = InitialLanguage;
 
-        private static bool? _allowCompressingPackageOnImport;
-        /// <summary>
-        /// Allow package compression when importing a mod. This is controlled by the server manifest and currently defaults to false.
-        /// </summary>
-        public static bool AllowCompressingPackagesOnImport
-        {
-            get
-            {
-                if (_allowCompressingPackageOnImport != null) return _allowCompressingPackageOnImport.Value;
-                if (ServerManifest != null)
-                {
-                    if (ServerManifest.TryGetValue(@"allowcompressingpackagesonimport", out var acpoiStr) && bool.TryParse(acpoiStr, out var acpoiVal))
-                    {
-                        _allowCompressingPackageOnImport = acpoiVal;
-                    }
-                }
-
-                return false;
-            }
-        }
-
         public static string AppVersion
         {
             get

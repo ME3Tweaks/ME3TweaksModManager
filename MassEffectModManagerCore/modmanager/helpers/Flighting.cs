@@ -17,12 +17,9 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static bool IsFeatureEnabled(string featurename)
         {
-            if (App.ServerManifest != null)
+            if (ServerManifest.TryGetBool($@"{ServerManifest.FEATURE_FLIGHTING_PREFIX}_{featurename}", out var enabledVal))
             {
-                if (App.ServerManifest.TryGetValue($@"flighting_{featurename}", out var enabled) && bool.TryParse(enabled, out var enabledVal))
-                {
-                    return enabledVal;
-                }
+                return enabledVal;
             }
             return false;
         }

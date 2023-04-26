@@ -28,7 +28,7 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
             if (EnsureCheckedThisSession)
                 return;
 
-            if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"latest_nexusdb_hash", out var nexusDbHash))
+            if (ServerManifest.TryGetString(ServerManifest.LATEST_NEXUSDB_HASH, out var nexusDbHash))
             {
                 string md5 = null;
                 var dbPath = Path.Combine(M3Filesystem.GetNexusModsCache(), @"nexusmodsdb.zip");
