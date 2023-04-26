@@ -42,21 +42,6 @@ namespace ME3TweaksModManager.modmanager.save.game2
         //        class Rotator { };
         //        class Vector2D { };
 
-        class SaveTimeStamp : IUnrealSerializable
-        {
-            int Seconds;
-            int Day;
-            int Month;
-            int Year;
-            public void Serialize(IUnrealStream stream)
-            {
-                stream.Serialize(ref Seconds);
-                stream.Serialize(ref Day);
-                stream.Serialize(ref Month);
-                stream.Serialize(ref Year);
-            }
-        };
-
         class Guid : IUnrealSerializable
         {
             int A;
@@ -611,7 +596,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
         // ISaveFile for unified interface
         public MEGame Game => MEGame.LE2;
         public string SaveFilePath { get; set; }
-        public DateTime Proxy_TimeStamp => DateTime.Now; // Todo: IMPLEMENT
+        public DateTime Proxy_TimeStamp => TimeStamp.ToDate();
         public string Proxy_DebugName => DebugName;
         public IPlayerRecord Proxy_PlayerRecord => PlayerData;
         public string Proxy_BaseLevelName => BaseLevelName;
