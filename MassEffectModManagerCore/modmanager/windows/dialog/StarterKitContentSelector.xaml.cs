@@ -3,6 +3,7 @@ using System.Windows;
 using IniParser;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
@@ -35,16 +36,16 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             InitializeComponent();
 
 
-            AvailableFeatures.Add(new StarterKitAddinFeature("Add startup file", AddStartupFile, validGames: new[] { MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 }));
-            AvailableFeatures.Add(new StarterKitAddinFeature("Add PlotManager data", AddPlotManagerData, validGames: new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 }));
+            AvailableFeatures.Add(new StarterKitAddinFeature(M3L.GetString(M3L.string_addStartupFile), AddStartupFile, validGames: new[] { MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 }));
+            AvailableFeatures.Add(new StarterKitAddinFeature(M3L.GetString(M3L.string_addPlotManagerData), AddPlotManagerData, validGames: new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 }));
 
             string[] game3Hench = new[] { @"Ashley", @"EDI", @"Garrus", @"Kaidan", @"Marine", @"Prothean", @"Liara", @"Tali" };
             foreach (var hench in game3Hench)
             {
-                AvailableFeatures.Add(new StarterKitAddinFeature($"Add Squadmate Outfit Merge: {GetUIHenchName(hench)}", () => AddSquadmateMergeOutfit(hench), validGames: new[] { MEGame.ME3, MEGame.LE3 }));
+                AvailableFeatures.Add(new StarterKitAddinFeature(M3L.GetString(M3L.string_interp_addSquadmateOutfitMergeX, GetUIHenchName(hench)), () => AddSquadmateMergeOutfit(hench), validGames: new[] { MEGame.ME3, MEGame.LE3 }));
             }
 
-            AvailableFeatures.Add(new StarterKitAddinFeature($"Add mod settings menu stub", AddModSettingsStub, validGames: new[] { /*MEGame.LE1,*/ MEGame.LE3 }));
+            AvailableFeatures.Add(new StarterKitAddinFeature(M3L.GetString(M3L.string_interp_addModSettingsMenuStub), AddModSettingsStub, validGames: new[] { /*MEGame.LE1,*/ MEGame.LE3 }));
         }
 
         private void AddModSettingsStub()
@@ -70,6 +71,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
 
         private void AddSquadmateMergeOutfit(string hench)
         {
+            Debug.WriteLine("NOT IMPLEMENTED YET!!");
         }
 
         private void AddPlotManagerData()
@@ -81,8 +83,8 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
 
         private string GetUIHenchName(string hench)
         {
-            if (hench == @"Prothean") return "Javik";
-            if (hench == @"Marine") return "James";
+            if (hench == @"Prothean") return @"Javik"; // Not sure these need localized
+            if (hench == @"Marine") return @"James";
             return hench;
         }
 
@@ -103,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             if (sourceDirs.Count > 1)
             {
                 // We have to select
-                var response = DropdownSelectorDialog.GetSelection<string>(this, "Select DLC mod", dlcJob.CustomDLCFolderMapping.Keys.ToList(), "Select a DLC folder to add a startup file to.", "I don't know what this is for.");
+                var response = DropdownSelectorDialog.GetSelection<string>(this, M3L.GetString(M3L.string_selectDLCMod), dlcJob.CustomDLCFolderMapping.Keys.ToList(), M3L.GetString(M3L.string_selectADLCFolderToAddAStartupFileTo), @"");
                 if (response is string str)
                 {
                     return str;

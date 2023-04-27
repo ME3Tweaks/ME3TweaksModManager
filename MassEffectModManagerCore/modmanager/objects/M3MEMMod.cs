@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
@@ -42,7 +43,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public string Title { get; set; }
 
         [JsonIgnore]
-        public string FileSource => ModdescMod?.ModName ?? "Texture library";
+        public string FileSource => ModdescMod?.ModName ?? M3L.GetString(M3L.string_textureLibrary);
 
         /// <summary>
         /// The description of the texture package when being shown to the user
@@ -119,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.objects
                     if (imageHeight < 1)
                     {
                         M3Log.Error($@"{IMAGE_HEIGHT_PARM} value must be an integer greater than 0.");
-                        ValidationFailedReason = $"{IMAGE_HEIGHT_PARM} value must be an integer greater than 0.";
+                        ValidationFailedReason = M3L.GetString(M3L.string_interp_valueMustBeIntegerGreaterThanZero, IMAGE_HEIGHT_PARM);
                         return;
                     }
                     ImageHeight = imageHeight;
@@ -164,11 +165,11 @@ namespace ME3TweaksModManager.modmanager.objects
 
             if (ModdescMod != null)
             {
-                return $"{baseDescription}\n\nPart of {ModdescMod.ModName}";
+                return M3L.GetString(M3L.string_interp_XpartOfY, baseDescription, ModdescMod.ModName);
             }
             else
             {
-                return $"{baseDescription}\n\nPart of the texture library";
+                return M3L.GetString(M3L.string_interp_XpartOfTextureLibrary, baseDescription);
             }
         }
 

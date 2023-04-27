@@ -1204,6 +1204,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_altfile_multilistIdNINotIntegerOrMissing = "string_interp_altfile_multilistIdNINotIntegerOrMissing";
 		public const string string_interp_altfile_installToNotGuaranteedCustomDLC = "string_interp_altfile_installToNotGuaranteedCustomDLC";
 		public const string string_interp_validation_altfile_flattentNotTrueOrFalse = "string_interp_validation_altfile_flattentNotTrueOrFalse";
+		public const string string_interp_altfile_missingOperation = "string_interp_altfile_missingOperation";
+		public const string string_interp_altfile_disallowedPattern = "string_interp_altfile_disallowedPattern";
+		public const string string_interp_altfile_nonExistentMergeFile = "string_interp_altfile_nonExistentMergeFile";
+		public const string string_interp_altfile_mergeFileFailedToLoad = "string_interp_altfile_mergeFileFailedToLoad";
+		public const string string_interp_altfile_noMergeFilesSpecified = "string_interp_altfile_noMergeFilesSpecified";
 		public const string string_interp_groupNameAlternateOptionsHeader = "string_interp_groupNameAlternateOptionsHeader";
 		public const string string_interp_invalidTargetMissingFile = "string_interp_invalidTargetMissingFile";
 		public const string string_invalidTargetProtectedByCmmvanilla = "string_invalidTargetProtectedByCmmvanilla";
@@ -1549,6 +1554,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_aSIMods = "string_aSIMods";
 		public const string string_textureMods = "string_textureMods";
 		public const string string_locateCustomFile = "string_locateCustomFile";
+		public const string string_interp_dialog_memForDifferentGame = "string_interp_dialog_memForDifferentGame";
+		public const string string_wrongGame = "string_wrongGame";
 		public const string string_selectDestinationLocation = "string_selectDestinationLocation";
 		public const string string_packageFile = "string_packageFile";
 		public const string string_interp_fileFetchedAndWrittenToX = "string_interp_fileFetchedAndWrittenToX";
@@ -2040,6 +2047,12 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_selectHeadmorph = "string_selectHeadmorph";
 		public const string string_selectAHeadmorphToInstall = "string_selectAHeadmorphToInstall";
 		public const string string_starterKitAddins = "string_starterKitAddins";
+		public const string string_addStartupFile = "string_addStartupFile";
+		public const string string_addPlotManagerData = "string_addPlotManagerData";
+		public const string string_interp_addSquadmateOutfitMergeX = "string_interp_addSquadmateOutfitMergeX";
+		public const string string_interp_addModSettingsMenuStub = "string_interp_addModSettingsMenuStub";
+		public const string string_selectDLCMod = "string_selectDLCMod";
+		public const string string_selectADLCFolderToAddAStartupFileTo = "string_selectADLCFolderToAddAStartupFileTo";
 		public const string string_autobootSave = "string_autobootSave";
 		public const string string_extractingTSECLI = "string_extractingTSECLI";
 		public const string string_batchModHasNoConfigOptionsUIText = "string_batchModHasNoConfigOptionsUIText";
@@ -2068,5 +2081,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_im3v_missingRequiredImageParameter = "string_interp_im3v_missingRequiredImageParameter";
 		public const string string_interp_im3v_nonExistentImageReference = "string_interp_im3v_nonExistentImageReference";
 		public const string string_textureExportsNotListedInThisMemFile = "string_textureExportsNotListedInThisMemFile";
+		public const string string_interp_valueMustBeIntegerGreaterThanZero = "string_interp_valueMustBeIntegerGreaterThanZero";
+		public const string string_interp_headmorphsCannotDependOnIncludedDLC = "string_interp_headmorphsCannotDependOnIncludedDLC";
+		public const string string_textureLibrary = "string_textureLibrary";
+		public const string string_interp_XpartOfY = "string_interp_XpartOfY";
+		public const string string_interp_XpartOfTextureLibrary = "string_interp_XpartOfTextureLibrary";
 	}
 }

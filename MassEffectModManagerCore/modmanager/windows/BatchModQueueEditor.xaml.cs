@@ -115,8 +115,8 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             OpenFileDialog ofd = new OpenFileDialog()
             {
-                Filter = "MassEffectModder files (*.mem)|*.mem", // Todo: Localize this properly
-                Title = "Select .mem file",
+                Filter = M3L.GetString(M3L.string_massEffectModderFiles) + @" (*.mem)|*.mem", // Todo: Localize this properly
+                Title = M3L.GetString(M3L.string_selectMemFile),
             };
 
             var result = ofd.ShowDialog();
@@ -126,7 +126,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 var memFileGame = ModFileFormats.GetGameMEMFileIsFor(ofd.FileName);
                 if (memFileGame != SelectedGame)
                 {
-                    M3L.ShowDialog(this, $"The selected .mem file is not for {SelectedGame} - it is for {memFileGame}. This .mem file cannot be used in this install group.", "Wrong game", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_memForDifferentGame, SelectedGame, memFileGame), M3L.GetString(M3L.string_wrongGame), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 

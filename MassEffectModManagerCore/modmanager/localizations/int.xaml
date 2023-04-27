@@ -1449,6 +1449,15 @@
     <!-- 0={FriendlyName} 1={File path} -->
     <system:String x:Key="string_interp_validation_altfile_flattentNotTrueOrFalse">Alternate File ({0}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
+    <system:String x:Key="string_interp_altfile_missingOperation">Alternate File does not specify ModOperation, which is required for all Alternate Files: {0}</system:String>
+    <!-- 0={Alternate name} -->
+    <system:String x:Key="string_interp_altfile_disallowedPattern">Alternate File {0} has merge filename with a .. in it, which is not allowed: {1}</system:String>
+    <!-- 0={Alternate name} 1={File name} -->
+    <system:String x:Key="string_interp_altfile_nonExistentMergeFile">Alternate File merge file (item in MergeFiles) does not exist: {0}</system:String>
+    <!-- 0={File name} -->
+    <system:String x:Key="string_interp_altfile_mergeFileFailedToLoad">Alternate File merge file {0} failed to load: {1}</system:String>
+    <!-- 0={File name} 1={Failure reason} -->
+    <system:String x:Key="string_interp_altfile_noMergeFilesSpecified">Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.</system:String>
 
     <!-- Alternate Group -->
     <system:String x:Key="string_interp_groupNameAlternateOptionsHeader">{0} - {1} option(s)</system:String>
@@ -1963,7 +1972,9 @@
     <system:String x:Key="string_aSIMods">ASI mods</system:String>
     <system:String x:Key="string_textureMods">Texture mods</system:String>
     <system:String x:Key="string_locateCustomFile">Locate custom file</system:String>
-
+    <system:String x:Key="string_interp_dialog_memForDifferentGame">The selected .mem file is not for {0} - it is for {1}. This .mem file cannot be used in this install group.</system:String>
+    <!-- 0={SelectedGame} 1={memFileGame} -->
+    <system:String x:Key="string_wrongGame">Wrong game</system:String>
 
     <!-- Backup File Fetcher (Devs only) -->
     <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
@@ -2660,6 +2671,13 @@
 
     <!-- Starter Kit Content Selector -->
     <system:String x:Key="string_starterKitAddins">Starter Kit Addins</system:String>
+    <system:String x:Key="string_addStartupFile">Add startup file</system:String>
+    <system:String x:Key="string_addPlotManagerData">Add PlotManager data</system:String>
+    <system:String x:Key="string_interp_addSquadmateOutfitMergeX">Add Squadmate Outfit Merge: {0}</system:String>
+    <!-- 0={Henchman name (James, Javik, etc)} -->
+    <system:String x:Key="string_interp_addModSettingsMenuStub">Add mod settings menu stub</system:String>
+    <system:String x:Key="string_selectDLCMod">Select DLC mod</system:String>
+    <system:String x:Key="string_selectADLCFolderToAddAStartupFileTo">Select a DLC folder to add a startup file to.</system:String>
 
     <!-- Save Selector -->
 
@@ -2717,5 +2735,17 @@
     <!-- MEMMod -->
     <system:String x:Key="string_textureExportsNotListedInThisMemFile">[texture exports not listed in this .mem file]</system:String>
 
+    <!-- M3HeadMorph -->
+    <system:String x:Key="string_interp_valueMustBeIntegerGreaterThanZero">{0} value must be an integer greater than 0.</system:String>
+    <!-- 0={Parameter name} -->
+    <system:String x:Key="string_interp_headmorphsCannotDependOnIncludedDLC">Headmorphs cannot mark themselves as dependent on DLC included with the game. Invalid value: {0}</system:String>
+    <!-- 0={DLC folder name} -->
+
+    <!-- M3MEMMod -->
+    <system:String x:Key="string_textureLibrary">Texture library</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_XpartOfY">{0}\n\nPart of {1}</system:String>
+    <!-- 0={Description (written by dev)} 1={Mod name} -->
+    <system:String xml:space="preserve" x:Key="string_interp_XpartOfTextureLibrary">{0}\n\nPart of the texture library</system:String>
+    <!-- 0={Description (written by dev)} -->
 
 </ResourceDictionary>

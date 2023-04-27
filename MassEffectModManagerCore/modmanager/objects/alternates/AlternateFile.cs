@@ -177,7 +177,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 M3Log.Error($@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}");
                 ValidAlternate = false;
-                LoadFailedReason = $"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_missingOperation, FriendlyName);
                 return;
             }
 
@@ -261,7 +261,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                     // ModDesc 8.0: Allow flattening output of multilist output.
                     // Backported to 7.0 125 build for EGM - it must work on 125 7.0 and above.
-                    if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125) 
+                    if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
                         || modForValidating.ModDescTargetVersion >= 8.0)
                     {
                         if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
@@ -366,7 +366,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                                 // Security issue
                                 M3Log.Error($@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_disallowedPattern, FriendlyName, mFile);
                                 return;
                             }
 
@@ -376,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                             {
                                 M3Log.Error($@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $"Alternate File merge file (item in MergeFiles) does not exist: {mFile}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_nonExistentMergeFile, mFile);
                                 return;
                             }
 
@@ -386,7 +386,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                                 // MM failed to load
                                 M3Log.Error($@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_mergeFileFailedToLoad, mFile, modForValidating.LoadFailedReason);
                                 return;
                             }
                             merges.Add(mm);
@@ -398,7 +398,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     {
                         M3Log.Error($@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.");
                         ValidAlternate = false;
-                        LoadFailedReason = "Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_noMergeFilesSpecified);
                         return;
                     }
                     #endregion
@@ -581,4 +581,4 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
     }
 }
-    
+

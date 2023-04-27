@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
                     if (imageHeight < 1)
                     {
                         M3Log.Error($@"{IMAGE_HEIGHT_PARM} value must be an integer greater than 0.");
-                        ValidationFailedReason = $"{IMAGE_HEIGHT_PARM} value must be an integer greater than 0.";
+                        ValidationFailedReason = M3L.GetString(M3L.string_interp_valueMustBeIntegerGreaterThanZero, IMAGE_HEIGHT_PARM);
                         return;
                     }
 
@@ -120,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
                     if (MEDirectories.OfficialDLC(mod.Game).Contains(reqDLC, StringComparer.InvariantCultureIgnoreCase))
                     {
                         M3Log.Error($@"Headmorphs cannot mark themselves as dependent on DLC included with the game. Invalid value: {reqDLC}");
-                        ValidationFailedReason = $"Headmorphs cannot mark themselves as dependent on DLC included with the game. Invalid value: {reqDLC}";
+                        ValidationFailedReason = M3L.GetString(M3L.string_interp_headmorphsCannotDependOnIncludedDLC, reqDLC);
                         return;
                     }
 
