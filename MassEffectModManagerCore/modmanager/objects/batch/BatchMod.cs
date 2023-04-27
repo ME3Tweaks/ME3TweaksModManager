@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.FileSource;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Newtonsoft.Json;
@@ -46,6 +46,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// </summary>
         [JsonProperty(@"moddeschash")]
         public string ModDescHash { get; set; }
+
+        /// <summary>
+        /// The original size of the moddesc
+        /// </summary>
+        [JsonProperty(@"moddescsize")]
+        public long ModDescSize { get; set; }
 
         /// <summary>
         /// If the moddesc hash does not match the one on disk
@@ -104,6 +110,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         [JsonIgnore]
         public bool UseSavedOptions { get; set; }
 
+
         /// <summary>
         /// Initializes and associates a mod with this object
         /// </summary>
@@ -143,8 +150,9 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             if (Mod != null)
             {
+                ModDescSize = new FileInfo(Mod.ModDescPath).Length;
                 ModDescHash = MUtilities.CalculateHash(Mod.ModDescPath);
-                if (FileSourceService.TryGetSource(ModDescHash, out var sourceLink))
+                if (FileSourceService.TryGetSource(new FileInfo(Mod.ModDescPath).Length, ModDescHash, out var sourceLink))
                 {
                     DownloadLink = sourceLink;
                 }

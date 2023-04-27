@@ -20,7 +20,10 @@ using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.importer
 {
-    internal class ModImport
+    /// <summary>
+    /// Class for inspecting mod archives to find mod content
+    /// </summary>
+    internal class ModArchiveInspector
     {
         /// <summary>
         /// Inspects and loads compressed mods from an archive.
@@ -234,11 +237,11 @@ namespace ME3TweaksModManager.modmanager.importer
                     return null; // We don't want to tell user that we don't support it cause they'll just ask us to, which I don't want
                 }
 
-                ModArchiveImporter.ExeTransform transform = null;
+                ModArchiveImporterPanel.ExeTransform transform = null;
                 if (importingInfo?.exetransform != null)
                 {
                     M3Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
-                    transform = new ModArchiveImporter.ExeTransform(M3OnlineContent.FetchExeTransform(importingInfo.exetransform));
+                    transform = new ModArchiveImporterPanel.ExeTransform(M3OnlineContent.FetchExeTransform(importingInfo.exetransform));
                 }
 
                 string custommoddesc = null;

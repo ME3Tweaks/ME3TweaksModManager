@@ -468,6 +468,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             // 06/14/2022 - ME3Tweaks Moddesc Updates 
             // This is for mods that might break when used on Mod Manager 8.0 and above due to alternate logic change
             ModDescHash = MUtilities.CalculateHash(ms); //resets pos to 0
+            ModDescSize = ms.Length;
+
             string updatedIni = null;
             if (ModDescUpdaterService.HasHash(ModDescHash))
             {
@@ -506,6 +508,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// Hash of the moddesc file. Only populated when loading from archive.
         /// </summary>
         public string ModDescHash { get; set; }
+
+        /// <summary>
+        /// Size of the moddesc file. Only populated whne loading from archive
+        /// </summary>
+        public long ModDescSize { get; set; }
 
         /// <summary>
         /// Initializes a mod from a moddesc.ini file

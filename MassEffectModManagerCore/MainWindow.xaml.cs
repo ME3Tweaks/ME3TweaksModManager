@@ -4195,7 +4195,7 @@ namespace ME3TweaksModManager
         private void openModImportUI(string archiveFile, Stream archiveStream = null, bool priority = false, NexusProtocolLink sourceLink = null)
         {
             M3Log.Information(@"Opening Mod Archive Importer for file " + archiveFile);
-            var modInspector = new ModArchiveImporter(archiveFile, archiveStream, link: sourceLink);
+            var modInspector = new ModArchiveImporterPanel(archiveFile, archiveStream, link: sourceLink);
             modInspector.Close += (a, b) =>
             {
                 if (!HasQueuedPanel())

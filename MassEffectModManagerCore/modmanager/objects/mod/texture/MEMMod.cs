@@ -5,7 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Services.FileSource;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
@@ -168,11 +170,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         public void ExtractFromArchive(string archivePath,
             string unused0,
             bool unused1,
-            Action<string> textUpdateCallback,
-            Action<DetailedProgressEventArgs> extractingCallback,
-            Action<string, int, int> unused2,
-            bool testMode,
-            Stream archiveStream)
+            Action<string> textUpdateCallback = null,
+            Action<DetailedProgressEventArgs> extractingCallback = null,
+            Action<string, int, int> unused2 = null,
+            bool testMode = false,
+            Stream archiveStream = null, NexusProtocolLink sourceNXMLink = null)
         {
             if (archiveStream == null && !File.Exists(archivePath))
             {
@@ -213,6 +215,24 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
 
             // Put into file directory
             var memPath = Path.Combine(M3LoadedMods.GetTextureLibraryDirectory(), Path.GetFileName(FilePath));
+
+            // But first, inventory and hash the file
+            if (sourceNXMLink != null)
+            {
+                var hash = MUtilities.CalculateHash(memPath);
+
+                var downloadLink = sourceNXMLink.ToNexusDownloadPageLink();
+                var dictionary = new CaseInsensitiveDictionary<FileSourceRecord>();
+                dictionary[hash] = new FileSourceRecord()
+                {
+                    DownloadLink = downloadLink, 
+                    Hash = hash, 
+                    Size = new FileInfo(memPath).Length,
+                    Name = Path.GetFileName(memPath)
+                };
+                FileSourceService.AddFileSourceEntries(dictionary, Settings.EnableTelemetry ? ServerManifest.GetInt(ServerManifest.SERVER_ALIGNMENT) : null);
+            }
+
             var game = ModFileFormats.GetGameMEMFileIsFor(memPath);
             var outputDir = Directory.CreateDirectory(M3LoadedMods.GetTextureLibraryDirectory(game)).FullName;
             var outPath = Path.Combine(outputDir, Path.GetFileName(memPath));

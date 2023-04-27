@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,7 +12,7 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.FileSource;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.gameini;
@@ -27,14 +28,13 @@ using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.ui;
 using SevenZip;
 using SevenZip.EventArguments;
-using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic for ModArchiveImporter.xaml
+    /// UI for importing mods from archive
     /// </summary>
-    public partial class ModArchiveImporter : MMBusyPanelBase
+    public partial class ModArchiveImporterPanel : MMBusyPanelBase
     {
         public string CancelButtonText { get; set; } = M3L.GetString(M3L.string_cancel);
 
@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// List of mods listed in the importer panel
         /// </summary>
         public ObservableCollectionExtended<IImportableMod> CompressedMods { get; } = new();
-        public ModArchiveImporter(string file, Stream archiveStream = null, NexusProtocolLink link = null)
+        public ModArchiveImporterPanel(string file, Stream archiveStream = null, NexusProtocolLink link = null)
         {
             M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", this);
             ArchiveFilePath = file;
@@ -132,12 +132,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (SourceNXMLink != null)
                     {
                         var downloadLink = SourceNXMLink.ToNexusDownloadPageLink();
-                        var dictionary = new CaseInsensitiveDictionary<string>();
+                        var dictionary = new CaseInsensitiveDictionary<FileSourceRecord>();
                         foreach (var mod in CompressedMods.OfType<Mod>())
                         {
-                            dictionary[mod.ModDescHash] = downloadLink;
+                            dictionary[mod.ModDescHash] = new FileSourceRecord()
+                            {
+                                DownloadLink = downloadLink,
+                                Hash = mod.ModDescHash,
+                                Size = mod.ModDescSize,
+                                Name = $@"moddesc.ini: ({mod.Game}) {mod.ModName} {mod.ModVersionString}"
+                            };
                         }
-                        FileSourceService.AddFileSourceEntries(dictionary, Settings.EnableTelemetry ? ServerManifest.GetString(ServerManifest.SERVER_ALIGNMENT) : null);
+                        
+                        FileSourceService.AddFileSourceEntries(dictionary, Settings.EnableTelemetry ? ServerManifest.GetInt(ServerManifest.SERVER_ALIGNMENT) : null);
                     }
 
 
@@ -369,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 });
             }
 
-            ScanFailureReason = ModImport.FindModsInArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, AddTextureModCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
+            ScanFailureReason = ModArchiveInspector.FindModsInArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, AddTextureModCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
         }
 
         protected override void OnClosing(DataEventArgs args)
@@ -610,7 +617,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 try
                 {
-                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback, false, ArchiveStream);
+                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback, false, ArchiveStream, SourceNXMLink);
                     if (mod is MEMMod)
                     {
                         ImportedTextureMod = true;

@@ -80,9 +80,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <param name="extractingCallback"></param>
         /// <param name="compressedPackageCallback"></param>
         /// <param name="testRun"></param>
+        /// <param name="archiveStream"></param>
+        /// <param name="nexusProtocolLink"></param>
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
-            Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null,
-            bool testRun = false, Stream archiveStream = null)
+            Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null,
+            Action<string, int, int> compressedPackageCallback = null,
+            bool testRun = false, Stream archiveStream = null, NexusProtocolLink unused = null)
         {
             if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
             if (archiveStream == null && !File.Exists(archivePath))

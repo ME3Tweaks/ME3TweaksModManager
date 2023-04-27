@@ -9,7 +9,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
-using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.FileSource;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
@@ -347,7 +347,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (mod is BatchMod bm && bm.Mod == null && bm.ModDescHash != null)
             {
-                if (FileSourceService.TryGetSource(bm.ModDescHash, out var link))
+                if (FileSourceService.TryGetSource(bm.ModDescSize, bm.ModDescHash, out var link))
                 {
                     open = true;
                     SelectedUnavailableModLink = link;

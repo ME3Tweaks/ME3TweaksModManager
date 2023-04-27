@@ -14,7 +14,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// Transform that is applied to help convert an exe installer to a mod manager mod
         /// </summary>
-        internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
+        internal ModArchiveImporterPanel.ExeTransform ExeExtractionTransform;
 
         /// <summary>
         /// Generates a blank mod object. You must specify you know what you are doing for this by specifying if this is a valid mod or not.
