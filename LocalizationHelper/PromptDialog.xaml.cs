@@ -26,7 +26,7 @@ namespace LocalizationHelper
         /// <param name="defaultValue"></param>
         /// <param name="selectText"></param>
         /// <param name="inputType"></param>
-        public PromptDialog(string question, string title, string defaultValue = "", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
+        public PromptDialog(string question, string title, string defaultValue = @"", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
         {
             InitializeComponent();
             this.Loaded += PromptDialog_Loaded;
