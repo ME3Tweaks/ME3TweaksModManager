@@ -113,7 +113,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             if (obj is M3Headmorph option)
             {
-                var removeRef = M3L.ShowDialog(Window.GetWindow(this), $"Remove headmorph reference '{option.Title}'?", "Confirm removal", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                var removeRef = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_mde_interp_removeHeadmorphReferenceX, option.Title), M3L.GetString(M3L.string_confirmRemoval), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                 if (removeRef == MessageBoxResult.Yes)
                 {
                     Headmorphs.Remove(option);

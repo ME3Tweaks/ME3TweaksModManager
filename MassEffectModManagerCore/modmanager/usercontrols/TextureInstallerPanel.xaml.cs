@@ -64,7 +64,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             // Write out the MFL file
             Target = target;
-            ActionText = "Preparing to install textures";
+            ActionText = M3L.GetString(M3L.string_preparingToInstallTextures);
 
             MEMFilesToInstall = memFilesToInstall;
 
@@ -102,7 +102,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (!canInstall)
             {
-                M3L.ShowDialog(window, $"Cannot install texture mods:\nNot all .mem files selected for install are for {Target.Game}.");
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotInstallMemsNotAllSameGame, Target.Game));
                 OnClosing(DataEventArgs.Empty);
                 return;
             }
@@ -125,7 +125,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TextureInstaller");
             nbw.DoWork += (a, b) =>
             {
-                BGTask = BackgroundTaskEngine.SubmitBackgroundJob("TextureInstall", "Installing texture mods", "Installed texture mods");
+                BGTask = BackgroundTaskEngine.SubmitBackgroundJob(@"TextureInstall", M3L.GetString(M3L.string_installingTextureMods), M3L.GetString(M3L.string_installedTextureMods));
                 bool hasMem = MEMNoGuiUpdater.UpdateMEM(false, false, setPercentDone, failedToExtractMEM, currentTaskCallback);
                 if (hasMem)
                 {
@@ -155,7 +155,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 }
 
                                 conistencyResult.AddFirstError(
-                                    "The following files are no longer in sync with the texture scan that took place when textures were first installed onto this game installation. Do not install or remove package files after installing textures.");
+                                    M3L.GetString(M3L.string_dialog_textureMapDesync));
                                 b.Result = conistencyResult;
                                 return;
                             }
@@ -187,7 +187,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                                 // Todo: Backup service specific strings.
                                 markerResult.AddFirstError(
-                                    "The following files are leftover from a different texture installation. This is not supported; reset your game to vanilla, reinstall your non-texture mods, then install textures again.");
+                                    M3L.GetString(M3L.string_dialog_leftoverTextureFilesFound));
                                 b.Result = markerResult;
                                 return;
                             }
@@ -213,7 +213,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (b.Error != null)
                 {
                     // Logging is handled in nbw
-                    BGTask.FinishedUIText = "Error occurred in texture installer thread";
+                    BGTask.FinishedUIText = M3L.GetString(M3L.string_errorOccurredInTextureInstaller);
                     Result.Error = b.Error;
                 }
                 else if (b.Result is MEMSessionResult mir)
@@ -221,7 +221,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (mir.ExitCode != 0)
                     {
                         // This is kind of technical, but will also catch some strange edge cases user may face if MEM unexpectedly dies.
-                        mir.AddFirstError($"MassEffectModder ended with non-zero exit code: {(mir.ExitCode?.ToString() ?? "[no exit code]")}. This indicates something went wrong.");
+                        var exitCodeString = mir.ExitCode?.ToString() ?? M3L.GetString(M3L.string_noExitCodeBrackets);
+                        mir.AddFirstError(M3L.GetString(M3L.string_dialog_memNonZeroExitCode, exitCodeString));
                     }
 
                     var errors = mir.GetErrors();
@@ -229,19 +230,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         if (BGTask != null)
                         {
-                            BGTask.FinishedUIText = "Texture installation failed";
+                            BGTask.FinishedUIText = M3L.GetString(M3L.string_textureInstallationFailed);
                         }
 
                         ListDialog ld = null;
                         if (mir.IsInstallSession)
                         {
                             // Messages are different.
-                            ld = new ListDialog(errors.ToList(), "Texture install errors", "The following errors were reported during Mass Effect Modder texture installation. More information can be found in Mod Manager's application log.\nYour game may be in a broken state due to these errors.", window, width: 800);
+                            ld = new ListDialog(errors.ToList(), M3L.GetString(M3L.string_textureInstallationErrors), M3L.GetString(M3L.string_dialog_textureInstallErrorsOccurred), window, width: 800);
                         }
                         else
                         {
                             // Game has not been modified
-                            ld = new ListDialog(errors.ToList(), "Cannot install textures", "The following issues were detected with your game installation prior to installing textures. More information can be found in Mod Manager's application log.\nYour game has not been modified.", window, width: 800);
+                            ld = new ListDialog(errors.ToList(), M3L.GetString(M3L.string_cannotInstallTextures), M3L.GetString(M3L.string_dialog_textureModPrecheckIssues), window, width: 800);
                         }
                         ld.ShowDialog();
                     }
@@ -264,8 +265,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private bool ShowTextureInstallWarning()
         {
             var result = M3L.ShowDialog(window,
-                "Once you install textures, you cannot install more content mods without restoring the entire game from backup. This includes installing updates to mods. Mod Manager will warn you if you attempt to install a mod that violates these procedures to prevent game instability.\n\nENSURED YOU HAVE INSTALLED ALL NON-TEXTURE MODS AT THIS POINT.\n\nAre you sure you wish to continue?",
-                "Texture installation warning", MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                M3L.GetString(M3L.string_dialog_bigScaryTextureInstallWarning),
+                M3L.GetString(M3L.string_textureInstallationWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning,
                 System.Windows.MessageBoxResult.No);
 
             return result == MessageBoxResult.Yes;

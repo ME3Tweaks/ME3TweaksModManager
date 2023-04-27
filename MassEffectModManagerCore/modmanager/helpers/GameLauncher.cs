@@ -56,14 +56,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
         public static void SetAutoresumeSave(MainWindow window, GameTargetWPF SelectedGameTarget, Action autoresumeSaveChanged = null)
         {
-
-            // How to hijack LE3's -RESUME for a specific numbered save
-            /*          var localProf = LocalProfile.DeserializeLocalProfile(LE3Directory.LocalProfilePath, MEGame.LE3);
-                        localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame].Data = 2;
-                        localProf.ProfileSettings[(int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer].Data = "Jane_31_Soldier_200122_4a61af6";
-                        localProf.Serialize().WriteToFile(LE3Directory.LocalProfilePath);*/
-
-            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedGameTarget, "Autoboot save");
+            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedGameTarget, M3L.GetString(M3L.string_autobootSave));
             ssui.Show();
             ssui.Closed += (sender, args) =>
             {
@@ -80,7 +73,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                             return;
                         }
 
-                        var careerId = Directory.GetParent(ssui.SelectedSaveFile.SaveFilePath).Name; 
+                        var careerId = Directory.GetParent(ssui.SelectedSaveFile.SaveFilePath).Name;
                         if (SelectedGameTarget.Game == MEGame.LE1)
                         {
                             var lp = LocalProfileLE1.DeserializeLocalProfile(lpf);

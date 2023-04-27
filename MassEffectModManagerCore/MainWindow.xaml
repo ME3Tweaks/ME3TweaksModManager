@@ -151,12 +151,12 @@
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem
-                Header="Developer features"
+                Header="{DynamicResource string_developerFeatures}"
                 Style="{StaticResource MenuItemHeaderStyle}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
             <MenuItem
-                Header="Add starter-kit content to DLC mod"
-                ToolTip="Allows you to add content to a DLC mod that is normally added when using Starter Kit, such as a startup file"
+                Header="{DynamicResource string_addStarterKitContent}"
+                ToolTip="{DynamicResource string_tooltip_addStarterKitContent}"
                 Command="{Binding AddStarterKitContentCommand}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
@@ -585,7 +585,6 @@
                                 RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                   
                     <MenuItem
                         Header="{DynamicResource string_libraryManagement}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
@@ -604,12 +603,12 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="Install standalone files"
-                        Style="{StaticResource MenuItemHeaderStyle}" 
-                        ui:SharedUIBindings.GenerationLE="True"/>
+                        Header="{DynamicResource string_installStandaloneFiles}"
+                        Style="{StaticResource MenuItemHeaderStyle}"
+                        ui:SharedUIBindings.GenerationLE="True" />
                     <MenuItem
                         Header="{DynamicResource string_installMemFile}"
-                        Command="{Binding InstallMEMFileCommand}" 
+                        Command="{Binding InstallMEMFileCommand}"
                         ui:SharedUIBindings.GenerationLE="True">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
@@ -623,7 +622,7 @@
                     </MenuItem>
                     <MenuItem
                         Header="{DynamicResource string_installHeadmorph}"
-                        Command="{Binding InstallHeadmorphCommand}" 
+                        Command="{Binding InstallHeadmorphCommand}"
                         ui:SharedUIBindings.GenerationLE="True">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
@@ -1031,8 +1030,8 @@
                     </MenuItem>
                     <MenuItem
                         ui:SharedUIBindings.GenerationLE="True"
-                        Header="Run LE1 Coalesced Merge"
-                        ToolTip="Merges all DLC M3 Coalesced Delta files into the main LE1 Coalesced file"
+                        Header="{DynamicResource string_runLE1CoalescedMerge}"
+                        ToolTip="{DynamicResource string_tooltip_runLE1CoalescedMerge}"
                         Command="{Binding LE1CoalescedMergeCommand}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
@@ -1317,10 +1316,10 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="Trilogy Save Editor"
+                        Header="{DynamicResource string_trilogySaveEditor}"
                         Name="TrilogySaveEditor_MenuItem"
                         Command="{Binding TrilogySaveEditorCommand}"
-                        ToolTip="Save editor for Mass Effect Trilogy and Legendary Edition">
+                        ToolTip="{DynamicResource string_tooltip_trilogySaveEditor}">
                         <MenuItem.Icon>
                             <Image
                                 Source="/modmanager/toolicons/tse.png"
@@ -1397,7 +1396,8 @@
                     Header="{DynamicResource string_beta}"
                     Visibility="{Binding Path=(modmanager:Settings.BetaMode), Converter={StaticResource BoolToVisibilityConverter}}"
                     Padding="4">
-                    <MenuItem Header="Blank item to avoid brekaing the interface"/>
+                    <MenuItem
+                        Header="{DynamicResource string_blankItemToAvoidBreakingTheInterface}" />
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
@@ -1457,7 +1457,7 @@
                         Name="ShowWelcomePanel_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Autoboot LE2 test"
+                        Header="{DynamicResource string_autobootLE2Test}"
                         Name="AutobootLE2_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
@@ -1469,7 +1469,7 @@
                         Name="ShowMEMDB_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Show Basegame File Identification Service Viewer"
+                        Header="{DynamicResource string_showBasegameFileIdentificationServiceViewer}"
                         Name="ShowBGFISDB_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
@@ -1655,11 +1655,11 @@
                         <Button
                             MinWidth="70"
                             Padding="10,7"
-                            Content="Install headmorph"
+                            Content="{DynamicResource string_installHeadmorph}"
                             Command="{Binding ApplyM3HeadmorphCommand}"
                             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
-                            ToolTip="Installs a headmorph from this mod into an existing save game"
-                            ui:SharedUIBindings.VisibilityToEnabled="True"/>
+                            ToolTip="{DynamicResource string_tooltip_installHeadmorph}"
+                            ui:SharedUIBindings.VisibilityToEnabled="True" />
                         <Button
                             MinWidth="70"
                             Padding="10,7"
@@ -1690,7 +1690,7 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem
-                                        Header="Boot into specific save file"
+                                        Header="{DynamicResource string_bootIntoSpecificSaveFile}"
                                         Command="{Binding StartGameSpecificSaveCommand}"
                                         Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
                                         <MenuItem.Icon>

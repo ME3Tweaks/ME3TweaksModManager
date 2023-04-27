@@ -289,7 +289,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 var texJob = GetJob(ModJob.JobHeader.TEXTUREMODS);
                 if (texJob != null && texJob.TextureModReferences.Any())
                 {
-                    sb.AppendLine("This mod references texture mod files that can be installed after all other mods are installed:");
+                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesTextureFiles));
                     foreach (var reference in texJob.TextureModReferences)
                     {
                         string name = reference.Title;
@@ -300,7 +300,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 var headmorphJob = GetJob(ModJob.JobHeader.HEADMORPHS);
                 if (headmorphJob != null && headmorphJob.HeadMorphFiles.Any())
                 {
-                    sb.AppendLine("This mod can install the following headmorph files:");
+                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesHeadmorphFiles));
                     foreach (var reference in headmorphJob.HeadMorphFiles)
                     {
                         string name = reference.Title;
@@ -653,7 +653,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (parsedModCmmVer > App.HighestSupportedModDesc && ModName != @"LE1 Diversification Project")
             {
                 M3Log.Error(@"The cmmver specified by this mod is higher than the version supported by this build of ME3Tweaks Mod Manager. You may need to update Mod Manager for this mod to load.");
-                LoadFailedReason = $"The cmmver specified by this mod ({parsedModCmmVer}) is higher than the version supported by this build of ME3Tweaks Mod Manager ({App.HighestSupportedModDesc}). You may need to update Mod Manager for this mod to load.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_unsupportedModdescVersion, parsedModCmmVer, App.HighestSupportedModDesc);
                 return;
             }
 
@@ -1205,7 +1205,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     !string.IsNullOrWhiteSpace(iniData[headerAsString][@"mergemods"]))
                 {
                     M3Log.Error(@"Mod specifies basegame mergemods descriptor but does not set basegame moddir, setting mod as invalid to prevent misleading behavior");
-                    LoadFailedReason = "[BASEGAME] 'mergemods' was specified, but 'moddir' was not - did you mean to set moddir to '.'? Merge mods will not work without settings a moddir value, use value '.' if you do not have other files to replace, or remove mergemods from this task header.";
+                    LoadFailedReason = M3L.GetString(M3L.string_mod_validation_basegameMergeModsWithoutModDir);
                     return;
                 }
             }

@@ -80,7 +80,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <summary>
         /// SERIALIZATION ONLY - Stores the list of MEM file paths befoer they are parsed into TextureModsToInstall
         /// </summary>
-        [JsonProperty("texturemodfiles")]
+        [JsonProperty(@"texturemodfiles")]
         public List<string> SerializeOnly_MEMFilePaths { get; set; }
 
         /// <summary>

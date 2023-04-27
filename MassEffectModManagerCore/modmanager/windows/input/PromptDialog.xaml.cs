@@ -25,7 +25,7 @@ namespace ME3TweaksModManager.modmanager.windows
         /// <param name="defaultValue"></param>
         /// <param name="selectText"></param>
         /// <param name="inputType"></param>
-        public PromptDialog(string question, string title, string defaultValue = "", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
+        public PromptDialog(string question, string title, string defaultValue = @"", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
         {
             InitializeComponent();
             txtQuestion.Text = question;
@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.windows
             txtResponse.Focus();
         }
 
-        public static string Prompt(Control owner, string question, string title = "", string defaultValue = "", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
+        public static string Prompt(Control owner, string question, string title = @"", string defaultValue = @"", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
         {
             PromptDialog inst = new PromptDialog(question, title, defaultValue, selectText, selectionStart, selectionEnd, inputType);
             if (owner != null)

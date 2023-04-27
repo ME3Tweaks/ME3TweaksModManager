@@ -1,9 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.BasegameFileIdentificationServicePanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-    xmlns:basegameFileIdentification="clr-namespace:ME3TweaksCore.Services.BasegameFileIdentification;assembly=ME3TweaksCore"
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.BasegameFileIdentificationServicePanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:basegameFileIdentification="clr-namespace:ME3TweaksCore.Services.BasegameFileIdentification;assembly=ME3TweaksCore"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -17,22 +13,36 @@
                 <TextBlock
                     Text="{Binding Filename}"
                     DockPanel.Dock="Top"
-                    FontWeight="Bold"/>
-
+                    FontWeight="Bold" />
                 <ItemsControl
                     Margin="10,0,0,0"
                     ItemsSource="{Binding Records}">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type basegameFileIdentification:BasegameFileRecord}">
+                        <DataTemplate
+                            DataType="{x:Type basegameFileIdentification:BasegameFileRecord}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition
+                                        Width="Auto" />
+                                    <ColumnDefinition
+                                        Width="*" />
+                                    <ColumnDefinition
+                                        Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding source}" TextWrapping="Wrap"/>
-                                <TextBlock Text="{Binding size}" Grid.Column="1" HorizontalAlignment="Right" Margin="10,0"/>
-                                <TextBlock Text="{Binding hash}" Grid.Column="2" Width="220" HorizontalAlignment="Right" TextAlignment="Right"/>
+                                <TextBlock
+                                    Text="{Binding source}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Text="{Binding size}"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Margin="10,0" />
+                                <TextBlock
+                                    Text="{Binding hash}"
+                                    Grid.Column="2"
+                                    Width="220"
+                                    HorizontalAlignment="Right"
+                                    TextAlignment="Right" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -50,13 +60,13 @@
     </UserControl.Resources>
     <DockPanel>
         <TextBlock
-            Text="Basegame File Identification Service Viewer "
+            Text="{DynamicResource string_title_bgfisviewer}"
             FontSize="20"
             FontWeight="Bold"
             HorizontalAlignment="Center"
             DockPanel.Dock="Top" />
         <TextBlock
-            Text="View the contents of the Basegame File Identification Service"
+            Text="{DynamicResource string_description_bgfisviewer}"
             TextWrapping="Wrap"
             Margin="0,0,0,10"
             HorizontalAlignment="Center"
@@ -74,7 +84,7 @@
                 Watermark="{DynamicResource string_typeToFilter}"
                 Width="200"
                 HorizontalAlignment="Left"
-                Text="{Binding SelectedGame.SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                Text="{Binding SelectedGame.SearchText, UpdateSourceTrigger=PropertyChanged}" />
         </DockPanel>
         <Grid
             VerticalAlignment="Stretch">
@@ -84,14 +94,21 @@
                 ItemsSource="{Binding Games}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
-                            <TextBlock Text="{Binding GameName}" />
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <Image
+                                Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}"
+                                Width="16"
+                                Height="16"
+                                Margin="0,0,5,0" />
+                            <TextBlock
+                                Text="{Binding GameName}" />
                         </StackPanel>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
-                    <DataTemplate DataType="{x:Type usercontrols:BasegameFileIdentificationServicePanel+BasegameFileUIRecord}">
+                    <DataTemplate
+                        DataType="{x:Type usercontrols:BasegameFileIdentificationServicePanel+BasegameFileUIRecord}">
                         <DockPanel>
                             <ListBox
                                 ItemsSource="{Binding FilesView}"

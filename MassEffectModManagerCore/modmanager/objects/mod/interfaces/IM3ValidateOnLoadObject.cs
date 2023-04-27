@@ -23,7 +23,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
                 if (!parms.ContainsKey(parm))
                 {
                     M3Log.Error($@"{structName} is missing required required parameter '{parm}'.");
-                    ValidationFailedReason = $"{structName} is missing required parameter '{parm}'.";
+                    ValidationFailedReason = M3L.GetString(M3L.string_interp_im3v_missingRequiredParameter, structName, parm);
                     return false;
                 }
             }
@@ -50,7 +50,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
                 if (required)
                 {
                     M3Log.Error($@"{structName} is missing required file parameter '{fileParamName}'.");
-                    ValidationFailedReason = $"{structName} is missing required file parameter '{fileParamName}'.";
+                    ValidationFailedReason = M3L.GetString(M3L.string_interp_im3v_missingRequiredFileParameter, structName, fileParamName);
                     return false;
                 }
                 else
@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
             if (fileAsset.StartsWith(@"/") || fileAsset.StartsWith(@"\\") || fileAsset.Contains(@".."))
             {
                 M3Log.Error($@"{structName} references file {fileAsset}, which contains invalid patterns. File references cannot contain .. or start with / or \.");
-                ValidationFailedReason = $"{structName} references file {fileAsset}, which contains invalid patterns. File references cannot contain .. or start with / or \\.";
+                ValidationFailedReason = M3L.GetString(M3L.string_interp_im3v_invalidCharacterPatterns, structName, fileAsset);
                 return false;
             }
 
@@ -74,7 +74,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
             if (!FilesystemInterposer.FileExists(fullPath, mod.Archive))
             {
                 M3Log.Error($@"{structName} references file asset {fileAsset}, but this file does not exist under the {fileFolderName} directory.");
-                ValidationFailedReason = $"{structName} references file asset {fileAsset}, but this file does not exist under the {fileFolderName} directory.";
+                ValidationFailedReason = M3L.GetString(M3L.string_interp_im3v_nonExistentFileReference, structName, fileAsset, fileFolderName);
                 return false;
             }
 
@@ -101,7 +101,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
                 if (required)
                 {
                     M3Log.Error($@"{structName} is missing required image parameter '{imageParmName}'.");
-                    ValidationFailedReason = $"{structName} is missing required image parameter '{imageParmName}'.";
+                    ValidationFailedReason = M3L.GetString(M3L.string_interp_im3v_missingRequiredImageParameter, structName, imageParmName);
                     return false;
                 }
                 else
@@ -113,7 +113,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
             if (additionalRequiredParam != null && (!parms.ContainsKey(additionalRequiredParam) || string.IsNullOrWhiteSpace(parms[additionalRequiredParam])))
             {
                 M3Log.Error($@"{structName} is missing required image parameter '{additionalRequiredParam}'.");
-                ValidationFailedReason = $"{structName} is missing required image parameter '{additionalRequiredParam}'.";
+                ValidationFailedReason = M3L.GetString(M3L.string_interp_im3v_missingRequiredImageParameter, structName, additionalRequiredParam);
                 return false;
             }
 
@@ -123,7 +123,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
             if (!FilesystemInterposer.FileExists(fullPath, mod.Archive))
             {
                 M3Log.Error($@"{structName} references imageasset {imageAsset}, but this file does not exist under the M3Images directory.");
-                ValidationFailedReason = $@"{structName} references imageasset {imageAsset}, but this file does not exist under the M3Images directory.";
+                ValidationFailedReason = M3L.GetString(M3L.string_interp_im3v_nonExistentImageReference, structName, imageAsset);
                 return false;
             }
 

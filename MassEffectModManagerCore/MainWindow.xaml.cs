@@ -798,8 +798,8 @@ namespace ME3TweaksModManager
                                     M3Log.Error(
                                         $@"Required DLC {dlc.DLCFolderName} is installed but Mod Manager could not read the version information; the mod may not have been installed by Mod Manager. We cannot verify this requirement is met; thus we are rejecting the install");
                                     M3L.ShowDialog(this,
-                                        $"This headmorph requires {modNameStr} version {dlc.MinVersion} or higher to be installed, but Mod Manager could not determine the installed version. Install {modNameStr} with Mod Manager, then install this headmorph.",
-                                        "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        M3L.GetString(M3L.string_interp_headmorphRequiresDLCCouldNotDetermine, modNameStr, dlc.MinVersion, modNameStr),
+                                        M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
                                     return;
                                 }
 
@@ -809,8 +809,8 @@ namespace ME3TweaksModManager
                                     M3Log.Error(
                                         $@"Required DLC {dlc.DLCFolderName} is installed but could not parse its version: {metaCmm.Version}. We cannot verify this requirement is met; thus we are rejecting the install");
                                     M3L.ShowDialog(this,
-                                        $"This headmorph requires {modNameStr} version {dlc.MinVersion} or higher to be installed, but Mod Manager could not determine the installed version from its version string {metaCmm.Version}. Contact the developer of this mod to fix this issue.",
-                                        "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        M3L.GetString(M3L.string_interp_headmorphRequiresDLCBadVersionString, modNameStr, dlc.MinVersion, metaCmm.Version),
+                                        M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
                                     return;
                                 }
 
@@ -820,19 +820,18 @@ namespace ME3TweaksModManager
                                     M3Log.Error(
                                         $@"Required DLC {dlc.DLCFolderName} is installed but does not meet the minimum version requirement. Installed version: {modVersion}, required version: {dlc.MinVersion}");
                                     M3L.ShowDialog(this,
-                                        $"This headmorph requires {modNameStr} version {dlc.MinVersion} or higher to be installed. The current installed version does not meet this requirement.\n\nInstalled version: {modVersion}\nMinimum version required: {dlc.MinVersion}",
-                                        "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        M3L.GetString(M3L.string_interp_headmorphRequiresDLCMinimumReqNotMet, modNameStr, dlc.MinVersion, modVersion, dlc.MinVersion),
+                                        M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            M3Log.Error(
-                                $@"Required DLC for headmorph is not installed in game: {dlc.DLCFolderName}{(dlc.MinVersion != null ? @" with minimum version " + dlc.MinVersion : null)}");
+                            M3Log.Error($@"Required DLC for headmorph is not installed in game: {dlc.DLCFolderName}{(dlc.MinVersion != null ? @" with minimum version " + dlc.MinVersion : null)}"); // do not localize
                             M3L.ShowDialog(this,
-                                $"This headmorph requires the following mod to be installed:\n{modNameStr}\n\nThis mod must be installed prior to installing this headmorph.",
-                                "Prerequesite not met", MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.GetString(M3L.string_interp_headmorphRequiresDLCPrereqNotMet, modNameStr),
+                                M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
                     }
@@ -880,8 +879,8 @@ namespace ME3TweaksModManager
 
             OpenFileDialog m = new OpenFileDialog
             {
-                Title = "Select headmorph file",
-                Filter = "Headmorph files" + $@"|{filter}"
+                Title = M3L.GetString(M3L.string_selectHeadmorphFile),
+                Filter = M3L.GetString(M3L.string_headmorphFiles) + $@"|{filter}"
             };
             var result = m.ShowDialog(this);
             if (result != true)
@@ -903,11 +902,11 @@ namespace ME3TweaksModManager
                     Task.Run(() =>
                     {
                         M3Log.Information($@"Installing headmorph {mFileName} to {ssui.SelectedSaveFile.SaveFilePath}");
-                        var task = BackgroundTaskEngine.SubmitBackgroundJob(@"HeadmorphInstall", "Installing headmorph", "Installed headmorph to save");
+                        var task = BackgroundTaskEngine.SubmitBackgroundJob(@"HeadmorphInstall", M3L.GetString(M3L.string_installingHeadmorph), M3L.GetString(M3L.string_installedHeadmorphToSave));
                         var installed = HeadmorphInstaller.InstallHeadmorph(mFileName, ssui.SelectedSaveFile.SaveFilePath, task).Result;
                         if (!installed)
                         {
-                            task.FinishedUIText = "Failed to install headmorph";
+                            task.FinishedUIText = M3L.GetString(M3L.string_failedToInstallHeadmorph);
                         }
                         BackgroundTaskEngine.SubmitJobCompletion(task);
                     });
@@ -929,7 +928,7 @@ namespace ME3TweaksModManager
         {
             void notInstalled()
             {
-                M3L.ShowDialog(this, "Trilogy Save Editor is not installed. Press OK to open the web page to download the installer.", "TSE not installed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_tseNotInstalled), M3L.GetString(M3L.string_tSENotInstalled), MessageBoxButton.OK, MessageBoxImage.Warning);
                 M3Utilities.OpenWebpage(@"https://github.com/KarlitosVII/trilogy-save-editor/releases/latest");
             }
 
@@ -2473,7 +2472,7 @@ namespace ME3TweaksModManager
             var nonDirectInstallJobs = SelectedMod.InstallationJobs.Where(x => x.Header != ModJob.JobHeader.TEXTUREMODS && x.Header != ModJob.JobHeader.HEADMORPHS).ToList();
             if (nonDirectInstallJobs.Count == 0)
             {
-                ApplyModButtonText = "Not a content mod";
+                ApplyModButtonText = M3L.GetString(M3L.string_notAContentMod);
                 return false;
             }
 
@@ -4224,8 +4223,8 @@ namespace ME3TweaksModManager
 
                 if (modInspector.ImportedTextureMod)
                 {
-                    M3L.ShowDialog(this, "Texture mods must be installed through Batch Installer, which is available in the Mod Management menu. The files you have imported will be available in the install group editor.",
-                        "Texture mod(s) imported", MessageBoxButton.OK, MessageBoxImage.Information);
+                    M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_textureModsImportedHowToUse),
+                        M3L.GetString(M3L.string_textureModsImported), MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             };
 
@@ -4296,8 +4295,8 @@ namespace ME3TweaksModManager
                 return;
             }
 
-            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MergeLE1Coalesced", "Merging coalesced files",
-                "Merged coalesced files");
+            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MergeLE1Coalesced", M3L.GetString(M3L.string_mergingCoalescedFiles),
+                M3L.GetString(M3L.string_mergedCoalescedFiles));
             var coalMergePanel = new LE1CoalescedMergePanel(target);
             coalMergePanel.Close += (a, b) =>
             {
@@ -4641,10 +4640,10 @@ namespace ME3TweaksModManager
 
         private void InstallMEMFile()
         {
-            string filter = "Mass Efect Modder files" + @"|*.mem";
+            string filter = M3L.GetString(M3L.string_massEfectModderFiles) + @"|*.mem";
             OpenFileDialog m = new OpenFileDialog
             {
-                Title = "Select .mem file",
+                Title = M3L.GetString(M3L.string_selectMemFile),
                 Filter = filter,
             };
             var result = m.ShowDialog(this);
@@ -4655,7 +4654,7 @@ namespace ME3TweaksModManager
             if (!game.IsLEGame())
             {
                 M3Log.Error($@"User attempting to install mem to unsupported game: {game}");
-                M3L.ShowDialog(this, $"Mod Manager does not support installing .mem files for {game}.", "Unsupported game", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_gameUnsupportedForTextureModding, game), M3L.GetString(M3L.string_unsupportedGame), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -4663,7 +4662,7 @@ namespace ME3TweaksModManager
             if (target == null)
             {
                 M3Log.Error($@"User attempting to install mem to game that is not currently a target: {game}");
-                M3L.ShowDialog(this, $"Mod Manager does not have an installation target available for {game}.", "Game not available", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_notTargetAvailableForX, game), M3L.GetString(M3L.string_gameNotAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

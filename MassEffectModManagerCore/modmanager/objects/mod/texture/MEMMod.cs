@@ -50,7 +50,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         /// <summary>
         /// The full path to the .mem file
         /// </summary>
-        [JsonProperty("filepath")]
+        [JsonProperty(@"filepath")]
         public string FilePath { get; set; }
 
         /// <summary>
@@ -131,7 +131,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         public virtual string GetDescription()
         {
             var modifiedExports = GetModifiedExportNames();
-            return $"This texture mod modifies the following exports:\n{string.Join('\n', modifiedExports.Select(x => $@" - {(string.IsNullOrWhiteSpace(x) ? "<export not listed in .mem file>" : x)}"))}";
+            var exportNotListed = M3L.GetString(M3L.string_textureExportsNotListedInThisMemFile);
+            var exportList = string.Join('\n', modifiedExports.Select(x => $@" - {(string.IsNullOrWhiteSpace(x) ? exportNotListed : x)}")); // do not localize
+            return M3L.GetString(M3L.string_interp_textureModModifiesExportsX, exportList);
         }
 
         /// <summary>
@@ -225,8 +227,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
                 var dictionary = new CaseInsensitiveDictionary<FileSourceRecord>();
                 dictionary[hash] = new FileSourceRecord()
                 {
-                    DownloadLink = downloadLink, 
-                    Hash = hash, 
+                    DownloadLink = downloadLink,
+                    Hash = hash,
                     Size = new FileInfo(memPath).Length,
                     Name = Path.GetFileName(memPath)
                 };

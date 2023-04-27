@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <summary>
         /// Link to where the asset that satisfies this mod can be found
         /// </summary>
-        [JsonProperty("downloadlink")]
+        [JsonProperty(@"downloadlink")]
         public string DownloadLink { get; set; }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             get
             {
-                if (Mod != null && Mod.InstallationJobs.Sum(x => x.GetAllAlternates().Count) == 0) return "Standalone";
+                if (Mod != null && Mod.InstallationJobs.Sum(x => x.GetAllAlternates().Count) == 0) return M3L.GetString(M3L.string_batchModHasNoConfigOptionsUIText);
                 if (!HasChosenOptions) return M3L.GetString(M3L.string_notConfigured);
                 if (ChosenOptionsDesync) return M3L.GetString(M3L.string_reconfigurationRequired);
                 return M3L.GetString(M3L.string_interp_configuredTimestamp, ConfigurationTime.ToString(@"d"));

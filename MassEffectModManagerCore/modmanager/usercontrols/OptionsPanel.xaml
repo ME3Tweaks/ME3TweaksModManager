@@ -323,12 +323,12 @@
                         Grid.Column="1">
                         <CheckBox
                             FontWeight="Bold"
-                            Content="LE1: Enable Coalesced Merge"
+                            Content="{DynamicResource string_lE1EnableCoalescedMerge}"
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.EnableLE1CoalescedMerge)}" />
                         <TextBlock
                             Margin="0,0,10,0"
-                            Text="Turning this off will allow you to manually edit your Coalesced file, and will prevent .m3cd files from merging to the basegame Coalesced file. This may break some mods. Do not turn this off if you don't know what this means."
+                            Text="{DynamicResource string_description_le1CoalescedMergeOption}"
                             TextWrapping="Wrap" />
                     </StackPanel>
                     <!-- OT OPTIONS MODMAKER -->

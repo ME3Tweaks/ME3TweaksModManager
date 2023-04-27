@@ -67,8 +67,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (SelectedBatchQueue == null) return;
 
-            var result = PromptDialog.Prompt(window, "Enter a new name for the duplicated install group.", "Enter new name",
-                            $"{SelectedBatchQueue.QueueName} - Duplicate", true);
+            var result = PromptDialog.Prompt(window, M3L.GetString(M3L.string_enterANewNameForTheDuplicatedInstallGroup), M3L.GetString(M3L.string_enterNewName),
+                            M3L.GetString(M3L.string_interp_defaultDuplicateName, SelectedBatchQueue.QueueName), true);
             if (!string.IsNullOrWhiteSpace(result))
             {
                 var originalQueue = SelectedBatchQueue; // Cache in event we lose reference to this after possible reload. We don't want to set name on wrong object.
@@ -85,14 +85,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     else
                     {
-                        M3L.ShowDialog(window, "An install group with this name already exists.", "Error",
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_anInstallGroupWithThisNameAlreadyExists), M3L.GetString(M3L.string_error),
                             MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 catch (Exception e)
                 {
                     M3Log.Exception(e, @"Error duplicating batch queue: ");
-                    M3L.ShowDialog(window, $"Error duplicating install group: {e.Message}", "Error",
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_errorDuplicatingInstallGroupX, e.Message), M3L.GetString(M3L.string_error),
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
@@ -391,7 +391,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (SelectedModInGroup is MEMMod mm)
                 {
-                    ModDescriptionText = mm.FileExists ? $"This texture mod modifies the following textures:\n{string.Join('\n', mm.GetModifiedExportNames())}" : M3L.GetString(M3L.string_modNotAvailableForInstall); ;
+                    ModDescriptionText = mm.FileExists ? M3L.GetString(M3L.string_interp_textureModModifiesExportsX, string.Join('\n', mm.GetModifiedExportNames())) : M3L.GetString(M3L.string_modNotAvailableForInstall); ;
                     if (mm is M3MEMMod m3mm)
                     {
                         // Todo: Store hash of moddesc with the M3MM mod in the BIQ

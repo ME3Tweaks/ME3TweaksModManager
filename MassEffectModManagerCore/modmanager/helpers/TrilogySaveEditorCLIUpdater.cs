@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                             });
 
                         // Handle unzip code here.
-                        statusMessageUpdate?.Invoke("Extracting Trilogy Save Editor (CLI)");
+                        statusMessageUpdate?.Invoke(M3L.GetString(M3L.string_extractingTSECLI));
                         if (Path.GetExtension(downloadPath) == @".7z")
                         {
                             var res = LZMA.ExtractSevenZipArchive(downloadPath, MCoreFilesystem.GetTempDirectory(),

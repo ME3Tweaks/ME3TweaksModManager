@@ -47,9 +47,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {@"updatecode", ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
                 {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", string.Join(';',RequiredDLC.Select(x=>x.Serialize(false)).Concat(OptionalSingleRequiredDLC.Select(x=>x.Serialize(true))))},
-                {@"bannerimagename", new MDParameter(@"string", @"bannerimagename", BannerImageName, new [] {@""}, "") {Header = @"ModInfo", AllowedValuesPopulationFunc = PopulateImageFileOptions}}, // Uses image population function
-                {@"sortalternates", new MDParameter(@"string", @"sortalternates", SortAlternateOptions ? @"" : @"False", new [] {@"", @"True", @"False"}, "") {Header = @"ModInfo"}}, //don't put checkedbydefault in if it is not set to true. // do not localize
-                {@"requiresenhancedbink", new MDParameter(@"string", @"requiresenhancedbink", !RequiresEnhancedBink ? @"" : @"False", new [] {@"", @"True", @"False"}, "") {Header = @"ModInfo"}}, // don't populate if not used
+                {@"bannerimagename", new MDParameter(@"string", @"bannerimagename", BannerImageName, new [] {@""}, @"") {Header = @"ModInfo", AllowedValuesPopulationFunc = PopulateImageFileOptions}}, // Uses image population function // do not localize
+                {@"sortalternates", new MDParameter(@"string", @"sortalternates", SortAlternateOptions ? @"" : @"False", new [] {@"", @"True", @"False"}, @"") {Header = @"ModInfo"}}, //don't put checkedbydefault in if it is not set to true. // do not localize
+                {@"requiresenhancedbink", new MDParameter(@"string", @"requiresenhancedbink", !RequiresEnhancedBink ? @"" : @"False", new [] {@"", @"True", @"False"}, @"") {Header = @"ModInfo"}}, // don't populate if not used // do not localize
             };
 
 
