@@ -104,7 +104,7 @@ namespace ME3TweaksModManager.Tests
                 modsFoundInArchive.Clear();
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
                 Console.WriteLine($@"Inspecting archive: { archive}");
-                ModImport.FindModsInArchive(archive, addModCallback, failedModCallback, addTextureMod, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
+                ModArchiveInspector.FindModsInArchive(archive, addModCallback, failedModCallback, addTextureMod, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
                 var archiveZ = new SevenZipExtractor(archive);
                 foreach (var mod in modsFoundInArchive)
                 {
@@ -205,7 +205,7 @@ namespace ME3TweaksModManager.Tests
                     modsFoundInArchive.Clear();
                     //var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(exe);
                     Console.WriteLine($@"Inspecting exe: { exe}");
-                    ModImport.FindModsInArchive(exe, addModCallback, failedModCallback, addTextureMod, logMessageCallback);
+                    ModArchiveInspector.FindModsInArchive(exe, addModCallback, failedModCallback, addTextureMod, logMessageCallback);
                     var archiveZ = new SevenZipExtractor(exe, InArchiveFormat.Nsis);
                     foreach (var mod in modsFoundInArchive)
                     {

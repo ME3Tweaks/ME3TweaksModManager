@@ -124,7 +124,7 @@ namespace ME3TweaksModManager.Tests
                 modsFoundInArchive.Clear();
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
                 Console.WriteLine($"Inspecting archive: { archive}");
-                ModImport.FindModsInArchive(archive, addModCallback, failedModCallback,addTextureMod, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
+                ModArchiveInspector.FindModsInArchive(archive, addModCallback, failedModCallback,addTextureMod, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
                 Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count(x => x.ValidMod), $"{archive} did not parse correct amount of mods.");
 
                 foreach (var v in modsFoundInArchive)
