@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
+using BCnEncoder.Shared;
 using IniParser;
 using IniParser.Model;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
@@ -9,6 +12,7 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
 using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
+using TaskExtensions = LegendaryExplorerCore.Helpers.TaskExtensions;
 
 namespace ME3TweaksModManager.modmanager.windows.dialog
 {
@@ -29,6 +33,12 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
         /// If the selected mod should be reloaded when the window closes
         /// </summary>
         public bool ReloadMod { get; private set; }
+
+        /// <summary>
+        /// Bottom left text to display
+        /// </summary>
+        public string OperationText { get; set; } = "Select an operation";
+
         public StarterKitContentSelector(Window owner, Mod selectedMod)
         {
             Owner = owner;
@@ -53,32 +63,105 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             var dlcFolderPath = GetDLCFolderPath();
             if (dlcFolderPath == null) return; // Abort
 
-            List<Action<IniData>> moddescAddinDelegates = new List<Action<IniData>>();
-            StarterKitAddins.AddModSettingsMenu(SelectedMod, SelectedMod.Game, Path.Combine(SelectedMod.ModPath, dlcFolderPath), moddescAddinDelegates);
-
-            if (moddescAddinDelegates.Any())
+            OperationText = "Adding mod settings menu data...";
+            Task.Run(() =>
             {
-                var iniParser = new FileIniDataParser();
-                var iniData = iniParser.ReadFile(SelectedMod.ModDescPath);
-                foreach (var del in moddescAddinDelegates)
+                OperationInProgress = true;
+                List<Action<IniData>> moddescAddinDelegates = new List<Action<IniData>>();
+                StarterKitAddins.AddModSettingsMenu(SelectedMod, SelectedMod.Game,
+                    Path.Combine(SelectedMod.ModPath, dlcFolderPath), moddescAddinDelegates);
+
+                if (moddescAddinDelegates.Any())
                 {
-                    del(iniData);
+                    var iniParser = new FileIniDataParser();
+                    var iniData = iniParser.ReadFile(SelectedMod.ModDescPath);
+                    foreach (var del in moddescAddinDelegates)
+                    {
+                        del(iniData);
+                    }
+
+                    File.WriteAllText(SelectedMod.ModDescPath, iniData.ToString());
+                    ReloadMod = true;
                 }
-                File.WriteAllText(SelectedMod.ModDescPath, iniData.ToString());
-                ReloadMod = true;
-            }
+            }).ContinueWithOnUIThread(x =>
+            {
+                OperationInProgress = false;
+
+                if (x.Exception == null)
+                {
+                    OperationText = "Added mod settings menu data";
+                }
+                else
+                {
+                    OperationText = $"Failed to add mod settings menu data: {x.Exception.Message}";
+                }
+            });
+
+
         }
+
+        /// <summary>
+        /// If an operation is currently in progress
+        /// </summary>
+        public bool OperationInProgress { get; set; }
 
         private void AddSquadmateMergeOutfit(string hench)
         {
-            Debug.WriteLine("NOT IMPLEMENTED YET!!");
+            // Test backup
+
+            if (!BackupService.GetBackupStatus(SelectedMod.Game).BackedUp)
+            {
+                M3L.ShowDialog(this,
+                    "Adding squadmate merge files to a mod requires a backup of the game to pull files from.",
+                    M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var dlcFolderPath = GetDLCFolderPath();
+            if (dlcFolderPath == null) return; // Abort
+
+            OperationText = $"Adding squadmate outfit merge files for {hench}...";
+            Task.Run(() =>
+            {
+                OperationInProgress = true;
+                StarterKitAddins.GenerateSquadmateMergeFiles(SelectedMod.Game, hench, dlcFolderPath,
+                    new List<Dictionary<string, object>>());
+            }).ContinueWithOnUIThread(x =>
+            {
+                OperationInProgress = false;
+                if (x.Exception == null)
+                {
+                    OperationText = $"Added squadmate outfit merge files for {hench}";
+                }
+                else
+                {
+                    OperationText = $"Failed to add squadmate outfit merge files for {hench}: {x.Exception.Message}";
+                }
+            });
         }
 
         private void AddPlotManagerData()
         {
             var dlcFolderPath = GetDLCFolderPath();
             if (dlcFolderPath == null) return; // Abort
-            StarterKitAddins.GeneratePlotData(SelectedMod.Game, Path.Combine(SelectedMod.ModPath, dlcFolderPath));
+
+            OperationText = $"Adding plot manager data...";
+            Task.Run(() =>
+            {
+                OperationInProgress = true;
+                StarterKitAddins.GeneratePlotData(SelectedMod.Game, Path.Combine(SelectedMod.ModPath, dlcFolderPath));
+            }).ContinueWithOnUIThread(x =>
+            {
+                OperationInProgress = false;
+                if (x.Exception == null)
+                {
+                    OperationText = $"Added plot manager data";
+                }
+                else
+                {
+                    OperationText = $"Failed to add plot manager data: {x.Exception.Message}";
+                }
+            });
         }
 
         private string GetUIHenchName(string hench)
@@ -92,7 +175,23 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
         {
             var dlcFolderPath = GetDLCFolderPath();
             if (dlcFolderPath == null) return; // Abort
-            StarterKitAddins.AddStartupFile(SelectedMod.Game, Path.Combine(SelectedMod.ModPath, dlcFolderPath));
+            OperationText = $"Adding startup file...";
+            Task.Run(() =>
+            {
+                OperationInProgress = true;
+                StarterKitAddins.AddStartupFile(SelectedMod.Game, Path.Combine(SelectedMod.ModPath, dlcFolderPath));
+            }).ContinueWithOnUIThread(x =>
+            {
+                OperationInProgress = false;
+                if (x.Exception == null)
+                {
+                    OperationText = $"Added startup file";
+                }
+                else
+                {
+                    OperationText = $"Failed to add startup file: {x.Exception.Message}";
+                }
+            });
         }
 
         private string GetDLCFolderPath()

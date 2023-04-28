@@ -18,7 +18,13 @@
             x:Key="ConverterBindableParameter" />
     </Window.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <ItemsControl
+            IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolToEnabledConverter}, ConverterParameter='Not'}"
+            Grid.Row="0"
             ItemsSource="{Binding AvailableFeatures}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate
@@ -37,5 +43,10 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <StatusBar Grid.Row="1">
+            <StatusBarItem>
+                <TextBlock Text="{Binding OperationText}"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
