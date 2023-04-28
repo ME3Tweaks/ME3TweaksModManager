@@ -14,23 +14,23 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <summary>
         /// Reopens a disposed seven zip archive if necessary
         /// </summary>
-        /// <param name="ArchivePath"></param>
-        /// <param name="Archive"></param>
+        /// <param name="archivePath"></param>
+        /// <param name="archive"></param>
         /// <returns></returns>
-        public static bool ReopenSevenZipArchive(string ArchivePath, SevenZipExtractor Archive)
+        public static bool ReopenSevenZipArchive(string archivePath, ref SevenZipExtractor archive)
         {
-            if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
+            if (File.Exists(archivePath) && (archive == null || archive.IsDisposed()))
             {
                 Debug.WriteLine(@"Re-opening file-based SVE archive");
-                Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
+                archive = new SevenZipExtractor(archivePath); //load archive file for inspection
                 return true;
             }
-            else if (Archive != null && Archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
+            else if (archive != null && archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
             {
-                var isExe = ArchivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
+                var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
                 Debug.WriteLine(@"Re-opening memory SVE archive");
                 ms.Position = 0; // Ensure position is 0
-                Archive = isExe ? new SevenZipExtractor(ms, InArchiveFormat.Nsis) : new SevenZipExtractor(ms);
+                archive = isExe ? new SevenZipExtractor(ms, InArchiveFormat.Nsis) : new SevenZipExtractor(ms);
                 return true;
             }
 

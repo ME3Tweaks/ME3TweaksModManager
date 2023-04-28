@@ -331,7 +331,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
 
             // Reopen archive if we need to
-            if (SevenZipHelper.ReopenSevenZipArchive(ArchivePath, Archive))
+            if (SevenZipHelper.ReopenSevenZipArchive(ArchivePath, ref Archive))
             {
                 M3MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", Archive);
             }
@@ -547,7 +547,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public List<string> GetAllInstallableFiles(bool includeModifable = false)
         {
             ReOpenArchiveIfNecessary();
-
+            var archive = Archive;
             var list = new List<string>();
 
             foreach (var job in InstallationJobs)
