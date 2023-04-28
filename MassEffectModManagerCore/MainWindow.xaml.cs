@@ -3877,7 +3877,7 @@ namespace ME3TweaksModManager
                         //TPF, .mod, .mem
                         case @".tpf":
                         case @".mod":
-                        case @".mem":
+                        case @".mem": // Todo: Offer install option instead
                             App.SubmitAnalyticTelemetryEvent(@"User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
                             M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_installingTextureMod, ext), M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK, MessageBoxImage.Warning);
                             break;

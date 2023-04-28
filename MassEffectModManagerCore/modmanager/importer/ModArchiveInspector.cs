@@ -194,8 +194,7 @@ namespace ME3TweaksModManager.modmanager.importer
                 if (isAlotFile)
                 {
                     //is alot installer
-                    M3Log.Information(
-                        @"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
+                    M3Log.Information(@"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
                     var textureLibraryPath = M3Utilities.GetALOTInstallerTextureLibraryDirectory();
                     if (textureLibraryPath != null)
                     {
@@ -215,8 +214,8 @@ namespace ME3TweaksModManager.modmanager.importer
                 }
                 else
                 {
-                    //found some texture-mod only files
-                    foreach (var entry in textureModEntries)
+                    //found some .mem files
+                    foreach (var entry in textureModEntries.Where(x=>Path.GetExtension(x.FileName) == @".mem"))
                     {
                         MEMMod memFile = new MEMMod(entry.FileName) { SizeRequiredtoExtract = (long)entry.Size, SelectedForImport = true };
                         addTextureMod(memFile);
