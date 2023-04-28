@@ -6,6 +6,7 @@
 trigger:
 - master
 - M3Core
+- ModManager-Next
 
 pool:
   vmImage: 'windows-2022'
