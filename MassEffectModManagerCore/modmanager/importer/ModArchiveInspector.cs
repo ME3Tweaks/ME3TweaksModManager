@@ -150,6 +150,7 @@ namespace ME3TweaksModManager.modmanager.importer
 
 
             // Used for TPIS information lookup
+            bool useTPIS = true; 
             long archiveSize = forcedSize > 0 ? forcedSize : archiveStream != null ? archiveStream.Length : new FileInfo(filepath).Length;
 
             if (moddesciniEntries.Count > 0)
@@ -167,6 +168,7 @@ namespace ME3TweaksModManager.modmanager.importer
 
                     addCompressedModCallback?.Invoke(m);
                     internalModList.Add(m);
+                    useTPIS = false;
                 }
             }
             else if (me2mods.Count > 0)
@@ -186,6 +188,7 @@ namespace ME3TweaksModManager.modmanager.importer
                         Mod m = new Mod(rcw);
                         addCompressedModCallback?.Invoke(m);
                         internalModList.Add(m);
+                        useTPIS = false;
                     }
                 }
             }
@@ -209,20 +212,24 @@ namespace ME3TweaksModManager.modmanager.importer
                             archiveFile.Dispose();
                             File.Move(filepath, destPath, true);
                             showALOTLauncher?.Invoke();
+                            useTPIS = false;
                         }
                     }
                 }
                 else
                 {
                     //found some .mem files
-                    foreach (var entry in textureModEntries.Where(x=>Path.GetExtension(x.FileName) == @".mem"))
+                    foreach (var entry in textureModEntries.Where(x => Path.GetExtension(x.FileName) == @".mem"))
                     {
                         MEMMod memFile = new MEMMod(entry.FileName) { SizeRequiredtoExtract = (long)entry.Size, SelectedForImport = true };
                         addTextureMod(memFile);
+                        useTPIS = false;
                     }
                 }
             }
-            else
+
+            // If nothing was loaded, use TPIS to attempt a virtual load
+            if (useTPIS)
             {
                 M3Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                 currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
