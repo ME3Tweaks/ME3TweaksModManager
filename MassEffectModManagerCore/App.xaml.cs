@@ -35,7 +35,6 @@ using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
 using SingleInstanceCore;
-using WinCopies.Linq;
 
 namespace ME3TweaksModManager
 {
@@ -489,6 +488,11 @@ namespace ME3TweaksModManager
 
         internal static void InitAppCenter()
         {
+            if (!new NickStrupat.ComputerInfo().ActuallyPlatform)
+            {
+                M3Log.Warning(@"This does not appear to be an actually supported platform, disabling telemetry");
+                return;
+            }
 #if !DEBUG
             if (APIKeys.HasAppCenterKey)
             {
