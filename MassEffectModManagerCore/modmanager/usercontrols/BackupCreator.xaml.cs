@@ -94,6 +94,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             OnBackupStatusChanged();
         }
 
+        [SuppressPropertyChangedWarnings]
         private void OnBackupStatusChanged(object sender, SizeChangedEventArgs e)
         {
             OnBackupStatusChanged();
