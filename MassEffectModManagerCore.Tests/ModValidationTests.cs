@@ -9,6 +9,7 @@ using ME3TweaksCore.ME3Tweaks.Online;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
@@ -91,8 +92,8 @@ namespace ME3TweaksModManager.Tests
             GlobalTest.Init();
 
             Console.WriteLine("Fetching third party services");
-            TPIService.LoadService(GlobalTest.CombinedServiceData);
-            TPMIService.LoadService(GlobalTest.CombinedServiceData);
+            TPIService.LoadService(GlobalTest.CombinedServiceData[M3ServiceLoader.TPI_SERVICE_KEY]);
+            TPMIService.LoadService(GlobalTest.CombinedServiceData[MCoreServiceLoader.TPMI_SERVICE_KEY]);
 
             var compressedModsDirectory = GlobalTest.GetTestingDataDirectoryFor(@"compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();

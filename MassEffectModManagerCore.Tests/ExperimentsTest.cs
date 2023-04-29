@@ -1,9 +1,12 @@
 ﻿#if DEBUG
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,12 +24,20 @@ namespace ME3TweaksModManager.Tests
         {
             GlobalTest.Init();
 
-            var ancestorPackage = MEPackageHandler.OpenMEPackage(@"C:\Users\mgame\Documents\jjj\BioD_Nor_201BridgeCon_LOC_INT_ANCESTOR.pcc");
-            var package1 = MEPackageHandler.OpenMEPackage(@"C:\Users\mgame\Documents\jjj\BioD_Nor_201BridgeCon_LOC_INT_NEWPATCH.pcc");
-            var package2 = MEPackageHandler.OpenMEPackage(@"C:\Users\mgame\Documents\jjj\BioD_Nor_201BridgeCon_LOC_INT_HATBOY.pcc");
-            var merge = ThreeWayPackageMerge.AttemptMerge(ancestorPackage, package1, package2);
+            var me3Files = MELoadedFiles.GetFilesLoadedInGame(MEGame.ME3, includeTFCs: true, includeAFCs: true, forceReload: true, gameRootOverride: @"Z:\Mass Effect Builds\ME3\PC\Retail")
+                .Where(x => (x.Key.RepresentsPackageFilePath() || x.Key.EndsWith(@".afc")) && x.Key.GetUnrealLocalization() == MELocalization.None).Select(x => x.Key)
+                .ToList();
+            var le3Files = MELoadedFiles.GetFilesLoadedInGame(MEGame.LE3, includeTFCs: true, includeAFCs: true, forceReload: true, gameRootOverride: @"B:\LegendaryBuilds\2.0.0.48602\ME3")
+                .Where(x => (x.Key.RepresentsPackageFilePath() || x.Key.EndsWith(@".afc")) && x.Key.GetUnrealLocalization() == MELocalization.None).Select(x => x.Key)
+                .ToList();
 
-            package2.Save(@"C:\Users\mgame\Documents\jjj\UPD_BioD_Nor_201BridgeCon_LOC_INT_HATBOY.pcc");
+            var special = le3Files.Except(me3Files);
+            foreach (var specialFile in special)
+            {
+                Debug.WriteLine(specialFile);
+            }
+
+
         }
     }
 }

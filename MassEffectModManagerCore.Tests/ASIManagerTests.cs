@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.ME3Tweaks.Online;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager;
@@ -25,7 +26,7 @@ namespace ME3TweaksModManager.Tests
             GlobalTest.Init();
             Random random = new Random();
             Console.WriteLine(@"Loading ASI Manager Manifest");
-            ASIManager.LoadService(GlobalTest.CombinedServiceData["asimanifest"]);
+            ASIManager.LoadService(GlobalTest.CombinedServiceData[MCoreServiceLoader.ASI_MANIFEST_KEY]);
 
             var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 };
 
