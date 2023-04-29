@@ -57,6 +57,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             base.OnClosing(args);
         }
 
+        // This doesn't do anything anymore but is just left in case it ever needs reimplemented
+        [SuppressPropertyChangedWarnings]
         private void OnBackupStatusChanged()
         {
 
