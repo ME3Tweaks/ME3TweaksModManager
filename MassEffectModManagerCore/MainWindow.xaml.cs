@@ -36,6 +36,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.deployment;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
@@ -1728,8 +1729,8 @@ namespace ME3TweaksModManager
                 return;
             }
 
-            var bup = BackupService.GetGameBackupPath(SelectedMod.Game);
-            if (bup != null && Directory.Exists(bup))
+            var canDeployMod = ArchiveDeployment.CanDeployMod(SelectedMod);
+            if (canDeployMod)
             {
                 var archiveDeploymentPane = new ArchiveDeploymentPanel(SelectedMod);
                 archiveDeploymentPane.Close += (a, b) =>
