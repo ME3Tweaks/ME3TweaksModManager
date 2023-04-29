@@ -927,7 +927,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 // Add DLC requirements
                 // If mod is null, we haven't generated mod yet, so it will say there is no dependency on this yet.
                 bool requiresLE3Patch = mod != null && mod.RequiredDLC.Any(x => x.DLCFolderName.CaseInsensitiveEquals(@"DLC_MOD_LE3Patch"));
-                bool requiresLE3Framework = mod != null && mod.RequiredDLC.Any(x => x.DLCFolderName.CaseInsensitiveEquals(@"DLC_MOD_LE3Patch"));
+                bool requiresLE3Framework = mod != null && mod.RequiredDLC.Any(x => x.DLCFolderName.CaseInsensitiveEquals(@"DLC_MOD_Framework"));
                 if (!requiresLE3Framework || !requiresLE3Patch)
                 {
                     // Mod has a dependency on LE3 Comm Patch so we add that to the moddesc
