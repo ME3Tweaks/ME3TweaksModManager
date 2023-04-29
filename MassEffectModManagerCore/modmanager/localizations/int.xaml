@@ -2634,6 +2634,11 @@
     <!-- Texture Installer Panel -->
     <system:String x:Key="string_massEffectModderFiles">Mass Effect Modder files</system:String>
     <!-- Mass Effect Modder is a proper noun so it probably shouldn't be localized. This is prefix to a filter so its like Mass Effect Modder Files|*.mem -->
+    <system:String x:Key="string_checkingMassEffectModder">Checking MassEffectModder</system:String>
+    <!-- This just means its checking the version number -->
+    <system:String x:Key="string_configuringMassEffectModder">Configuring MassEffectModder</system:String>
+    <system:String x:Key="string_preparingForTextureInstall">Preparing for texture install</system:String>
+    <system:String x:Key="string_dialog_cannotDownloadMEMCannotProceed">Could not download MassEffectModderNoGui - texture installation cannot proceed. See Mod Manager logs for more information.</system:String>
 
     <!-- Launch Option Selector Dialog -->
     <system:String x:Key="string_launchOptionSelector">Launch Option Selector</system:String>
@@ -2678,8 +2683,42 @@
     <system:String x:Key="string_interp_addModSettingsMenuStub">Add mod settings menu stub</system:String>
     <system:String x:Key="string_selectDLCMod">Select DLC mod</system:String>
     <system:String x:Key="string_selectADLCFolderToAddAStartupFileTo">Select a DLC folder to add a startup file to.</system:String>
+    <system:String x:Key="string_selectAnOperation">Select an operation</system:String>
+    <system:String x:Key="string_addingModSettingsMenuData">Adding mod settings menu data...</system:String>
+    <system:String x:Key="string_addedModSettingsMenuData">Added mod settings menu data</system:String>
+    <system:String x:Key="string_dialog_squadmateMergeBackupRequired">Adding squadmate merge files to a mod requires a backup of the game to pull files from.</system:String>
+    <system:String x:Key="string_interp_addingPlotManagerData">Adding plot manager data...</system:String>
+    <system:String x:Key="string_interp_addedPlotManagerData">Added plot manager data</system:String>
+    <system:String x:Key="string_interp_failedToAddModSettingsMenuDataX">Failed to add mod settings menu data: {0}</system:String>
+    <!-- 0={error message} -->
+    <system:String x:Key="string_interp_addingSquadmateOutfitMergeFilesForX">Adding squadmate outfit merge files for {0}...</system:String>
+    <!-- 0={Hench name (e.g. Javik)} -->
+    <system:String x:Key="string_interp_addedSquadmateOutfitMergeFilesForX">Added squadmate outfit merge files for {0}</system:String>
+    <!-- 0={Hench name (e.g. Javik)} -->
+    <system:String x:Key="string_interp_failedToAddSquadmateOutfitMergeFilesForHenchXY">Failed to add squadmate outfit merge files for {0}: {1}</system:String>
+    <!-- 0={Hench name (e.g. Javik)} 1={error message} -->
+    <system:String x:Key="string_interp_failedToAddPlotManagerDataX">Failed to add plot manager data: {0}</system:String>
+    <!-- 0={error message} -->
+    <system:String x:Key="string_interp_addingStartupFile">Adding startup file...</system:String>
+    <system:String x:Key="string_interp_addedStartupFile">Added startup file</system:String>
+    <system:String x:Key="string_interp_failedToAddStartupFileX">Failed to add startup file: {0}</system:String>
+    <!-- 0={error message} -->
 
     <!-- Save Selector -->
+    <system:String xml:space="preserve" x:Key="string_tooltip_loadAllSaves">Parses all save files from all careers; this may use a lot of memory if you have a lot of save files.&#10;The default state is unchecked, which only loads the most recent 50 saves from every career</system:String>
+    <system:String x:Key="string_loadAllSavesMayUseALotOfMemory">Load all saves (may use a lot of memory)</system:String>
+    <system:String x:Key="string_selectThisSave">Select this save</system:String>
+    <system:String x:Key="string_careers">Careers</system:String>
+    <system:String x:Key="string_saves">Saves</system:String>
+    <system:String x:Key="string_lastPlayed">Last played:</system:String>
+    <system:String x:Key="string_timePlayed">Time played:</system:String>
+    <system:String x:Key="string_difficulty">Difficulty:</system:String>
+    <system:String x:Key="string_gender">Gender:</system:String>
+    <system:String x:Key="string_readingSavedGames">Reading saved games</system:String>
+    <system:String x:Key="string_selectASaveFile">Select a save file</system:String>
+    <system:String x:Key="string_interp_unknownMapX">Unknown map: {0}</system:String>
+    <!-- 0={Map name (will be in form of BIOA_XXX or BioP_CitHot} -->
+    <system:String x:Key="string_saveSelector">Save Selector</system:String>
 
     <!-- Game launcher -->
     <system:String x:Key="string_autobootSave">Autoboot save</system:String>

@@ -21,6 +21,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.save;
 using ME3TweaksModManager.modmanager.save.game2.UI;
+using ME3TweaksModManager.modmanager.windows.input;
 using Pathoschild.FluentNexus.Models;
 
 namespace ME3TweaksModManager.modmanager.helpers

@@ -64,6 +64,7 @@ using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
+using SaveSelectorUI = ME3TweaksModManager.modmanager.windows.input.SaveSelectorUI;
 using StarterKitContentSelector = ME3TweaksModManager.modmanager.windows.dialog.StarterKitContentSelector;
 
 namespace ME3TweaksModManager

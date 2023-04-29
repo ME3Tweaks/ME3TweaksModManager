@@ -127,11 +127,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 BGTask = BackgroundTaskEngine.SubmitBackgroundJob(@"TextureInstall", M3L.GetString(M3L.string_installingTextureMods), M3L.GetString(M3L.string_installedTextureMods));
 
-                SetNextStep("Checking MassEffectModder");
+                SetNextStep(M3L.GetString(M3L.string_checkingMassEffectModder));
                 bool hasMem = MEMNoGuiUpdater.UpdateMEM(false, false, setPercentDone, failedToExtractMEM, currentTaskCallback);
                 if (hasMem)
                 {
-                    SetNextStep("Configuring MassEffectModder");
+                    SetNextStep(M3L.GetString(M3L.string_configuringMassEffectModder));
                     MEMIPCHandler.SetGamePath(Target);
 
                     // Precheck: Texture map consistency (only on already texture modded game)
@@ -167,7 +167,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
 
                         // Check for markers
-                        SetNextStep("Preparing for texture install");
+                        SetNextStep(M3L.GetString(M3L.string_preparingForTextureInstall));
                         var markerResult = MEMIPCHandler.CheckForMarkers(Target, x => ActionText = x,
                             x => PercentDone = x, setGamePath: false);
                         if (markerResult != null)
@@ -202,7 +202,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         M3Log.Warning(@"Texture safety checks are disabled! Do not trust the results of this installation");
                     }
 
-                    SetNextStep("Preparing for texture install"); // same message
+                    SetNextStep(M3L.GetString(M3L.string_preparingForTextureInstall)); // same message
                     var installResult = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
                     if (installResult != null)
                     {
@@ -214,7 +214,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 else
                 {
                     // We cannot install textures!
-                    throw new Exception("Could not download MassEffectModderNoGui - texture installation cannot proceed. See Mod Manager logs for more information.");
+                    throw new Exception(M3L.GetString(M3L.string_dialog_cannotDownloadMEMCannotProceed));
                 }
             };
 

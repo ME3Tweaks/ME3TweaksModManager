@@ -1,0 +1,304 @@
+﻿<Window
+    x:Class="ME3TweaksModManager.modmanager.windows.input.SaveSelectorUI" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:ui="clr-namespace:ME3TweaksModManager.modmanager.save.game2.UI" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:save="clr-namespace:ME3TweaksModManager.modmanager.save"
+    xmlns:input="clr-namespace:ME3TweaksModManager.modmanager.windows.input"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterOwner"
+    ContentRendered="SSContent_Rendered"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Height="550"
+    Width="800">
+    <Window.Style>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
+    <Window.Resources>
+        <converters:GenderToColorConverter
+            x:Key="GenderToColorConverter" />
+        <converters:GenderToIconConverter
+            x:Key="GenderToIconConverter" />
+        <converters:GenderToStringConverter
+            x:Key="GenderToStringConverter" />
+        <ui:DifficultyStringConverter
+            x:Key="DifficultyStringConverter" />
+        <ui:SaveGameNameConverter
+            x:Key="SaveGameNameConverter" />
+        <converters:BoolToVisibilityConverter
+            x:Key="BoolToVisibilityConverter" />
+        <converters:NullVisibilityConverter
+            x:Key="NullVisibility" />
+        <Style
+            TargetType="{x:Type ListBoxItem}"
+            BasedOn="{StaticResource {x:Type ListBoxItem}}">
+            <Style.Triggers>
+                <Trigger
+                    Property="ItemsControl.AlternationIndex"
+                    Value="1">
+                    <Setter
+                        Property="Background"
+                        Value="#25225577"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="Auto"
+                MinWidth="200"
+                MaxWidth="400" />
+            <ColumnDefinition
+                Width="5" />
+            <ColumnDefinition
+                Width="Auto"
+                MinWidth="200"
+                MaxWidth="400" />
+            <ColumnDefinition
+                Width="5" />
+            <ColumnDefinition
+                Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <StatusBar
+            Grid.ColumnSpan="5"
+            Grid.Row="3"
+            IsEnabled="{Binding LoadingSaves, Converter={StaticResource BoolToEnabledConverter}, ConverterParameter='Not'}"
+            HorizontalAlignment="Stretch"
+            DockPanel.Dock="Bottom"
+            Padding="5,0">
+            <StatusBarItem
+                HorizontalAlignment="Left"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Name="LoadingSpinnerContainer"
+                Width="Auto"
+                Height="36"
+                Padding="0">
+                <CheckBox
+                    Content="{DynamicResource string_loadAllSavesMayUseALotOfMemory}"
+                    IsChecked="{Binding LoadAllSaves}"
+                    ToolTip="{DynamicResource string_tooltip_loadAllSaves}" />
+            </StatusBarItem>
+            <StatusBarItem
+                HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Width="Auto"
+                Height="36"
+                Padding="0">
+                <StackPanel
+                    Orientation="Horizontal">
+                    <Image
+                        Source="{Binding Target.Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"
+                        Width="24"
+                        Height="24"
+                        Margin="5,0" />
+                    <Button
+                        Content="{DynamicResource string_cancel}"
+                        Command="{Binding CancelSelectionCommand}"
+                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
+                        Margin="5,0"
+                        HorizontalAlignment="Right"
+                        Padding="10,7" />
+                    <Button
+                        Content="{DynamicResource string_selectThisSave}"
+                        Command="{Binding SelectSaveCommand}"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                        HorizontalAlignment="Right"
+                        Padding="10,7" />
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+        <TextBlock
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            Grid.Row="0"
+            Grid.Column="0"
+            Text="{DynamicResource string_careers}"
+            TextAlignment="Center"
+            FontSize="16"
+            FontWeight="Bold" />
+        <ListBox
+            HorizontalAlignment="Stretch"
+            Grid.Row="1"
+            Grid.Column="0"
+            ItemsSource="{Binding SaveCareersView}"
+            SelectedItem="{Binding SelectedCareer}"
+            DockPanel.Dock="Left"
+            Width="200"
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            AlternationCount="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate
+                    DataType="{x:Type input:SaveSelectorUI+Career}">
+                    <StackPanel>
+                        <TextBlock
+                            Text="{Binding CharacterName}"
+                            FontWeight="Bold" />
+                        <TextBlock
+                            Text="{Binding SaveFiles.BindableCount, StringFormat=\{0\} save(s)}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <xctk:WatermarkTextBox
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            Grid.Row="2"
+            Grid.Column="0"
+            Watermark="{DynamicResource string_typeToFilter}"
+            Text="{Binding CareerFilterText, UpdateSourceTrigger=PropertyChanged}" />
+        <GridSplitter
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Grid.Column="1"
+            HorizontalAlignment="Stretch" />
+        <TextBlock
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            Grid.Row="0"
+            Grid.Column="2"
+            Text="{DynamicResource string_saves}"
+            FontSize="16"
+            TextAlignment="Center"
+            FontWeight="Bold" />
+        <ListBox
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            Grid.Column="2"
+            Grid.Row="1"
+            VirtualizingStackPanel.VirtualizationMode="Recycling"
+            ItemsSource="{Binding CareerSaveFilesView}"
+            SelectedItem="{Binding SelectedSaveFile}"
+            AlternationCount="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate
+                    DataType="{x:Type save:ISaveFile}">
+                    <StackPanel>
+                        <TextBlock
+                            Text="{Binding Converter={StaticResource SaveGameNameConverter}}"
+                            FontWeight="Bold" />
+                        <TextBlock
+                            Text="{Binding Proxy_TimeStamp}"
+                            FontWeight="Bold" />
+                        <TextBlock
+                            Text="{Binding Proxy_DebugName}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <xctk:WatermarkTextBox
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            Grid.Row="2"
+            Grid.Column="2"
+            Watermark="{DynamicResource string_typeToFilter}"
+            Text="{Binding SaveFilterText, UpdateSourceTrigger=PropertyChanged}" />
+        <GridSplitter
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Grid.Column="3"
+            HorizontalAlignment="Stretch" />
+        <StackPanel
+            Grid.Column="4"
+            Grid.RowSpan="2"
+            Grid.Row="0"
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
+            <TextBlock
+                TextAlignment="Center"
+                Text="{Binding SelectedLevelText}"
+                FontWeight="Bold"
+                FontSize="24"
+                Margin="0,10" />
+            <Image
+                Source="{Binding CurrentSaveImage}" />
+            <StackPanel
+                Visibility="{Binding SelectedSaveFile, Converter={StaticResource NullVisibility}}">
+                <TextBlock
+                    TextAlignment="Center"
+                    Text="{DynamicResource string_lastPlayed}"
+                    FontWeight="Bold"
+                    FontSize="16"
+                    Margin="0,0,0,5" />
+                <TextBlock
+                    TextAlignment="Center"
+                    Text="{Binding SelectedSaveFile.Proxy_TimeStamp}"
+                    FontSize="16"
+                    Margin="0,0,0,5" />
+                <TextBlock
+                    TextAlignment="Center"
+                    Text="{DynamicResource string_timePlayed}"
+                    FontWeight="Bold"
+                    FontSize="16"
+                    Margin="0,0,0,5" />
+                <TextBlock
+                    TextAlignment="Center"
+                    FontSize="16"
+                    Margin="0,0,0,5"
+                    Text="{Binding SelectedSaveFile.Proxy_TimePlayed}" />
+                <TextBlock
+                    TextAlignment="Center"
+                    Text="{DynamicResource string_difficulty}"
+                    FontWeight="Bold"
+                    FontSize="16"
+                    Margin="0,0,0,5" />
+                <TextBlock
+                    Text="{Binding SelectedSaveFile.Proxy_Difficulty}"
+                    TextAlignment="Center"
+                    FontSize="16"
+                    Margin="0,0,0,5" />
+                <TextBlock
+                    TextAlignment="Center"
+                    Text="{DynamicResource string_gender}"
+                    FontWeight="Bold"
+                    FontSize="16"
+                    Margin="0,0,0,5" />
+                <StackPanel
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+                    <fa5:ImageAwesome
+                        Icon="{Binding SelectedSaveFile.Proxy_IsFemale, Converter={StaticResource GenderToIconConverter}}"
+                        Margin="5,0"
+                        Height="16">
+                        <fa5:ImageAwesome.Foreground>
+                            <SolidColorBrush
+                                Color="{Binding SelectedSaveFile.Proxy_IsFemale, Converter={StaticResource GenderToColorConverter}}" />
+                        </fa5:ImageAwesome.Foreground>
+                    </fa5:ImageAwesome>
+                    <TextBlock
+                        Text="{Binding SelectedSaveFile.Proxy_IsFemale, Converter={StaticResource GenderToStringConverter}}"
+                        TextAlignment="Center"
+                        FontSize="16"
+                        Margin="0,0,0,5" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="4"
+            Grid.ColumnSpan="5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ContentControl
+                x:Name="LoadingSpinner_Image"
+                Focusable="False"
+                ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingCircle}}"
+                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                Width="32"
+                Height="32" />
+            <TextBlock
+                Text="{DynamicResource string_readingSavedGames}"
+                Margin="0,5,0,0" />
+        </StackPanel>
+    </Grid>
+</Window>

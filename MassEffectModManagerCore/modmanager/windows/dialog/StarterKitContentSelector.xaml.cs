@@ -37,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
         /// <summary>
         /// Bottom left text to display
         /// </summary>
-        public string OperationText { get; set; } = "Select an operation";
+        public string OperationText { get; set; } = M3L.GetString(M3L.string_selectAnOperation);
 
         public StarterKitContentSelector(Window owner, Mod selectedMod)
         {
@@ -63,7 +63,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             var dlcFolderPath = GetDLCFolderPath();
             if (dlcFolderPath == null) return; // Abort
 
-            OperationText = "Adding mod settings menu data...";
+            OperationText = M3L.GetString(M3L.string_addingModSettingsMenuData);
             Task.Run(() =>
             {
                 OperationInProgress = true;
@@ -89,11 +89,11 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
 
                 if (x.Exception == null)
                 {
-                    OperationText = "Added mod settings menu data";
+                    OperationText = M3L.GetString(M3L.string_addedModSettingsMenuData);
                 }
                 else
                 {
-                    OperationText = $"Failed to add mod settings menu data: {x.Exception.Message}";
+                    OperationText = M3L.GetString(M3L.string_interp_failedToAddModSettingsMenuDataX, x.Exception.Message);
                 }
             });
 
@@ -112,7 +112,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             if (!BackupService.GetBackupStatus(SelectedMod.Game).BackedUp)
             {
                 M3L.ShowDialog(this,
-                    "Adding squadmate merge files to a mod requires a backup of the game to pull files from.",
+                    M3L.GetString(M3L.string_dialog_squadmateMergeBackupRequired),
                     M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -120,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             var dlcFolderPath = GetDLCFolderPath();
             if (dlcFolderPath == null) return; // Abort
 
-            OperationText = $"Adding squadmate outfit merge files for {hench}...";
+            OperationText = M3L.GetString(M3L.string_interp_addingSquadmateOutfitMergeFilesForX, hench);
             Task.Run(() =>
             {
                 OperationInProgress = true;
@@ -131,11 +131,11 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
                 OperationInProgress = false;
                 if (x.Exception == null)
                 {
-                    OperationText = $"Added squadmate outfit merge files for {hench}";
+                    OperationText = M3L.GetString(M3L.string_interp_addedSquadmateOutfitMergeFilesForX, hench);
                 }
                 else
                 {
-                    OperationText = $"Failed to add squadmate outfit merge files for {hench}: {x.Exception.Message}";
+                    OperationText = M3L.GetString(M3L.string_interp_failedToAddSquadmateOutfitMergeFilesForHenchXY, hench, x.Exception.Message);
                 }
             });
         }
@@ -145,7 +145,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             var dlcFolderPath = GetDLCFolderPath();
             if (dlcFolderPath == null) return; // Abort
 
-            OperationText = $"Adding plot manager data...";
+            OperationText = M3L.GetString(M3L.string_interp_addingPlotManagerData);
             Task.Run(() =>
             {
                 OperationInProgress = true;
@@ -155,11 +155,11 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
                 OperationInProgress = false;
                 if (x.Exception == null)
                 {
-                    OperationText = $"Added plot manager data";
+                    OperationText = M3L.GetString(M3L.string_interp_addedPlotManagerData);
                 }
                 else
                 {
-                    OperationText = $"Failed to add plot manager data: {x.Exception.Message}";
+                    OperationText = M3L.GetString(M3L.string_interp_failedToAddPlotManagerDataX, x.Exception.Message);
                 }
             });
         }
@@ -175,7 +175,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
         {
             var dlcFolderPath = GetDLCFolderPath();
             if (dlcFolderPath == null) return; // Abort
-            OperationText = $"Adding startup file...";
+            OperationText = M3L.GetString(M3L.string_interp_addingStartupFile);
             Task.Run(() =>
             {
                 OperationInProgress = true;
@@ -185,11 +185,11 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
                 OperationInProgress = false;
                 if (x.Exception == null)
                 {
-                    OperationText = $"Added startup file";
+                    OperationText = M3L.GetString(M3L.string_interp_addedStartupFile);
                 }
                 else
                 {
-                    OperationText = $"Failed to add startup file: {x.Exception.Message}";
+                    OperationText = M3L.GetString(M3L.string_interp_failedToAddStartupFileX, x.Exception.Message);
                 }
             });
         }

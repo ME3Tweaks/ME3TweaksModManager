@@ -20,9 +20,11 @@ using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
-using static ME3TweaksModManager.modmanager.usercontrols.BackupFileFetcher;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.save.game2.UI;
 
-namespace ME3TweaksModManager.modmanager.save.game2.UI
+namespace ME3TweaksModManager.modmanager.windows.input
 {
     /// <summary>
     /// Interaction logic for SaveSelectorUI.xaml
@@ -96,7 +98,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         {
             if (SelectedSaveFile == null)
             {
-                SelectedLevelText = "Select a save file";
+                SelectedLevelText = M3L.GetString(M3L.string_selectASaveFile);
                 CurrentSaveImage = null;
                 // csi = MERUtilities.ListStaticAssets("saveimages", includemerPrefix: true).FirstOrDefault(x => x.EndsWith("nosave.png"));
             }
@@ -179,7 +181,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             if (UnknownMapImage != null) return UnknownMapImage;
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             UnknownMapImage = new BitmapImage();
-            using (var stream = M3Utilities.GetResourceStream("ME3TweaksModManager.images.unknownmap.png"))
+            using (var stream = M3Utilities.GetResourceStream(@"ME3TweaksModManager.images.unknownmap.png"))
             {
                 UnknownMapImage.BeginInit();
                 UnknownMapImage.StreamSource = stream;
@@ -214,7 +216,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 }
             }
 
-            return $"Unknown map: {proxyBaseLevelName}";
+            return M3L.GetString(M3L.string_interp_unknownMapX, proxyBaseLevelName);
         }
 
 
@@ -409,7 +411,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             Owner = owner;
             Target = target;
             LoadingSaves = true;
-            Title = "Save Selector";
+            Title = M3L.GetString(M3L.string_saveSelector);
             if (!string.IsNullOrWhiteSpace(titleTextSuffix))
             {
                 Title += $@" - {titleTextSuffix}";
@@ -854,7 +856,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     if (assetNameToSourcePackageMap.TryGetValue(mapEntry.Value, out var packageName))
                     {
                         // Found
-                        Debug.WriteLine($"Found {mapEntry.Key}");
+                        Debug.WriteLine($@"Found {mapEntry.Key}");
                         var saveEntry = new SaveImageAsset2() { FullInstancePath = mapEntry.Value, PackageName = packageName + @".pcc" };
                         if (mapToStrRefName.TryGetValue(mapEntry.Key, out var strId))
                         {
@@ -865,7 +867,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     }
                     else
                     {
-                        Debug.WriteLine($"MISS {mapEntry.Key}");
+                        Debug.WriteLine($@"MISS {mapEntry.Key}");
                     }
                 }
             }
