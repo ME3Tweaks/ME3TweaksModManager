@@ -58,7 +58,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public int CompressionProgressValue { get; set; }
         public int CompressionProgressMaximum { get; set; } = 100;
 
-        public Mod SelectedMod { get; private set; }
+        public IImportableMod SelectedMod { get; set; }
 
 
         private string ArchiveFilePath;
@@ -143,7 +143,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 Name = $@"moddesc.ini: ({mod.Game}) {mod.ModName} {mod.ModVersionString}"
                             };
                         }
-                        
+
                         FileSourceService.AddFileSourceEntries(dictionary, Settings.EnableTelemetry ? ServerManifest.GetInt(ServerManifest.SERVER_ALIGNMENT) : null);
                     }
 
@@ -729,9 +729,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             get
             {
-                if (SelectedMod != null)
+                if (SelectedMod is Mod m)
                 {
-                    if (SelectedMod.ExeExtractionTransform != null)
+                    if (m.ExeExtractionTransform != null)
                     {
                         return M3L.GetString(M3L.string_exeModsMustBeImportedBeforeInstall);
                     }
@@ -792,19 +792,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanImportMods() => !TaskRunning && CompressedMods.Any(x => x.SelectedForImport && x.ValidMod);
 
-        private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
+        private void OnSelectedModChanged()
         {
-            SelectedMod = CompressedMods_ListBox.SelectedItem as Mod;
-            if (SelectedMod != null && SelectedMod.Game > MEGame.ME1 && SelectedMod.PreferCompressed)
+            if (SelectedMod is Mod m)
             {
-                CompressPackages = true;
+                if (m.Game > MEGame.ME1 && m.PreferCompressed)
+                {
+                    CompressPackages = true;
+                }
+                else if (m.Game == MEGame.ME1)
+                {
+                    CompressPackages = false;
+                }
             }
-
-            if (SelectedMod != null && SelectedMod.Game == MEGame.ME1)
-            {
-                CompressPackages = false;
-            }
-
         }
 
         public override void OnPanelVisible()

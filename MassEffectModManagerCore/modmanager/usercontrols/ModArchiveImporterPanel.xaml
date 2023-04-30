@@ -133,9 +133,8 @@
                     Name="CompressedMods_ListBox"
                     BorderThickness="0.25"
                     Margin="0,0,0,1"
-                    Grid.Column="0"
                     ItemsSource="{Binding CompressedMods}"
-                    SelectionChanged="SelectedMod_Changed"
+                    SelectedItem="{Binding SelectedMod}"
                     IsEnabled="{Binding TaskRunning, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
                     <ListBox.Resources>
                         <DataTemplate DataType="{x:Type mod:Mod}">
@@ -219,8 +218,13 @@
                     HorizontalContentAlignment="Left">
                     <TextBox.Text>
                         <PriorityBinding>
+                            <!-- M3 Mod -->
                             <Binding
                                 Path="SelectedMod.DisplayedModDescription"
+                                Mode="OneWay" />
+                            <!-- MEMMod-->
+                            <Binding
+                                Path="SelectedMod.UIDescription"
                                 Mode="OneWay" />
                             <Binding
                                 Path="NoModSelectedText"
