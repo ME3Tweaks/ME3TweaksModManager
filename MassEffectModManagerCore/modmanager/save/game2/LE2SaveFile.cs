@@ -486,7 +486,7 @@ namespace ME3TweaksModManager.modmanager.save.game2
 
             public void Serialize(IUnrealStream stream)
             {
-                Debug.WriteLine($"At {stream.Stream.Position:X8}");
+                // Debug.WriteLine($"At {stream.Stream.Position:X8}");
                 stream.Serialize(ref PlanetID);
                 stream.Serialize(ref bVisited);
                 stream.Serialize(ref Probes);

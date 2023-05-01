@@ -58,6 +58,9 @@ namespace ME3TweaksModManager.modmanager.windows.input
         /// </summary>
         public bool LoadingSaves { get; set; }
 
+        /// <summary>
+        /// Should all saves be loaded or just the first 50 of every career
+        /// </summary>
         public bool LoadAllSaves { get; set; } = Settings.SSUILoadAllSaves;
 
         public void OnLoadAllSavesChanged()
@@ -69,6 +72,9 @@ namespace ME3TweaksModManager.modmanager.windows.input
             }
         }
 
+        /// <summary>
+        /// The list of loaded careers
+        /// </summary>
         public ObservableCollectionExtended<Career> SaveCareers { get; } = new();
 
         /// <summary>
@@ -76,9 +82,14 @@ namespace ME3TweaksModManager.modmanager.windows.input
         /// </summary>
         public Career SelectedCareer { get; set; }
 
-        public void OnSelectedCareerChanged()
+        public void OnSelectedCareerChanged(object oldValue, object newValue)
         {
-            SelectedSaveFile = SelectedCareer?.SaveFiles.FirstOrDefault();
+            if (oldValue != null)
+            {
+                // Only update the selected save file if we are changing by user - on first load
+                // we want to use the pre-populated one
+                SelectedSaveFile = SelectedCareer?.SaveFiles.FirstOrDefault();
+            }
             if (SelectedCareer != null)
             {
                 CareerSaveFiles.ReplaceAll(SelectedCareer.SaveFiles);
@@ -90,8 +101,14 @@ namespace ME3TweaksModManager.modmanager.windows.input
             SaveFilterText = @"";
         }
 
+        /// <summary>
+        /// The currently selected save file
+        /// </summary>
         public ISaveFile SelectedSaveFile { get; set; }
 
+        /// <summary>
+        /// A cache of Map name -> texture to display
+        /// </summary>
         public Dictionary<MEGame, CaseInsensitiveDictionary<BitmapSource>> LevelImageCache { get; } = new();
 
         public void OnSelectedSaveFileChanged()
@@ -612,7 +629,6 @@ namespace ME3TweaksModManager.modmanager.windows.input
 
 
                 // Load saves
-
                 var saveDirs = Directory.GetDirectories(savePath);
                 Dictionary<string, List<ISaveFile>> charNameCareers = new Dictionary<string, List<ISaveFile>>();
                 foreach (var saveDir in saveDirs)
@@ -629,14 +645,19 @@ namespace ME3TweaksModManager.modmanager.windows.input
 
                         // Only load the most recent 50 saves if we are doing an optimized load
                         // Cause this uses a ton of allocations
-                        if (!Settings.SSUILoadAllSaves && numLoaded >= 50)
+                        // Also make sure we load the specific resume file if its somehow not in the top 50
+                        if (!Settings.SSUILoadAllSaves && numLoaded >= 50 && !sf.CaseInsensitiveEquals(resumeSavePath))
                             break;
 
                         numLoaded++;
                         try
                         {
                             using var saveFileS = File.OpenRead(sf);
-                            var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf);
+                            var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf, allowedGames: new MEGame[] { Target.Game }); // Scope saves to specific game so we don't load any saves for different games
+                            if (saveFile == null)
+                            {
+                                continue; // We do not parse this
+                            }
                             if (!charNameCareers.TryGetValue(saveFile.Proxy_PlayerRecord.Proxy_FirstName, out var list))
                             {
                                 list = new List<ISaveFile>();
