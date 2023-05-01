@@ -101,7 +101,10 @@ namespace ME3TweaksModManager
         private readonly string[] SupportedDroppableExtensions =
         {
             @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk",
-            @".par", @".m3m", @".json", @".extractedbin", @".m3za"
+#if LEGACY
+            @".par",
+#endif
+            @".m3m", @".json", @".extractedbin", @".m3za"
         };
 
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
@@ -4104,14 +4107,16 @@ namespace ME3TweaksModManager
 
                             }
                             break;
+#if LEGACY
+
                         case @".par":
                             {
-#if DEBUG
                                 var contents = PARTools.DecodePAR(File.ReadAllBytes(file));
                                 Debug.WriteLine(contents);
-#endif
                             }
                             break;
+#endif
+
                         case @".json":
                             {
                                 var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod),
