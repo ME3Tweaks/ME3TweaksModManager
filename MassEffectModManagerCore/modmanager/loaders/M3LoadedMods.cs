@@ -601,7 +601,9 @@ namespace ME3TweaksModManager.modmanager.loaders
             {
                 if (game != MEGame.Unknown && ModFileFormats.GetGameMEMFileIsFor(mem) != game)
                     continue; // Not for this list
-                mm.Add(new MEMMod(mem) { Game = game });
+                var mmm = new MEMMod(mem) { Game = game };
+                mmm.ParseMEMData();
+                mm.Add(mmm);
             }
 
             return mm;
