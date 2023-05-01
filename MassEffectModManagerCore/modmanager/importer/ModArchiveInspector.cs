@@ -221,7 +221,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     //found some .mem files
                     foreach (var entry in textureModEntries.Where(x => Path.GetExtension(x.FileName) == @".mem"))
                     {
-                        MEMMod memFile = new MEMMod(entry.FileName) { SizeRequiredtoExtract = (long)entry.Size, SelectedForImport = true };
+                        MEMMod memFile = new MEMMod(entry.FileName) { SizeRequiredtoExtract = (long)entry.Size, SelectedForImport = true, IsInArchive = true};
                         addTextureMod(memFile);
                         useTPIS = false;
                     }

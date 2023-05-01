@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         [JsonIgnore]
         public List<string> ModifiedExportNames { get; set; }
 
-
+        public bool IsInArchive { get; init; }
 
         /// <summary>
         /// Gets the full path to the MEM file. This method can be overridden.
@@ -109,6 +109,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             Game = other.Game;
             ModdedTextures = other.ModdedTextures?.ToList(); // Clone the other's object with .ToList()
             FileExists = other.FileExists; // Should we do this...?
+            IsInArchive = other.IsInArchive;
         }
 
         public MEMMod(string filePath)
@@ -128,8 +129,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             }
         }
 
+
+
         public virtual string GetDescription()
         {
+            if (IsInArchive)
+            {
+                return "Texture mods must be imported before they can be used";
+            }
             var modifiedExports = GetModifiedExportNames();
             var exportNotListed = M3L.GetString(M3L.string_textureExportsNotListedInThisMemFile);
             var exportList = string.Join('\n', modifiedExports.Select(x => $@" - {(string.IsNullOrWhiteSpace(x) ? exportNotListed : x)}")); // do not localize

@@ -28,6 +28,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
         bool ValidMod { get; }
 
         /// <summary>
+        /// If this mod is currently stored in an archive or not
+        /// </summary>
+        bool IsInArchive { get; init; }
+
+        /// <summary>
         /// The size required to extract this file to disk
         /// </summary>
         long SizeRequiredtoExtract { get; set; }

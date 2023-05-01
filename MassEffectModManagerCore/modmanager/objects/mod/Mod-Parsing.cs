@@ -401,7 +401,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// If this mod was was loaded from archive or from disk
         /// </summary>
-        public bool IsInArchive { get; }
+        public bool IsInArchive { get; init; }
         /// <summary>
         /// The minimum build number that this mod is allowed to load on
         /// </summary>
