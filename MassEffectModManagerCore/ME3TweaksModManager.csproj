@@ -189,10 +189,10 @@
 	<ItemGroup>
 		<PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="CliWrap" Version="3.6.0" />
+		<PackageReference Include="CliWrap" Version="3.6.1" />
 		<PackageReference Include="Flurl" Version="3.0.7" />
 		<PackageReference Include="Flurl.Http" Version="3.2.4" />
-		<PackageReference Include="Fody" Version="6.6.4">
+		<PackageReference Include="Fody" Version="6.7.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -200,12 +200,12 @@
 		<PackageReference Include="Microsoft.AppCenter" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-		<PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
-		<PackageReference Include="Octokit" Version="5.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15" />
+		<PackageReference Include="Octokit" Version="5.1.0" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
 		<PackageReference Include="Serilog" Version="2.12.0" />
@@ -213,7 +213,7 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
 		<PackageReference Include="SSH.NET" Version="2020.0.2" />
-		<PackageReference Include="WatsonWebsocket" Version="4.0.6" />
+		<PackageReference Include="WatsonWebsocket" Version="4.0.8" />
     <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.12.0.2" />
   </ItemGroup>
 	<ItemGroup>
