@@ -653,7 +653,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
                         try
                         {
                             using var saveFileS = File.OpenRead(sf);
-                            var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf, allowedGames: new MEGame[] { Target.Game }); // Scope saves to specific game so we don't load any saves for different games
+                            var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf);
                             if (saveFile == null)
                             {
                                 continue; // We do not parse this
