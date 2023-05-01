@@ -26,6 +26,10 @@ namespace ME3TweaksModManager.modmanager.helpers
         public static MEGameSelector[] GetGameSelectors() => allSupportedGames.Where(x => x != MEGame.LELauncher && x.IsEnabledGeneration()).Select(x => new MEGameSelector(x)).ToArray();
         public static MEGameSelector[] GetGameSelectorsIncludingLauncher() => allSupportedGames.Where(x => x.IsEnabledGeneration()).Select(x => new MEGameSelector(x)).ToArray();
 
+        /// <summary>
+        /// Gets list of MEGame values that are currently enabled for use in Mod Manager
+        /// </summary>
+        /// <returns></returns>
         public static MEGame[] GetEnabledGames() => GetGameSelectors().Select(x => x.Game).ToArray();
         public static MEGame[] GetEnabledGamesIncludingLauncher() => GetGameSelectorsIncludingLauncher().Select(x => x.Game).ToArray();
 

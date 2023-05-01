@@ -13,12 +13,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
     /// <summary>
     /// Interaction logic for DropdownSelectorDialog.xaml
     /// </summary>
-    public partial class DropdownSelectorDialog : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class DropdownSelectorDialog : Window
     {
-        public string DirectionsText { get; set; }
-        public string DirectionsText2 { get; set; }
+        public string TopDirectionsText { get; set; }
+        public string BottomDirectionsText { get; set; }
         public object SelectedItem { get; set; }
-        public string DialogTitle { get; set; }
         public ObservableCollection<object> DropdownItems { get; } = new ObservableCollection<object>();
 
         private DropdownSelectorDialog()
@@ -27,13 +27,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             InitializeComponent();
         }
 
-        public static object GetSelection<T>(Window owner, string title, IEnumerable<T> dropdownObjects, string directionsText, string directionsText2)
+        public static object GetSelection<T>(Window owner,
+            string title,
+            IEnumerable<T> dropdownObjects,
+            string topDirectionsText,
+            string bottomDirectionsText = null,
+            bool canSelectNothing = false)
         {
             DropdownSelectorDialog dss = new DropdownSelectorDialog()
             {
-                DialogTitle = title,
-                DirectionsText = directionsText,
-                DirectionsText2 = directionsText2,
+                Title = title,
+                TopDirectionsText = topDirectionsText,
+                BottomDirectionsText = bottomDirectionsText,
+                CanSelectNothing = canSelectNothing,
                 Owner = owner
             };
             dss.DropdownItems.ReplaceAll(dropdownObjects.Select(x => (object)x));
@@ -41,9 +47,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             return dss.SelectedItem;
         }
 
+        /// <summary>
+        /// If the blank option is valid input or not
+        /// </summary>
+        public bool CanSelectNothing { get; set; }
+
         private void LoadCommands()
         {
-            OKCommand = new GenericCommand(OK);
+            OKCommand = new GenericCommand(OK, CanSelectOK);
+        }
+
+        private bool CanSelectOK()
+        {
+            if (SelectedItem == null)
+                return CanSelectNothing;
+            return true;
         }
 
         private void OK()
@@ -66,10 +84,5 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                 OKCommand.Execute(null);
             }
         }
-
-        //Fody uses this property on weaving
-#pragma warning disable 0067
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0067
     }
 }

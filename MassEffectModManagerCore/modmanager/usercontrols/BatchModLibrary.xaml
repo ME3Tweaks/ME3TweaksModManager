@@ -246,7 +246,7 @@
                             VerticalAlignment="Bottom">
               <Hyperlink
                                 RequestNavigate="RequestNavigate"
-                                NavigateUri="{Binding SelectedUnavailableModLink}">
+                                NavigateUri="{Binding SelectedUnavailableModLink, TargetNullValue='https://example.com'}">
                 <TextBlock
                                     Text="{DynamicResource string_downloadMod}" />
               </Hyperlink>

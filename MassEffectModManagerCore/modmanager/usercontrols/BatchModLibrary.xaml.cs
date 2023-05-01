@@ -23,7 +23,9 @@ using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
+using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
 using ME3TweaksModManager.modmanager.windows;
+using ME3TweaksModManager.modmanager.windows.input;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -173,13 +175,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void CreateNewGroup()
         {
-            var editGroupUI = new BatchModQueueEditor(mainwindow);
-            editGroupUI.ShowDialog();
-            var newPath = editGroupUI.SavedPath;
-            if (newPath != null)
+            var gameDialog = DropdownSelectorDialog.GetSelection<MEGame>(window, "Game selector", MEGameSelector.GetEnabledGames(), "Select which game to create an install group for.", null);
+            if (gameDialog is MEGame game)
             {
-                //file was saved, reload
-                parseBatchFiles(newPath);
+                var editGroupUI = new BatchModQueueEditor(mainwindow) { SelectedGame = game };
+                editGroupUI.ShowDialog();
+                var newPath = editGroupUI.SavedPath;
+                if (newPath != null)
+                {
+                    //file was saved, reload
+                    parseBatchFiles(newPath);
+                }
             }
         }
 

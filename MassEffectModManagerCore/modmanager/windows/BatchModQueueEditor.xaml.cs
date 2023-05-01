@@ -47,7 +47,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public string NoModSelectedText { get; } = M3L.GetString(M3L.string_selectAModOnTheLeftToViewItsDescription);
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<ASIMod> VisibleFilteredASIMods { get; } = new ObservableCollectionExtended<ASIMod>();
-        public ObservableCollectionExtended<object> VisibleFilteredMEMMods { get; } = new ObservableCollectionExtended<object>();
+        public ObservableCollectionExtended<MEMMod> VisibleFilteredMEMMods { get; } = new ObservableCollectionExtended<MEMMod>();
 
         /// <summary>
         /// Contains both ASI (BatchASIMod) and Content mods (BatchMod)
@@ -60,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public string GroupName { get; set; }
         public string GroupDescription { get; set; }
-        private string existingFilename;
+
         /// <summary>
         /// Then newly saved path, for showing in the calling window's UI
         /// </summary>
@@ -77,7 +77,6 @@ namespace ME3TweaksModManager.modmanager.windows
             InitializeComponent();
             if (queueToEdit != null)
             {
-                existingFilename = queueToEdit.BackingFilename;
                 SelectedGame = queueToEdit.Game;
                 GroupName = queueToEdit.QueueName;
                 GroupDescription = queueToEdit.QueueDescription;
@@ -345,8 +344,8 @@ namespace ME3TweaksModManager.modmanager.windows
             }
             else if (SelectedTabIndex == TAB_TEXTUREMOD)
             {
-                object m = SelectedAvailableMEMMod;
-                if (VisibleFilteredMEMMods.Remove(m))
+                var m = SelectedAvailableMEMMod; // cache first since removal will change the value
+                if (VisibleFilteredMEMMods.Remove(SelectedAvailableMEMMod))
                 {
                     if (m is M3MEMMod m3mm) // M3MEMMMod must go first
                     {
@@ -373,13 +372,9 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 VisibleFilteredASIMods.Add(bai.AssociatedMod.OwningMod);
             }
-            else if (SelectedInstallGroupMod is M3MEMMod m3ai && ModsInGroup.Remove(m3ai))
+            else if (SelectedInstallGroupMod is MEMMod m3ai && ModsInGroup.Remove(m3ai)) // covers both types
             {
                 VisibleFilteredMEMMods.Add(m3ai);
-            }
-            else if (SelectedInstallGroupMod is MEMMod tai && ModsInGroup.Remove(tai))
-            {
-                VisibleFilteredMEMMods.Add(tai);
             }
 
             // Select next object to keep UI working well
@@ -512,7 +507,7 @@ namespace ME3TweaksModManager.modmanager.windows
         /// <summary>
         /// Selected left pane MEM mod. Can be MEMMod or M3MEMMod
         /// </summary>
-        public object SelectedAvailableMEMMod { get; set; }
+        public MEMMod SelectedAvailableMEMMod { get; set; }
 
         /// <summary>
         /// The current selected tab. 0 = content mods, 1 = ASI mods - maybe 2 in future = texture mods?
@@ -532,11 +527,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public void OnSelectedAvailableMEMModChanged()
         {
-            if (SelectedAvailableMEMMod is M3MEMMod m3mm)
-            {
-                AvailableModText = m3mm.GetDescription();
-            }
-            else if (SelectedAvailableMEMMod is MEMMod mm) AvailableModText = mm.DisplayString;
+            AvailableModText = SelectedAvailableMEMMod?.GetDescription() ?? "Select a texture mod";
         }
 
         public void OnSelectedTabIndexChanged()
