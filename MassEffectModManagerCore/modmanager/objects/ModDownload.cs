@@ -17,8 +17,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Markup;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -81,12 +81,12 @@ namespace ME3TweaksModManager.modmanager.objects
                 if (ProgressMaximum < DOWNLOAD_TO_MEMORY_SIZE_CAP && Settings.ModDownloadCacheFolder == null) // Mod Manager 8.0.1: If cache is set, always download to disk    
                 {
                     DownloadedStream = new MemoryStream();
-                    MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download MemoryStream", new WeakReference(DownloadedStream));
+                    M3MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download MemoryStream", DownloadedStream);
                 }
                 else
                 {
                     DownloadedStream = new FileStream(Path.Combine(M3Filesystem.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
-                    MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download FileStream", new WeakReference(DownloadedStream));
+                    M3MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download FileStream", DownloadedStream);
                 }
 
                 var downloadUri = DownloadLinks[0].Uri;
@@ -120,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.objects
                     {
                         // Todo: If verification fails, should we let user try to continue anyways?
 
-                        var hash = M3Utilities.CalculateMD5(DownloadedStream);
+                        var hash = MUtilities.CalculateHash(DownloadedStream);
                         var matchingHashedFiles = NexusModsUtilities.MD5Search(ProtocolLink.Domain, hash);
                         if (matchingHashedFiles.All(x => x.Mod.ModID != ProtocolLink.ModId))
                         {

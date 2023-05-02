@@ -10,8 +10,10 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Targets;
+using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -59,7 +61,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             //}
 
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifest);
-            MemoryAnalyzer.AddTrackedMemoryItem($@"MergeMod1 {mergeModName}", new WeakReference(mm));
+            M3MemoryAnalyzer.AddTrackedMemoryItem($@"MergeMod1 {mergeModName}", mm);
             mm.MergeModFilename = mergeModName;
 
             // setup links
@@ -107,7 +109,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             return mm;
         }
 
-        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, Action<int> mergeWeightDelegate, Action<string, string> mergeStatusDelegate)
+        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, Action<int> mergeWeightDelegate, Action<string, string> addTrackedFileDelegate, CaseInsensitiveConcurrentDictionary<string> originalFileMD5Map)
         {
             M3Log.Information($@"Applying {MergeModFilename}.");
             Debug.WriteLine($@"Expected weight: {GetMergeWeight()}");
@@ -124,7 +126,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             int numDone = 0;
             foreach (var mf in FilesToMergeInto)
             {
-                mf.ApplyChanges(target, loadedFiles, associatedMod, mergeWeightDelegate, mergeStatusDelegate);
+                mf.ApplyChanges(target, loadedFiles, associatedMod, mergeWeightDelegate, originalFileMD5Map, addTrackedFileDelegate);
                 numDone++;
             }
 

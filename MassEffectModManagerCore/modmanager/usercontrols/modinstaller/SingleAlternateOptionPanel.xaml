@@ -18,8 +18,6 @@
     <UserControl.Resources>
         <converters:GroupNameToColorConverter
             x:Key="GroupNameToColorConverter" />
-        <converters:ImageTooltipVerticalOffsetConverter
-            x:Key="ImageTooltipVerticalOffsetConverter" />
     </UserControl.Resources>
     <!-- DataContext is the AlternateOption object itself!-->
     <Border

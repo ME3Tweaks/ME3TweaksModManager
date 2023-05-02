@@ -316,6 +316,21 @@
                             Text="{DynamicResource string_description_autobootLE}"
                             TextWrapping="Wrap" />
                     </StackPanel>
+                    <StackPanel
+                        ui:SharedUIBindings.GenerationLE="true"
+                        Margin="0,10,0,0"
+                        Grid.Row="7"
+                        Grid.Column="1">
+                        <CheckBox
+                            FontWeight="Bold"
+                            Content="{DynamicResource string_lE1EnableCoalescedMerge}"
+                            DockPanel.Dock="Top"
+                            IsChecked="{Binding Path=(modmanager:Settings.EnableLE1CoalescedMerge)}" />
+                        <TextBlock
+                            Margin="0,0,10,0"
+                            Text="{DynamicResource string_description_le1CoalescedMergeOption}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
                     <!-- OT OPTIONS MODMAKER -->
                     <TextBlock
                         ui:SharedUIBindings.GenerationOT="true"

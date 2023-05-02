@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Services.FileSource;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Newtonsoft.Json;
@@ -6,7 +8,7 @@ using Newtonsoft.Json;
 namespace ME3TweaksModManager.modmanager.objects.batch
 {
     [AddINotifyPropertyChangedInterface]
-    public class BatchMod
+    public class BatchMod : IBatchQueueMod
     {
         public BatchMod() { }
 
@@ -46,6 +48,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public string ModDescHash { get; set; }
 
         /// <summary>
+        /// The original size of the moddesc
+        /// </summary>
+        [JsonProperty(@"moddescsize")]
+        public long ModDescSize { get; set; }
+
+        /// <summary>
         /// If the moddesc hash does not match the one on disk
         /// </summary>
         [JsonIgnore]
@@ -56,6 +64,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// </summary>
         [JsonIgnore]
         public bool ModMissing => Mod == null;
+
+        /// <summary>
+        /// Link to where the asset that satisfies this mod can be found
+        /// </summary>
+        [JsonProperty(@"downloadlink")]
+        public string DownloadLink { get; set; }
 
         /// <summary>
         /// List of user selections, in order
@@ -83,6 +97,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             get
             {
+                if (Mod != null && Mod.InstallationJobs.Sum(x => x.GetAllAlternates().Count) == 0) return M3L.GetString(M3L.string_batchModHasNoConfigOptionsUIText);
                 if (!HasChosenOptions) return M3L.GetString(M3L.string_notConfigured);
                 if (ChosenOptionsDesync) return M3L.GetString(M3L.string_reconfigurationRequired);
                 return M3L.GetString(M3L.string_interp_configuredTimestamp, ConfigurationTime.ToString(@"d"));
@@ -92,7 +107,9 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <summary>
         /// If the saved options for this batch mod should be used by the installer
         /// </summary>
+        [JsonIgnore]
         public bool UseSavedOptions { get; set; }
+
 
         /// <summary>
         /// Initializes and associates a mod with this object
@@ -108,7 +125,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 if (m != null)
                 {
                     Mod = m;
-                    var localHash = M3Utilities.CalculateMD5(Mod.ModDescPath);
+                    var localHash = MUtilities.CalculateHash(Mod.ModDescPath);
                     ChosenOptionsDesync = ModDescHash != null && localHash != ModDescHash;
                     //if (ChosenOptionsDesync)
                     //{
@@ -133,8 +150,18 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             if (Mod != null)
             {
-                ModDescHash = M3Utilities.CalculateMD5(Mod.ModDescPath);
+                ModDescSize = new FileInfo(Mod.ModDescPath).Length;
+                ModDescHash = MUtilities.CalculateHash(Mod.ModDescPath);
+                if (FileSourceService.TryGetSource(new FileInfo(Mod.ModDescPath).Length, ModDescHash, out var sourceLink))
+                {
+                    DownloadLink = sourceLink;
+                }
             }
+        }
+
+        public bool IsAvailableForInstall()
+        {
+            return Mod != null;
         }
     }
 }

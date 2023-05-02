@@ -1,36 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using IniParser.Parser;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.alternates;
-using Microsoft.AppCenter.Analytics;
-using PropertyChanged;
+using ME3TweaksModManager.modmanager.objects.mod.headmorph;
+using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using SevenZip;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
-using StringStructParser = ME3TweaksModManager.modmanager.helpers.StringStructParser;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     [AddINotifyPropertyChangedInterface]
-    public partial class Mod
+    public partial class Mod : IImportableMod
     {
 
         private static readonly string[] DirectorySeparatorChars = new[] { @"\", @"/" };
@@ -42,17 +35,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// MergeMods folder. Do not change
         /// </summary>
-        public const string MergeModFolderName = @"MergeMods";
+        public const string MergeModFolderName = @"MergeMods";  // DO NOT CHANGE THIS VALUE
 
         /// <summary>
         /// The folder that contains the TLK files for the GAME1_EMBEDDED_TLK feature. DO NOT CHANGE.
         /// </summary>
-        public const string Game1EmbeddedTlkFolderName = @"GAME1_EMBEDDED_TLK";
+        public const string Game1EmbeddedTlkFolderName = @"GAME1_EMBEDDED_TLK";  // DO NOT CHANGE THIS VALUE
 
         /// <summary>
         /// The filename of the combined compressed TLK info for moddesc > 8 GAME1_EMBEDDED_TLK
         /// </summary>
-        public const string Game1EmbeddedTlkCompressedFilename = @"CombinedTLKMergeData.m3za";
+        public const string Game1EmbeddedTlkCompressedFilename = @"CombinedTLKMergeData.m3za";  // DO NOT CHANGE THIS VALUE
 
         /// <summary>
         /// The numerical ID for a mod on the respective game's NexusMods page. This is automatically parsed from the ModWebsite if this is not explicitly set and the ModWebsite attribute is a nexusmods url.
@@ -75,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// Mapping of Custom DLC names to their human-readable versions.
         /// </summary>
-        public Dictionary<string, string> HumanReadableCustomDLCNames = new Dictionary<string, string>();
+        public Dictionary<string, string> HumanReadableCustomDLCNames = new Dictionary<string, string>(0);
         /// <summary>
         /// What game this mod can install to.
         /// </summary>
@@ -224,7 +217,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture)));
                 }
-                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC && x.Header != ModJob.JobHeader.LOCALIZATION).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
+                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC
+                                                               && x.Header != ModJob.JobHeader.LOCALIZATION
+                                                               && x.Header != ModJob.JobHeader.TEXTUREMODS
+                                                               && x.Header != ModJob.JobHeader.HEADMORPHS).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
                 {
                     sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modifies, string.Join(@", ", modifiesList)));
@@ -290,26 +286,83 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
                 }
 
+                var texJob = GetJob(ModJob.JobHeader.TEXTUREMODS);
+                if (texJob != null && texJob.TextureModReferences.Any())
+                {
+                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesTextureFiles));
+                    foreach (var reference in texJob.TextureModReferences)
+                    {
+                        string name = reference.Title;
+                        sb.AppendLine($@" - {name}");
+                    }
+                }
+
+                var headmorphJob = GetJob(ModJob.JobHeader.HEADMORPHS);
+                if (headmorphJob != null && headmorphJob.HeadMorphFiles.Any())
+                {
+                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesHeadmorphFiles));
+                    foreach (var reference in headmorphJob.HeadMorphFiles)
+                    {
+                        string name = reference.Title;
+                        sb.AppendLine($@" - {name}");
+                    }
+                }
+
                 return sb.ToString();
             }
         }
 
         /// <summary>
-        /// Get's the installation job associated with the header, or null if that job is not defined for this mod.
+        /// Gets the installation job associated with the header, or null if that job is not defined for this mod.
         /// </summary>
         /// <param name="header">Header to find job for</param>
         /// <returns>Associated job with this header, null otherwise</returns>
         public ModJob GetJob(ModJob.JobHeader header) => InstallationJobs.FirstOrDefault(x => x.Header == header);
 
+        /// <summary>
+        /// The raw string the mod sets as the version. Check <see cref="ParsedModVersion"/> for the parsed version.
+        /// </summary>
         public string ModVersionString { get; set; }
+        /// <summary>
+        /// The properly versioned mod version. Can be null if the developer does it wrong.
+        /// </summary>
         public Version ParsedModVersion { get; set; }
+
+        /// <summary>
+        /// The website the mod lists
+        /// </summary>
         public string ModWebsite { get; set; } = ""; //not null default I guess.
+
+        /// <summary>
+        /// The moddesc parser version 
+        /// </summary>
         public double ModDescTargetVersion { get; set; }
 
+        /// <summary>
+        /// List of DLC foldernames that will be offered for removal if found upon successful mod install
+        /// </summary>
+
         public List<string> OutdatedCustomDLC = new List<string>();
+
+        /// <summary>
+        /// List of DLC foldernames that will block install of this mod
+        /// </summary>
         public List<string> IncompatibleDLC = new List<string>();
+
+        /// <summary>
+        /// The updater service code for this mod
+        /// </summary>
         public int ModClassicUpdateCode { get; set; }
+
+        /// <summary>
+        /// The reason the mod failed to load
+        /// </summary>
         public string LoadFailedReason { get; set; }
+
+        /// <summary>
+        /// If this mod makes use of the new bink encoder - this flag is used to help flag that bink is not installed when troubleshooting
+        /// </summary>
+        public bool RequiresEnhancedBink { get; set; }
 
         /// <summary>
         /// List of DLC requirements for this mod to be able to install
@@ -320,31 +373,57 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// List of DLC, of which at least one must be installed
         /// </summary>
         public List<DLCRequirement> OptionalSingleRequiredDLC = new List<DLCRequirement>();
+
+        /// <summary>
+        /// List of additional folders to include in mod deployment
+        /// </summary>
         private List<string> AdditionalDeploymentFolders = new List<string>();
+
+        /// <summary>
+        /// List of additional files to include in mod deployment
+        /// </summary>
         private List<string> AdditionalDeploymentFiles = new List<string>();
+
+        /// <summary>
+        /// The path on disk to the root of the mod folder
+        /// </summary>
         public string ModPath { get; private set; }
+
+        /// <summary>
+        /// The archive this mod was loaded from, if loaded from archive
+        /// </summary>
         public SevenZipExtractor Archive;
         /// <summary>
         /// The full path to the moddesc.ini file
         /// </summary>
         public string ModDescPath => FilesystemInterposer.PathCombine(IsInArchive, ModPath, @"moddesc.ini");
-        
+
         /// <summary>
         /// If this mod was was loaded from archive or from disk
         /// </summary>
-        public bool IsInArchive { get; }
+        public bool IsInArchive { get; init; }
         /// <summary>
         /// The minimum build number that this mod is allowed to load on
         /// </summary>
         public int MinimumSupportedBuild { get; set; }
         /// <summary>
-        /// If this mod was loaded using an autobuilt moddesc based on the DLC name in TPMI (ME3 only)
+        /// If this mod was loaded using a moddesc.ini from ME3Tweaks
         /// </summary>
         public bool IsVirtualized { get; private set; }
-        public string OriginalArchiveHash { get; private set; }
+
+        /// <summary>
+        /// What tool to launch after mod install
+        /// </summary>
         public string PostInstallToolLaunch { get; private set; }
 
+        /// <summary>
+        /// The virtualize ini text, if this mod was loaded from virtual
+        /// </summary>
         private readonly string VirtualizedIniText;
+
+        /// <summary>
+        /// The path to the archive file, if this mod was initialized from archive on disk
+        /// </summary>
         private readonly string ArchivePath;
 
         public Mod(RCWMod rcw)
@@ -359,7 +438,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             rcwJob.RCW = rcw;
             InstallationJobs.Add(rcwJob);
             ValidMod = true;
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, this);
         }
 
         /// <summary>
@@ -388,14 +467,19 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // 06/14/2022 - ME3Tweaks Moddesc Updates 
             // This is for mods that might break when used on Mod Manager 8.0 and above due to alternate logic change
-            var moddescHash = MUtilities.CalculateMD5(ms); //resets pos to 0
+            ModDescHash = MUtilities.CalculateHash(ms); //resets pos to 0
+            ModDescSize = ms.Length;
+
             string updatedIni = null;
-            if (ModDescUpdaterService.HasHash(moddescHash))
+            if (ModDescUpdaterService.HasHash(ModDescHash))
             {
-                updatedIni = ModDescUpdaterService.FetchUpdatedModdesc(moddescHash);
+                updatedIni = ModDescUpdaterService.FetchUpdatedModdesc(ModDescHash, out var localHash);
                 if (updatedIni != null)
                 {
                     M3Log.Information(@"This moddesc is being updated by ME3Tweaks ModDesc Updater Service");
+                    ModDescHash = localHash;
+                    VirtualizedIniText = updatedIni;
+                    IsVirtualized = true; // Mark virtualized so on extraction it works properly
                 }
             }
 
@@ -414,11 +498,21 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini, moddescArchiveEntry.FileName, e.Message);
             }
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, this);
 
             //Retain reference to archive as we might need this.
             //Archive = null; //dipose of the mod
         }
+
+        /// <summary>
+        /// Hash of the moddesc file. Only populated when loading from archive.
+        /// </summary>
+        public string ModDescHash { get; set; }
+
+        /// <summary>
+        /// Size of the moddesc file. Only populated whne loading from archive
+        /// </summary>
+        public long ModDescSize { get; set; }
 
         /// <summary>
         /// Initializes a mod from a moddesc.ini file
@@ -438,7 +532,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingModdescini, filePath, e.Message);
             }
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Disk) - " + ModName, new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Disk) - " + ModName, this);
 
         }
 
@@ -474,7 +568,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (archive != null && ValidMod)
             {
                 SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
-                MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
+                M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, this);
             }
 
         }
@@ -521,6 +615,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 ModDescTargetVersion = 1.0;
             }
 
+
             if (parsedModCmmVer < 6.0)
             {
                 CheckDeployedWithM3 = false;
@@ -555,10 +650,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // After name and site are loaded, we now check if we can parse it, as these attributes have been always supported.
             // LE1DP shipped with 8.1 as the value before 8.1 was ever even submitted for beta testing; this needs removed eventually //04/01/2023
-            if (parsedModCmmVer > App.HighestSupportedModDesc && ModName != @"LE1 Diversification Project")
+            // LE1DP workaround removed 05/02/2023
+            if (parsedModCmmVer > App.HighestSupportedModDesc)
             {
                 M3Log.Error(@"The cmmver specified by this mod is higher than the version supported by this build of ME3Tweaks Mod Manager. You may need to update Mod Manager for this mod to load.");
-                LoadFailedReason = $"The cmmver specified by this mod ({parsedModCmmVer}) is higher than the version supported by this build of ME3Tweaks Mod Manager ({App.HighestSupportedModDesc}). You may need to update Mod Manager for this mod to load.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_unsupportedModdescVersion, parsedModCmmVer, App.HighestSupportedModDesc);
                 return;
             }
 
@@ -723,49 +819,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // Parsed here as it depends on the game
             #region NexusMods ID from URL
-
             if (NexusModID == 0 && ModModMakerID == 0 /*&& ModClassicUpdateCode == 0 */ &&
                 !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
             {
-                try
+                var nfi = NexusFileInfo.FromModSite(Game, ModWebsite);
+                if (nfi != null && nfi.ModId != 0)
                 {
-                    //try to extract nexus mods ID
-                    var nexusIndex = ModWebsite.IndexOf(@"nexusmods.com/", StringComparison.InvariantCultureIgnoreCase);
-                    if (nexusIndex > 0)
-                    {
-                        string nexusId = ModWebsite.Substring(nexusIndex + @"nexusmods.com/".Length); // http:/
-
-                        nexusId = nexusId.Substring(@"masseffect".Length);
-                        if (Game == MEGame.ME2 || Game == MEGame.ME3)
-                        {
-                            nexusId = nexusId.Substring(1); //number
-                        }
-                        else if (Game.IsLEGame())
-                        {
-                            nexusId = nexusId.Substring(16); // legendaryedition
-                        }
-
-                        nexusId = nexusId.Substring(6)
-                            .TrimEnd('/'); // /mods/ and any / after number in the event url has that in it.
-
-                        int questionMark = nexusId.IndexOf(@"?", StringComparison.InvariantCultureIgnoreCase);
-                        if (questionMark > 0)
-                        {
-                            nexusId = nexusId.Substring(0, questionMark);
-                        }
-
-                        if (int.TryParse(nexusId, out var nid))
-                        {
-                            NexusModID = nid;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    //don't bother.
+                    NexusModID = nfi.ModId;
                 }
             }
-
             #endregion
 
             if (ModDescTargetVersion < 2) //Mod Manager 1 (2012)
@@ -813,7 +875,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 if (!string.IsNullOrWhiteSpace(BannerImageName))
                 {
-                    var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.ModImageAssetFolderName, BannerImageName);
+                    var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.M3IMAGES_FOLDER_NAME, BannerImageName);
                     if (!FilesystemInterposer.FileExists(fullPath, Archive))
                     {
                         M3Log.Error($@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
@@ -839,7 +901,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
-
 
             //We must check against official headers
             //ME2 doesn't support anything but basegame.
@@ -1136,6 +1197,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                     M3Log.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
                     InstallationJobs.Add(headerJob);
+                }
+
+                // 04/18/2023: Add check for 'mergemods' set in basegame job without a job header, make mod fail to load if 
+                // jobdir is not specified, as a way to cue user into needing a value for it
+                // This is
+                if (ModDescTargetVersion >= 8.1 && header == ModJob.JobHeader.BASEGAME && jobSubdirectory == null &&
+                    !string.IsNullOrWhiteSpace(iniData[headerAsString][@"mergemods"]))
+                {
+                    M3Log.Error(@"Mod specifies basegame mergemods descriptor but does not set basegame moddir, setting mod as invalid to prevent misleading behavior");
+                    LoadFailedReason = M3L.GetString(M3L.string_mod_validation_basegameMergeModsWithoutModDir);
+                    return;
                 }
             }
 
@@ -1598,6 +1670,63 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
             #endregion
 
+            #region Texture Mod References
+
+            if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
+            {
+                // Todo: Settings.LogModStartup for 8.1 moddesc ini changes
+
+                var textureModsStruct = iniData[@"TEXTUREMODS"][@"files"];
+                if (!string.IsNullOrWhiteSpace(textureModsStruct))
+                {
+                    ModJob texJob = new ModJob(ModJob.JobHeader.TEXTUREMODS, this);
+                    var tmSplit = StringStructParser.GetParenthesisSplitValues(textureModsStruct);
+                    foreach (var tm in tmSplit)
+                    {
+                        var mm = new M3MEMMod(this, tm);
+                        if (mm.ValidationFailedReason != null)
+                        {
+                            // Mod fails to load due to validation failure
+                            LoadFailedReason = mm.ValidationFailedReason;
+                            return;
+                        }
+                        texJob.TextureModReferences.Add(mm);
+                    }
+                    InstallationJobs.Add(texJob);
+                }
+            }
+
+            #endregion
+
+            #region Headmorphs
+            // This is LE only cause save files are a pain in the arse for OT
+            if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
+            {
+                var headmorphReferenceStruct = iniData[ModJob.JobHeader.HEADMORPHS.ToString()][@"files"];
+                if (!string.IsNullOrWhiteSpace(headmorphReferenceStruct))
+                {
+                    ModJob headmorphJob = new ModJob(ModJob.JobHeader.HEADMORPHS, this);
+
+                    var tmSplit = StringStructParser.GetParenthesisSplitValues(headmorphReferenceStruct);
+                    foreach (var tm in tmSplit)
+                    {
+                        var mm = new M3Headmorph(this, tm);
+                        if (mm.ValidationFailedReason != null)
+                        {
+                            // Mod fails to load due to validation failure
+                            LoadFailedReason = mm.ValidationFailedReason;
+                            return;
+                        }
+
+                        headmorphJob.HeadMorphFiles.Add(mm);
+                    }
+
+                    InstallationJobs.Add(headmorphJob);
+                }
+            }
+
+            #endregion
+
             #endregion
 
             #region Additional Mod Items
@@ -1767,9 +1896,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
             }
 
-            //Archive file hash for update checks. Not sure if this is actually useful to store.
-            OriginalArchiveHash = iniData[@"UPDATES"][@"originalarchivehash"];
-
             #endregion
 
             #region Backwards Compatibilty
@@ -1814,6 +1940,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             //What tool to launch post-install
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
+
+            // Enhanced bink support
+            if (ModDescTargetVersion >= 8.1 && (Game.IsLEGame() || Game == MEGame.LELauncher))
+            {
+                if (bool.TryParse(iniData[@"ModInfo"][@"requiresenhancedbink"], out var usesEnhancedBink))
+                {
+                    // Marks mod are requiring the enhanced bink
+                    RequiresEnhancedBink = usesEnhancedBink;
+                    M3Log.Information(@"This mod requires the enhanced bink2w64 dll", Settings.LogModStartup && usesEnhancedBink);
+                }
+            }
 
             // SECURITY CHECK
             #region TASK SILOING CHECK
@@ -2052,7 +2189,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             return true;
         }
 
-        private bool CheckNonSolidArchiveFile(string path)
+        internal bool CheckNonSolidArchiveFile(string path)
         {
             if (!IsInArchive)
                 throw new Exception(@"Guarded check: Called CheckNonSolidArchiveFile() when there is no backing archive!");
@@ -2081,6 +2218,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         private static readonly string[] allowedConfigFilesME1 = { @"BIOCredits.ini", @"BioEditor.ini", @"BIOEngine.ini", @"BIOGame.ini", @"BIOGuiResources.ini", @"BIOInput.ini", @"BIOParty.in", @"BIOQA.ini" };
+
         private bool CheckAndCreateLegacyCoalescedJob()
         {
             var legacyCoalFile = FilesystemInterposer.PathCombine(IsInArchive, ModPath, @"Coalesced.bin");

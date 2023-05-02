@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Helpers;
 
 //Taken from ALOT Installer V4
 namespace ME3TweaksModManager.modmanager.helpers
@@ -81,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
             if (calculateOriginalHash)
             {
-                info.OriginalExecutableHash = M3Utilities.CalculateMD5(s);
+                info.OriginalExecutableHash = MUtilities.CalculateHash(s);
             }
 
             return info;

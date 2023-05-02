@@ -4,7 +4,9 @@
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+                       xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
                        mc:Ignorable="d" 
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        d:DesignHeight="450" d:DesignWidth="800" MaxWidth="500">
     <usercontrols:MMBusyPanelBase.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -24,17 +26,22 @@
         <Separator />
         <TextBlock Text="{DynamicResource string_releaseNotes}" FontWeight="Bold" />
         <TextBlock Text="{Binding Changelog}" TextWrapping="Wrap" />
-        <StackPanel Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Separator />
-            <TextBlock FontWeight="Bold" Text="{DynamicResource string_updateInProgress}" />
-            <TextBlock Text="{DynamicResource string_modManagerWillAutomaticallyRestart}" TextWrapping="Wrap"></TextBlock>
-            <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" Margin="0,10,0,0"></TextBlock>
-            <ProgressBar Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}" IsIndeterminate="{Binding ProgressIndeterminate}" Height="16" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
-            <Button Content="{DynamicResource string_notNow}" Padding="4" Command="{Binding NotNowCommand}" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,3">
+            <Button Content="{DynamicResource string_notNow}" Padding="4" Command="{Binding NotNowCommand}"  Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
             <Button Content="{DynamicResource string_viewChangelog}" Margin="5,0" Padding="7,5" Command="{Binding ViewChangelogCommand}" />
-            <Button Content="{DynamicResource string_installUpdate}" Padding="4" Width="190" Command="{Binding StartUpdateCommand}" />
+            <Button Content="{DynamicResource string_installUpdate}" Padding="4" Width="190" Command="{Binding StartUpdateCommand}"  Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
         </StackPanel>
+        <ui:Clipper HorizontalAlignment="Left"
+                    Constraint="Width"
+                    DockPanel.Dock="Bottom">
+            <StackPanel Name="UpdateInProgressPanel" ui:Clipper.HeightFraction="0">
+                <Separator />
+                <TextBlock FontWeight="Bold" Text="{DynamicResource string_updateInProgress}" />
+                <TextBlock Text="{DynamicResource string_modManagerWillAutomaticallyRestart}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                <ProgressBar Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}" IsIndeterminate="{Binding ProgressIndeterminate}" Height="16" />
+            </StackPanel>
+        </ui:Clipper>
+
     </StackPanel>
 </usercontrols:MMBusyPanelBase>

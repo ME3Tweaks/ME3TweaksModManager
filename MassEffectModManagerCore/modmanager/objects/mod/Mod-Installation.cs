@@ -13,6 +13,8 @@ using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.tlk;
@@ -144,8 +146,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             }
 
                             if (altApplied) continue; //no further processing for file
-                            var relativeDestStartIndex = sourceFile.IndexOf(mapping.Value);
-                            string destPath = sourceFile.Substring(relativeDestStartIndex);
+                            var relativeDestStartIndex = sourceFile.IndexOf(mapping.Key); // Source file will use mod directory name, so it must use key, not value (dest)
+                            string destPath = mapping.Value + Path.DirectorySeparatorChar + sourceFile.Substring(relativeDestStartIndex + 1 + mapping.Key.Length);
                             installationMapping[destPath] = new InstallSourceFile(sourceFile); //destination is mapped to source file that will replace it.
                         }
 
@@ -289,6 +291,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     // We don't parse this here
                     #endregion
                 }
+                else if (job.Header == ModJob.JobHeader.HEADMORPHS)
+                {
+                    // Do nothing
+                }
+                else if (job.Header == ModJob.JobHeader.TEXTUREMODS)
+                {
+                    // Do nothing
+                }
                 else
                 {
                     //?? Header
@@ -319,20 +329,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 Archive.DisposeObjectOnly();
             }
- 
+
             // Reopen archive if we need to
-            if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
+            if (SevenZipHelper.ReopenSevenZipArchive(ArchivePath, ref Archive))
             {
-                Debug.WriteLine(@"Re-opening file-based SVE archive");
-                Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
-            }
-            else if (Archive != null && Archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
-            {
-                var isExe = ArchivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
-                Debug.WriteLine(@"Re-opening memory SVE archive");
-                ms.Position = 0; // Ensure position is 0
-                Archive = isExe ? new SevenZipExtractor(ms, InArchiveFormat.Nsis) : new SevenZipExtractor(ms);
-                MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", new WeakReference(Archive));
+                M3MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", Archive);
             }
         }
 
@@ -546,7 +547,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public List<string> GetAllInstallableFiles(bool includeModifable = false)
         {
             ReOpenArchiveIfNecessary();
-
+            var archive = Archive;
             var list = new List<string>();
 
             foreach (var job in InstallationJobs)

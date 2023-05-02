@@ -449,6 +449,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             InOrderRecordedOptions.Add(new PlusMinusKey(newSelectedOption.UIIsSelected, newSelectedOption.OptionKey));
         }
 
+        [SuppressPropertyChangedWarnings]
         private void OnAlternateSelectionChanged(object sender, EventArgs data)
         {
             if (sender is AlternateOption ao && data is DataEventArgs args && args.Data is bool newState)

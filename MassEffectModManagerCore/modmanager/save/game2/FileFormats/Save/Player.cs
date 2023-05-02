@@ -42,20 +42,6 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
             set => FirstName = value;
         }
 
-        public void SetMorphHead(IMorphHead morphHead)
-        {
-            if (morphHead is MorphHead head)
-            {
-                Appearance.MorphHead = head;
-                Appearance.HasMorphHead = true;
-            }
-            else
-            {
-                Appearance.MorphHead = null;
-                Appearance.HasMorphHead = false;
-            }
-        }
-
         [UnrealFieldOffset(0x02C)]
         [UnrealFieldCategory("Player")]
         [UnrealFieldDisplayName("Last Name")]

@@ -2,15 +2,20 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
+using AdonisUI.Controls;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Helpers.MEM;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using PropertyChanged;
 using MEMIPCHandler = ME3TweaksCore.Helpers.MEM.MEMIPCHandler;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxImage = System.Windows.MessageBoxImage;
+using MessageBoxResult = System.Windows.MessageBoxResult;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -20,16 +25,51 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class TextureInstallerPanel : MMBusyPanelBase
     {
-        private Action runAndDoneDelegate;
+        /// <summary>
+        /// Background task for this installation
+        /// </summary>
+        private BackgroundTask BGTask;
 
-        private readonly BackgroundTask BGTask;
+        /// <summary>
+        /// The text shown in the panel
+        /// </summary>
         public string ActionText { get; private set; }
 
+        /// <summary>
+        /// The percentage reported by MEM
+        /// </summary>
         public int PercentDone { get; set; }
-        public TextureInstallerPanel()
+
+        /// <summary>
+        /// The path where the MEM MFL file is written
+        /// </summary>
+        /// <returns></returns>
+        private string GetMEMMFLPath() => Path.Combine(M3Filesystem.GetTempPath(), @"meminstalllist.mfl");
+
+
+        /// <summary>
+        /// Target we are installing textures to
+        /// </summary>
+        public GameTarget Target { get; set; }
+
+        /// <summary>
+        /// List of files to install
+        /// </summary>
+        private readonly List<string> MEMFilesToInstall;
+
+        public TextureInstallerPanel(GameTarget target, List<string> memFilesToInstall)
         {
+            if (File.Exists(GetMEMMFLPath()))
+                File.Delete(GetMEMMFLPath());
+
+            // Write out the MFL file
+            Target = target;
+            ActionText = M3L.GetString(M3L.string_preparingToInstallTextures);
+
+            MEMFilesToInstall = memFilesToInstall;
 
         }
+
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -39,53 +79,213 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
-            OpenFileDialog m = new OpenFileDialog
+
+            if (!Target.Game.IsMEGame())
             {
-                Title = @"Select texture file (.mem)",
-                Filter = M3L.GetString(M3L.string_massEffectModderFiles) + @"|*.mem"
+                M3Log.Information(@"TextureInstallerPanel: Could not determine the game for any mem mods, skipping install.");
+                OnClosing(DataEventArgs.Empty);
+                return;
+            }
+
+            // Validate installation
+            bool canInstall = true;
+            foreach (var memFile in MEMFilesToInstall)
+            {
+                var game = ModFileFormats.GetGameMEMFileIsFor(memFile);
+                if (game != Target.Game)
+                {
+                    // Abort here
+                    canInstall = false;
+                    M3Log.Error($@"Cannot install {memFile} to {Target.Game}, it is for {game}");
+                }
+            }
+
+            if (!canInstall)
+            {
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotInstallMemsNotAllSameGame, Target.Game));
+                OnClosing(DataEventArgs.Empty);
+                return;
+            }
+
+            if (!Target.TextureModded)
+            {
+                // Show the big scary warning
+                if (!ShowTextureInstallWarning())
+                {
+                    M3Log.Information(@"User declined to install texture after warning");
+                    OnClosing(DataEventArgs.Empty);
+                    return;
+                }
+            }
+
+            // Write MFL
+            File.WriteAllLines(GetMEMMFLPath(), MEMFilesToInstall);
+
+            // Perform the installation
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TextureInstaller");
+            nbw.DoWork += (a, b) =>
+            {
+                BGTask = BackgroundTaskEngine.SubmitBackgroundJob(@"TextureInstall", M3L.GetString(M3L.string_installingTextureMods), M3L.GetString(M3L.string_installedTextureMods));
+
+                SetNextStep(M3L.GetString(M3L.string_checkingMassEffectModder));
+                bool hasMem = MEMNoGuiUpdater.UpdateMEM(false, false, setPercentDone, failedToExtractMEM, currentTaskCallback);
+                if (hasMem)
+                {
+                    SetNextStep(M3L.GetString(M3L.string_configuringMassEffectModder));
+                    MEMIPCHandler.SetGamePath(Target);
+
+                    // Precheck: Texture map consistency (only on already texture modded game)
+                    if (Settings.EnableTextureSafetyChecks)
+                    {
+                        var conistencyResult = MEMIPCHandler.CheckTextureMapConsistencyAddedRemoved(Target,
+                            x => ActionText = x, x => PercentDone = x, setGamePath: false);
+                        if (conistencyResult != null)
+                        {
+                            if (conistencyResult.HasAnyErrors())
+                            {
+                                M3Log.Error(
+                                    $@"{conistencyResult.GetErrors().Count} files have changed since the texture scan took place. You cannot modify game files outside of using Mass Effect Modder after installing textures.");
+                                if (Settings.LogModInstallation || conistencyResult.GetErrors().Count < 30)
+                                {
+                                    foreach (var file in conistencyResult.GetErrors())
+                                    {
+                                        M3Log.Error($@" - {file}");
+                                    }
+                                }
+                                else
+                                {
+                                    M3Log.Error(@"Turn on mod install logging in the options to log them.");
+                                }
+
+                                conistencyResult.AddFirstError(
+                                    M3L.GetString(M3L.string_dialog_textureMapDesync));
+                                b.Result = conistencyResult;
+                                return;
+                            }
+                        }
+
+
+
+                        // Check for markers
+                        SetNextStep(M3L.GetString(M3L.string_preparingForTextureInstall));
+                        var markerResult = MEMIPCHandler.CheckForMarkers(Target, x => ActionText = x,
+                            x => PercentDone = x, setGamePath: false);
+                        if (markerResult != null)
+                        {
+                            if (markerResult.HasAnyErrors())
+                            {
+                                M3Log.Error(
+                                    $@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
+
+                                if (Settings.LogModInstallation || markerResult.GetErrors().Count < 30)
+                                {
+                                    foreach (var file in markerResult.GetErrors())
+                                    {
+                                        M3Log.Error($@" - {file}");
+                                    }
+                                }
+                                else
+                                {
+                                    M3Log.Error(@"Turn on mod install logging in the options to log them.");
+                                }
+
+                                // Todo: Backup service specific strings.
+                                markerResult.AddFirstError(
+                                    M3L.GetString(M3L.string_dialog_leftoverTextureFilesFound));
+                                b.Result = markerResult;
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        M3Log.Warning(@"Texture safety checks are disabled! Do not trust the results of this installation");
+                    }
+
+                    SetNextStep(M3L.GetString(M3L.string_preparingForTextureInstall)); // same message
+                    var installResult = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
+                    if (installResult != null)
+                    {
+                        // If 'installation' occurred (e.g. it got past scan) we need to reload the game target to ensure consistency in the UI
+                        Result.ReloadTargets = installResult.IsInstallSession;
+                    }
+                    b.Result = installResult;
+                }
+                else
+                {
+                    // We cannot install textures!
+                    throw new Exception(M3L.GetString(M3L.string_dialog_cannotDownloadMEMCannotProceed));
+                }
             };
 
-            var result = m.ShowDialog();
-            if (result.HasValue && result.Value && File.Exists(m.FileName))
+            nbw.RunWorkerCompleted += (a, b) =>
             {
-                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TextureInstaller");
-                nbw.DoWork += (a, b) =>
+                if (b.Error != null)
                 {
-                    bool hasMem = MEMNoGuiUpdater.UpdateMEM(false, false, setPercentDone, failedToExtractMEM, currentTaskCallback);
-                    if (hasMem)
-                    {
-                        var game = ModFileFormats.GetGameMEMFileIsFor(m.FileName);
-                        
-                        // Todo: Figure out how to make MEM take a game path
-
-
-                        Debug.WriteLine(game);
-                        MEMIPCHandler.InstallMEMFile(m.FileName, x => ActionText = x, x => PercentDone = x);
-                        Result.ReloadTargets = true;
-                    }
-                    runAndDoneDelegate?.Invoke();
-                };
-                nbw.RunWorkerCompleted += (a, b) =>
+                    // Logging is handled in nbw
+                    BGTask.FinishedUIText = M3L.GetString(M3L.string_errorOccurredInTextureInstaller);
+                    Result.Error = b.Error;
+                }
+                else if (b.Result is MEMSessionResult mir)
                 {
-                    if (b.Error != null)
+                    if (mir.ExitCode != 0)
                     {
-                        // Logging is handled in nbw
-                        Result.Error = b.Error;
+                        // This is kind of technical, but will also catch some strange edge cases user may face if MEM unexpectedly dies.
+                        var exitCodeString = mir.ExitCode?.ToString() ?? M3L.GetString(M3L.string_noExitCodeBrackets);
+                        mir.AddFirstError(M3L.GetString(M3L.string_dialog_memNonZeroExitCode, exitCodeString));
                     }
 
-                    if (BGTask != null)
+                    var errors = mir.GetErrors();
+                    if (errors.Any() || mir.ExitCode != 0)
                     {
-                        BackgroundTaskEngine.SubmitJobCompletion(BGTask);
-                    }
+                        if (BGTask != null)
+                        {
+                            BGTask.FinishedUIText = M3L.GetString(M3L.string_textureInstallationFailed);
+                        }
 
-                    OnClosing(DataEventArgs.Empty);
-                };
-                nbw.RunWorkerAsync();
-            }
-            else
-            {
+                        ListDialog ld = null;
+                        if (mir.IsInstallSession)
+                        {
+                            // Messages are different.
+                            ld = new ListDialog(errors.ToList(), M3L.GetString(M3L.string_textureInstallationErrors), M3L.GetString(M3L.string_dialog_textureInstallErrorsOccurred), window, width: 800);
+                        }
+                        else
+                        {
+                            // Game has not been modified
+                            ld = new ListDialog(errors.ToList(), M3L.GetString(M3L.string_cannotInstallTextures), M3L.GetString(M3L.string_dialog_textureModPrecheckIssues), window, width: 800);
+                        }
+                        ld.ShowDialog();
+                    }
+                    else if (mir.ExitCode != 0)
+                    {
+                        // Handle here
+                    }
+                }
+
+                if (BGTask != null)
+                {
+                    BackgroundTaskEngine.SubmitJobCompletion(BGTask);
+                }
+
                 OnClosing(DataEventArgs.Empty);
-            }
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        private void SetNextStep(string nextStepText)
+        {
+            ActionText = nextStepText;
+            PercentDone = 0;
+        }
+
+        private bool ShowTextureInstallWarning()
+        {
+            var result = M3L.ShowDialog(window,
+                M3L.GetString(M3L.string_dialog_bigScaryTextureInstallWarning),
+                M3L.GetString(M3L.string_textureInstallationWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                System.Windows.MessageBoxResult.No);
+
+            return result == MessageBoxResult.Yes;
         }
 
         private void currentTaskCallback(string text)
@@ -93,9 +293,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             ActionText = text;
         }
 
-        private void failedToExtractMEM(Exception obj)
+        private void failedToExtractMEM(Exception exception)
         {
-
+            M3Log.Exception(exception, @"Failed to extract MassEffectModderNoGui:");
+            // Should probably have a more useful message than this.
         }
 
         private void setPercentDone(long done, long total)

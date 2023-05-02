@@ -16,6 +16,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;

@@ -43,6 +43,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public const string MER = @"Mass Effect Randomizer";
         public const string ME2R = @"Mass Effect 2 Randomizer";
         public const string FVBCCU = @"FVBCCU"; // Femshep vs BroShep Clone Configuration Utility
+        public const string TRILOGYSAVEEDITOR_CMD = @"Trilogy Save Editor (CLI)"; // For installing headmorphs
         private string tool;
 
         public static List<string> ToolsCheckedForUpdatesInThisSession = new List<string>();
@@ -444,6 +445,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     toolGithubOwner = @"Exkywor";
                     toolGithubRepoName = @"FSvBSCustomCloneConfigurator";
                     break;
+                case TRILOGYSAVEEDITOR_CMD:
+                    toolGithubOwner = @"KarlitosVII";
+                    toolGithubRepoName = @"trilogy-save-editor-cli";
+                    break;
             }
 
 
@@ -515,7 +520,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // This is to ensure we can create data directory
             try
             {
-                getToolStoragePath(tool);
+                GetToolStoragePath(tool);
             }
             catch (Exception e)
             {
@@ -525,8 +530,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // var toolName = tool.Replace(@" ", "");
-            var localToolFolderName = getToolStoragePath(tool);
-            var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
+            var localToolFolderName = GetToolStoragePath(tool);
+            var localExecutable = Path.Combine(localToolFolderName, ToolNameToExeName(tool));
             bool needsDownloading = !File.Exists(localExecutable);
 
             if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
@@ -709,7 +714,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 case LegendaryExplorer:
                     {
-                        if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorerstable_netversion", out var lexStableNetVersion) && int.TryParse(lexStableNetVersion, out netVersion))
+                        if (ServerManifest.TryGetInt(ServerManifest.LEX_STABLE_DOTNET_VERSION_REQ, out netVersion))
                         {
                             // Nothing here, we parsed it out
                         }
@@ -717,7 +722,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 case LegendaryExplorer_Beta:
                     {
-                        if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorernightly_netversion", out var lexBetaNetVersion) && int.TryParse(lexBetaNetVersion, out netVersion))
+                        if (ServerManifest.TryGetInt(ServerManifest.LEX_NIGHTLY_DOTNET_VERSION_REQ, out netVersion))
                         {
                             // Nothing here, we parsed it out
                         }
@@ -761,7 +766,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return false;
         }
 
-        private static string getToolStoragePath(string tool)
+        public static string GetToolStoragePath(string tool)
         {
             if (tool == MEM_CMD)
             {
@@ -781,12 +786,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static Version me3tweaksToolGetLatestVersion(string tool)
         {
-            if (App.ServerManifest == null)
+            if (!ServerManifest.HasManifest)
                 return null;
             switch (tool)
             {
                 case LegendaryExplorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestversion", out var lexbVersion))
+                    if (ServerManifest.TryGetString(ServerManifest.LEX_NIGHTLY_LATEST_VERSION, out var lexbVersion))
                     {
                         return new Version(lexbVersion);
                     }
@@ -798,12 +803,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static string me3tweaksToolGetDownloadUrl(string tool)
         {
-            if (App.ServerManifest == null)
+            if (!ServerManifest.HasManifest)
                 return null;
             switch (tool)
             {
                 case LegendaryExplorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestlink", out var lexNightlyLatestLink))
+                    if (ServerManifest.TryGetString(ServerManifest.LEX_NIGHTLY_LATEST_DOWNLOADLINK, out var lexNightlyLatestLink))
                     {
                         return lexNightlyLatestLink;
                     }
@@ -819,7 +824,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true;
         }
 
-        private static string toolNameToExeName(string toolname)
+        public static string ToolNameToExeName(string toolname)
         {
             if (toolname == LegendaryExplorer_Beta) return @"LegendaryExplorer.exe";
             if (toolname == ME2R) return @"ME2Randomizer.exe";
@@ -827,6 +832,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (toolname == MEM_LE_CMD) return @"MassEffectModderNoGui.exe";
             if (toolname == EGMSettingsLE) return @"EGMSettings.exe";
             if (toolname == FVBCCU) return @"FSvBSC3.exe";
+            if (toolname == TRILOGYSAVEEDITOR_CMD) return @"trilogy-save-editor-cli.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
@@ -841,7 +847,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             MER,
             ME2R,
             ALOTInstaller,
-            FVBCCU
+            FVBCCU,
+            // Command line tools are not supported by this list as they are automatically called
+            // internally and cannot be done by mods.
         };
 
         internal static bool IsSupportedToolID(string toolId) => SupportedToolIDs.Contains(toolId);

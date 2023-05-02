@@ -129,6 +129,15 @@
                         BorderThickness="1"
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="ModName">
+                        <ListBox.ItemContainerStyle>
+                            <Style
+                                TargetType="ListBoxItem"
+                                BasedOn="{StaticResource ListBoxItemStyle}">
+                                <Setter
+                                    Property="HorizontalContentAlignment"
+                                    Value="Stretch" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel
@@ -153,10 +162,56 @@
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="Name"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                        ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
                         ItemsSource="{Binding VisibleFilteredASIMods}"
                         HorizontalContentAlignment="Stretch"
-                        SelectedItem="{Binding SelectedAvailableASIMod}" />
+                        ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
+                        SelectedItem="{Binding SelectedAvailableASIMod}"></ListBox>
+                </TabItem>
+                <TabItem
+                    Header="{DynamicResource string_textureMods}">
+                    <DockPanel>
+                        <Button
+                            HorizontalAlignment="Right"
+                            Margin="5,8,-8,-8"
+                            Height="24"
+                            DockPanel.Dock="Bottom"
+                            Command="{Binding AddCustomMEMModCommand}">
+                            <Button.Content>
+                                <StackPanel
+                                    Orientation="Horizontal">
+                                    <fa5:ImageAwesome
+                                        Icon="Solid_Plus"
+                                        Width="12"
+                                        Height="12"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,5,0"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                    <TextBlock
+                                        Text="{DynamicResource string_locateCustomFile}"
+                                        VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <ListBox
+                            BorderThickness="1"
+                            Margin="-8"
+                            IsTextSearchEnabled="True"
+                            TextSearch.TextPath="Name"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                            ItemsSource="{Binding VisibleFilteredMEMMods}"
+                            HorizontalContentAlignment="Stretch"
+                            SelectedItem="{Binding SelectedAvailableMEMMod}">
+                            <ListBox.ItemContainerStyle>
+                                <Style
+                                    TargetType="ListBoxItem"
+                                    BasedOn="{StaticResource ListBoxItemStyle}">
+                                    <Setter
+                                        Property="HorizontalContentAlignment"
+                                        Value="Stretch" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </DockPanel>
                 </TabItem>
             </TabControl>
             <TextBox
@@ -319,6 +374,20 @@
                         BorderThickness="1"
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="ModName">
+                        <ListBox.ItemContainerStyle>
+                            <Style
+                                TargetType="ListBoxItem"
+                                BasedOn="{StaticResource ListBoxItemStyle}">
+                                <Setter
+                                    Property="HorizontalContentAlignment"
+                                    Value="Stretch" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.InputBindings>
+                            <KeyBinding
+                                Key="Delete"
+                                Command="{Binding RemoveFromInstallGroupCommand}" />
+                        </ListBox.InputBindings>
                         <ListBox.Resources>
                             <DataTemplate
                                 DataType="{x:Type batch:BatchMod}">
@@ -371,11 +440,17 @@
                         extensions:CursorSpotlightExtension.MaxBlurRadius="0">
                         <TextBox.Text>
                             <PriorityBinding>
+                                <!-- ModdescMod -->
                                 <Binding
                                     Path="SelectedInstallGroupMod.Mod.DisplayedModDescription"
                                     Mode="OneWay" />
+                                <!-- ASIMod -->
                                 <Binding
                                     Path="SelectedInstallGroupMod.AssociatedMod.Description"
+                                    Mode="OneWay" />
+                                <!-- MEMMod-->
+                                <Binding
+                                    Path="SelectedInstallGroupMod.UIDescription"
                                     Mode="OneWay" />
                                 <Binding
                                     Path="NoModSelectedText"

@@ -13,6 +13,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
@@ -29,6 +30,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonProperty(@"propertyupdates")] public List<PropertyUpdate1> PropertyUpdates { get; set; }
         [JsonProperty(@"disableconfigupdate")] public bool DisableConfigUpdate { get; set; }
         [JsonProperty(@"assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
+        [JsonProperty(@"newassetupdate")] public AssetUpdate1 NewAssetUpdate { get; set; }
+
         [JsonProperty(@"scriptupdate")] public ScriptUpdate1 ScriptUpdate { get; set; }
         [JsonProperty(@"sequenceskipupdate")] public SequenceSkipUpdate1 SequenceSkipUpdate { get; set; }
         [JsonProperty(@"addtoclassorreplace")] public AddToClassOrReplace1 AddToClassOrReplace { get; set; }
@@ -41,11 +44,25 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             // APPLY PROPERTY UPDATES
             M3Log.Information($@"Merging changes into {EntryName}");
             var export = package.FindExport(EntryName);
+
+            // Mod MUST target 8.1 or higher to be able to use this functionality at all
+            if (installingMod.ModDescTargetVersion < 8.1 && export == null)
+            {
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_couldNotFindExportInPackage, package.FilePath, EntryName));
+            }
+
+            // APPLY ASSET UPDATE
+            AssetUpdate?.ApplyUpdate(package, ref export, installingMod, addMergeWeightCompletion);
+
+            // The below all require a target export so we enforce it here.
             if (export == null)
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_couldNotFindExportInPackage, package.FilePath, EntryName));
 
             if (PropertyUpdates != null)
             {
+                if (export == null)
+                    throw new Exception(M3L.GetString(M3L.string_interp_mergefile_couldNotFindExportInPackage, package.FilePath, EntryName));
+
                 var props = export.GetProperties();
                 foreach (var pu in PropertyUpdates)
                 {
@@ -53,9 +70,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 }
                 export.WriteProperties(props);
             }
-
-            // APPLY ASSET UPDATE
-            AssetUpdate?.ApplyUpdate(package, export, installingMod, addMergeWeightCompletion);
 
             // APPLY SCRIPT UDPATE
             ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod, gameTarget, addMergeWeightCompletion);
@@ -217,7 +231,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 else
                 {
                     // Print out the missing property not found by taking the first i+1 items in the key array.
-                    throw new Exception(M3L.GetString(M3L.string_interp_propertyNotFoundX, string.Join('.', propKeys.Take(i+1))));
+                    throw new Exception(M3L.GetString(M3L.string_interp_propertyNotFoundX, string.Join('.', propKeys.Take(i + 1))));
                 }
             }
 
@@ -347,6 +361,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         public string AssetName { get; set; }
 
         /// <summary>
+        /// If the entry name can be null, indicating we must merge this asset into the file as new (Mod Manager 8.1)
+        /// </summary>
+        [JsonProperty(@"canmergeasnew")]
+        public bool CanMergeAsNew { get; set; } = false;
+
+        /// <summary>
         /// Entry in the asset to use as porting source
         /// </summary>
         [JsonProperty(@"entryname")]
@@ -355,8 +375,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted)
+        public bool ApplyUpdate(IMEPackage package, ref ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted)
         {
+            // targetExport CAN BE NULL starting with ModDesc 8.1 mods!
             Stream binaryStream;
             string sourcePath = null;
             if (OwningMM.Assets[AssetName].AssetBinary != null)
@@ -376,26 +397,83 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             var sourceEntry = sourcePackage.FindExport(EntryName);
             if (sourceEntry == null)
             {
-                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_cannotFindAssetEntryInAssetPackage, AssetName, EntryName));
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_cannotFindAssetEntryInAssetPackage,
+                    AssetName, EntryName));
             }
 
-            var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular,
-                sourceEntry, targetExport.FileRef, targetExport, true, new RelinkerOptionsPackage()
-                {
-                    ErrorOccurredCallback = x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
-                    ImportExportDependencies = true // I don't think this is actually necessary...
-                }, out _);
-            if (resultst.Any())
+            if (targetExport == null && CanMergeAsNew)
             {
-                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorsOccurredMergingAsset, AssetName, EntryName, string.Join('\n', resultst.Select(x => x.Message))));
+                // We must port in the parents
+
+                // Build the stack of all things that might need ported
+                Stack<IEntry> parentStack = new Stack<IEntry>();
+                IEntry entry = sourceEntry;
+                while (entry.Parent != null)
+                {
+                    parentStack.Push(entry.Parent);
+                    entry = entry.Parent;
+                }
+
+                // Create parents first
+                IEntry parent = null;
+                foreach (var pEntry in parentStack)
+                {
+                    var existingEntry = package.FindEntry(pEntry.InstancedFullPath);
+                    if (existingEntry == null)
+                    {
+                        // Port it in
+                        EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, pEntry, package, parent, true, new RelinkerOptionsPackage()
+                            {
+                                ImportChildrenOfPackages = false, // As roots may be Package, do not port the children, we will do it ourselves
+                                ErrorOccurredCallback = x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
+                            }, out parent);
+                    }
+                    else
+                    {
+                        parent = existingEntry;
+                        break;
+                    }
+                }
+
+                // Port in the actual content
+                var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies,
+                    sourceEntry, package, parent, true, new RelinkerOptionsPackage()
+                    {
+                        ErrorOccurredCallback = x =>
+                            throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
+                        ImportExportDependencies = true // I don't think this is actually necessary...
+                    }, out var newEntry);
+                if (resultst.Any())
+                {
+                    throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorsOccurredMergingAsset, AssetName,
+                        EntryName, string.Join('\n', resultst.Select(x => x.Message))));
+                }
+
+                targetExport = newEntry as ExportEntry; // Update the reference target export.
             }
+            else
+            {
+                // Replace the existing content - even if marked as new this might be updating an existing mod
+                var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular,
+                    sourceEntry, targetExport.FileRef, targetExport, true, new RelinkerOptionsPackage()
+                    {
+                        ErrorOccurredCallback = x =>
+                            throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
+                        ImportExportDependencies = true // I don't think this is actually necessary...
+                    }, out _);
+                if (resultst.Any())
+                {
+                    throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorsOccurredMergingAsset, AssetName,
+                        EntryName, string.Join('\n', resultst.Select(x => x.Message))));
+                }
+            }
+
             addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_ASSETUPDATE);
             return true;
         }
 
         public void Validate()
         {
-
         }
     }
 
@@ -515,7 +593,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
         public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted)
         {
-            if (M3Utilities.CalculateMD5(new MemoryStream(targetExport.Data)) == EntryMD5)
+            if (MUtilities.CalculateHash(new MemoryStream(targetExport.Data)) == EntryMD5)
             {
                 M3Log.Information($@"Applying sequence skip: Skipping {targetExport.InstancedFullPath} through on link {OutboundLinkNameToUse}");
                 SeqTools.SkipSequenceElement(targetExport, outboundLinkName: OutboundLinkNameToUse);

@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksCore.Save;
 
 namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
@@ -21,8 +23,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         public DateTime BindableTimestamp => TimeStamp.ToDate();
         public TimeSpan BindableTimePlayed => TimeSpan.FromSeconds(SecondsPlayed);
         public string Proxy_DebugName => DebugName;
-        public MEGame Game { get; set; }
-        public string SaveFilePath { get; }
+        public MEGame Game => MEGame.ME2;
+        public string SaveFilePath { get; set; }
 
         // Metadata
         public string FileName { get; set; }
@@ -32,12 +34,22 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             DebugName = BindableDebugName;
         }
+
+        /// <summary>
+        /// The actual deserialized value of the save
+        /// </summary>
+        public int SaveFormatVersion;
         public int SaveNumber { get; set; }
+        public string Proxy_TimePlayed => MSaveShared.GetTimePlayed((int)SecondsPlayed);
+        public string Proxy_Difficulty => MSaveShared.GetDifficultyString((int)Difficulty, MEGame.ME2);
+        public bool Proxy_IsFemale => PlayerRecord?.Proxy_IsFemale ?? false;
+
+        public bool IsValid { get; set; }
         public ESFXSaveGameType SaveGameType { get; set; }
 
 
         // Original code is as follows
-        public uint Version { get; set; } // ME2 1.0 (release) has saves of version 29 (0x1D)
+        public uint Version => 29; // ME2 1.0 (release) has saves of version 29 (0x1D)
         public uint Checksum; // CRC32 of save data (from start) to before CRC32 value
 
         [UnrealFieldOffset(0x054)]
@@ -149,8 +161,9 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         [UnrealFieldDisplayName("Dependent DLC")]
         public List<Save.DependentDLC> DependentDLC;
 
-        protected void Serialize(IUnrealStream stream)
+        public void Serialize(IUnrealStream stream)
         {
+            stream.Serialize(ref this.SaveFormatVersion);
             stream.Serialize(ref this.DebugName);
             stream.Serialize(ref this.SecondsPlayed);
             stream.Serialize(ref this.Disc);
@@ -174,10 +187,17 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             stream.Serialize(ref this.DependentDLC);
         }
 
+        /// <summary>
+        /// Loads a save game file for ME2. The input stream should have already read the version number and be at position 0x4.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="fileName"></param>
+        /// <param name="expectedGame"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
         public static SaveFileGame2 Load(Stream input, string fileName = null, MEGame expectedGame = MEGame.Unknown)
         {
             SaveFileGame2 save = new SaveFileGame2();
-            save.Version = input.ReadUInt32();
 
             if (fileName != null)
             {
@@ -209,20 +229,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
                 }
             }
 
-            if (save.Version != 29 && save.Version != 30)
-            {
-                throw new FormatException("Save version not supported. This parser only supports ME2 (29) and LE2 (30)");
-            }
-
-            if (save.Version == 29) save.Game = MEGame.ME2;
-            if (save.Version == 30) save.Game = MEGame.LE2;
-            if (expectedGame != MEGame.Unknown && expectedGame != save.Game)
-            {
-                throw new Exception($@"Sanity check failure: Save loader expected save for {expectedGame} but save appears to be for {{Game}}");
-            }
-
-            UnrealStream stream = new UnrealStream(input, true, save.Version);
-            save.Serialize(stream);
+            save.Serialize(input is IUnrealStream us ? us : new UnrealStream(input, true, save.Version));
 
             save.BindableDebugName = save.DebugName;
 

@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -10,8 +11,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
     {
         private const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
         private const double RequiredAspectRatioTolerance = 0.08;
-        public const string ModImageAssetFolderName = @"M3Images";
-        public string ModImageAssetsPath => FilesystemInterposer.PathCombine(Archive != null, ModPath, ModImageAssetFolderName);
+
+        /// <summary>
+        /// The images folder for a mod. Do not change
+        /// </summary>
+        public const string M3IMAGES_FOLDER_NAME = @"M3Images"; // DO NOT CHANGE THIS VALUE
+
+        /// <summary>
+        /// Gets the full path to the image asset folder
+        /// </summary>
+        public string ModImageAssetsPath => FilesystemInterposer.PathCombine(Archive != null, ModPath, M3IMAGES_FOLDER_NAME);
 
         /// <summary>
         /// Bitmap data for the banner of the mod
@@ -80,6 +89,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     bitmap.StreamSource = loadStream;
                     bitmap.EndInit();
                     bitmap.Freeze();
+                    M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod ({Game}: {ModName}) - LoadedImageAsset {imagePathFull}", bitmap);
 
                     LoadedImageAssets[assetName] = bitmap;
                     return bitmap; // This is so xaml doesn't trigger possibly before this code block has executed
@@ -128,6 +138,37 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         BannerBitmap = bitmap;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of available image options in the M3Images folder. This method does NOT work if this mod is loaded from an archive
+        /// </summary>
+        /// <returns></returns>
+        internal List<string> PopulateImageFileOptions()
+        {
+            if (!IsInArchive)
+            {
+                if (FilesystemInterposer.DirectoryExists(ModImageAssetsPath))
+                {
+                    return FilesystemInterposer.DirectoryGetFiles(ModImageAssetsPath).Where(IsAllowedM3ImageType)
+                        .Select(x => x.Substring(ModImageAssetsPath.Length + 1)).Prepend(@"").ToList();
+                }
+            }
+
+            return new List<string>();
+        }
+
+        private static bool IsAllowedM3ImageType(string filename)
+        {
+            var extension = Path.GetExtension(filename);
+            switch (extension)
+            {
+                case @".png":
+                case @".jpg":
+                    return true;
+                default:
+                    return false;
             }
         }
     }

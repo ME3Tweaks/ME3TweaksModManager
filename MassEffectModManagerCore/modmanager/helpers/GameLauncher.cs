@@ -4,9 +4,13 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading;
+using System.Threading.Tasks;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Save;
+using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
@@ -15,6 +19,9 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
+using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.save.game2.UI;
+using ME3TweaksModManager.modmanager.windows.input;
 using Pathoschild.FluentNexus.Models;
 
 namespace ME3TweaksModManager.modmanager.helpers
@@ -23,14 +30,80 @@ namespace ME3TweaksModManager.modmanager.helpers
     {
         private const string AUTOBOOT_KEY_NAME = @"LEAutobootArgs"; // DO NOT CHANGE - USED FOR AUTOBOOT IN BINK DLL
 
+        /// <summary>
+        /// Encodes a save file to a Bioware save file ID
+        /// </summary>
+        /// <param name="sf"></param>
+        /// <returns></returns>
+        private static int GetEncodedSaveId(ISaveFile sf)
+        {
+            switch (sf.SaveGameType)
+            {
+                case ESFXSaveGameType.SaveGameType_Manual:
+                    return sf.SaveNumber;
+                case ESFXSaveGameType.SaveGameType_Quick:
+                    return 1000000;
+                case ESFXSaveGameType.SaveGameType_Auto:
+                    return 2000000;
+                case ESFXSaveGameType.SaveGameType_Chapter:
+                    return 3000000;
+                case ESFXSaveGameType.SaveGameType_Export:
+                    return 4000000;
+                case ESFXSaveGameType.SaveGameType_Legend:
+                    return 5000000;
+            }
+            return 0; // Manual save
+        }
 
-        public static void LaunchGame(GameTargetWPF target, LaunchOptionsPackage LaunchPackage)
+        public static void SetAutoresumeSave(MainWindow window, GameTargetWPF SelectedGameTarget, Action autoresumeSaveChanged = null)
+        {
+            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedGameTarget, M3L.GetString(M3L.string_autobootSave));
+            ssui.Show();
+            ssui.Closed += (sender, args) =>
+            {
+                if (ssui.SaveWasSelected && ssui.SelectedSaveFile != null)
+                {
+                    Task.Run(() =>
+                    {
+                        M3Log.Information($@"Adjusting autoboot save for {SelectedGameTarget.Game} to {ssui.SelectedSaveFile.SaveFilePath}");
+                        var lpf = MEDirectories.GetProfileSave(SelectedGameTarget.Game);
+
+                        if (!File.Exists(lpf))
+                        {
+                            M3Log.Warning(@"Cannot adjust autoboot save: local profile doesn't exist");
+                            return;
+                        }
+
+                        var careerId = Directory.GetParent(ssui.SelectedSaveFile.SaveFilePath).Name;
+                        if (SelectedGameTarget.Game == MEGame.LE1)
+                        {
+                            var lp = LocalProfileLE1.DeserializeLocalProfile(lpf);
+                            lp.GamerProfile.LastPlayedCharacterID = Directory.GetParent(ssui.SelectedSaveFile.SaveFilePath).Name;
+                            lp.GamerProfile.LastSaveGame = Path.GetFileNameWithoutExtension(ssui.SelectedSaveFile.SaveFilePath);
+                            lp.Serialize().WriteToFile(lpf);
+                        }
+                        else if (SelectedGameTarget.Game is MEGame.LE2 or MEGame.LE3)
+                        {
+                            var lp = LocalProfile.DeserializeLocalProfile(lpf, SelectedGameTarget.Game);
+                            var cSaveGameIdx = SelectedGameTarget.Game == MEGame.LE2 ? (int)LocalProfile.ELE2ProfileSetting.Setting_CurrentSaveGame : (int)LocalProfile.ELE3ProfileSetting.Setting_CurrentSaveGame;
+                            var cCareerIdx = SelectedGameTarget.Game == MEGame.LE2 ? (int)LocalProfile.ELE2ProfileSetting.Setting_CurrentCareer : (int)LocalProfile.ELE3ProfileSetting.Setting_CurrentCareer;
+                            lp.ProfileSettings[cSaveGameIdx].Data = GetEncodedSaveId(ssui.SelectedSaveFile);
+                            lp.ProfileSettings[cCareerIdx].Data = careerId;
+                            lp.Serialize().WriteToFile(lpf);
+                        }
+                        autoresumeSaveChanged?.Invoke();
+                    });
+                }
+            };
+        }
+
+        public static void LaunchGame(GameTargetWPF target, LaunchOptionsPackage LaunchPackage, bool? skipLauncher = null, bool? autoresume = null)
         {
             if (!target.Game.IsLEGame()) return;
 
             string args = @"";
 
-            if (Settings.SkipLELauncher) // Autoboot
+            if (skipLauncher ?? Settings.SkipLELauncher) // Autoboot
             {
                 args += $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate";
 
@@ -52,7 +125,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                         args += @" -enableminidumps";
                     }
 
-                    if (LaunchPackage.AutoResumeSave)
+                    if (autoresume ?? LaunchPackage.AutoResumeSave)
                     {
                         args += @" -RESUME";
                     }
@@ -166,7 +239,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 #endif
                 }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
-                commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());
+                commandLineArgs.Add((target.Game.ToMEMGameNum()).ToString()); // MEM Game Num is 1-3
                 commandLineArgs.Add(@"-autoterminate");
 
             }
@@ -204,8 +277,8 @@ namespace ME3TweaksModManager.modmanager.helpers
         private static void RunGame(GameTargetWPF target, string exe, string commandLineArgsString, List<string> commandLineArgsList, Dictionary<string, string> environmentVars)
         {
             // If the game source is steam and it's LE, we can use Link2EA as they all require EA app to run.
-            // Technically this can also be done for ME3 but I'm not going to bother changing launch code for it
-            var usingEALink = false;
+            // ME3 is also included
+            // ME1 and ME2 do not use EA App and are natively on steam
             if (target.GameSource != null && target.GameSource.Contains(@"Steam") && (target.Game == MEGame.ME3 || target.Game.IsLEGame() || target.Game == MEGame.LELauncher))
             {
                 // Experimental: Use Link2EA to boot without EA sign in
@@ -223,7 +296,6 @@ namespace ME3TweaksModManager.modmanager.helpers
                     var theme = target.Game == MEGame.ME3 ? @"me3" : @"met";
                     var gameId = target.Game == MEGame.ME3 ? 1238020 : 1328670; // Game IDs on steam
                     commandLineArgsString = $@"link2ea://launchgame/{gameId}?platform=steam&theme={theme}"; // The id of what to run.
-                    usingEALink = true;
                 }
             }
 

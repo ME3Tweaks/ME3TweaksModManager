@@ -411,12 +411,13 @@
                   "$id": "#/properties/files/items/properties/changes/items/properties/assetupdate",
                   "type": "object",
                   "title": "Asset Update",
-                  "description": "An asset package file that will be opened for copying an asset out of, as well as the full instanced path of the entry. The asset must be next to the .json file",
+                  "description": "An asset package file that will be opened for copying an asset out of, as well as the full instanced path of the entry. The asset must be next to the .json file. To use 'canmergeasnew', your mod must target ModDesc 8.1 or higher.",
                   "default": {},
                   "examples": [
                     {
                       "assetname": "MyAsset.pcc",
-                      "entryname": "MyNewEntryName"
+                      "entryname": "MyNewEntryName",
+                      "canmergeasnew":  true
                     }
                   ],
                   "required": [
@@ -442,6 +443,16 @@
                       "default": "",
                       "examples": [
                         "BioVFX.MyNewAsset"
+                      ]
+                    },
+                    "canmergeasnew": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/assetupdate/properties/canmergeasnew",
+                      "type": "boolean",
+                      "title": "Can merge asset as new content",
+                      "description": "If the export specified by entryname of this change may not exist in the target, in which case, the content will be ported over as new, rather than replacing only existing content",
+                      "default": "",
+                      "examples": [
+                        "true"
                       ]
                     }
                   },

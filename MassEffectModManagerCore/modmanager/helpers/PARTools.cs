@@ -1,4 +1,10 @@
-﻿using System.Linq;
+﻿#if LEGACY
+
+// This was experimental code, it was never used in production
+// It is left here only for documentation purposes if anyone ever
+// finds it
+
+using System.Linq;
 using System.Text;
 using LegendaryExplorerCore.Misc;
 
@@ -58,3 +64,4 @@ namespace ME3TweaksModManager.modmanager.helpers
         //}
     }
 }
+#endif

@@ -2,6 +2,7 @@
 using ME3TweaksCore.ME3Tweaks.Online;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
@@ -35,9 +36,8 @@ namespace ME3TweaksModManager.Tests
 
             BasegameFileIdentificationService.LoadService(GlobalTest.CombinedServiceData[MCoreServiceLoader.BGFI_SERVICE_KEY]);
 
-            var startupManifest = M3OnlineContent.FetchOnlineStartupManifest(true);
-            Assert.AreNotEqual(0, startupManifest.Count, "FetchOnlineStartupManifest failed: No items were parsed, the list is empty!");
-
+            var fetchedOnlineManifest = ServerManifest.FetchOnlineStartupManifest(true);
+            Assert.IsTrue(fetchedOnlineManifest, "FetchOnlineStartupManifest failed, returned false!");
         }
     }
 }

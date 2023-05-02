@@ -1,0 +1,57 @@
+﻿<Window
+    x:Class="ME3TweaksModManager.modmanager.windows.HeadmorphSelectorDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:headmorph="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.headmorph"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterOwner"
+    Height="450"
+    Width="500"
+    Title="{DynamicResource string_headmorphSelector}"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <Window.Style>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
+    <DockPanel
+        Margin="5">
+        <DockPanel
+            DockPanel.Dock="Bottom">
+            <Button
+                Content="{DynamicResource string_selectHeadmorph}"
+                DockPanel.Dock="Right"
+                Command="{Binding SelectHeadmorphCommand}" />
+            <Button
+                Content="{DynamicResource string_cancel}"
+                HorizontalAlignment="Right"
+                Command="{Binding CancelCommand}"
+                Margin="0,0,5,0" />
+        </DockPanel>
+        <TextBlock
+            Text="{DynamicResource string_selectAHeadmorphToInstall}"
+            TextWrapping="Wrap"
+            DockPanel.Dock="Top"
+            Margin="0,0,0,3" />
+        <ListBox
+            Margin="0,0,0,5"
+            SelectedItem="{Binding SelectedHeadmorph}"
+            ItemsSource="{Binding AvailableHeadmorphs}"
+            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+            BorderThickness="1"
+            HorizontalContentAlignment="Stretch"
+            IsTextSearchEnabled="True"
+            TextSearch.TextPath="DisplayString"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style
+                    TargetType="ListBoxItem"
+                    BasedOn="{StaticResource ListBoxItemStyle}">
+                    <Setter
+                        Property="HorizontalContentAlignment"
+                        Value="Stretch" />
+                    <EventSetter
+                        Event="MouseDoubleClick"
+                        Handler="HeadmorphList_MouseDoubleClick" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+    </DockPanel>
+</Window>

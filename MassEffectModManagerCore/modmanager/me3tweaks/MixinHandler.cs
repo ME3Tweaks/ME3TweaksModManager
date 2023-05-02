@@ -39,7 +39,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             if (ServerMixinHash == null) return true; //can't check. Just say it's up to date.
             if (File.Exists(MixinPackagePath))
             {
-                var md5 = M3Utilities.CalculateMD5(MixinPackagePath);
+                var md5 = MUtilities.CalculateHash(MixinPackagePath);
                 return md5.Equals(ServerMixinHash, StringComparison.InvariantCultureIgnoreCase);
             }
 
@@ -294,7 +294,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 MixinMemoryStreamManager = new RecyclableMemoryStreamManager(MB * 4, MB * 128, MB * 256);
                 MixinMemoryStreamManager.GenerateCallStacks = true;
                 MixinMemoryStreamManager.AggressiveBufferReturn = true;
-                MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Memory Stream Manager", new WeakReference(MixinMemoryStreamManager));
+                M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Memory Stream Manager", MixinMemoryStreamManager);
             }
 
             if (isResetting)

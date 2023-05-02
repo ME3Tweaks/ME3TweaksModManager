@@ -20,9 +20,9 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -41,7 +41,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool ShowInstalledOptions { get; private set; }
         public InstallationInformation(List<GameTargetWPF> targetsList, GameTargetWPF selectedTarget)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Installation Information Panel", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Installation Information Panel", this);
             DataContext = this;
             InstallationTargets.AddRange(targetsList);
             LoadCommands();
@@ -327,6 +327,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         Result.TargetsToPlotManagerSync.Add(SelectedTarget);
                     }
 
+                    if (SelectedTarget.Game == MEGame.LE1)
+                    {
+                        Result.TargetsToCoalescedMerge.Add(SelectedTarget); // Rebuild coalesced merge
+                    }
+
                     if (SelectedTarget.Game.IsGame2())
                     {
                         Result.TargetsToEmailMergeSync.Add(SelectedTarget);
@@ -344,6 +349,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (SelectedTarget.Game.IsGame1() || SelectedTarget.Game.IsGame2())
                     {
                         Result.TargetsToPlotManagerSync.Add(SelectedTarget);
+                    }
+
+                    if (SelectedTarget.Game == MEGame.LE1)
+                    {
+                        Result.TargetsToCoalescedMerge.Add(SelectedTarget); // Rebuild coalesced merge
                     }
 
                     if (SelectedTarget.Game.IsGame2())

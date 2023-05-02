@@ -1,8 +1,6 @@
 ﻿<Window
     x:Class="ME3TweaksModManager.modmanager.windows.ModDescEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-    xmlns:moddescinieditor="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor"
-    xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates"
+    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:moddescinieditor="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor" xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Title="{DynamicResource string_moddesciniEdsitor}"
     MinHeight="750"
@@ -21,7 +19,7 @@
             <Button
                 Content="{DynamicResource string_openModdesciniDocumentation}"
                 DockPanel.Dock="Left"
-                Click="OpenModdescDocumenation_Click" 
+                Click="OpenModdescDocumenation_Click"
                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
             <TextBlock
                 Text="{Binding StatusMessage}"
@@ -81,7 +79,7 @@
                     <alternates:AlternateFileBuilder
                         x:Name="customdlc_alternateFileEditor_control"
                         TaskHeader="CUSTOMDLC"
-                        DirectionsText="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead." />
+                        DirectionsText="{DynamicResource string_mde_altFiles_directions}" />
                 </ScrollViewer>
             </TabItem>
             <TabItem
@@ -118,6 +116,18 @@
                     x:Name="game1tlkmerge_editor_control" />
             </TabItem>
             <TabItem
+                Header="{DynamicResource string_textures}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                <moddescinieditor:TexturesEditorControl
+                    x:Name="textures_editor_control" />
+            </TabItem>
+            <TabItem
+                Header="{DynamicResource string_headmorphs}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                <moddescinieditor:HeadmorphsEditorControl
+                    x:Name="headmorphs_editor_control" />
+            </TabItem>
+            <TabItem
                 Header="{DynamicResource string_resultingModdescini}"
                 x:Name="results_tab">
                 <DockPanel>
@@ -138,7 +148,9 @@
                             HorizontalAlignment="Right"
                             Command="{Binding CopyModdescIniTextCommand}" />
                     </DockPanel>
-                    <TextBox
+                    <xctk:WatermarkTextBox
+                        Watermark="{DynamicResource string_serializeModToShowGeneratedModdesciniFile}"
+                        MinHeight="400"
                         Text="{Binding GeneratedIni}"
                         IsReadOnly="True"
                         IsReadOnlyCaretVisible="False"

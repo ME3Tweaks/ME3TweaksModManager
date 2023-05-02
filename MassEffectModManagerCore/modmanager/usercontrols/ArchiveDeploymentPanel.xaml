@@ -1,0 +1,189 @@
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.ArchiveDeploymentPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:checks="clr-namespace:ME3TweaksModManager.modmanager.objects.deployment.checks" xmlns:deployment="clr-namespace:ME3TweaksModManager.modmanager.objects.deployment"
+    xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    MinWidth="450"
+    MaxWidth="700">
+    <StackPanel>
+        <TextBlock
+            FontSize="20"
+            FontWeight="Bold"
+            Text="{StaticResource string_prepareModForDistribution}"
+            TextAlignment="Center" />
+        <TextBlock
+            Text="{DynamicResource string_deplolymentPanelSubheading}"
+            TextWrapping="Wrap"
+            TextAlignment="Center" />
+        <Button
+            HorizontalAlignment="Center"
+            Margin="0,5"
+            Command="{Binding AddModToDeploymentCommand}">
+            <Button.Content>
+                <StackPanel
+                    Orientation="Horizontal">
+                    <fa5:ImageAwesome
+                        Icon="Solid_Plus"
+                        Height="16"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Margin="0,0,5,0" />
+                    <TextBlock
+                        Text="{DynamicResource string_addModToDeployment}" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Expander
+            Header="{DynamicResource string_validationTargets}">
+            <DockPanel>
+                <TextBlock
+                    Text="{DynamicResource string_deploymentValidationTargetDesc}"
+                    DockPanel.Dock="Top"
+                    Margin="0,5"
+                    MaxWidth="500"
+                    TextWrapping="Wrap" />
+                <ItemsControl
+                    ItemsSource="{Binding ValidationTargets}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate
+                            DataType="{x:Type deployment:DeploymentValidationTarget}">
+                            <DockPanel>
+                                <TextBlock
+                                    Text="{Binding HeaderString}"
+                                    FontWeight="Bold"
+                                    DockPanel.Dock="Top" />
+                                <TextBlock
+                                    Text="{DynamicResource string_validationTargetsCannotBeTextureModdedOT}"
+                                    DockPanel.Dock="Top"
+                                    Margin="0,5"
+                                    MaxWidth="500"
+                                    TextWrapping="Wrap"
+                                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='OTGame'}"/>
+                                <usercontrols:TargetSelector
+                                    IsEnabled="{Binding CanChangeValidationTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:ArchiveDeploymentPanel}}}"
+                                    SelectedGameTarget="{Binding SelectedTarget, Mode=TwoWay}"
+                                    AvailableTargets="{Binding AvailableTargets}" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+        </Expander>
+        <ScrollViewer
+            MaxHeight="300">
+            <ItemsControl
+                ItemsSource="{Binding ModsInDeployment}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate
+                        DataType="{x:Type deployment:EncompassingModDeploymentCheck}">
+                        <StackPanel>
+                            <DockPanel>
+                                <Button
+                                    Margin="0,0,5,0"
+                                    ToolTip="{DynamicResource string_tooltip_rerunCheckOnMod}"
+                                    Command="{Binding RerunChecksCommand}"
+                                    Visibility="{Binding CanReRun,                                      Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Button.Content>
+                                        <fa5:ImageAwesome
+                                            Icon="Solid_Sync"
+                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"
+                                            Height="12" />
+                                    </Button.Content>
+                                </Button>
+                                <TextBlock
+                                    Text="{Binding ModBeingDeployed.ModName}"
+                                    FontWeight="Bold"
+                                    FontSize="14" />
+                            </DockPanel>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} | {1}">
+                                        <Binding Path="ModBeingDeployed.ModVersionString" Converter="{StaticResource LocalizationConverter}" ConverterParameter="string_interp_versionX" />
+                                        <Binding Path="ModBeingDeployed.Game" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock
+                                Text="{DynamicResource string_deploymentChecklist}"
+                                FontWeight="Bold" />
+                            <ItemsControl
+                                ItemsSource="{Binding DeploymentChecklistItems}"
+                                HorizontalContentAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                AlternationCount="2"
+                                VirtualizingStackPanel.IsVirtualizing="True"
+                                ScrollViewer.CanContentScroll="True">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate
+                                        DataType="{x:Type checks:DeploymentChecklistItem}">
+                                        <StackPanel
+                                            Orientation="Horizontal"
+                                            Margin="2"
+                                            ToolTip="{Binding ToolTip}">
+                                            <fa5:ImageAwesome
+                                                Icon="{Binding Icon}"
+                                                Foreground="{Binding Foreground}"
+                                                Spin="{Binding Spinning}"
+                                                SpinDuration="1.2"
+                                                Width="16" />
+                                            <TextBlock
+                                                FontSize="12"
+                                                Text="{Binding ItemText}"
+                                                Margin="5,0"
+                                                VerticalAlignment="Center"
+                                                Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                            <TextBlock
+                                                Margin="5,0"
+                                                VerticalAlignment="Center"
+                                                Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Hyperlink
+                                                    NavigateUri="http://www.google.com"
+                                                    RequestNavigate="Hyperlink_RequestNavigate">
+                          <TextBlock
+                                                        Text="{Binding ItemText}" />
+                        </Hyperlink>
+                      </TextBlock>
+                                            <!--<Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>-->
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <CheckBox
+            Content="{DynamicResource string_multiThreadedCompression}"
+            IsEnabled="{Binding DeploymentInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
+            ToolTip="{DynamicResource string_tooltip_multithreadDeployment}"
+            IsChecked="{Binding MultithreadedCompression}"
+            Margin="0,5" />
+        <ProgressBar
+            Height="16"
+            IsIndeterminate="{Binding ProgressIndeterminate}"
+            Maximum="{Binding ProgressMax}"
+            Value="{Binding ProgressValue}" />
+        <DockPanel
+            Margin="0,4">
+            <Button
+                DockPanel.Dock="Right"
+                Content="{Binding DeployButtonText}"
+                Command="{Binding DeployCommand}"
+                HorizontalAlignment="Right"
+                Padding="7,5" />
+            <Button
+                DockPanel.Dock="Right"
+                Content="{DynamicResource string_close}"
+                Command="{Binding CloseCommand}"
+                HorizontalAlignment="Right"
+                Padding="5"
+                Margin="4,0" />
+            <TextBlock
+                Text="{Binding OperationText}"
+                VerticalAlignment="Center"
+                DockPanel.Dock="Left" />
+        </DockPanel>
+    </StackPanel>
+</usercontrols:MMBusyPanelBase>

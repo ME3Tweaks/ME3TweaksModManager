@@ -16,6 +16,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.usercontrols;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -31,7 +32,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         /// </summary>
         public static void TouchupServerManifest(MainWindow window)
         {
+            M3UpdateCheck.CheckManifestForUpdates(window);
             M3ServiceLoader.TouchupMixinPackage();
+            ExternalToolLauncher.ToolsCheckedForUpdatesInThisSession.Clear(); // We clear this so it rechecks in the event there's an update
 
             var hasUpdatedLocalization = M3OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
             if (hasUpdatedLocalization == true)
@@ -45,13 +48,13 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         /// </summary>
         public static void TouchupMixinPackage()
         {
-            if (App.ServerManifest == null)
+            if (!ServerManifest.HasManifest)
                 return; // We have nothing to do here.
 
             try
             {
                 //Mixins
-                if (App.ServerManifest.TryGetValue(@"mixinpackagemd5", out MixinHandler.ServerMixinHash))
+                if (ServerManifest.TryGetString(ServerManifest.MIXIN_PACKAGE_MD5, out MixinHandler.ServerMixinHash))
                 {
                     if (!MixinHandler.IsMixinPackageUpToDate())
                     {
@@ -118,9 +121,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
 
         /// <summary>
         /// Loads ME3Tweaks services that depend on the ME3Tweaks server
-        /// <param name="firstStartup">If this is a service first startup. </param>
+        /// <param name="bw">background worker that is used when dynamic help is loading to report data to the UI thread via ReportProgress()</param>
         /// </summary>
-        public static void LoadServices(MainWindow mw, BackgroundWorker bw)
+        public static void LoadServices(BackgroundWorker bw)
         {
             // We cache this here in the event that there's some exception.
             var useCachedContent = FirstContentCheck && !MOnlineContent.CanFetchContentThrottleCheck();

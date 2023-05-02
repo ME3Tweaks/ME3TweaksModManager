@@ -110,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.generic
             UpdateSelectedItemString();
         }
 
-        private void newValueINotifyCollectionChanged_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {

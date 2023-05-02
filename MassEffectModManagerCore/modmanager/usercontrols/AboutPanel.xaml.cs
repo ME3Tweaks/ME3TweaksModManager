@@ -22,8 +22,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public string BuildDate { get; set; }
         public string NetVersion => Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
 
-        public ObservableCollectionExtended<LibraryCredit> Libraries { get; } =
-            new ObservableCollectionExtended<LibraryCredit>();
+        public ObservableCollectionExtended<LibraryCredit> Libraries { get; } = new ObservableCollectionExtended<LibraryCredit>();
+
+        /// <summary>
+        /// Year used to bind to the UI
+        /// </summary>
+        public string CurrentYear => (App.BuildDateTime?.Year ?? DateTime.Now.Year).ToString();
 
         public class LibraryCredit
         {

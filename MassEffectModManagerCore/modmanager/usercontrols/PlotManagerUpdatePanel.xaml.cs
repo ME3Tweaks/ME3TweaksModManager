@@ -32,16 +32,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// </summary>
     public partial class PlotManagerUpdatePanel : MMBusyPanelBase
     {
-        private GameTargetWPF PlotManagerUpdateTarget;
+        private GameTarget PlotManagerUpdateTarget;
 
         public const string PLOT_MANAGER_UPDATE_FILENAME = @"PlotManagerUpdate.pmu";
 
-        public PlotManagerUpdatePanel(GameTargetWPF target)
+        public PlotManagerUpdatePanel(GameTarget target)
         {
             this.PlotManagerUpdateTarget = target ?? throw new Exception(@"Null target specified for PlotManagerUpdatePanel");
         }
 
-        public static bool RunPlotManagerUpdate(GameTargetWPF target)
+        public static bool RunPlotManagerUpdate(GameTarget target)
         {
             M3Log.Information($@"Updating PlotManager for game: {target.TargetPath}");
             var supercedances = M3Directories.GetFileSupercedances(target, new[] { @".pmu" });
@@ -199,7 +199,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     plotManager.Save(pmPath, true);
                     // Update local file DB
-                    var bgfe = new BasegameFileRecord(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX, string.Join(@", ", combinedNames)), M3Utilities.CalculateMD5(pmPath));
+                    var bgfe = new BasegameFileRecord(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX, string.Join(@", ", combinedNames)), MUtilities.CalculateHash(pmPath));
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(new List<BasegameFileRecord>(new[] { bgfe }));
                 }
             }
@@ -212,7 +212,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true;
         }
 
-        private static string GetPlotManagerPath(GameTargetWPF target)
+        private static string GetPlotManagerPath(GameTarget target)
         {
             switch (target.Game)
             {

@@ -1,5 +1,5 @@
 # ME3Tweaks Mod Manager
-Next generation Mod Manager for all Mass Effect Trilogy games
+ME3Tweaks Mod Manager is the mod manager for Mass Effect Trilogy (2008/2010/2012) and Mass Effect Legendary Edition (2021) set of games. It is designed to facilitate the entire modding process for end users, from backing up and restoring, to installation and debugging. For developers, it's designed to be both the starting and ending point of mod development, with features to generate blank mods and deploy them for use.
 
 ![mmwindow](https://i.imgur.com/guvrtig.png)
 

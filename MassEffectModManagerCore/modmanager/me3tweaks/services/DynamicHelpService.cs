@@ -276,7 +276,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                             M3Log.Information("Downloading dynamic help image asset: " + fullURL);
                             wc.DownloadFile(fullURL, localFile);
 
-                            var md5OfDownloadedFile = M3Utilities.CalculateMD5(localFile);
+                            var md5OfDownloadedFile = MUtilities.CalculateHash(localFile);
                             if (md5OfDownloadedFile != ResourceMD5)
                             {
                                 M3Log.Error($"Downloaded asset has wrong hash. Expected: {ResourceMD5}, got: {md5OfDownloadedFile}");

@@ -18,7 +18,7 @@ namespace ME3TweaksModManager.ui
     {
         public SingleItemPanel2(MMBusyPanelBase control)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"SingleItemPanel", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"SingleItemPanel", this);
             //control.DataContext = control;
             Content = control;
             control.Loaded += SingleItemPanel2_OnLoaded;

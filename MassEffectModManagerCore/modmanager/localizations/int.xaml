@@ -458,6 +458,52 @@
     <system:String x:Key="string_installedASIMods">Installed ASI mods</system:String>
     <system:String x:Key="string_installedASIModByCommandLineRequest">Installed ASI mod by command line request</system:String>
     <system:String x:Key="string_failedToInstallASIModByCommandLineRequest">Failed to install ASI mod by command line request</system:String>
+    <system:String x:Key="string_developerFeatures">Developer features</system:String>
+    <system:String x:Key="string_addStarterKitContent">Add starter-kit content to DLC mod</system:String>
+    <system:String x:Key="string_tooltip_addStarterKitContent">Allows you to add content to a DLC mod that is normally added when using Starter Kit, such as a startup file</system:String>
+    <system:String x:Key="string_installStandaloneFiles">Install standalone files</system:String>
+    <!-- Contains 'Install .mem file', 'install headmorph' under it -->
+    <system:String x:Key="string_runLE1CoalescedMerge">Run LE1 Coalesced Merge</system:String>
+    <system:String x:Key="string_tooltip_runLE1CoalescedMerge">Merges all DLC M3 Coalesced Delta files into the main LE1 Coalesced file</system:String>
+    <system:String x:Key="string_trilogySaveEditor">Trilogy Save Editor</system:String>
+    <system:String x:Key="string_tooltip_trilogySaveEditor">Save editor for Mass Effect Trilogy and Legendary Edition</system:String>
+    <system:String x:Key="string_blankItemToAvoidBreakingTheInterface">Blank item to avoid breaking the interface</system:String>
+    <!-- This is a string that is used to prevent an empty beta menu from blowing up the UI for some reason -->
+    <system:String x:Key="string_autobootLE2Test">Autoboot LE2 test</system:String>
+    <!-- This is debug only -->
+    <system:String x:Key="string_showBasegameFileIdentificationServiceViewer">Show Basegame File Identification Service Viewer</system:String>
+    <!-- This is a debug build only feature -->
+    <system:String x:Key="string_tooltip_installHeadmorph">Installs a headmorph from this mod into an existing save game</system:String>
+    <system:String x:Key="string_bootIntoSpecificSaveFile">Boot into specific save file</system:String>
+    <system:String x:Key="string_selectHeadmorphFile">Select headmorph file</system:String>
+    <system:String x:Key="string_headmorphFiles">Headmorph files</system:String>
+    <system:String x:Key="string_installingHeadmorph">Installing headmorph</system:String>
+    <system:String x:Key="string_installedHeadmorphToSave">Installed headmorph to save</system:String>
+    <system:String x:Key="string_failedToInstallHeadmorph">Failed to install headmorph</system:String>
+    <system:String x:Key="string_dialog_tseNotInstalled">Trilogy Save Editor is not installed. Press OK to open the web page to download the installer.</system:String>
+    <system:String x:Key="string_tSENotInstalled">TSE not installed</system:String>
+    <system:String x:Key="string_notAContentMod">Not a content mod</system:String>
+    <system:String x:Key="string_dialog_textureModsImportedHowToUse">Texture mods must be installed through Batch Installer, which is available in the Mod Management menu. The files you have imported will be available in the install group editor.</system:String>
+    <system:String x:Key="string_textureModsImported">Texture mod(s) imported</system:String>
+    <system:String x:Key="string_mergingCoalescedFiles">Merging coalesced files</system:String>
+    <system:String x:Key="string_mergedCoalescedFiles">Merged coalesced files</system:String>
+    <system:String x:Key="string_massEfectModderFiles">Mass Efect Modder files</system:String>
+    <system:String x:Key="string_selectMemFile">Select .mem file</system:String>
+    <system:String x:Key="string_interp_headmorphRequiresDLCCouldNotDetermine">This headmorph requires {0} version {1} or higher to be installed, but Mod Manager could not determine the installed version. Install {0} with Mod Manager, then install this headmorph.</system:String>
+    <!-- 0={Mod name} 1={version string} 2={version string} -->
+    <system:String x:Key="string_interp_headmorphRequiresDLCBadVersionString">This headmorph requires {0} version {1} or higher to be installed, but Mod Manager could not determine the installed version from its version string {2}. Contact the developer of this mod to fix this issue.</system:String>
+    <!-- 0={Mod name} 1={version string} 2={version string} -->
+    <system:String xml:space="preserve" x:Key="string_interp_headmorphRequiresDLCMinimumReqNotMet">This headmorph requires {0} version {1} or higher to be installed. The current installed version does not meet this requirement.\n\nInstalled version: {2}\nMinimum version required: {1}</system:String>
+    <!-- 0={Mod name} 1={version string} 2={version string} 3={version string} -->
+    <system:String xml:space="preserve" x:Key="string_interp_headmorphRequiresDLCPrereqNotMet">This headmorph requires the following mod to be installed:\n{0}\n\nThis mod must be installed prior to installing this headmorph.</system:String>
+    <!-- 0={Mod name} -->
+    <system:String x:Key="string_interp_gameUnsupportedForTextureModding">Mod Manager does not support installing .mem files for {0}.</system:String>
+    <!-- 0={game} -->
+    <system:String x:Key="string_interp_notTargetAvailableForX">Mod Manager does not have an installation target available for {0}.</system:String>
+    <!-- 0={game} -->
+    <system:String x:Key="string_gameNotAvailable">Game not available</system:String>
+    <system:String x:Key="string_unsupportedGame">Unsupported game</system:String>
+    <system:String x:Key="string_prerequesiteNotMet">Prerequesite not met</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -807,6 +853,7 @@
     <system:String x:Key="string_interp_gamenameValidationTarget">{0} validation target</system:String>
     <!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
     <system:String x:Key="string_deploymentValidationTargetDesc">Validation targets are used to validate the configuration of your mod against other mods that your mod may depend on, such as compatibility patches referencing textures in another mod. Install these mods to the target so Mod Manager can check these references. Validation targets cannot be texture modded.</system:String>
+    <system:String x:Key="string_validationTargetsCannotBeTextureModdedOT">Validation targets cannot be texture modded.</system:String>
     <system:String x:Key="string_interp_noValidationTarget">No validation target available for {0}!</system:String>
     <!-- 0={ME1/ME2/ME3} -->
     <system:String x:Key="string_errorOccurredCheckingReferences">Error occurred checking references during deployment</system:String>
@@ -1402,6 +1449,15 @@
     <!-- 0={FriendlyName} 1={File path} -->
     <system:String x:Key="string_interp_validation_altfile_flattentNotTrueOrFalse">Alternate File ({0}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
+    <system:String x:Key="string_interp_altfile_missingOperation">Alternate File does not specify ModOperation, which is required for all Alternate Files: {0}</system:String>
+    <!-- 0={Alternate name} -->
+    <system:String x:Key="string_interp_altfile_disallowedPattern">Alternate File {0} has merge filename with a .. in it, which is not allowed: {1}</system:String>
+    <!-- 0={Alternate name} 1={File name} -->
+    <system:String x:Key="string_interp_altfile_nonExistentMergeFile">Alternate File merge file (item in MergeFiles) does not exist: {0}</system:String>
+    <!-- 0={File name} -->
+    <system:String x:Key="string_interp_altfile_mergeFileFailedToLoad">Alternate File merge file {0} failed to load: {1}</system:String>
+    <!-- 0={File name} 1={Failure reason} -->
+    <system:String x:Key="string_interp_altfile_noMergeFilesSpecified">Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.</system:String>
 
     <!-- Alternate Group -->
     <system:String x:Key="string_interp_groupNameAlternateOptionsHeader">{0} - {1} option(s)</system:String>
@@ -1642,6 +1698,12 @@
     <!-- 0={File path} -->
     <system:String x:Key="string_interp_validation_modparsing_sortIndexGroupUnique">Alternate {0} specifies a 'sortindex' value that differs from another one in group '{1}'. Alternate specifies sortindex {2}, but another specifies {3}. 'sortindex' values in a group must all be the same, or only one defined.</system:String>
     <!-- 0={option FriendlyName} 1={option GroupName} 2={Option sortindex, integer} 3={Proper index, integer} -->
+    <system:String x:Key="string_mod_modReferencesTextureFiles">This mod references texture mod files that can be installed after all other mods are installed:</system:String>
+    <system:String x:Key="string_mod_modReferencesHeadmorphFiles">This mod can install the following headmorph files:</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_unsupportedModdescVersion">The cmmver specified by this mod ({0}) is higher than the version supported by this build of ME3Tweaks Mod Manager ({1}). You may need to update Mod Manager for this mod to load.</system:String>
+    <!-- 0={Version number} 1={Version number} -->
+    <system:String x:Key="string_mod_validation_basegameMergeModsWithoutModDir">[BASEGAME] 'mergemods' was specified, but 'moddir' was not - did you mean to set moddir to '.'? Merge mods will not work without settings a moddir value, use value '.' if you do not have other files to replace, or remove mergemods from this task header.</system:String>
+    <!-- This is for user convenience -->
 
     <!-- Shared NO BACKUP -->
     <system:String x:Key="string_interp_noBackupMessage">There is no backup of {0} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?</system:String>
@@ -1908,6 +1970,12 @@
     <system:String x:Key="string_moveUp">Move up</system:String>
     <system:String x:Key="string_contentMods">Content mods</system:String>
     <system:String x:Key="string_aSIMods">ASI mods</system:String>
+    <system:String x:Key="string_textureMods">Texture mods</system:String>
+    <system:String x:Key="string_locateCustomFile">Locate custom file</system:String>
+    <system:String x:Key="string_interp_dialog_memForDifferentGame">The selected .mem file is not for {0} - it is for {1}. This .mem file cannot be used in this install group.</system:String>
+    <!-- 0={SelectedGame} 1={memFileGame} -->
+    <system:String x:Key="string_wrongGame">Wrong game</system:String>
+    <system:String x:Key="string_selectATextureMod">Select a texture mod</system:String>
 
     <!-- Backup File Fetcher (Devs only) -->
     <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
@@ -2103,6 +2171,20 @@
     <system:String x:Key="string_batchQueueDesync">Batch Queue Desync</system:String>
     <system:String x:Key="string_usePreviouslySavedModOptionsQuestion">Use previously saved mod options?</system:String>
     <system:String x:Key="string_savedOptionsFound">Saved options found</system:String>
+    <system:String x:Key="string_duplicateGroup">Duplicate group</system:String>
+    <system:String x:Key="string_tooltip_bml_downloadMod">Click to go to download page for this mod</system:String>
+    <system:String x:Key="string_downloadMod">Download mod</system:String>
+    <system:String x:Key="string_enterANewNameForTheDuplicatedInstallGroup">Enter a new name for the duplicated install group.</system:String>
+    <system:String x:Key="string_enterNewName">Enter new name</system:String>
+    <system:String x:Key="string_interp_defaultDuplicateName">{0} - Duplicate</system:String>
+    <!-- 0={A batch queue name (the original one being duplicated)} -->
+    <system:String x:Key="string_anInstallGroupWithThisNameAlreadyExists">An install group with this name already exists.</system:String>
+    <system:String x:Key="string_interp_errorDuplicatingInstallGroupX">Error duplicating install group: {0}</system:String>
+    <!-- 0={Error message -->
+    <system:String xml:space="preserve" x:Key="string_interp_textureModModifiesExportsX">This texture mod modifies the following textures:\n{0}</system:String>
+    <!-- 0={A list of texture export names, in bullet point form} -->
+    <system:String x:Key="string_gameSelector">Game selector</system:String>
+    <system:String x:Key="string_dialog_selectGameInstallGroup">Select which game to create an install group for.</system:String>
 
     <!-- Batch Mod class -->
     <system:String x:Key="string_notConfigured">Not configured</system:String>
@@ -2345,6 +2427,26 @@
     <system:String x:Key="string_mde_validation_customDLCUniqueNames">Source directories and destination directories for CustomDLC must be unique from each other.</system:String>
     <system:String x:Key="string_mde_dlcModControl">DLC mod control</system:String>
     <!-- As in "Use these options to control what DLC mods your mod will install"-->
+    <system:String x:Key="string_headmorphs">Headmorphs</system:String>
+    <system:String x:Key="string_serializeModToShowGeneratedModdesciniFile">Serialize mod to show generated moddesc.ini file</system:String>
+    <system:String x:Key="string_mde_altFiles_directions">Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead.</system:String>
+    <system:String x:Key="string_mde_interp_removeTextureModReferenceX">Remove texture mod reference '{0}'?</system:String>
+    <!-- 0={Title of texture mod object} -->
+    <system:String x:Key="string_confirmRemoval">Confirm removal</system:String>
+    <system:String x:Key="string_mde_description_headmorphs">ME3Tweaks Mod Manager can install headmoprh files through a command line version of Trilogy Save Editor by KarlitosVII. These are not installed with with a mod's main installation step, as they depend on the user choosing a save file.</system:String>
+    <system:String x:Key="string_addHeadmorphReferencesTaskHeader">Add headmorph references task header</system:String>
+    <system:String x:Key="string_removeHeadmorphReferencesTaskHeader">Remove headmorph references task header</system:String>
+    <system:String x:Key="string_autopopulate">Autopopulate</system:String>
+    <system:String x:Key="string_addHeadmorphFile">Add headmorph file</system:String>
+    <system:String xml:space="preserve" x:Key="string_mde_description_textures">ME3Tweaks Mod Manager can install texture mods, but for users to find them easier, you should declare them as part of your mod. Textures must be installed via Batch Installer currently.&#10;Texture mod files (.mem) must be placed under the 'Textures' folder at the root of your mod directory.</system:String>
+    <system:String x:Key="string_addTextureModReferencesTaskHeader">Add texture mod references task header</system:String>
+    <system:String x:Key="string_removeAllTextureModReferencesTaskHeader">Remove all texture mod references task header</system:String>
+    <system:String x:Key="string_addTextureMod">Add texture mod</system:String>
+    <system:String x:Key="string_mde_description_alternatefiles_officialdlc">Alternate files allow you to specify alternate installation options for this task. These options are presented to the user before installation begins.</system:String>
+    <system:String x:Key="string_mde_description_cmmverUpgradeWarning">Your mod's cmmver value will be upgraded when serializing. This may require additional changes to properly work.</system:String>
+    <!-- 'cmmver' is a descriptor and should NOT be changed. That value is part of moddesc.ini. -->
+    <system:String x:Key="string_mde_interp_removeHeadmorphReferenceX">Remove headmorph reference '{0}'?</system:String>
+    <!-- 0={Headmorph option title} -->
 
     <!-- Nexus File Search (Query) -->
     <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>
@@ -2474,7 +2576,8 @@
     <system:String x:Key="string_customDirectory">Custom directory</system:String>
     <system:String x:Key="string_temporaryCache">Temporary cache</system:String>
     <system:String x:Key="string_selectNexusModsDownloadDirectory">Select NexusMods download directory</system:String>
-
+    <system:String x:Key="string_lE1EnableCoalescedMerge">LE1: Enable Coalesced Merge</system:String>
+    <system:String x:Key="string_description_le1CoalescedMergeOption">Turning this off will allow you to manually edit your Coalesced file, and will prevent .m3cd files from merging to the basegame Coalesced file. This may break some mods. Do not turn this off if you don't know what this means.</system:String>
 
     <!-- Check Box Combo Box Control -->
     <system:String x:Key="string_noItemsSelected">No items selected</system:String>
@@ -2534,6 +2637,11 @@
     <!-- Texture Installer Panel -->
     <system:String x:Key="string_massEffectModderFiles">Mass Effect Modder files</system:String>
     <!-- Mass Effect Modder is a proper noun so it probably shouldn't be localized. This is prefix to a filter so its like Mass Effect Modder Files|*.mem -->
+    <system:String x:Key="string_checkingMassEffectModder">Checking MassEffectModder</system:String>
+    <!-- This just means its checking the version number -->
+    <system:String x:Key="string_configuringMassEffectModder">Configuring MassEffectModder</system:String>
+    <system:String x:Key="string_preparingForTextureInstall">Preparing for texture install</system:String>
+    <system:String x:Key="string_dialog_cannotDownloadMEMCannotProceed">Could not download MassEffectModderNoGui - texture installation cannot proceed. See Mod Manager logs for more information.</system:String>
 
     <!-- Launch Option Selector Dialog -->
     <system:String x:Key="string_launchOptionSelector">Launch Option Selector</system:String>
@@ -2556,12 +2664,131 @@
     <system:String x:Key="string_noForceFeedback">No force feedback</system:String>
     <system:String x:Key="string_tooltip_disablesControllerVibration">Disables controller vibration</system:String>
 
-    <!-- Bio2DA Selector Dialog --> 
+    <!-- Bio2DA Selector Dialog -->
     <system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">There is no backup available to query 2DAs from.</system:String>
     <system:String x:Key="string_2da_errorReading2DAs">Error reading 2DA tables from game: {0}</system:String>
     <!-- 0={Error message} -->
     <system:String x:Key="string_errorReadingTables">Error reading tables</system:String>
     <system:String x:Key="string_bio2DASelector">Bio2DA Selector</system:String>
     <system:String x:Key="string_select2DATablesForBlank">Select 2DA tables to generate blank versions of for your mod.</system:String>
+
+    <!-- Headmorph selector -->
+    <system:String x:Key="string_headmorphSelector">Headmorph selector</system:String>
+    <system:String x:Key="string_selectHeadmorph">Select headmorph</system:String>
+    <system:String x:Key="string_selectAHeadmorphToInstall">Select a headmorph to install.</system:String>
+
+    <!-- Starter Kit Content Selector -->
+    <system:String x:Key="string_starterKitAddins">Starter Kit Addins</system:String>
+    <system:String x:Key="string_addStartupFile">Add startup file</system:String>
+    <system:String x:Key="string_addPlotManagerData">Add PlotManager data</system:String>
+    <system:String x:Key="string_interp_addSquadmateOutfitMergeX">Add Squadmate Outfit Merge: {0}</system:String>
+    <!-- 0={Henchman name (James, Javik, etc)} -->
+    <system:String x:Key="string_interp_addModSettingsMenuStub">Add mod settings menu stub</system:String>
+    <system:String x:Key="string_selectDLCMod">Select DLC mod</system:String>
+    <system:String x:Key="string_selectADLCFolderToAddAStartupFileTo">Select a DLC folder to add a startup file to.</system:String>
+    <system:String x:Key="string_selectAnOperation">Select an operation</system:String>
+    <system:String x:Key="string_addingModSettingsMenuData">Adding mod settings menu data...</system:String>
+    <system:String x:Key="string_addedModSettingsMenuData">Added mod settings menu data</system:String>
+    <system:String x:Key="string_dialog_squadmateMergeBackupRequired">Adding squadmate merge files to a mod requires a backup of the game to pull files from.</system:String>
+    <system:String x:Key="string_interp_addingPlotManagerData">Adding plot manager data...</system:String>
+    <system:String x:Key="string_interp_addedPlotManagerData">Added plot manager data</system:String>
+    <system:String x:Key="string_interp_failedToAddModSettingsMenuDataX">Failed to add mod settings menu data: {0}</system:String>
+    <!-- 0={error message} -->
+    <system:String x:Key="string_interp_addingSquadmateOutfitMergeFilesForX">Adding squadmate outfit merge files for {0}...</system:String>
+    <!-- 0={Hench name (e.g. Javik)} -->
+    <system:String x:Key="string_interp_addedSquadmateOutfitMergeFilesForX">Added squadmate outfit merge files for {0}</system:String>
+    <!-- 0={Hench name (e.g. Javik)} -->
+    <system:String x:Key="string_interp_failedToAddSquadmateOutfitMergeFilesForHenchXY">Failed to add squadmate outfit merge files for {0}: {1}</system:String>
+    <!-- 0={Hench name (e.g. Javik)} 1={error message} -->
+    <system:String x:Key="string_interp_failedToAddPlotManagerDataX">Failed to add plot manager data: {0}</system:String>
+    <!-- 0={error message} -->
+    <system:String x:Key="string_interp_addingStartupFile">Adding startup file...</system:String>
+    <system:String x:Key="string_interp_addedStartupFile">Added startup file</system:String>
+    <system:String x:Key="string_interp_failedToAddStartupFileX">Failed to add startup file: {0}</system:String>
+    <!-- 0={error message} -->
+
+    <!-- Save Selector -->
+    <system:String xml:space="preserve" x:Key="string_tooltip_loadAllSaves">Parses all save files from all careers; this may use a lot of memory if you have a lot of save files.&#10;The default state is unchecked, which only loads the most recent 50 saves from every career</system:String>
+    <system:String x:Key="string_loadAllSavesMayUseALotOfMemory">Load all saves (may use a lot of memory)</system:String>
+    <system:String x:Key="string_selectThisSave">Select this save</system:String>
+    <system:String x:Key="string_careers">Careers</system:String>
+    <system:String x:Key="string_saves">Saves</system:String>
+    <system:String x:Key="string_lastPlayed">Last played:</system:String>
+    <system:String x:Key="string_timePlayed">Time played:</system:String>
+    <system:String x:Key="string_difficulty">Difficulty:</system:String>
+    <system:String x:Key="string_gender">Gender:</system:String>
+    <system:String x:Key="string_readingSavedGames">Reading saved games</system:String>
+    <system:String x:Key="string_selectASaveFile">Select a save file</system:String>
+    <system:String x:Key="string_interp_unknownMapX">Unknown map: {0}</system:String>
+    <!-- 0={Map name (will be in form of BIOA_XXX or BioP_CitHot} -->
+    <system:String x:Key="string_saveSelector">Save Selector</system:String>
+
+    <!-- Game launcher -->
+    <system:String x:Key="string_autobootSave">Autoboot save</system:String>
+    <!-- This is appended to the save selector title. Eg. 'Save Selector - Autoboot save' -->
+
+    <!-- Trilogy Save Editor CLI Updater -->
+    <system:String x:Key="string_extractingTSECLI">Extracting Trilogy Save Editor (CLI)</system:String>
+
+    <!-- Batch Mod -->
+    <system:String x:Key="string_batchModHasNoConfigOptionsUIText">Standalone</system:String>
+    <!-- This string is shown in the batch mod library when a mod has no configuration options. This is to differentiate it from 'Configured', which is shown when a mod has options. We don't want to use 'Not configured' as it implies that this has configurable options. The UI space here is limited.-->
+
+    <!-- Basegame File Identification Service Viewer -->
+    <system:String x:Key="string_title_bgfisviewer">Basegame File Identification Service Viewer</system:String>
+    <system:String x:Key="string_description_bgfisviewer">View the contents of the Basegame File Identification Service</system:String>
+
+    <!-- Texture installer panel -->
+    <system:String x:Key="string_preparingToInstallTextures">Preparing to install textures</system:String>
+    <system:String x:Key="string_installingTextureMods">Installing texture mods</system:String>
+    <system:String x:Key="string_installedTextureMods">Installed texture mods</system:String>
+    <system:String x:Key="string_textureInstallationFailed">Texture installation failed</system:String>
+    <system:String x:Key="string_textureInstallationErrors">Texture installation errors</system:String>
+    <system:String x:Key="string_textureInstallationWarning">Texture installation warning</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_cannotInstallMemsNotAllSameGame">Cannot install texture mods:\nNot all .mem files selected for install are for {0}.</system:String>
+    <!-- 0={Game short name (ME1, ME2, etc} -->
+    <system:String x:Key="string_cannotInstallTextures">Cannot install textures</system:String>
+    <system:String x:Key="string_dialog_textureMapDesync">The following files are no longer in sync with the texture scan that took place when textures were first installed onto this game installation. Do not install or remove package files after installing textures.</system:String>
+    <system:String x:Key="string_dialog_leftoverTextureFilesFound">The following files are leftover from a different texture installation. This is not supported; reset your game to vanilla, reinstall your non-texture mods, then install textures again.</system:String>
+    <system:String x:Key="string_errorOccurredInTextureInstaller">Error occurred in texture installer</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_textureInstallErrorsOccurred">The following errors were reported during Mass Effect Modder texture installation. More information can be found in Mod Manager's application log.\nYour game may be in a broken state due to these errors.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_textureModPrecheckIssues">The following issues were detected with your game installation prior to installing textures. More information can be found in Mod Manager's application log.\nYour game has not been modified.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_bigScaryTextureInstallWarning">Once you install textures, you cannot install more content mods without restoring the entire game from backup. This includes installing updates to mods. Mod Manager will warn you if you attempt to install a mod that violates these procedures to prevent game instability.\n\nENSURED YOU HAVE INSTALLED ALL NON-TEXTURE MODS AT THIS POINT.\n\nAre you sure you wish to continue?</system:String>
+    <!-- This dialog is very important because it is a one-way process for modding. Ensure you keep strong wording because users will think 'eh, not a big deal' when it really is. -->
+    <system:String x:Key="string_noExitCodeBrackets">[no exit code]</system:String>
+    <!-- brackets are because this is a 'null' value shown to the user-->
+    <system:String x:Key="string_dialog_memNonZeroExitCode">MassEffectModder exited with non-zero exit code: {0}. This indicates something went wrong.</system:String>
+    <!-- 0={exit code string ([No exit code] or a number)} -->
+
+    <!-- IM3ValidateOnLoadObject -->
+    <system:String x:Key="string_interp_im3v_missingRequiredParameter">{0} is missing required parameter '{1}'.</system:String>
+    <!-- 0={structName} 1={parameter name} -->
+    <system:String x:Key="string_interp_im3v_missingRequiredFileParameter">{0} is missing required file parameter '{1}'.</system:String>
+    <!-- 0={structName} 1={parameter name} -->
+    <system:String x:Key="string_interp_im3v_invalidCharacterPatterns">{0} references file {1}, which contains invalid patterns. File references cannot contain .. or start with / or \\.</system:String>
+    <!-- 0={structName} 1={file path} -->
+    <system:String x:Key="string_interp_im3v_nonExistentFileReference">{0} references file asset {1}, but this file does not exist under the {2} directory.</system:String>
+    <!-- 0={structName} 1={file path} 2={folder name} -->
+    <system:String x:Key="string_interp_im3v_missingRequiredImageParameter">{0} is missing required image parameter '{1}'.</system:String>
+    <!-- 0={structName} 1={parameter name} -->
+    <system:String x:Key="string_interp_im3v_nonExistentImageReference">{0} references imageasset {1}, but this file does not exist under the M3Images directory.</system:String>
+    <!-- 0={structName} 1={file path/name} -->
+
+    <!-- MEMMod -->
+    <system:String x:Key="string_textureExportsNotListedInThisMemFile">[texture exports not listed in this .mem file]</system:String>
+    <system:String x:Key="string_textureModsMustBeImportedBeforeUse">Texture mods must be imported before they can be used</system:String>
+
+    <!-- M3HeadMorph -->
+    <system:String x:Key="string_interp_valueMustBeIntegerGreaterThanZero">{0} value must be an integer greater than 0.</system:String>
+    <!-- 0={Parameter name} -->
+    <system:String x:Key="string_interp_headmorphsCannotDependOnIncludedDLC">Headmorphs cannot mark themselves as dependent on DLC included with the game. Invalid value: {0}</system:String>
+    <!-- 0={DLC folder name} -->
+
+    <!-- M3MEMMod -->
+    <system:String x:Key="string_textureLibrary">Texture library</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_XpartOfY">{0}\n\nPart of {1}</system:String>
+    <!-- 0={Description (written by dev)} 1={Mod name} -->
+    <system:String xml:space="preserve" x:Key="string_interp_XpartOfTextureLibrary">{0}\n\nPart of the texture library</system:String>
+    <!-- 0={Description (written by dev)} -->
 
 </ResourceDictionary>

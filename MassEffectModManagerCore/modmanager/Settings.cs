@@ -115,7 +115,13 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
+        private static bool _ssuiLoadAllSAves = false;
 
+        public static bool SSUILoadAllSaves
+        {
+            get => _ssuiLoadAllSAves;
+            set => SetProperty(ref _ssuiLoadAllSAves, value);
+        }
 
         private static bool _enableTelemetry = true;
         public static bool EnableTelemetry
@@ -361,6 +367,21 @@ namespace ME3TweaksModManager.modmanager
         }
 
 
+        private static bool _enableLE1CoalescedMerge = true;
+        public static bool EnableLE1CoalescedMerge
+        {
+            get => _enableLE1CoalescedMerge;
+            set => SetProperty(ref _enableLE1CoalescedMerge, value);
+        }
+
+        private static bool _enableTextureSafetyChecks = true;
+        public static bool EnableTextureSafetyChecks
+        {
+            get => _enableTextureSafetyChecks;
+            set => SetProperty(ref _enableTextureSafetyChecks, value);
+        }
+
+
         public static readonly string SettingsPath = Path.Combine(M3Filesystem.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
@@ -414,8 +435,11 @@ namespace ME3TweaksModManager.modmanager
             ConfigureNXMHandlerOnBoot = LoadSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", true);
             DoubleClickModInstall = LoadSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", false);
 
+            SSUILoadAllSaves = LoadSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", false);
+
             // LEGENDARY
             SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
+            EnableLE1CoalescedMerge = LoadSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", true);
             GenerationSettingLE = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingLE", true);
             GenerationSettingOT = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingOT", true);
 
@@ -425,6 +449,7 @@ namespace ME3TweaksModManager.modmanager
 
             // Debugging options - these have no UI.
             UseOptimizedTextureRestore = LoadSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", true);
+            EnableTextureSafetyChecks = LoadSettingBool(settingsIni, "ModManagerDebug", "EnableTextureSafetyChecks", true);
 
             // Dismiss messages
             OneTimeMessage_ModListIsNotListOfInstalledMods = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
@@ -620,13 +645,17 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", SelectedLE2LaunchOption);
                 SaveSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", SelectedLE3LaunchOption);
 
+                SaveSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", EnableLE1CoalescedMerge);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
 
+                // Save Selector
+                SaveSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", SSUILoadAllSaves);
+
                 // Debug options
                 SaveSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", UseOptimizedTextureRestore);
-
+                SaveSettingBool(settingsIni, "ModManagerDebug", "EnableTextureSafetyChecks", EnableTextureSafetyChecks);
 
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
                 return SettingsSaveResult.SAVED;

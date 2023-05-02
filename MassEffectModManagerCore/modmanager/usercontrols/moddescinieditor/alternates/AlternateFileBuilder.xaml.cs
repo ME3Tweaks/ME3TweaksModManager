@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -95,7 +96,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
 
         private void AddAlternateFile()
         {
-            Alternates.Add(new AlternateFile(M3L.GetString(M3L.string_interp_alternateFileX, Alternates.Count + 1), AlternateFile.AltFileCondition.COND_MANUAL, AlternateFile.AltFileOperation.OP_NOTHING));
+            Alternates.Add(new AlternateFile(EditingMod, M3L.GetString(M3L.string_interp_alternateFileX, Alternates.Count + 1), AlternateFile.AltFileCondition.COND_MANUAL, AlternateFile.AltFileOperation.OP_NOTHING));
         }
 
 

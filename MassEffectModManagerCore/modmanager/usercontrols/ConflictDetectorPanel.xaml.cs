@@ -10,8 +10,8 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.ui;
-using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -25,7 +25,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public GameTargetWPF SelectedTarget { get; set; }
         public ConflictDetectorPanel()
         {
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Custom DLC Conflict Detector Panel", new WeakReference(this));
+            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Custom DLC Conflict Detector Panel", this);
             LoadCommands();
         }
         public ICommand CloseCommand { get; set; }

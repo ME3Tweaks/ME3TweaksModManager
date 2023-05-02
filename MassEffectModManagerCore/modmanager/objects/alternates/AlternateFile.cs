@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -99,12 +100,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// Creates a new, blank Alternate DLC object
         /// </summary>
         /// <param name="alternateName"></param>
-        public AlternateFile(string alternateName, AltFileCondition condition, AltFileOperation operation)
+        public AlternateFile(Mod mod, string alternateName, AltFileCondition condition, AltFileOperation operation)
         {
             FriendlyName = alternateName;
             Condition = condition;
             Operation = operation;
-            BuildParameterMap(null);
+            BuildParameterMap(mod);
         }
 
         public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
@@ -148,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     }
                     if (!dlc.StartsWith(@"DLC_"))
                     {
-                        M3Log.Error(@"An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
+                        M3Log.Error(@"An item in Alternate Files' ConditionalDLC doesn't start with DLC_");
                         LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_conditionalDLCInvalidValue, FriendlyName);
                         return;
                     }
@@ -176,7 +177,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 M3Log.Error($@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}");
                 ValidAlternate = false;
-                LoadFailedReason = $@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_missingOperation, FriendlyName);
                 return;
             }
 
@@ -260,7 +261,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                     // ModDesc 8.0: Allow flattening output of multilist output.
                     // Backported to 7.0 125 build for EGM - it must work on 125 7.0 and above.
-                    if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125) 
+                    if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
                         || modForValidating.ModDescTargetVersion >= 8.0)
                     {
                         if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
@@ -365,7 +366,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                                 // Security issue
                                 M3Log.Error($@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_disallowedPattern, FriendlyName, mFile);
                                 return;
                             }
 
@@ -375,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                             {
                                 M3Log.Error($@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_nonExistentMergeFile, mFile);
                                 return;
                             }
 
@@ -385,7 +386,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                                 // MM failed to load
                                 M3Log.Error($@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_mergeFileFailedToLoad, mFile, modForValidating.LoadFailedReason);
                                 return;
                             }
                             merges.Add(mm);
@@ -397,7 +398,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     {
                         M3Log.Error($@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.");
                         ValidAlternate = false;
-                        LoadFailedReason = $@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_noMergeFilesSpecified);
                         return;
                     }
                     #endregion
@@ -575,9 +576,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 { @"FlattenMultiListOutput", new MDParameter(@"FlattenMultiListOutput", FlattenMultilistOutput, false)},
             };
 
-            BuildSharedParameterMap(parameterDictionary);
+            BuildSharedParameterMap(mod, parameterDictionary);
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }
 }
-    
+

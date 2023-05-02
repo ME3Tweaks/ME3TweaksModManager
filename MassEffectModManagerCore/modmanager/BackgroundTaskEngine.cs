@@ -125,7 +125,7 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
-        private void OnActiveJobChanged(object oldValue, object newValue)
+        private void OnActiveTaskChanged(object oldValue, object newValue)
         {
             if (oldValue is BackgroundTask bto)
             {

@@ -10,7 +10,7 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>8.0.1.127</Version>
+		<Version>8.1.0.128</Version>
 		<Copyright>ME3Tweaks 2012 - 2023</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>ME3TweaksModManager</PackageId>
@@ -54,6 +54,14 @@
 		<DefineConstants>DEBUG;AZURE</DefineConstants>
 	</PropertyGroup>
 
+	<!--Fody code generator to allow us to access OnPropertyChanged-->
+	<PropertyGroup>
+		<PropertyChangedAnalyzerConfiguration>
+			<IsCodeGeneratorDisabled>false</IsCodeGeneratorDisabled>
+			<EventInvokerName>OnPropertyChanged</EventInvokerName>
+		</PropertyChangedAnalyzerConfiguration>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
@@ -74,6 +82,7 @@
 		<None Remove="images\steam.png" />
 		<None Remove="images\terminal.png" />
 		<None Remove="images\unknown.png" />
+		<None Remove="images\unknownmap.png" />
 		<None Remove="images\windowicon.png" />
 		<None Remove="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
@@ -100,6 +109,7 @@
 		<None Remove="modmanager\meim\propertymaps\BioEngine.xml" />
 		<None Remove="modmanager\meim\propertymaps\BioGame.xml" />
 		<None Remove="modmanager\meim\propertymaps\BioParty.xml" />
+		<None Remove="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
 		<None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
 		<None Remove="modmanager\objects\mod\merge\v1\schema.json" />
 		<None Remove="modmanager\starterkit\BlankTlkFile.pcc" />
@@ -145,6 +155,7 @@
 
 	<ItemGroup>
 		<Resource Include="images\asi.png" />
+		<EmbeddedResource Include="images\unknownmap.png" />
 		<EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
@@ -178,10 +189,10 @@
 	<ItemGroup>
 		<PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="CliWrap" Version="3.6.0" />
+		<PackageReference Include="CliWrap" Version="3.6.1" />
 		<PackageReference Include="Flurl" Version="3.0.7" />
 		<PackageReference Include="Flurl.Http" Version="3.2.4" />
-		<PackageReference Include="Fody" Version="6.6.4">
+		<PackageReference Include="Fody" Version="6.7.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -189,12 +200,12 @@
 		<PackageReference Include="Microsoft.AppCenter" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-		<PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
-		<PackageReference Include="Octokit" Version="5.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15" />
+		<PackageReference Include="Octokit" Version="5.1.0" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
 		<PackageReference Include="Serilog" Version="2.12.0" />
@@ -202,7 +213,7 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
 		<PackageReference Include="SSH.NET" Version="2020.0.2" />
-		<PackageReference Include="WatsonWebsocket" Version="4.0.6" />
+		<PackageReference Include="WatsonWebsocket" Version="4.0.8" />
     <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.12.0.2" />
   </ItemGroup>
 	<ItemGroup>
@@ -236,6 +247,9 @@
   </ItemGroup>
 
   <ItemGroup>
+		<Compile Update="modmanager\usercontrols\moddescinieditor\HeadmorphsEditorControl.xaml.cs">
+		  <SubType>Code</SubType>
+		</Compile>
 		<Compile Update="modmanager\usercontrols\TestArchiveGenerator.xaml.cs">
 			<SubType>Code</SubType>
 		</Compile>
@@ -263,6 +277,9 @@
 		<Page Update="modmanager\usercontrols\moddescinieditor\Game1TLKMergeEditorControl.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
+		<Page Update="modmanager\usercontrols\LE1CoalescedMergePanel.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
 		<Page Update="modmanager\usercontrols\PlotManagerUpdatePanel.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
@@ -272,7 +289,7 @@
 		<Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="modmanager\windows\DeploymentListDialog.xaml">
+		<Page Update="modmanager\windows\dialog\DeploymentListDialog.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		  <SubType>Designer</SubType>
 		</Page>
@@ -289,6 +306,9 @@
   <ItemGroup>
     <Folder Include="modmanager\objects\merge\email\" />
     <Folder Include="modmanager\squadmates\LE3\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
   </ItemGroup>
 
 </Project>

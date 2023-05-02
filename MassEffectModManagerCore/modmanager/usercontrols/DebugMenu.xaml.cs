@@ -7,6 +7,7 @@ using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.save;
 using ME3TweaksModManager.modmanager.save.game2.UI;
 using ME3TweaksModManager.modmanager.squadmates;
 using SevenZip;
@@ -32,9 +33,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.UpdateMD5DB_MenuItem)) UpdateMD5Map(window);
             if (sender == nameof(MainWindow.StampCurrentTargetWithALOTMarker_MenuItem)) StampCurrentTargetWithALOT_Click(window);
             if (sender == nameof(MainWindow.StripCurrentTargetWithALOTMarker_MenuItem)) StripCurrentTargetALOTMarker_Click(window);
-            if (sender == nameof(MainWindow.InstallHeadMorph_MenuItem)) InstallHeadMorphTest_Click(window);
             if (sender == nameof(MainWindow.ShowWelcomePanel_MenuItem)) ShowWelcomePanel_Click(window);
+            if (sender == nameof(MainWindow.ShowBGFISDB_MenuItem)) ShowBGFISDB_Click(window);
 #endif
+        }
+
+#if DEBUG
+        private static void ShowBGFISDB_Click(MainWindow window)
+        {
+            var previewPanel = new BasegameFileIdentificationServicePanel();
+            previewPanel.Close += (a, b) =>
+            {
+                window.ReleaseBusyControl();
+            };
+            window.ShowBusyControl(previewPanel);
         }
 
         private static void ShowWelcomePanel_Click(MainWindow window)
@@ -42,23 +54,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             window.ShowFirstRunPanel();
         }
 
-        private static void InstallHeadMorphTest_Click(MainWindow window)
-        {
-            SaveSelectorUI ssui = new SaveSelectorUI();
-            ssui.Show();
-
-            /*
-            OpenFileDialog ofd = new OpenFileDialog()
-            {
-                Filter = @".ron",
-            };
-            if (ofd.ShowDialog().Value)
-            {
-                
-            }*/
-        }
-
-#if DEBUG
         private static void TestSquadmateMerge_Click(MainWindow window)
         {
             // Note this is mutual exclusive, for testing only!

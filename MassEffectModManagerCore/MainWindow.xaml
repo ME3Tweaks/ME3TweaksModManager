@@ -151,6 +151,25 @@
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem
+                Header="{DynamicResource string_developerFeatures}"
+                Style="{StaticResource MenuItemHeaderStyle}"
+                Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
+            <MenuItem
+                Header="{DynamicResource string_addStarterKitContent}"
+                ToolTip="{DynamicResource string_tooltip_addStarterKitContent}"
+                Command="{Binding AddStarterKitContentCommand}"
+                Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <fa5:ImageAwesome
+                        Style="{StaticResource EnableDisableImageStyle}"
+                        Icon="Solid_Plus"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Height="16"
+                        Width="16"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem
                 Header="{DynamicResource string_packageModForRelease}"
                 Style="{StaticResource MenuItemHeaderStyle}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
@@ -584,6 +603,38 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
+                        Header="{DynamicResource string_installStandaloneFiles}"
+                        Style="{StaticResource MenuItemHeaderStyle}"
+                        ui:SharedUIBindings.GenerationLE="True" />
+                    <MenuItem
+                        Header="{DynamicResource string_installMemFile}"
+                        Command="{Binding InstallMEMFileCommand}"
+                        ui:SharedUIBindings.GenerationLE="True">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_FileImage"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_installHeadmorph}"
+                        Command="{Binding InstallHeadmorphCommand}"
+                        ui:SharedUIBindings.GenerationLE="True">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_User"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
                         Header="{DynamicResource string_developerTools}"
                         Style="{StaticResource MenuItemHeaderStyle}"
                         Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
@@ -978,6 +1029,20 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem
+                        ui:SharedUIBindings.GenerationLE="True"
+                        Header="{DynamicResource string_runLE1CoalescedMerge}"
+                        ToolTip="{DynamicResource string_tooltip_runLE1CoalescedMerge}"
+                        Command="{Binding LE1CoalescedMergeCommand}">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_ObjectUngroup"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
                         Header="{DynamicResource string_dragAndDropOperations}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
@@ -1163,6 +1228,30 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem
+                        Header="{DynamicResource string_LegendaryExplorerStable}"
+                        Name="LegendaryExplorerStable_MenuItem"
+                        Click="LaunchExternalTool_Clicked"
+                        ToolTip="{DynamicResource string_ME3ExplorerME3TweaksForkTooltip}">
+                        <MenuItem.Icon>
+                            <Image
+                                Source="{ui:MippedIcon Source={StaticResource lexIcon}, Size=16}"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_LegendaryExplorerBeta}"
+                        Name="LegendaryExplorerBeta_MenuItem"
+                        Click="LaunchExternalTool_Clicked"
+                        ToolTip="{DynamicResource string_ME3ExplorerME3TweaksForkBetaTooltip}">
+                        <MenuItem.Icon>
+                            <Image
+                                Source="{ui:MippedIcon Source={StaticResource lexIcon}, Size=16}"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
                         ui:SharedUIBindings.GenerationOT="True"
                         Header="{DynamicResource string_MassEffectINIModder}"
                         Command="{Binding LaunchIniModderCommand}"
@@ -1227,25 +1316,13 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="{DynamicResource string_LegendaryExplorerStable}"
-                        Name="LegendaryExplorerStable_MenuItem"
-                        Click="LaunchExternalTool_Clicked"
-                        ToolTip="{DynamicResource string_ME3ExplorerME3TweaksForkTooltip}">
+                        Header="{DynamicResource string_trilogySaveEditor}"
+                        Name="TrilogySaveEditor_MenuItem"
+                        Command="{Binding TrilogySaveEditorCommand}"
+                        ToolTip="{DynamicResource string_tooltip_trilogySaveEditor}">
                         <MenuItem.Icon>
                             <Image
-                                Source="{ui:MippedIcon Source={StaticResource lexIcon}, Size=16}"
-                                Width="16"
-                                RenderOptions.BitmapScalingMode="Linear" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem
-                        Header="{DynamicResource string_LegendaryExplorerBeta}"
-                        Name="LegendaryExplorerBeta_MenuItem"
-                        Click="LaunchExternalTool_Clicked"
-                        ToolTip="{DynamicResource string_ME3ExplorerME3TweaksForkBetaTooltip}">
-                        <MenuItem.Icon>
-                            <Image
-                                Source="{ui:MippedIcon Source={StaticResource lexIcon}, Size=16}"
+                                Source="/modmanager/toolicons/tse.png"
                                 Width="16"
                                 RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
@@ -1320,8 +1397,7 @@
                     Visibility="{Binding Path=(modmanager:Settings.BetaMode), Converter={StaticResource BoolToVisibilityConverter}}"
                     Padding="4">
                     <MenuItem
-                        Header="{DynamicResource string_installMemFile}"
-                        Command="{Binding InstallMEMFileCommand}" />
+                        Header="{DynamicResource string_blankItemToAvoidBreakingTheInterface}" />
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
@@ -1381,7 +1457,7 @@
                         Name="ShowWelcomePanel_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Autoboot LE2 test"
+                        Header="{DynamicResource string_autobootLE2Test}"
                         Name="AutobootLE2_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
@@ -1389,12 +1465,12 @@
                         Name="ShowBackupNag_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="{DynamicResource string_installHeadmorph}"
-                        Name="InstallHeadMorph_MenuItem"
-                        Click="RouteDebugCall" />
-                    <MenuItem
                         Header="{DynamicResource string_mEMVanillaDBViewer}"
                         Name="ShowMEMDB_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_showBasegameFileIdentificationServiceViewer}"
+                        Name="ShowBGFISDB_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
                         Header="{DynamicResource string_testCode}"
@@ -1579,6 +1655,15 @@
                         <Button
                             MinWidth="70"
                             Padding="10,7"
+                            Content="{DynamicResource string_installHeadmorph}"
+                            Command="{Binding ApplyM3HeadmorphCommand}"
+                            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
+                            ToolTip="{DynamicResource string_tooltip_installHeadmorph}"
+                            ui:SharedUIBindings.VisibilityToEnabled="True" />
+                        <Button
+                            MinWidth="70"
+                            Padding="10,7"
+                            Margin="5,0,0,0"
                             Content="{Binding ApplyModButtonText}"
                             Command="{Binding ApplyModCommand}"
                             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
@@ -1599,6 +1684,19 @@
                                             <fa5:ImageAwesome
                                                 Style="{StaticResource EnableDisableImageStyle}"
                                                 Icon="Solid_Rocket"
+                                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                Height="16"
+                                                Width="16" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem
+                                        Header="{DynamicResource string_bootIntoSpecificSaveFile}"
+                                        Command="{Binding StartGameSpecificSaveCommand}"
+                                        Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                                        <MenuItem.Icon>
+                                            <fa5:ImageAwesome
+                                                Style="{StaticResource EnableDisableImageStyle}"
+                                                Icon="Solid_Save"
                                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                                 Height="16"
                                                 Width="16" />

@@ -54,6 +54,27 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -98,24 +119,34 @@
                 <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='bra'}"/>
                 <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="Krozt&#10;Falcoman94" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='ita'}"/>
 
-                <TextBlock Text="Legendary Edition Bink Proxy" Foreground="White" Margin="0,15,0, 0" TextAlignment="Center" Grid.Row="11" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
-                <TextBlock Text="By d00t" Foreground="White" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold"/>
-                <TextBlock ToolTip="Click to view license" Foreground="#FF87CEFA" Width="150" TextAlignment="Center" Grid.Row="13" Grid.ColumnSpan="3">
+                <TextBlock Text="Legendary Edition Bink Proxy" Foreground="White" Margin="0,15,0, 0" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
+                <TextBlock Text="By d00t" Foreground="White" TextAlignment="Center" Grid.Row="13" Grid.ColumnSpan="3" FontWeight="Bold"/>
+                <TextBlock ToolTip="Click to view license" Foreground="#FF87CEFA" Width="150" TextAlignment="Center" Grid.Row="14" Grid.ColumnSpan="3">
                     <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="internal://minhook-license" Foreground="#FF87CEFA">
                         <TextBlock Text="Uses MinHook" />
                     </Hyperlink>
                 </TextBlock>
 
-                <TextBlock Text="{DynamicResource string_specialThanks}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="14" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
-                <TextBlock Foreground="White" Grid.Row="15" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Kinkojiro" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Foreground="White" Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="SirCxytryx" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Foreground="White" Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="Erik JS" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Foreground="White" Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="aquadran" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Foreground="White" Grid.Row="17" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="HenBagle" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Foreground="White" Grid.Row="18" Grid.Column="0" TextWrapping="Wrap" Grid.ColumnSpan="3" Text="{DynamicResource string_youTheEndUser}" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Text="{DynamicResource string_license}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="19" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
-                <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="20" TextWrapping="Wrap" Text="Copyright (C) 2012 - 2022 ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts." />
-                <TextBlock Text="Telemetry key not present in this build" Visibility="{Binding TelemetryKeyAvailable, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Foreground="White" Grid.ColumnSpan="3" Grid.Row="21" TextAlignment="Center" Margin="0,10"/>
+                <TextBlock Text="Mass Effect Modder" Foreground="White" Margin="0,15,0, 0" TextAlignment="Center" Grid.Row="15" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
+                <TextBlock Text="By aquadran" Foreground="White" TextAlignment="Center" Grid.Row="16" Grid.ColumnSpan="3" FontWeight="Bold"/>
+
+
+                <TextBlock Text="Trilogy Save Editor CLI" Foreground="White" Margin="0,15,0, 0" TextAlignment="Center" Grid.Row="17" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
+                <TextBlock Text="By Karlitos" Foreground="White" TextAlignment="Center" Grid.Row="18" Grid.ColumnSpan="3" FontWeight="Bold"/>
+                
+
+                <TextBlock Text="{DynamicResource string_specialThanks}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="20" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
+                <TextBlock Foreground="White" Grid.Row="21" Grid.Column="0" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Kinkojiro" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="21" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="SirCxytryx" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="22" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="Erik JS" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="22" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="aquadran" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="23" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="HenBagle" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="23" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="TheBenefactor" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="22" Grid.Column="0" Grid.ColumnSpan="3" TextWrapping="Wrap" Text="BioWare" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="25" Grid.Column="0" TextWrapping="Wrap" Grid.ColumnSpan="3" Text="{DynamicResource string_youTheEndUser}" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Text="{DynamicResource string_license}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="30" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
+                <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="31" TextWrapping="Wrap" Text="{Binding CurrentYear, StringFormat='Copyright (C) 2012 - {0} ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts.'}" />
+                <TextBlock Text="Telemetry key not present in this build" Visibility="{Binding TelemetryKeyAvailable, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Foreground="White" Grid.ColumnSpan="3" Grid.Row="32" TextAlignment="Center" Margin="0,10"/>
 
             </Grid>
         </ScrollViewer>

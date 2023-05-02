@@ -120,6 +120,7 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
             }
         }
 
+        [SuppressPropertyChangedWarnings]
         public void OnLanguageChanged()
         {
             if (IsCustomOption)

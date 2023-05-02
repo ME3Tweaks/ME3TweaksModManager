@@ -171,6 +171,7 @@ namespace LocalizationHelper
                     string content = (string)item.Attribute("Content");
                     string text = (string)item.Attribute("Text");
                     string watermark = (string)item.Attribute("Watermark");
+                    string directionstext = (string)item.Attribute("DirectionsText");
 
                     if (title != null && !title.StartsWith("{") && isNotLangWord(title) && isNotGameName(title) && isNotJobheader(title) && isNotLocalizableWord(title))
                     {
@@ -203,6 +204,15 @@ namespace LocalizationHelper
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
                         //item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
                     }
+
+                    if (directionstext != null && !directionstext.StartsWith("{") && directionstext.Length > 1 && !long.TryParse(directionstext, out var _) && isNotLangWord(directionstext) && isNotLocalizableWord(directionstext)
+                        && isNotJobheader(directionstext) && isNotGameName(directionstext)
+                        && !directionstext.StartsWith("http"))
+                    {
+                        localizations[directionstext] = $"string_{toCamelCase(directionstext)}";
+                        //item.Attribute("directionstext").Value = $"{{DynamicResource {localizations[directionstext]}}}";
+                    }
+                    
 
                     if (text != null && !text.StartsWith("{")
                                      && text.Length > 1
@@ -564,7 +574,7 @@ namespace LocalizationHelper
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             var file = Path.Combine(M3folder, SelectedFile);
-            string[] attributes = { "Title", "Header", "ToolTip", "Content", "Text", "Watermark" };
+            string[] attributes = { "Title", "Header", "ToolTip", "Content", "Text", "Watermark", "DirectionsText" };
             try
             {
                 XDocument doc = XDocument.Load(file);

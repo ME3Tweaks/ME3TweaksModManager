@@ -16,8 +16,6 @@ namespace ME3TweaksModManager.modmanager.converters
         {
             if (value is MEGame game && parameter is string gameStr)
             {
-                Visibility v = Visibility.Visible;
-
                 var splitparms = gameStr.Split('_');
 
                 // Go by pairings

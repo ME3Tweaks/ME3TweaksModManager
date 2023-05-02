@@ -21,7 +21,8 @@ namespace ME3TweaksModManager.modmanager
             if (header == ModJob.JobHeader.LOCALIZATION) return true; //Don't check localization
             if (header == ModJob.JobHeader.LELAUNCHER) return true; //Don't check launcher
             if (header == ModJob.JobHeader.GAME1_EMBEDDED_TLK) return true; //Don't check launcher
-
+            if (header == ModJob.JobHeader.HEADMORPHS) return true; // Don't check headmorphs
+            if (header == ModJob.JobHeader.TEXTUREMODS) return true; // Don't check textures
             if (header == ModJob.JobHeader.TESTPATCH)
             {
                 return File.Exists(M3Directories.GetTestPatchSFARPath(gameTarget));

@@ -485,8 +485,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SourceFile sf = new SourceFile();
                 var sFile = Path.Combine(mod.ModPath, x);
                 var lFile = Path.Combine(lzmaStagingPath, x + @".lzma");
-                sf.hash = M3Utilities.CalculateMD5(sFile);
-                sf.lzmahash = M3Utilities.CalculateMD5(lFile);
+                sf.hash = MUtilities.CalculateHash(sFile);
+                sf.lzmahash = MUtilities.CalculateHash(lFile);
                 var fileInfo = new FileInfo(sFile);
                 sf.size = fileInfo.Length;
                 sf.timestamp = fileInfo.LastWriteTimeUtc.Ticks;
@@ -989,5 +989,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
+        // Disable the autosizer for the panel
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

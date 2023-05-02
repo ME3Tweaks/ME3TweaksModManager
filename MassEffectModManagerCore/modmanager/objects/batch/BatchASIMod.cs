@@ -11,7 +11,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
     /// <summary>
     /// Defines an ASI mod for installation for serialization and deserialization in a Batch Queue
     /// </summary>
-    public class BatchASIMod
+    public class BatchASIMod : IBatchQueueMod
     {
         /// <summary>
         /// Generates a batch ASI mod from the latest version of an ASI
@@ -51,6 +51,11 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             Game = game; // This is not serialized as it is done via the containing serialized item so we set it here.
             AssociatedMod = ASIManager.GetASIVersion(UpdateGroup, Version, game);
+            return AssociatedMod != null;
+        }
+
+        public bool IsAvailableForInstall()
+        {
             return AssociatedMod != null;
         }
     }

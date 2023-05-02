@@ -57,6 +57,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             base.OnClosing(args);
         }
 
+        // This doesn't do anything anymore but is just left in case it ever needs reimplemented
+        [SuppressPropertyChangedWarnings]
         private void OnBackupStatusChanged()
         {
 
@@ -87,11 +89,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             OnBackupStatusChanged();
         }
 
-        private void BackupServiceStateChanged(object? sender, EventArgs eventArgs)
+        private void BackupServiceStateChanged(object sender, EventArgs eventArgs)
         {
             OnBackupStatusChanged();
         }
 
+        [SuppressPropertyChangedWarnings]
         private void OnBackupStatusChanged(object sender, SizeChangedEventArgs e)
         {
             OnBackupStatusChanged();

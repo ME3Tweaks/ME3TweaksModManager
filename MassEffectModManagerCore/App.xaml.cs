@@ -35,7 +35,6 @@ using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
 using SingleInstanceCore;
-using WinCopies.Linq;
 
 namespace ME3TweaksModManager
 {
@@ -85,9 +84,9 @@ namespace ME3TweaksModManager
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
-        public const double HighestSupportedModDesc = 8.0;
+        public const double HighestSupportedModDesc = 8.1;
 
-        //Windows 8.1 Update 1
+        //Windows 10 1909
         public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.19044");
 
         internal static readonly string[] SupportedOperatingSystemVersions =
@@ -249,6 +248,7 @@ namespace ME3TweaksModManager
 
                 if (signTime != null)
                 {
+                    BuildDateTime = signTime.Value;
                     BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy @ hh:mm");
                     var signer = info.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
                     if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
@@ -427,6 +427,11 @@ namespace ME3TweaksModManager
         }
 
         /// <summary>
+        /// A datetime object representing the signing date of this executable
+        /// </summary>
+        public static DateTime? BuildDateTime { get; set; }
+
+        /// <summary>
         /// If a language localization is supported in M3 for use
         /// </summary>
         /// <param name="lang">The lang code</param>
@@ -483,6 +488,11 @@ namespace ME3TweaksModManager
 
         internal static void InitAppCenter()
         {
+            if (!new NickStrupat.ComputerInfo().ActuallyPlatform)
+            {
+                M3Log.Warning(@"This does not appear to be an actually supported platform, disabling telemetry");
+                return;
+            }
 #if !DEBUG
             if (APIKeys.HasAppCenterKey)
             {
@@ -544,27 +554,6 @@ namespace ME3TweaksModManager
         /// </summary>
         internal static string CurrentLanguage = InitialLanguage;
 
-        private static bool? _allowCompressingPackageOnImport;
-        /// <summary>
-        /// Allow package compression when importing a mod. This is controlled by the server manifest and currently defaults to false.
-        /// </summary>
-        public static bool AllowCompressingPackagesOnImport
-        {
-            get
-            {
-                if (_allowCompressingPackageOnImport != null) return _allowCompressingPackageOnImport.Value;
-                if (ServerManifest != null)
-                {
-                    if (ServerManifest.TryGetValue(@"allowcompressingpackagesonimport", out var acpoiStr) && bool.TryParse(acpoiStr, out var acpoiVal))
-                    {
-                        _allowCompressingPackageOnImport = acpoiVal;
-                    }
-                }
-
-                return false;
-            }
-        }
-
         public static string AppVersion
         {
             get
@@ -613,39 +602,6 @@ namespace ME3TweaksModManager
         /// The executable location for this application
         /// </summary>
         public static string ExecutableLocation { get; private set; }
-
-        #region Server Manifest
-        #region Static Property Changed
-
-        public static event PropertyChangedEventHandler StaticPropertyChanged;
-        /// <summary>
-        /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
-        /// Should be called in property setters.
-        /// </summary>
-        /// <typeparam name="T">Type of given property.</typeparam>
-        /// <param name="field">Backing field to update.</param>
-        /// <param name="value">New value of property.</param>
-        /// <param name="propertyName">Name of property.</param>
-        /// <returns>True if success, false if backing field and new value aren't compatible.</returns>
-        private static bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
-            return true;
-        }
-        #endregion
-        private static Dictionary<string, string> _serverManifest;
-        /// <summary>
-        /// The online server manifest that was fetched at boot. If null, the manifest was not fetched
-        /// </summary>
-        public static Dictionary<string, string> ServerManifest
-        {
-            get => _serverManifest;
-            set => SetProperty(ref _serverManifest, value);
-        }
-
-        #endregion
 
         public static List<NexusDomainHandler> NexusDomainHandlers { get; } = new();
 
@@ -718,7 +674,8 @@ namespace ME3TweaksModManager
                 }
                 else
                 {
-                    M3Log.Information(@"Application exiting (duplicate instance)");
+                    // We don't log this anymore cause it causes too many duplicate log files to be opened
+                    //M3Log.Information(@"Application exiting (duplicate instance)");
                 }
 
                 Log.CloseAndFlush();

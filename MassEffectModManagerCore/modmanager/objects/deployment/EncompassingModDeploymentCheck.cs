@@ -21,7 +21,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
         /// <summary>
         /// Validation target for this mod
         /// </summary>
-        internal GameTargetWPF internalValidationTarget { get; set; }
+        internal GameTarget internalValidationTarget { get; set; }
         public bool CheckCancelled { get; set; }
         public bool CanReRun { get; set; }
         public Mod ModBeingDeployed { get; }

@@ -29,7 +29,10 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksCore.Save;
+using ME3TweaksModManager.modmanager.save.game2;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 
 namespace ME3TweaksModManager.modmanager.save.game3
@@ -38,6 +41,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
     [OriginalName("SFXSaveGame")]
     public class SaveFileGame3 : IUnrealSerializable, INotifyPropertyChanged, ISaveFile
     {
+
+        #region Bindable
+        public string BindableBaseLevelName => BaseLevelName;
+        // public Save.DifficultyOptions BindableDifficulty => Difficulty;
+        public DateTime BindableTimestamp => TimeStamp.ToDate();
+        public TimeSpan BindableTimePlayed => TimeSpan.FromSeconds(SecondsPlayed);
+        #endregion
+
         private Endian _Endian;
         private uint _Version;
         private uint _Checksum;
@@ -52,13 +63,17 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Version == 59) return MEGame.ME3; // Also LE3
                 return MEGame.Unknown;
             }
-        } 
-        public string SaveFilePath { get; init; }
+        }
+        public string SaveFilePath { get; set; }
         #region Fields
         public int SaveNumber { get; set; }
+        public string Proxy_TimePlayed => MSaveShared.GetTimePlayed((int)SecondsPlayed);
+        public string Proxy_Difficulty => MSaveShared.GetDifficultyString((int)Difficulty, MEGame.LE3);
+        public bool IsValid { get; set; }
         public ESFXSaveGameType SaveGameType { get; set; }
 
         public IPlayerRecord Proxy_PlayerRecord => Player;
+        public bool Proxy_IsFemale => _Player.Proxy_IsFemale;
         public string Proxy_DebugName => DebugName;
 
         [OriginalName("DebugName")]
@@ -155,6 +170,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public void Serialize(IUnrealStream stream)
         {
+            stream.Serialize(ref this._Version);
             stream.Serialize(ref this._DebugName);
             stream.Serialize(ref this._SecondsPlayed);
             stream.Serialize(ref this._Disc);
@@ -644,85 +660,11 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
         #endregion
 
-        public static SaveFileGame3 Read(Stream input, string fileName = null, MEGame expectedGame = MEGame.Unknown)
-        {
 
-            if (input == null)
-            {
-                throw new ArgumentNullException("input");
-            }
-
-            var save = new SaveFileGame3()
-            {
-                _Version = input.ReadUInt32(),
-                SaveFilePath = fileName
-            };
-
-            if (fileName != null)
-            {
-                // Setup save params
-                var sgName = Path.GetFileNameWithoutExtension(fileName);
-                if (sgName.StartsWith("Save_"))
-                {
-                    // Parse number
-                    var numStr = sgName.Substring(sgName.IndexOf("_") + 1);
-                    if (int.TryParse(numStr, out var saveNum))
-                    {
-                        save.SaveNumber = saveNum;
-                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Manual;
-                    }
-                }
-                else if (sgName.StartsWith("AutoSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
-                }
-                else if (sgName.StartsWith("ChapterSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Chapter;
-                }
-                else if (sgName.StartsWith("QuickSave"))
-                {
-                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
-                }
-            }
-
-            if (save._Version != 29 && save._Version.Swap() != 29 &&
-                save._Version != 59 && save._Version.Swap() != 59)
-            {
-                throw new FormatException("unexpected version");
-            }
-            var endian = save._Version == 29 || save._Version == 59
-                             ? Endian.Little
-                             : Endian.Big;
-            if (endian == Endian.Big)
-            {
-                save._Version = save._Version.Swap();
-            }
-
-            var reader = new UnrealStream(input, true, save._Version);
-            save.Serialize(reader);
-
-            if (save._Version >= 27)
-            {
-                if (input.Position != input.Length - 4)
-                {
-                    throw new FormatException("bad checksum position");
-                }
-
-                save._Checksum = input.ReadUInt32();
-            }
-
-            if (input.Position != input.Length)
-            {
-                throw new FormatException("did not consume entire file");
-            }
-
-            save.Endian = endian;
-            return save;
-        }
 
         public static void Write(SaveFileGame3 save, Stream output)
         {
+            throw new Exception(@"This is not propertly implemented right now");
             if (save == null)
             {
                 throw new ArgumentNullException("save");

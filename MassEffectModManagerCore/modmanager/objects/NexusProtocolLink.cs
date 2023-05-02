@@ -3,9 +3,9 @@
 namespace ME3TweaksModManager.modmanager.objects
 {
     /// <summary>
-    /// C# representation of an nxm:// link
+    /// C# representation of an nxm:// link.
     /// </summary>
-    public class NexusProtocolLink
+    public class NexusProtocolLink : NexusFileInfo
     {
         public static NexusProtocolLink Parse(string link)
         {
@@ -34,18 +34,18 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         /// <summary>
-        /// The original link
+        /// The original NXM link
         /// </summary>
         public string Link { get; set; }
 
+        /// <summary>
+        /// When the key expires
+        /// </summary>
         public int KeyExpiry { get; set; }
 
+        /// <summary>
+        /// The download key, required for download
+        /// </summary>
         public string Key { get; set; }
-
-        public int FileId { get; set; }
-
-        public int ModId { get; set; }
-
-        public string Domain { get; set; }
     }
 }

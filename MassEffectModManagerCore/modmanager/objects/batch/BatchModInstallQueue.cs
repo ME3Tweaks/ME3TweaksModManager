@@ -11,6 +11,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.Helpers;
+using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
 using WinCopies.Util;
 
@@ -70,10 +72,22 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public ObservableCollectionExtended<BatchASIMod> ASIModsToInstall { get; } = new ObservableCollectionExtended<BatchASIMod>();
 
         /// <summary>
+        /// Texture mods that will install at the end of the installation.
+        /// </summary>
+        [JsonIgnore] // This is built after deserialization
+        public ObservableCollectionExtended<MEMMod> TextureModsToInstall { get; } = new ObservableCollectionExtended<MEMMod>();
+
+        /// <summary>
+        /// SERIALIZATION ONLY - Stores the list of MEM file paths befoer they are parsed into TextureModsToInstall
+        /// </summary>
+        [JsonProperty(@"texturemodfiles")]
+        public List<string> SerializeOnly_MEMFilePaths { get; set; }
+
+        /// <summary>
         /// Only used for UI binding!
         /// </summary>
         [JsonIgnore]
-        public ObservableCollectionExtended<object> AllModsToInstall { get; } = new ObservableCollectionExtended<object>();
+        public ObservableCollectionExtended<IBatchQueueMod> AllModsToInstall { get; } = new ObservableCollectionExtended<IBatchQueueMod>();
 
         /// <summary>
         /// USED FOR SAVING/LOADING FILE FROM DISK
@@ -158,9 +172,33 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     mod.AssociateASIObject(modernQueue.Game);
                 }
 
+                // Associate any M3-managed texture mods, otherwise use a basic MEMMod object.
+                if (modernQueue.SerializeOnly_MEMFilePaths != null)
+                {
+                    foreach (var texModPath in modernQueue.SerializeOnly_MEMFilePaths)
+                    {
+                        var matchingM3Entry = M3LoadedMods.GetAllM3ManagedMEMs()
+                            .FirstOrDefault(x =>
+                                x.GetFilePathToMEM().CaseInsensitiveEquals(texModPath)); // Filepath the same!
+                        if (matchingM3Entry == null)
+                        {
+                            MEMMod m = new MEMMod(texModPath);
+                            m.ParseMEMData();
+                            modernQueue.TextureModsToInstall.Add(m);
+                        }
+                        else
+                        {
+                            modernQueue.TextureModsToInstall.Add(matchingM3Entry);
+                        }
+                    }
+                }
+
+                modernQueue.SerializeOnly_MEMFilePaths = null; // Remove this data as it's only used during serialization
+
                 // Populate the full list of mods for UI binding
                 modernQueue.AllModsToInstall.AddRange(modernQueue.ModsToInstall);
                 modernQueue.AllModsToInstall.AddRange(modernQueue.ASIModsToInstall);
+                modernQueue.AllModsToInstall.AddRange(modernQueue.TextureModsToInstall);
 
                 return modernQueue;
             }
@@ -223,7 +261,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// Save this queue to disk
         /// </summary>
         /// <returns></returns>
-        internal string Save(bool canOverwrite)
+        internal string Save(bool canOverwrite, string newName = null)
         {
             // Prepare for save
             foreach (var m in ModsToInstall)
@@ -231,11 +269,15 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 m.PrepareForSave();
             }
 
+            SerializeOnly_MEMFilePaths = TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList(); // Serialize the list
+
             // Commit
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
 
-            var savePath = getSaveName(QueueName, canOverwrite);
+            var savePath = getSaveName(newName ?? QueueName, canOverwrite);
             File.WriteAllText(savePath, json);
+
+            SerializeOnly_MEMFilePaths = null; // Clear
             return savePath;
         }
 
@@ -278,6 +320,20 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             }
         }
 
+        /// <summary>
+        /// If this queue has recorded any options in the chosen values for validation
+        /// </summary>
+        /// <returns></returns>
+        public bool HasAnyRecordedOptions()
+        {
+            foreach (var mod in ModsToInstall)
+            {
+                if (mod.AllChosenOptionsForValidation.Any())
+                    return true;
+            }
+
+            return false;
+        }
     }
 
 }

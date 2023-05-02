@@ -37,6 +37,12 @@ namespace ME3TweaksModManager.modmanager.objects
         /// Targets to plot manager sync after this panel has closed
         /// </summary>
         public ConcurrentHashSet<GameTargetWPF> TargetsToPlotManagerSync { get; } = new();
+
+        /// <summary>
+        /// LE1 targets to run Coalesced merge on after this panel has been closed
+        /// </summary>
+        public ConcurrentHashSet<GameTargetWPF> TargetsToCoalescedMerge { get; } = new();
+
         /// <summary>
         /// Targets to squadmate merge sync when this panel has closed
         /// </summary>
@@ -94,6 +100,7 @@ namespace ME3TweaksModManager.modmanager.objects
             batchPanelResult.TargetsToSquadmateMergeSync.AddRange(TargetsToSquadmateMergeSync);
             batchPanelResult.TargetsToEmailMergeSync.AddRange(TargetsToEmailMergeSync);
             batchPanelResult.TargetsToPlotManagerSync.AddRange(TargetsToPlotManagerSync);
+            batchPanelResult.TargetsToCoalescedMerge.AddRange(TargetsToCoalescedMerge);
             batchPanelResult.TargetsToAutoTOC.AddRange(TargetsToAutoTOC);
             batchPanelResult.ModsToCheckForUpdates.AddRange(ModsToCheckForUpdates);
             if (SelectedTarget != null) batchPanelResult.SelectedTarget = SelectedTarget;

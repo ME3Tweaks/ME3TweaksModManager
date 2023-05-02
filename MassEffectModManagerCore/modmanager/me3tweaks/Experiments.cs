@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.helpers;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks

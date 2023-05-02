@@ -54,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             LoadingInProgress = false;
         }
 
-        public LegendaryExplorerCore.Misc.ObservableCollectionExtended<MemGameDB> Games { get; } = new();
+        public ObservableCollectionExtended<MemGameDB> Games { get; } = new();
 
         private void LoadMEMDBs()
         {
