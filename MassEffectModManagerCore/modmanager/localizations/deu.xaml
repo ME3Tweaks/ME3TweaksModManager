@@ -227,6 +227,8 @@
 	<system:String x:Key="string_anInstallGroupWithThisNameAlreadyExists">Es existiert bereits eine Installationsgruppe mit diesem Namen.</system:String>
 	<system:String x:Key="string_interp_errorDuplicatingInstallGroupX">Fehler beim Duplizieren der Installationsgruppe: {0}</system:String>
 	<system:String x:Key="string_interp_textureModModifiesExportsX" xml:space="preserve">Diese Texturmod modifiziert die folgenden Texturen:\n{0}</system:String>
+        <system:String x:Key="string_gameSelector">Spiel-Selektor</system:String>
+        <system:String x:Key="string_dialog_selectGameInstallGroup">Wähle aus, für welches Spiel eine Installationsgruppe erstellt werden soll.</system:String>
 	<system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">Es ist kein Backup verfügbar, um 2DAs abzufragen.</system:String>
 	<system:String x:Key="string_2da_errorReading2DAs">Fehler beim Lesen der 2DA-Tabellen aus dem Spiel: {0}</system:String>
 	<system:String x:Key="string_errorReadingTables">Fehler beim Lesen von Tabellen</system:String>
@@ -522,6 +524,7 @@
 	<system:String x:Key="string_locateCustomFile">Benutzerdefinierte Datei suchen</system:String>
 	<system:String x:Key="string_interp_dialog_memForDifferentGame">Die ausgewählte .mem-Datei ist nicht für {0}, sondern für {1}. Diese .mem-Datei kann in dieser Installationsgruppe nicht verwendet werden.</system:String>
 	<system:String x:Key="string_wrongGame">Falsches Spiel</system:String>
+        <system:String x:Key="string_selectATextureMod">Wähle eine Textur Mod</system:String>
 	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Während Texturmods installiert sind können keine Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
 	<system:String x:Key="string_cannotRestoreSfarFiles">SFAR-Dateien können nicht wiederhergestellt werden</system:String>
 	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Wenn Dateien wiederhergestellt werden während ein Texturmod installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
@@ -1163,6 +1166,7 @@
 	<system:String x:Key="string_mEMVanillaDatabaseViewer">MEM Vanilla DB Anzeige</system:String>
 	<system:String x:Key="string_viewInformationInTheVanillaDatabaseUsedForBackupVerification">Lasse dir Informationen aus der vanilla Datenbank anzeigen, die für Backupverifikation benutzt wird</system:String>
 	<system:String x:Key="string_textureExportsNotListedInThisMemFile">[Texturexporte sind in dieser .mem-Datei nicht aufgeführt]</system:String>
+        <system:String x:Key="string_textureModsMustBeImportedBeforeUse">Texturmods müssen importiert werden, bevor sie verwendet werden können</system:String>
 	<system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Merge-Mod hat keinen korrekten magischen Header</system:String>
 	<system:String x:Key="string_interp_unsupportedMergeModVersionVersionX">Nicht unterstützte Merge-Mod Version: {0}</system:String>
 	<system:String x:Key="string_interp_invalidMergeModManifestReason" xml:space="preserve">Ungültiges Merge-Mod Manifest:\n{0}</system:String>
