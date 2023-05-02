@@ -1556,6 +1556,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_locateCustomFile = "string_locateCustomFile";
 		public const string string_interp_dialog_memForDifferentGame = "string_interp_dialog_memForDifferentGame";
 		public const string string_wrongGame = "string_wrongGame";
+		public const string string_selectATextureMod = "string_selectATextureMod";
 		public const string string_selectDestinationLocation = "string_selectDestinationLocation";
 		public const string string_packageFile = "string_packageFile";
 		public const string string_interp_fileFetchedAndWrittenToX = "string_interp_fileFetchedAndWrittenToX";
@@ -1711,6 +1712,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_anInstallGroupWithThisNameAlreadyExists = "string_anInstallGroupWithThisNameAlreadyExists";
 		public const string string_interp_errorDuplicatingInstallGroupX = "string_interp_errorDuplicatingInstallGroupX";
 		public const string string_interp_textureModModifiesExportsX = "string_interp_textureModModifiesExportsX";
+		public const string string_gameSelector = "string_gameSelector";
+		public const string string_dialog_selectGameInstallGroup = "string_dialog_selectGameInstallGroup";
 		public const string string_notConfigured = "string_notConfigured";
 		public const string string_reconfigurationRequired = "string_reconfigurationRequired";
 		public const string string_interp_configuredTimestamp = "string_interp_configuredTimestamp";
@@ -2112,6 +2115,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_im3v_missingRequiredImageParameter = "string_interp_im3v_missingRequiredImageParameter";
 		public const string string_interp_im3v_nonExistentImageReference = "string_interp_im3v_nonExistentImageReference";
 		public const string string_textureExportsNotListedInThisMemFile = "string_textureExportsNotListedInThisMemFile";
+		public const string string_textureModsMustBeImportedBeforeUse = "string_textureModsMustBeImportedBeforeUse";
 		public const string string_interp_valueMustBeIntegerGreaterThanZero = "string_interp_valueMustBeIntegerGreaterThanZero";
 		public const string string_interp_headmorphsCannotDependOnIncludedDLC = "string_interp_headmorphsCannotDependOnIncludedDLC";
 		public const string string_textureLibrary = "string_textureLibrary";

@@ -1975,6 +1975,7 @@
     <system:String x:Key="string_interp_dialog_memForDifferentGame">The selected .mem file is not for {0} - it is for {1}. This .mem file cannot be used in this install group.</system:String>
     <!-- 0={SelectedGame} 1={memFileGame} -->
     <system:String x:Key="string_wrongGame">Wrong game</system:String>
+    <system:String x:Key="string_selectATextureMod">Select a texture mod</system:String>
 
     <!-- Backup File Fetcher (Devs only) -->
     <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
@@ -2182,6 +2183,8 @@
     <!-- 0={Error message -->
     <system:String xml:space="preserve" x:Key="string_interp_textureModModifiesExportsX">This texture mod modifies the following textures:\n{0}</system:String>
     <!-- 0={A list of texture export names, in bullet point form} -->
+    <system:String x:Key="string_gameSelector">Game selector</system:String>
+    <system:String x:Key="string_dialog_selectGameInstallGroup">Select which game to create an install group for.</system:String>
 
     <!-- Batch Mod class -->
     <system:String x:Key="string_notConfigured">Not configured</system:String>
@@ -2773,6 +2776,7 @@
 
     <!-- MEMMod -->
     <system:String x:Key="string_textureExportsNotListedInThisMemFile">[texture exports not listed in this .mem file]</system:String>
+    <system:String x:Key="string_textureModsMustBeImportedBeforeUse">Texture mods must be imported before they can be used</system:String>
 
     <!-- M3HeadMorph -->
     <system:String x:Key="string_interp_valueMustBeIntegerGreaterThanZero">{0} value must be an integer greater than 0.</system:String>

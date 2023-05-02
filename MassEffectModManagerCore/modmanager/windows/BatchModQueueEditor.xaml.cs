@@ -527,7 +527,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public void OnSelectedAvailableMEMModChanged()
         {
-            AvailableModText = SelectedAvailableMEMMod?.GetDescription() ?? "Select a texture mod";
+            AvailableModText = SelectedAvailableMEMMod?.GetDescription() ?? M3L.GetString(M3L.string_selectATextureMod);
         }
 
         public void OnSelectedTabIndexChanged()

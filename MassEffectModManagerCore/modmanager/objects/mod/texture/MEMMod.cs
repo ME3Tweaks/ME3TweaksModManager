@@ -135,7 +135,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         {
             if (IsInArchive)
             {
-                return "Texture mods must be imported before they can be used";
+                return M3L.GetString(M3L.string_textureModsMustBeImportedBeforeUse);
             }
             var modifiedExports = GetModifiedExportNames();
             var exportNotListed = M3L.GetString(M3L.string_textureExportsNotListedInThisMemFile);
@@ -255,3 +255,4 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         }
     }
 }
+    
