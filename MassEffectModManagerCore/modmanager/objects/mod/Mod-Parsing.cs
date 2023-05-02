@@ -650,7 +650,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // After name and site are loaded, we now check if we can parse it, as these attributes have been always supported.
             // LE1DP shipped with 8.1 as the value before 8.1 was ever even submitted for beta testing; this needs removed eventually //04/01/2023
-            if (parsedModCmmVer > App.HighestSupportedModDesc && ModName != @"LE1 Diversification Project")
+            // LE1DP workaround removed 05/02/2023
+            if (parsedModCmmVer > App.HighestSupportedModDesc)
             {
                 M3Log.Error(@"The cmmver specified by this mod is higher than the version supported by this build of ME3Tweaks Mod Manager. You may need to update Mod Manager for this mod to load.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_unsupportedModdescVersion, parsedModCmmVer, App.HighestSupportedModDesc);
