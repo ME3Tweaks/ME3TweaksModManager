@@ -37,7 +37,7 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information about the squadmate merge feature, and how to use it so you can add outfits without replacing existing ones for Mass Effect 3 (OT + LE)
 - [Adding emails in Game 2 using Game 2 Email Merge](game2_email_merge.md)
    - Contains information on using the Game 2 email merge feature
-- [M3 Config Delta (M3CD) - Merging config files in Legendary Edition](configmerge.md)
+- [M3 Config Delta (M3CD) - Merging config files in Legendary Edition](configdelta.md)
    - Contains information on using the M3CD feature, which allows LE1 basegame Coalesced changes, and delta changes to LE2/LE3 DLC configuration files upon installation
 
 Mod Manager includes a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
