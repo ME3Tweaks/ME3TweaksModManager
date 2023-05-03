@@ -21,7 +21,7 @@ Since these games support config merge natively via DLC, using .m3cd files allow
 ## M3CD format
 M3CD files are basic ini files that must follow the following specification in order to work.
 
-- They must be named in the following format: `ConfigMerge-*.m3cd`, where * is whatever you want. If your file does not match this name, Mod Manger will ignore it.
+- They must be named in the following format: `ConfigDelta-*.m3cd`, where * is whatever you want. If your file does not match this name, Mod Manger will ignore it.
 - Section headers in this ini file use the following format:
    - [INIFILENAME SECTIONAME]
    - For example, `[BioUI.ini sfxgame.biosfhandler_browserwheel]`
