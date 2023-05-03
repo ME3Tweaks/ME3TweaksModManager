@@ -1262,7 +1262,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
                         byte[] decomp = new byte[chunk.UncompressedSize];
                         var result = Zlib.Decompress(stream.Stream.ReadToBuffer(chunk.CompressedSize), decomp);
                         if (result != chunk.UncompressedSize)
-                            Debug.WriteLine("uh oh");
+                            Debug.WriteLine(@"uh oh");
                         uncompressedSaveData.Write(decomp);
                     }
 
@@ -1271,8 +1271,8 @@ namespace ME3TweaksModManager.modmanager.save.le1
 #if DEBUG
                     // You can edit this to save the decompressed data to a file for testing.
                     //uncompressedSaveData.WriteToFile(@"B:\UserProfile\Documents\BioWare\Mass Effect Legendary Edition\Save\ME1\Jlock00\Jlock_00_01.decompressed");
-                    //stream = new UnrealStream(uncompressedSaveData, true, stream.Version);
 #endif
+                    stream = new UnrealStream(uncompressedSaveData, true, stream.Version);
                 }
                 else
                 {

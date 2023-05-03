@@ -132,7 +132,6 @@ namespace ME3TweaksModManager.modmanager.save
                 }
             }
 
-
             var reader = new UnrealStream(input, true, saveVersion);
             save.Serialize(reader);
 
