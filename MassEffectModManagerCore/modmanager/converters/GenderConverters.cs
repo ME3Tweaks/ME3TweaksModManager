@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 using FontAwesome5;
+using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.converters
 {
@@ -17,10 +18,10 @@ namespace ME3TweaksModManager.modmanager.converters
         {
             if (value is bool isFemale)
             {
-                return isFemale ? "Female" : "Male";
+                return isFemale ? M3L.GetString(M3L.string_female) : M3L.GetString(M3L.string_male);
             }
             // Something is wrong, data should be a bool
-            return "Undefined";
+            return M3L.GetString(M3L.string_undefined);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

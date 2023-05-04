@@ -49,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.save
 
             if (input == null)
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(@"input");
             }
 
             ISaveFile save = null;
@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.save
                     else
                     {
                         // Parse number
-                        var numStr = sgName.Substring(sgName.LastIndexOf("_") + 1);
+                        var numStr = sgName.Substring(sgName.LastIndexOf(@"_") + 1);
                         if (int.TryParse(numStr, out var saveNum))
                         {
                             save.SaveNumber = saveNum;
@@ -110,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.save
                     if (sgName.StartsWith(@"Save_"))
                     {
                         // Parse number
-                        var numStr = sgName.Substring(sgName.IndexOf("_") + 1);
+                        var numStr = sgName.Substring(sgName.IndexOf(@"_") + 1);
                         if (int.TryParse(numStr, out var saveNum))
                         {
                             save.SaveNumber = saveNum;
@@ -149,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.save
             {
                 save.IsValid = false;
 #if DEBUG
-                throw new FormatException("did not consume entire file");
+                throw new FormatException(@"did not consume entire file");
 #endif
             }
 
