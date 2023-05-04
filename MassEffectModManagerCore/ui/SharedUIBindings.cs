@@ -43,7 +43,7 @@ namespace ME3TweaksModManager.ui
             obj.SetValue(VisibilityToEnabledProperty, value);
         }
         public static readonly DependencyProperty VisibilityToEnabledProperty =
-            DependencyProperty.RegisterAttached("VisibilityToEnabled", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnVisibilityToEnabledChanged));
+            DependencyProperty.RegisterAttached(@"VisibilityToEnabled", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnVisibilityToEnabledChanged));
 
         private static void OnVisibilityToEnabledChanged(object sender, DependencyPropertyChangedEventArgs args)
         {
@@ -75,7 +75,7 @@ namespace ME3TweaksModManager.ui
             obj.SetValue(GenerationOTProperty, value);
         }
         public static readonly DependencyProperty GenerationOTProperty =
-            DependencyProperty.RegisterAttached("GenerationOT", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnGenerationOTVisibilityChanged));
+            DependencyProperty.RegisterAttached(@"GenerationOT", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnGenerationOTVisibilityChanged));
 
         private static void OnGenerationOTVisibilityChanged(object sender, DependencyPropertyChangedEventArgs args)
         {
@@ -111,7 +111,7 @@ namespace ME3TweaksModManager.ui
             obj.SetValue(GenerationDevModeOTProperty, value);
         }
         public static readonly DependencyProperty GenerationDevModeOTProperty =
-            DependencyProperty.RegisterAttached("GenerationDevModeOT", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnGenerationDevModeOTVisibilityChanged));
+            DependencyProperty.RegisterAttached(@"GenerationDevModeOT", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnGenerationDevModeOTVisibilityChanged));
 
         private static void OnGenerationDevModeOTVisibilityChanged(object sender, DependencyPropertyChangedEventArgs args)
         {
@@ -153,7 +153,7 @@ namespace ME3TweaksModManager.ui
             obj.SetValue(GenerationLEProperty, value);
         }
         public static readonly DependencyProperty GenerationLEProperty =
-            DependencyProperty.RegisterAttached("GenerationLE", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnGenerationLEVisibilityChanged));
+            DependencyProperty.RegisterAttached(@"GenerationLE", typeof(bool), typeof(SharedUIBindings), new PropertyMetadata(false, OnGenerationLEVisibilityChanged));
 
         private static void OnGenerationLEVisibilityChanged(object sender, DependencyPropertyChangedEventArgs args)
         {

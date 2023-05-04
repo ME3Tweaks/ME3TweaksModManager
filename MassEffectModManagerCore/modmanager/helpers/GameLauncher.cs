@@ -10,7 +10,7 @@ using ME3TweaksCore.Services;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
-using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.save.shared;
 using ME3TweaksModManager.modmanager.windows.input;
 
 namespace ME3TweaksModManager.modmanager.helpers

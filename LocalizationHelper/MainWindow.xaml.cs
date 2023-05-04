@@ -47,6 +47,15 @@ namespace LocalizationHelper
                 var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
                 var rootLen = modmanagerroot.Length + 1;
                 //localizable folders
+                var ui = Path.Combine(modmanagerroot, "ui");
+                var mmBase = Path.Combine(modmanagerroot, "modmanager");
+                var deployment = Path.Combine(modmanagerroot, "modmanager", "deployment");
+                var diagnostics = Path.Combine(modmanagerroot, "modmanager", "diagnostics");
+                var exceptions = Path.Combine(modmanagerroot, "modmanager", "exceptions");
+                var importer = Path.Combine(modmanagerroot, "modmanager", "importer");
+                var loaders = Path.Combine(modmanagerroot, "modmanager", "loaders");
+                var meim = Path.Combine(modmanagerroot, "modmanager", "meim");
+                var starterkit = Path.Combine(modmanagerroot, "modmanager", "starterkit");
                 var usercontrols = Path.Combine(modmanagerroot, "modmanager", "usercontrols");
                 var converters = Path.Combine(modmanagerroot, "modmanager", "converters");
                 var windows = Path.Combine(modmanagerroot, "modmanager", "windows");
@@ -56,9 +65,17 @@ namespace LocalizationHelper
                 var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
                 var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
                 var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
+                var merge = Path.Combine(modmanagerroot, "modmanager", "merge");
+                var save = Path.Combine(modmanagerroot, "modmanager", "save");
+                var headmorph = Path.Combine(modmanagerroot, "modmanager", "headmorph");
 
+                // Top folder only
+                files.AddRange(Directory.EnumerateFiles(mmBase, "*.cs", SearchOption.TopDirectoryOnly).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(ui, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(converters, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                // Contains some non .xaml.cs files
+                files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(usercontrols, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(windows, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
@@ -66,6 +83,21 @@ namespace LocalizationHelper
                 files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(pmu, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+
+                files.AddRange(Directory.EnumerateFiles(diagnostics, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(exceptions, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(importer, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(loaders, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(meim, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(deployment, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(starterkit, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(headmorph, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(merge, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                
+                // Top folder only
+                files.AddRange(Directory.EnumerateFiles(save, "*.cs", SearchOption.TopDirectoryOnly).Select(x => x.Substring(rootLen)));
+
+
 
                 //these files are not localized
                 files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
@@ -79,6 +111,20 @@ namespace LocalizationHelper
                 files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
                 files.Add(Path.Combine(modmanagerroot, "modmanager", "squadmates", "SQMOutfitMerge.cs").Substring(rootLen));
                 //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+
+                if (true)
+                {
+                    var allFiles = Directory.GetFiles(modmanagerroot, @"*.cs", SearchOption.AllDirectories)
+                        .Select(x => x.Substring(rootLen)).ToList();
+                    var notLocalizedFiles = allFiles.Except(files);
+                    foreach (var f in notLocalizedFiles)
+                    {
+                        if (f.StartsWith(@"obj\")) continue;
+                        if (f.StartsWith(@"modmanager\save\game2")) continue;
+                        if (f.StartsWith(@"modmanager\save\game3")) continue;
+                        Debug.WriteLine(f);
+                    }
+                }
             }
             else
             {
@@ -214,7 +260,7 @@ namespace LocalizationHelper
                         localizations[directionstext] = $"string_{toCamelCase(directionstext)}";
                         //item.Attribute("directionstext").Value = $"{{DynamicResource {localizations[directionstext]}}}";
                     }
-                    
+
 
                     if (text != null && !text.StartsWith("{")
                                      && text.Length > 1
@@ -299,6 +345,11 @@ namespace LocalizationHelper
             return (preserveWhitespace, keyVal);
         }
 
+        /// <summary>
+        /// Pulls localizable strings from a .cs file and puts them into the interface
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PullStringsFromCS(object sender, RoutedEventArgs e)
         {
             var regex = "([$@]*(\".+?\"))";

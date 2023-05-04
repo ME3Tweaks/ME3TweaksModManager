@@ -1029,6 +1029,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_blacklistedMod = "string_blacklistedMod";
 		public const string string_description_blacklistedMod = "string_description_blacklistedMod";
 		public const string string_interp_errorCreatingModFolderX = "string_interp_errorCreatingModFolderX";
+		public const string string_invalidServerModdesc = "string_invalidServerModdesc";
 		public const string string_modupdatesavailable = "string_modupdatesavailable";
 		public const string string_downloadUpdate = "string_downloadUpdate";
 		public const string string_downloadUpdateFromNexusMods = "string_downloadUpdateFromNexusMods";
@@ -2074,6 +2075,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_addingStartupFile = "string_interp_addingStartupFile";
 		public const string string_interp_addedStartupFile = "string_interp_addedStartupFile";
 		public const string string_interp_failedToAddStartupFileX = "string_interp_failedToAddStartupFileX";
+		public const string string_interp_sk_sqmNoBackup = "string_interp_sk_sqmNoBackup";
+		public const string string_interp_sk_sqmBackupMissingRequiredFile = "string_interp_sk_sqmBackupMissingRequiredFile";
 		public const string string_tooltip_loadAllSaves = "string_tooltip_loadAllSaves";
 		public const string string_loadAllSavesMayUseALotOfMemory = "string_loadAllSavesMayUseALotOfMemory";
 		public const string string_selectThisSave = "string_selectThisSave";

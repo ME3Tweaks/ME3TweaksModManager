@@ -10,6 +10,7 @@ using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.Save;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats.Save;
+using ME3TweaksModManager.modmanager.save.shared;
 using Microsoft.WindowsAPICodePack.Sensors;
 using Microsoft.WindowsAPICodePack.Win32Native.NamedPipe;
 using Vector = ME3TweaksModManager.modmanager.save.game2.FileFormats.Save.Vector;

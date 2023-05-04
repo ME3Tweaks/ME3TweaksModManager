@@ -29,7 +29,7 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
         private static readonly List<MemoryAnalyzerObject> TrackedMemoryObjects = new List<MemoryAnalyzerObject>();
 
         //All calls to this method will be removed in release builds
-        [Conditional("DEBUG")]
+        [Conditional(@"DEBUG")]
         public static void AddTrackedMemoryItem(string objectname, object reference)
         {
             //Force concurrency
@@ -110,8 +110,8 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
             TrackedMemoryObjects.Where(x => !x.IsAlive()).ToList().ForEach(x => x.RemainingLifetimeAfterGC--);
             TrackedMemoryObjects.RemoveAll(x => !x.IsAlive() && x.RemainingLifetimeAfterGC < 0);
             InstancedTrackedMemoryObjects.ReplaceAll(TrackedMemoryObjects);
-            LastRefreshText = "Last refreshed: " + DateTime.Now;
-            CurrentMemoryUsageText = "Current process allocation: " + FileSize.FormatSize(System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64);
+            LastRefreshText = @"Last refreshed: " + DateTime.Now;
+            CurrentMemoryUsageText = @"Current process allocation: " + FileSize.FormatSize(System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64);
 
             LargeInUseStr = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.LargePoolInUseSize);
             LargeFreeStr = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.LargePoolFreeSize);
@@ -168,17 +168,17 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
                     {
                         if (Reference.Target is FrameworkElement w)
                         {
-                            return w.IsLoaded ? "In Memory, Open" : "In Memory, Closed";
+                            return w.IsLoaded ? @"In Memory, Open" : @"In Memory, Closed";
                         }
                         else if (Reference.Target is Stream s)
                         {
-                            return s.CanRead ? "In Memory, Open" : "In Memory, Disposed";
+                            return s.CanRead ? @"In Memory, Open" : @"In Memory, Disposed";
                         }
-                        return "In Memory";
+                        return @"In Memory";
                     }
                     else
                     {
-                        return "Garbage Collected";
+                        return @"Garbage Collected";
                     }
                 }
             }
