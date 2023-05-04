@@ -487,7 +487,6 @@
     <system:String x:Key="string_textureModsImported">Texture mod(s) imported</system:String>
     <system:String x:Key="string_mergingCoalescedFiles">Merging coalesced files</system:String>
     <system:String x:Key="string_mergedCoalescedFiles">Merged coalesced files</system:String>
-    <system:String x:Key="string_massEfectModderFiles">Mass Efect Modder files</system:String>
     <system:String x:Key="string_selectMemFile">Select .mem file</system:String>
     <system:String x:Key="string_interp_headmorphRequiresDLCCouldNotDetermine">This headmorph requires {0} version {1} or higher to be installed, but Mod Manager could not determine the installed version. Install {0} with Mod Manager, then install this headmorph.</system:String>
     <!-- 0={Mod name} 1={version string} 2={version string} -->
@@ -503,7 +502,7 @@
     <!-- 0={game} -->
     <system:String x:Key="string_gameNotAvailable">Game not available</system:String>
     <system:String x:Key="string_unsupportedGame">Unsupported game</system:String>
-    <system:String x:Key="string_prerequesiteNotMet">Prerequesite not met</system:String>
+    <system:String x:Key="string_prerequesiteNotMet">Prerequisite not met</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -1320,7 +1319,7 @@
     <system:String x:Key="string_errorAuthenticatingToNexusMods">Error authenticating to NexusMods</system:String>
     <system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager has built-in support for NexusMods features such as endorsements, update detection, and 'Download with Manager'. You must login to NexusMods with ME3Tweaks Mod Manager to use these features.</system:String>
     <system:String x:Key="string_directions">Directions</system:String>
-    <system:String x:Key="string_nexusModsDirections">Sign into NexusMods by clicking the "Authenicate with NexusMods" button below. Alternatively, you can manually authorize by pasting your NexusMods API key in after checking "Manually enter API key". Your API key can be found on your account settings on NexusMods.</system:String>
+    <system:String x:Key="string_nexusModsDirections">Sign into NexusMods by clicking the "Authenticate with NexusMods" button below. Alternatively, you can manually authorize by pasting your NexusMods API key in after checking "Manually enter API key". Your API key can be found on your account settings on NexusMods.</system:String>
     <system:String x:Key="string_caution">Caution</system:String>
     <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>

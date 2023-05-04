@@ -4646,7 +4646,7 @@ namespace ME3TweaksModManager
 
         private void InstallMEMFile()
         {
-            string filter = M3L.GetString(M3L.string_massEfectModderFiles) + @"|*.mem";
+            string filter = M3L.GetString(M3L.string_massEffectModderFiles) + @"|*.mem";
             OpenFileDialog m = new OpenFileDialog
             {
                 Title = M3L.GetString(M3L.string_selectMemFile),
