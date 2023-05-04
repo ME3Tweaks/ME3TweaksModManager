@@ -2791,4 +2791,19 @@
     <system:String xml:space="preserve" x:Key="string_interp_XpartOfTextureLibrary">{0}\n\nPart of the texture library</system:String>
     <!-- 0={Description (written by dev)} -->
 
+    <!-- Gender Converter -->
+    <system:String x:Key="string_undefined">Undefined</system:String>
+    <!-- This can just be generic 'undefined' value. In this instance, it is when gender value is not 0 or 1, unlikely to ever be encountered-->
+
+    <!-- Save Type Converter -->
+    <system:String x:Key="string_autoSave">Auto Save</system:String>
+    <system:String x:Key="string_quickSave">Quick Save</system:String>
+    <system:String x:Key="string_restartMission">Restart Mission</system:String>
+    <system:String x:Key="string_interp_saveX">Save {0}</system:String>
+    <!-- 0={Number} -->
+    <system:String x:Key="string_exportSave">Export Save</system:String>
+    <system:String x:Key="string_legendSave">Legend Save</system:String>
+    <system:String x:Key="string_interp_unknownSaveTypeX">Unknown save type: {0}</system:String>
+    <!-- 0={Number or string} -->
+
 </ResourceDictionary>

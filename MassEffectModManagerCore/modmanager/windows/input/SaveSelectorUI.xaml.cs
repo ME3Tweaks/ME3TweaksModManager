@@ -19,10 +19,11 @@ using LegendaryExplorerCore.Unreal.Classes;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.converters;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save;
-using ME3TweaksModManager.modmanager.save.game2.UI;
 
 namespace ME3TweaksModManager.modmanager.windows.input
 {
@@ -237,7 +238,8 @@ namespace ME3TweaksModManager.modmanager.windows.input
         }
 
 
-        private string LangCode = @"INT"; // Todo: Support changing this
+        private string LangCode = Settings.Language.ToUpper();
+
         private List<ME2ME3LazyTLK> TlkFiles { get; } = new();
         private List<ME1TalkFile> TlkFilesLE1 { get; } = new();
         private void LoadTLKs()
@@ -248,7 +250,16 @@ namespace ME3TweaksModManager.modmanager.windows.input
                 // oh lord.
 
                 // Load basegame
-                var baseTlk = LoadTlkFromPackage(Path.Combine(Target.GetCookedPath(), $@"Startup_{LangCode}.pcc"), @"GlobalTlk.GlobalTlk_tlk");
+                var baseTlk = LoadTlkFromPackage(Path.Combine(Target.GetCookedPath(), $@"Startup_{GameLanguage.ConvertModManagerLocToGameLoc(LangCode, MEGame.LE1)}.pcc"), @"GlobalTlk.GlobalTlk_tlk");
+                if (baseTlk == null && LangCode != @"INT")
+                {
+                    M3Log.Information($@"Could not find Startup_{LangCode}.pcc, changing over to INT");
+                    // Force onto INT - localized startup package was not found 
+                    // Game may be in different lang than M3
+                    LangCode = @"INT";
+                    baseTlk = LoadTlkFromPackage(Path.Combine(Target.GetCookedPath(), $@"Startup_{LangCode}.pcc"), @"GlobalTlk.GlobalTlk_tlk");
+                }
+
                 if (baseTlk != null)
                     TlkFilesLE1.Add(baseTlk);
 
@@ -288,9 +299,29 @@ namespace ME3TweaksModManager.modmanager.windows.input
             else if (Target.Game.IsGame2() || Target.Game.IsGame3())
             {
                 // Load basegame
+                var baseTlkPath = Path.Combine(Target.GetCookedPath(), $@"BIOGame_{LangCode}.tlk");
                 var baseTlk = new ME2ME3LazyTLK();
-                baseTlk.LoadTlkData(Path.Combine(Target.GetCookedPath(), $@"BIOGame_{LangCode}.tlk"));
-                TlkFiles.Add(baseTlk);
+                if (!File.Exists(baseTlkPath))
+                {
+                    if (LangCode != @"INT")
+                    {
+                        M3Log.Information($@"Could not find BIOGame_{LangCode}.tlk, changing over to INT");
+                        // Force onto INT - tlk
+                        // Game may be in different lang than M3
+                        LangCode = @"INT";
+                        baseTlkPath = Path.Combine(Target.GetCookedPath(), $@"BIOGame_{LangCode}.tlk");
+                    }
+                }
+
+                if (File.Exists(baseTlkPath))
+                {
+                    baseTlk.LoadTlkData(Path.Combine(Target.GetCookedPath(), $@"BIOGame_{LangCode}.tlk"));
+                    TlkFiles.Add(baseTlk);
+                }
+                else
+                {
+                    M3Log.Warning($@"Could not find basegame TLK: {baseTlkPath}, we will not load strings from this file");
+                }
 
                 // Load DLC
                 var dlcs = Target.GetInstalledDLCByMountPriority();
@@ -310,6 +341,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
 
         private ME1TalkFile LoadTlkFromPackage(string filePath, string instancedFullPath)
         {
+            if (!File.Exists(filePath)) return null;
             using var pack = MEPackageHandler.UnsafePartialLoad(filePath, x => x.ClassName == @"BioTlkFile");
             var tlk = pack.FindExport(instancedFullPath);
             if (tlk != null)

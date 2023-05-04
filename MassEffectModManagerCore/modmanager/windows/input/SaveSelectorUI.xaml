@@ -1,5 +1,5 @@
 ﻿<Window
-    x:Class="ME3TweaksModManager.modmanager.windows.input.SaveSelectorUI" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:ui="clr-namespace:ME3TweaksModManager.modmanager.save.game2.UI" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:save="clr-namespace:ME3TweaksModManager.modmanager.save"
+    x:Class="ME3TweaksModManager.modmanager.windows.input.SaveSelectorUI" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:save="clr-namespace:ME3TweaksModManager.modmanager.save"
     xmlns:input="clr-namespace:ME3TweaksModManager.modmanager.windows.input"
     mc:Ignorable="d"
     WindowStartupLocation="CenterOwner"
@@ -19,9 +19,7 @@
             x:Key="GenderToIconConverter" />
         <converters:GenderToStringConverter
             x:Key="GenderToStringConverter" />
-        <ui:DifficultyStringConverter
-            x:Key="DifficultyStringConverter" />
-        <ui:SaveGameNameConverter
+        <converters:SaveGameNameConverter
             x:Key="SaveGameNameConverter" />
         <converters:BoolToVisibilityConverter
             x:Key="BoolToVisibilityConverter" />
@@ -217,6 +215,7 @@
                 Text="{Binding SelectedLevelText}"
                 FontWeight="Bold"
                 FontSize="24"
+                TextWrapping="Wrap"
                 Margin="0,10" />
             <Image
                 Source="{Binding CurrentSaveImage}" />

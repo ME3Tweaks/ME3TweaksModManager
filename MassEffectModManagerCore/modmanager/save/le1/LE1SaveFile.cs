@@ -1262,14 +1262,16 @@ namespace ME3TweaksModManager.modmanager.save.le1
                         byte[] decomp = new byte[chunk.UncompressedSize];
                         var result = Zlib.Decompress(stream.Stream.ReadToBuffer(chunk.CompressedSize), decomp);
                         if (result != chunk.UncompressedSize)
-                            Debug.WriteLine("uh oh");
+                            Debug.WriteLine(@"uh oh");
                         uncompressedSaveData.Write(decomp);
                     }
 
                     uncompressedSaveData.Position = 0;
 
+#if DEBUG
                     // You can edit this to save the decompressed data to a file for testing.
-                    uncompressedSaveData.WriteToFile(@"B:\UserProfile\Documents\BioWare\Mass Effect Legendary Edition\Save\ME1\Jlock00\Jlock_00_01.decompressed");
+                    //uncompressedSaveData.WriteToFile(@"B:\UserProfile\Documents\BioWare\Mass Effect Legendary Edition\Save\ME1\Jlock00\Jlock_00_01.decompressed");
+#endif
                     stream = new UnrealStream(uncompressedSaveData, true, stream.Version);
                 }
                 else
@@ -1309,7 +1311,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
         // ISaveFile for unified interface
         public MEGame Game => MEGame.LE1;
         public string SaveFilePath { get; set; }
-        public DateTime Proxy_TimeStamp => TimeStamp.ToDate(); 
+        public DateTime Proxy_TimeStamp => TimeStamp.ToDate();
         public string Proxy_TimePlayed => MSaveShared.GetTimePlayed(SecondsPlayed);
         public string Proxy_Difficulty => MSaveShared.GetDifficultyString(PlayerData.GameOptions[0], MEGame.LE1);
         public bool Proxy_IsFemale => PlayerData?.Proxy_IsFemale ?? false;

@@ -3,10 +3,11 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.save;
 
-namespace ME3TweaksModManager.modmanager.save.game2.UI
+namespace ME3TweaksModManager.modmanager.converters
 {
-    [Localizable(false)]
     public class SaveGameNameConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -24,16 +25,20 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             switch (sf.SaveGameType)
             {
                 case ESFXSaveGameType.SaveGameType_Auto:
-                    return "Auto Save";
+                    return M3L.GetString(M3L.string_autoSave);
                 case ESFXSaveGameType.SaveGameType_Quick:
-                    return "Quick Save";
+                    return M3L.GetString(M3L.string_quickSave);
                 case ESFXSaveGameType.SaveGameType_Chapter:
-                    return "Restart Mission";
+                    return M3L.GetString(M3L.string_restartMission);
                 case ESFXSaveGameType.SaveGameType_Manual:
-                    return $"Save {sf.SaveNumber}";
+                    return M3L.GetString(M3L.string_interp_saveX, sf.SaveNumber);
+                case ESFXSaveGameType.SaveGameType_Export:
+                    return M3L.GetString(M3L.string_exportSave);
+                case ESFXSaveGameType.SaveGameType_Legend:
+                    return M3L.GetString(M3L.string_legendSave);
             }
 
-            return $"Unknown save type: {sf.SaveGameType}";
+            return M3L.GetString(M3L.string_interp_unknownSaveTypeX, sf.SaveGameType);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -2121,5 +2121,13 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_textureLibrary = "string_textureLibrary";
 		public const string string_interp_XpartOfY = "string_interp_XpartOfY";
 		public const string string_interp_XpartOfTextureLibrary = "string_interp_XpartOfTextureLibrary";
+		public const string string_undefined = "string_undefined";
+		public const string string_autoSave = "string_autoSave";
+		public const string string_quickSave = "string_quickSave";
+		public const string string_restartMission = "string_restartMission";
+		public const string string_interp_saveX = "string_interp_saveX";
+		public const string string_exportSave = "string_exportSave";
+		public const string string_legendSave = "string_legendSave";
+		public const string string_interp_unknownSaveTypeX = "string_interp_unknownSaveTypeX";
 	}
 }

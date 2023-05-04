@@ -1,14 +1,9 @@
 ﻿using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.modmanager.save;
-using ME3TweaksModManager.modmanager.save.game2.UI;
 using ME3TweaksModManager.modmanager.squadmates;
 using SevenZip;
 

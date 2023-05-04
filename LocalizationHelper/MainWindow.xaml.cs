@@ -48,6 +48,7 @@ namespace LocalizationHelper
                 var rootLen = modmanagerroot.Length + 1;
                 //localizable folders
                 var usercontrols = Path.Combine(modmanagerroot, "modmanager", "usercontrols");
+                var converters = Path.Combine(modmanagerroot, "modmanager", "converters");
                 var windows = Path.Combine(modmanagerroot, "modmanager", "windows");
                 var me3tweaks = Path.Combine(modmanagerroot, "modmanager", "me3tweaks");
                 var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
@@ -56,6 +57,7 @@ namespace LocalizationHelper
                 var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
                 var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
 
+                files.AddRange(Directory.EnumerateFiles(converters, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(windows, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
