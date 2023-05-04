@@ -682,15 +682,14 @@
 	<system:String x:Key="string_textureLibrary">Texturbibliothek</system:String>
 	<system:String x:Key="string_interp_XpartOfY" xml:space="preserve">{0}\n\nTeil von {1}</system:String>
 	<system:String x:Key="string_interp_XpartOfTextureLibrary" xml:space="preserve">{0}\n\nTeil der Texturbibliothek</system:String>
-//--- Pending ---    
-    <system:String x:Key="string_undefined">Undefiniert</system:String>
-    <system:String x:Key="string_autoSave">Auto Save</system:String>
-    <system:String x:Key="string_quickSave">Quick Save</system:String>
-    <system:String x:Key="string_restartMission">Mission neu starten</system:String>
-    <system:String x:Key="string_interp_saveX">Spielstand {0}</system:String>
-    <system:String x:Key="string_exportSave">Spielstand Exportieren</system:String>
-    <system:String x:Key="string_legendSave">Legend Save</system:String>
-    <system:String x:Key="string_interp_unknownSaveTypeX">Unbekannter Spielstandtyp: {0}</system:String>
+        <system:String x:Key="string_undefined">Undefiniert</system:String>
+        <system:String x:Key="string_autoSave">Automatisches Speichern</system:String>
+        <system:String x:Key="string_quickSave">Schnellspeicherung</system:String>
+        <system:String x:Key="string_restartMission">Mission neu starten</system:String>
+        <system:String x:Key="string_interp_saveX">Spielstand {0}</system:String>
+        <system:String x:Key="string_exportSave">Spielstand Exportieren</system:String>
+        <system:String x:Key="string_legendSave">Legendenspielstand</system:String>
+        <system:String x:Key="string_interp_unknownSaveTypeX">Unbekannter Spielstandtyp: {0}</system:String>
 	<system:String x:Key="string_AvailableMods">Mod-Bibliothek</system:String>
 	<system:String x:Key="string_Language">Sprache</system:String>
 	<system:String x:Key="string_Actions">Aktionen</system:String>
@@ -1306,7 +1305,7 @@
 	<system:String x:Key="string_blacklistedMod">Gesperrter Mod</system:String>
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Die Entwickler von ME3Tweaks Mod Manager haben diese Datei aus einer der folgenden Gründe gesperrt:\n - Der/die Mod(s) in dieser Datei funktionieren bekanntermaßen nicht und wurden von ihrem Autor aufgegeben\n - Der/die Mod(s) in dieser Datei sind destruktiv für das Spiel für Endbenutzer</system:String>
 	<system:String x:Key="string_interp_errorCreatingModFolderX">Beim Erstellen des Ordners für diese Mod ist ein Fehler aufgetreten: {0}</system:String>
-    <system:String x:Key="string_invalidServerModdesc">Für diese Archivdatei wurde eine ungültige Server-Moddesc bereitgestellt, bitte kontaktiere Mgamerz mit dem Link zu dieser Datei und dieser Fehlermeldung.</system:String>
+        <system:String x:Key="string_invalidServerModdesc">Für diese Archivdatei wurde eine ungültige Server-Moddesc bereitgestellt, bitte kontaktiere Mgamerz mit dem Link zu dieser Datei und dieser Fehlermeldung.</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Datei kann nicht heruntergeladen werden: Du musst Premiummitglied bei NexusMods sein, um direct download links zu nutzen</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Datei kann nicht heruntergeladen werden: von NexusMods gelöscht</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Fehler beim Herunterladen des Mods: {0}</system:String>
@@ -1855,8 +1854,8 @@
         <system:String x:Key="string_interp_addingStartupFile">Startup-Datei wird hinzugefügt...</system:String>
         <system:String x:Key="string_interp_addedStartupFile">Startup-Datei hinzugefügt</system:String>
         <system:String x:Key="string_interp_failedToAddStartupFileX">Startup-Datei konnte nicht hinzugefügt werden: {0}</system:String>
- <system:String x:Key="string_interp_sk_sqmNoBackup">Keine Backup für {0} verfügbar, Squadmate-Merge-Dateien können nicht erstellt werden</system:String>
- <system:String x:Key="string_interp_sk_sqmBackupMissingRequiredFile">Erforderliche Datei für Squadmate-Merge nicht im Backup verfügbar: {0}</system:String>
+        <system:String x:Key="string_interp_sk_sqmNoBackup">Kein Backup für {0} verfügbar, Squadmate-Merge-Dateien können nicht erstellt werden</system:String>
+        <system:String x:Key="string_interp_sk_sqmBackupMissingRequiredFile">Erforderliche Datei für Squadmate-Merge nicht im Backup verfügbar: {0}</system:String>
         <system:String xml:space="preserve" x:Key="string_tooltip_loadAllSaves">Analysiert alle Spielstände aller Karrieren; Dies kann viel Arbeitsspeicher bei vielen Spielständen beanspruchen.&#10;Standardmäßig ist dies deaktiviert, wodurch nur die letzten 50 Spielstände aus jeder Karriere geladen werden</system:String>
         <system:String x:Key="string_loadAllSavesMayUseALotOfMemory">Alle Spielstände laden (kann viel Arbeitsspeicher verbrauchen)</system:String>
         <system:String x:Key="string_selectThisSave">Spielstand auswählen</system:String>
