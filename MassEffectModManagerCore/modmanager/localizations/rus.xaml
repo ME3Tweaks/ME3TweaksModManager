@@ -465,6 +465,7 @@
 	<system:String x:Key="string_binkw32ASILoader">Загрузчик Binkw32 ASI</system:String>
 	<system:String x:Key="string_binkw32ASIBypass">Байпас Binkw32 ASI</system:String>
 	<system:String x:Key="string_bink2w64ASILoader">Загрузчик Bink2w64 ASI</system:String>
+	<system:String x:Key="string_undefined">Неизвестно</system:String>
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Эта игра содержит модифицированные текстуры</system:String>
 	<system:String x:Key="string_headmorphSelector">Выбор headmorph</system:String>
 	<system:String x:Key="string_selectHeadmorph">Выберите headmorph</system:String>
@@ -1297,6 +1298,7 @@
 	<system:String x:Key="string_blacklistedMod">Мод из черного списка</system:String>
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Разработчики ME3Tweaks Mod Manager внесли данный файл в черный список по одной из следующих причин:\n - Мод(ы) в данном файле не работает или заброшен\n - Мод(ы) в данном файле повреждает игру у конечных пользователей</system:String>
 	<system:String x:Key="string_interp_errorCreatingModFolderX">Произошла ошибка создания папки для данного мода: {0}</system:String>
+	<system:String x:Key="string_invalidServerModdesc">Для данного архива был предоставлен недопустимый moddesc сервера, пожалуйста отправьте Mgamerz ссылку на данный файл и сообщение об ошибке.</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Невозможно скачать файл: Необходимо иметь премиум-подписку NexusMods для использования прямых ссылок.</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Невозможно скачать файл: Удалено с NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Ошибка загрузки мода: {0}</system:String>
@@ -1830,6 +1832,13 @@
 	<system:String x:Key="string_selectASaveFile">Выберите файл сохранения</system:String>
 	<system:String x:Key="string_interp_unknownMapX">Неизвестная карта: {0}</system:String>
 	<system:String x:Key="string_saveSelector">Выбор Сохранения</system:String>
+	<system:String x:Key="string_autoSave">Автосохранение</system:String>
+	<system:String x:Key="string_quickSave">Быстрое Сохранение</system:String>
+	<system:String x:Key="string_restartMission">Перезапуск Миссии</system:String>
+	<system:String x:Key="string_interp_saveX">Сохранение {0}</system:String>
+	<system:String x:Key="string_exportSave">Экспорт Сохранения</system:String>
+	<system:String x:Key="string_legendSave">Финальное Сохранение</system:String>
+	<system:String x:Key="string_interp_unknownSaveTypeX">Неизвестный тип сохранения: {0}</system:String>
 	<system:String x:Key="string_interp_noBackupMessage">Отсутствуют доступные архивы {0}. Если продолжить, вы не сможете создать архив игры, так как игра будет модифицирована. Вы уверены, что хотите сделать это?</system:String>
 	<system:String x:Key="string_backupWarning">Предупреждение архивации</system:String>
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Неверное имя сопартийца: {0}. Значение чувствительно к регистру.</system:String>
@@ -1837,6 +1846,8 @@
 	<system:String x:Key="string_synchronizingSquadmateOutfits">Синхронизация костюмов сопартийцев</system:String>
 	<system:String x:Key="string_synchronizedSquadmateOutfits">Костюмы сопартийцев синхронизированы</system:String>
 	<system:String x:Key="string_synchronizingSquadmateOutfitFiles">Синхронизация файлов костюмов сопартийцев</system:String>
+	<system:String x:Key="string_interp_sk_sqmNoBackup">Нет доступного архива для {0}, невозможно сгенерировать файлы squadmate merge</system:String>
+	<system:String x:Key="string_interp_sk_sqmBackupMissingRequiredFile">Требуемый для squadmate merge файл недоступен в архиве: {0}</system:String>
 	<system:String x:Key="string_starterKitAddins">Добавления Starter Kit</system:String>
 	<system:String x:Key="string_addStartupFile">Добавление файла запуска</system:String>
 	<system:String x:Key="string_addPlotManagerData">Добавление данных PlotManager</system:String>
