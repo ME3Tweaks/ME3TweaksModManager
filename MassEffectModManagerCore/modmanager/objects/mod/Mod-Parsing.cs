@@ -1674,15 +1674,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
             {
-                // Todo: Settings.LogModStartup for 8.1 moddesc ini changes
-
                 var textureModsStruct = iniData[@"TEXTUREMODS"][@"files"];
                 if (!string.IsNullOrWhiteSpace(textureModsStruct))
                 {
+                    M3Log.Information(@"Found [TEXTUREMODS] job header", Settings.LogModStartup);
                     ModJob texJob = new ModJob(ModJob.JobHeader.TEXTUREMODS, this);
                     var tmSplit = StringStructParser.GetParenthesisSplitValues(textureModsStruct);
                     foreach (var tm in tmSplit)
                     {
+                        M3Log.Information($@"TextureMods: Instantiating M3MEMMod object from struct {tm}", Settings.LogModStartup);
                         var mm = new M3MEMMod(this, tm);
                         if (mm.ValidationFailedReason != null)
                         {
@@ -1690,6 +1690,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             LoadFailedReason = mm.ValidationFailedReason;
                             return;
                         }
+
+                        M3Log.Information($@"TextureMods: Added texture mod reference for {mm.Title}", Settings.LogModStartup);
                         texJob.TextureModReferences.Add(mm);
                     }
                     InstallationJobs.Add(texJob);
