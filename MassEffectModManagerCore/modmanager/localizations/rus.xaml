@@ -229,6 +229,7 @@
 	<system:String x:Key="string_interp_textureModModifiesExportsX" xml:space="preserve">Данный текстурный мод изменяет следующие текстуры:\n{0}</system:String>
 	<system:String x:Key="string_gameSelector">Выбор игры</system:String>
 	<system:String x:Key="string_dialog_selectGameInstallGroup">Выберите игру для создания группы установки.</system:String>
+	<system:String x:Key="string_debugTriggerDataReload">Отладка: Перезагрузка данных триггера</system:String>
 	<system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">Отсутствует доступный архив для запроса  таблиц 2DA.</system:String>
 	<system:String x:Key="string_2da_errorReading2DAs">Ошибка чтения таблиц 2DA из игры: {0}</system:String>
 	<system:String x:Key="string_errorReadingTables">Ошибка чтения таблиц</system:String>
@@ -423,6 +424,9 @@
 	<system:String x:Key="string_creatingCombinedTLKMergeFile">Создание объединенного TLK-merge файла</system:String>
 	<system:String x:Key="string_addingCombinedTLKMergeFile">Добавление объединенного TLK-merge файла</system:String>
 	<system:String x:Key="string_tooltip_clickToLEX">Кликните для открытия в Legendary Explorer Nightly</system:String>
+	<system:String x:Key="string_validatingArchiveFile">Валидация файла архива</system:String>
+	<system:String x:Key="string_deploymentFailed">Ошибка преобразования</system:String>
+	<system:String x:Key="string_interp_dialog_deploymentFailedWrongNumMods" xml:space="preserve">Преобразование мода не удалось: Количество модов в архиве не совпадает с количеством прошедших парсинг.\nОжидалось: {0}\nОбнаружено: {1}Пожалуйста, сообщите об этом Mgamerz на ME3Tweaks Discord</system:String>
 	<system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
 	<system:String x:Key="string_interp_extractingX">Распаковка {0}</system:String>
 	<system:String x:Key="string_checkingForUpdates">Проверка обновлений</system:String>
@@ -1131,7 +1135,6 @@
 	<system:String x:Key="string_textureModsImported">Текстурный(-е) мод(ы) импортирован(ы)</system:String>
 	<system:String x:Key="string_mergingCoalescedFiles">Объединение файлов Coalesced</system:String>
 	<system:String x:Key="string_mergedCoalescedFiles">Файлы Coalesced объединены</system:String>
-	<system:String x:Key="string_massEfectModderFiles">Файлы Mass Effect Modder</system:String>
 	<system:String x:Key="string_selectMemFile">Выбор файла .mem</system:String>
 	<system:String x:Key="string_interp_headmorphRequiresDLCCouldNotDetermine">Данный headmoprh требует установки {0} версии {1} или выше, но Mod Manager не может определить установленную версию. Установите {0} через Mod Manager, затем установите headmorph.</system:String>
 	<system:String x:Key="string_interp_headmorphRequiresDLCBadVersionString">Данный headmoprh требует установки {0} версии {1} или выше, но Mod Manager не может определить установленную версию в строке версии {2}. Свяжитесь с разработчиком данного мода для исправления проблемы.</system:String>
