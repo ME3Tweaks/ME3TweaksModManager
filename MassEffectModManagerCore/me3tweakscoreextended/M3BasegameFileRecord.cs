@@ -9,7 +9,7 @@ using ME3TweaksModManager.modmanager.objects.mod;
 namespace ME3TweaksModManager.me3tweakscoreextended
 {
     /// <summary>
-    /// /Extension to create a BasegameFileRecord using a game target and a mod.
+    /// Extension to create a BasegameFileRecord using a game target and a mod.
     /// </summary>
     public class M3BasegameFileRecord : BasegameFileRecord
     {

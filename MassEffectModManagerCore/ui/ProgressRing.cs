@@ -31,10 +31,10 @@ namespace ME3TweaksModManager.ui
         public static object Box(bool value) => value ? TrueBox : FalseBox;
     }
 
-    [TemplateVisualState(Name = "Large", GroupName = "SizeStates")]
-    [TemplateVisualState(Name = "Small", GroupName = "SizeStates")]
-    [TemplateVisualState(Name = "Inactive", GroupName = "ActiveStates")]
-    [TemplateVisualState(Name = "Active", GroupName = "ActiveStates")]
+    [TemplateVisualState(Name = @"Large", GroupName = @"SizeStates")]
+    [TemplateVisualState(Name = @"Small", GroupName = @"SizeStates")]
+    [TemplateVisualState(Name = @"Inactive", GroupName = @"ActiveStates")]
+    [TemplateVisualState(Name = @"Active", GroupName = @"ActiveStates")]
     public class ProgressRing : Control
     {
         /// <summary>Identifies the <see cref="BindableWidth"/> dependency property.</summary>
@@ -217,11 +217,11 @@ namespace ME3TweaksModManager.ui
 
             if (this.IsLarge)
             {
-                action = () => VisualStateManager.GoToState(this, "Large", true);
+                action = () => VisualStateManager.GoToState(this, @"Large", true);
             }
             else
             {
-                action = () => VisualStateManager.GoToState(this, "Small", true);
+                action = () => VisualStateManager.GoToState(this, @"Small", true);
             }
 
             if (this.deferredActions != null)
@@ -252,11 +252,11 @@ namespace ME3TweaksModManager.ui
 
             if (this.IsActive)
             {
-                action = () => VisualStateManager.GoToState(this, "Active", true);
+                action = () => VisualStateManager.GoToState(this, @"Active", true);
             }
             else
             {
-                action = () => VisualStateManager.GoToState(this, "Inactive", true);
+                action = () => VisualStateManager.GoToState(this, @"Inactive", true);
             }
 
             if (this.deferredActions != null)

@@ -34,6 +34,7 @@ using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.Save;
 using ME3TweaksModManager.modmanager.save.game2;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
+using ME3TweaksModManager.modmanager.save.shared;
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {

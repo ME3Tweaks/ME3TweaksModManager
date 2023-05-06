@@ -12,6 +12,7 @@ using LegendaryExplorerCore.Unreal.Classes;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
 using ME3TweaksModManager.modmanager.windows;
@@ -39,7 +40,6 @@ namespace ME3TweaksModManager.modmanager.starterkit
         private const string LE3ModSettingsClassTextAsset = @"ME3TweaksModManager.modmanager.starterkit.scripts.SFXGUIData_ModSettings.uc";
         #endregion
 
-
         #region STARTUP FILE
         /// <summary>
         /// Generates a startup file for the specified game
@@ -61,7 +61,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             var startupPackagePath = Path.Combine(cookedPath, startupFName);
             if (File.Exists(startupPackagePath))
             {
-                M3Log.Error($@"A startup file already exists: {startupPackagePath}. Not regenerating.");
+                M3Log.Warning($@"A startup file already exists: {startupPackagePath}. Not regenerating.");
                 return;
             }
 
@@ -77,7 +77,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             else
             {
                 // Add it to coalesced so it gets used
-                AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "DLCStartupPackage", Path.GetFileNameWithoutExtension(startupFName).StripUnrealLocalization(), CoalesceParseAction.AddUnique);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"Engine.StartupPackages", @"DLCStartupPackage", Path.GetFileNameWithoutExtension(startupFName).StripUnrealLocalization(), CoalesceParseAction.AddUnique);
             }
         }
 
@@ -99,7 +99,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
         private static void AddAutoloadReferenceGame1(string dlcRootPath, string section, string key, string value, bool isIndexed = true)
         {
             // Load autoload
-            var autoload = Path.Combine(dlcRootPath, "Autoload.ini");
+            var autoload = Path.Combine(dlcRootPath, @"Autoload.ini");
             var ini = DuplicatingIni.LoadIni(autoload);
 
             var packageHeading = ini.GetOrAddSection(section);
@@ -175,7 +175,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             if (sourceBaseDir == null || !Directory.Exists(sourceBaseDir))
             {
                 M3Log.Warning($@"No backup available for {game}");
-                return $"No backup available for {game}, cannot generate squadmate merge files";
+                return M3L.GetString(M3L.string_interp_sk_sqmNoBackup, game);
             }
             var sourceBaseFiles = MELoadedFiles.GetFilesLoadedInGame(game, true, gameRootOverride: sourceBaseDir);
 
@@ -201,15 +201,15 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 if (!sourceBaseFiles.TryGetValue(f, out var _))
                 {
                     M3Log.Warning($@"Required file for squadmate merge not available in backup: {f}");
-                    return $"Required file for squadmate merge not available in backup: {f}";
+                    return M3L.GetString(M3L.string_interp_sk_sqmBackupMissingRequiredFile, f);
                 }
             }
 
-            var isourcefname = $"SFXHenchImages{henchHumanName}0.pcc";
+            var isourcefname = $@"SFXHenchImages{henchHumanName}0.pcc";
             if (!sourceBaseFiles.TryGetValue(isourcefname, out var _))
             {
                 M3Log.Warning($@"Required file for squadmate merge not available in backup: {isourcefname}");
-                return $"Required file for squadmate merge not available in backup: {isourcefname}";
+                return M3L.GetString(M3L.string_interp_sk_sqmBackupMissingRequiredFile, isourcefname);
             }
 
             M3Log.Information(@"Squadmate merge generator: all required source files found in backup");
@@ -219,7 +219,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             {
                 var path = sourceBaseFiles[f];
                 var destFName = Path.GetFileName(f);
-                destFName = destFName.Replace(henchName, $"{henchName}_{dlcName}");
+                destFName = destFName.Replace(henchName, $@"{henchName}_{dlcName}");
 
                 var destpath = Path.Combine(cookedPath, destFName);
 
@@ -245,7 +245,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 // Available
                 var exp = EntryCloner.CloneEntry(texToClone);
                 AddToObjectReferencer(exp);
-                exp.ObjectName = new NameReference($"{henchHumanName}0", 0);
+                exp.ObjectName = new NameReference($@"{henchHumanName}0", 0);
                 var t2d = new Texture2D(exp);
                 var imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_available.png").GetBuffer();
                 t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
@@ -253,7 +253,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 // Silouette
                 exp = EntryCloner.CloneEntry(texToClone);
                 AddToObjectReferencer(exp);
-                exp.ObjectName = new NameReference($"{henchHumanName}0_locked", 0);
+                exp.ObjectName = new NameReference($@"{henchHumanName}0_locked", 0);
                 t2d = new Texture2D(exp);
                 imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_silo.png").GetBuffer();
                 t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
@@ -261,7 +261,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 // Chosen
                 exp = EntryCloner.CloneEntry(texToClone);
                 AddToObjectReferencer(exp);
-                exp.ObjectName = new NameReference($"{henchHumanName}0Glow", 0);
+                exp.ObjectName = new NameReference($@"{henchHumanName}0Glow", 0);
                 t2d = new Texture2D(exp);
                 imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_chosen.png").GetBuffer();
                 t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
@@ -280,13 +280,13 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
                 // Silouette
-                exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0_locked");
+                exp = ipackage.FindExport($@"GUI_Henchmen_Images.{henchHumanName}0_locked");
                 t2d = new Texture2D(exp);
                 imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_silo.png").GetBuffer();
                 t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
                 // Chosen
-                exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0Glow");
+                exp = ipackage.FindExport($@"GUI_Henchmen_Images.{henchHumanName}0Glow");
                 t2d = new Texture2D(exp);
                 imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_chosen.png").GetBuffer();
                 t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
@@ -349,7 +349,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                     MEPackageHandler.CreateAndSavePackage(plotManF, game);
                     // PlotManager needs added since it forces it into memory (in vanilla) for long enough to be referenced
                     AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"GlobalPackage", plotManName);
-                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerConditionals", $"{AddConditionalsClass(plotManF, dlcName)}.BioAutoConditionals");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerConditionals", $@"{AddConditionalsClass(plotManF, dlcName)}.BioAutoConditionals");
                 }
 
                 // Plot Manager Auto
@@ -363,11 +363,11 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 {
                     MEPackageHandler.CreateAndSavePackage(plotManAutoF, game);
                     AddPlotManagerAuto(plotManAutoF, dlcName);
-                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerStateTransitionMap", $"{plotManAutoName}.StateTransitionMap");
-                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerConsequenceMap", $"{plotManAutoName}.ConsequenceMap");
-                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerOutcomeMap", $"{plotManAutoName}.OutcomeMap");
-                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerQuestMap", $"{plotManAutoName}.QuestMap");
-                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerCodexMap", $"{plotManAutoName}.DataCodexMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerStateTransitionMap", $@"{plotManAutoName}.StateTransitionMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerConsequenceMap", $@"{plotManAutoName}.ConsequenceMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerOutcomeMap", $@"{plotManAutoName}.OutcomeMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerQuestMap", $@"{plotManAutoName}.QuestMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerCodexMap", $@"{plotManAutoName}.DataCodexMap");
                 }
             }
             #endregion
@@ -387,27 +387,27 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 {
                     // We need to add the conditionals
                     var plotManagerPackageName = AddConditionalsClass(startupPackagePath, dlcName);
-                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "Package", plotManagerPackageName, CoalesceParseAction.AddUnique);
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"Engine.StartupPackages", @"Package", plotManagerPackageName, CoalesceParseAction.AddUnique);
 
                     var bio2daPackageName = AddBio2DAGame2(game, dlcName, startupPackagePath);
-                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "Package", bio2daPackageName, CoalesceParseAction.AddUnique);
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"Engine.StartupPackages", @"Package", bio2daPackageName, CoalesceParseAction.AddUnique);
 
 
                     // Must also add to biogame
-                    AddCoalescedReference(game, dlcName, cookedPath, @"BioGame", "SFXGame.BioWorldInfo", "ConditionalClasses", $"{plotManagerPackageName}.BioAutoConditionals", CoalesceParseAction.AddUnique);
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioGame", @"SFXGame.BioWorldInfo", @"ConditionalClasses", $@"{plotManagerPackageName}.BioAutoConditionals", CoalesceParseAction.AddUnique);
                 }
 
                 // Generate the maps
                 var plotAutoPackageName = AddPlotManagerAuto(startupPackagePath, dlcName);
 
                 // Add to Coalesced
-                AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "Package", plotAutoPackageName, CoalesceParseAction.AddUnique);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"Engine.StartupPackages", @"Package", plotAutoPackageName, CoalesceParseAction.AddUnique);
 
                 if (game.IsGame3())
                 {
                     // Additional coalesced entry
                     // Should include localization of _INT
-                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "dlcstartuppackagename", Path.GetFileNameWithoutExtension(startupPackagePath), CoalesceParseAction.AddUnique);
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"Engine.StartupPackages", @"dlcstartuppackagename", Path.GetFileNameWithoutExtension(startupPackagePath), CoalesceParseAction.AddUnique);
 
                     // Conditionals file
                     CNDFile c = new CNDFile();
@@ -503,10 +503,10 @@ namespace ME3TweaksModManager.modmanager.starterkit
             if (startupFile.Game.IsGame1())
             {
                 // Remove forcedexport flag on class and defaults
-                var classExp = startupFile.FindExport("BioAutoConditionals");
+                var classExp = startupFile.FindExport(@"BioAutoConditionals");
                 classExp.ExportFlags &= ~UnrealFlags.EExportFlags.ForcedExport;
 
-                classExp = startupFile.FindExport("Default__BioAutoConditionals");
+                classExp = startupFile.FindExport(@"Default__BioAutoConditionals");
                 classExp.ExportFlags &= ~UnrealFlags.EExportFlags.ForcedExport;
             }
 
@@ -539,12 +539,12 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 }
             }
             // Generate the map exports
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "DataCodexMap", "BioCodexMap", 2));
-            var consequenceMapClass = packageFile.Game.IsGame1() ? "BioStateEventMap" : "BioConsequenceMap";
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "ConsequenceMap", consequenceMapClass, 1));
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "OutcomeMap", "BioOutcomeMap", 1));
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "QuestMap", "BioQuestMap", 4)); // Journal
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "StateTransitionMap", "BioStateEventMap", 1));
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, @"DataCodexMap", @"BioCodexMap", 2));
+            var consequenceMapClass = packageFile.Game.IsGame1() ? @"BioStateEventMap" : @"BioConsequenceMap";
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, @"ConsequenceMap", consequenceMapClass, 1));
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, @"OutcomeMap", @"BioOutcomeMap", 1));
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, @"QuestMap", @"BioQuestMap", 4)); // Journal
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, @"StateTransitionMap", @"BioStateEventMap", 1));
             packageFile.Save();
 
             return sfPlotExport?.ObjectName.Name ?? Path.GetFileNameWithoutExtension(startupPackagePath);
@@ -712,7 +712,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             // Todo: Non-saving mode to improve performance
 
             // Load coalesced
-            var coalFile = $"Default_{dlcName}.bin";
+            var coalFile = $@"Default_{dlcName}.bin";
             var coalPath = Path.Combine(cookedPath, coalFile);
             var decompiled = CoalescedConverter.DecompileGame3ToMemory(new MemoryStream(File.ReadAllBytes(coalPath)));
             var iniFiles = new SortedDictionary<string, CoalesceAsset>(); // For recomp
@@ -751,7 +751,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             if (package.Game.IsGame2())
             {
                 // 2 just uses objectreferencer
-                referencer = new ExportEntry(package, 0, package.GetNextIndexedName(@"ObjectReferencer"), properties: new PropertyCollection() { new ArrayProperty<ObjectProperty>("ReferencedObjects") })
+                referencer = new ExportEntry(package, 0, package.GetNextIndexedName(@"ObjectReferencer"), properties: new PropertyCollection() { new ArrayProperty<ObjectProperty>(@"ReferencedObjects") })
                 {
                     Class = EntryImporter.EnsureClassIsInFile(package, @"ObjectReferencer", rop)
                 };
@@ -760,7 +760,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             {
                 // 3 uses both ObjectReferencer for normal packages and CombinedStartupReferencer for startup files
                 // Startup files do not work if they use ObjectReferencer
-                referencer = new ExportEntry(package, 0, package.GetNextIndexedName(isStartupPackage ? @"CombinedStartupReferencer" : @"ObjectReferencer"), properties: new PropertyCollection() { new ArrayProperty<ObjectProperty>("ReferencedObjects") })
+                referencer = new ExportEntry(package, 0, package.GetNextIndexedName(isStartupPackage ? @"CombinedStartupReferencer" : @"ObjectReferencer"), properties: new PropertyCollection() { new ArrayProperty<ObjectProperty>(@"ReferencedObjects") })
                 {
                     Class = EntryImporter.EnsureClassIsInFile(package, @"ObjectReferencer", rop)
                 };
@@ -913,7 +913,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                             new CaseInsensitiveDictionary<string>()
                             {
                                 { @"srChoiceName", mf.TLKID.ToString() }, // These strings need added to the TLK
-                                { @"srChoiceDescription", "3248042" }, // These strings need added to the TLK
+                                { @"srChoiceDescription", @"3248042" }, // These strings need added to the TLK
                             })
                     },
                     { @"Images[0]", modSettingsClassPath },
@@ -945,7 +945,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                             if (!string.IsNullOrWhiteSpace(reqDlc)) reqDlc += @";";
                             reqDlc += @"DLC_MOD_Framework";
                         }
-                        
+
                         x[@"ModInfo"][@"requireddlc"] = reqDlc;
                     });
                 }
@@ -963,9 +963,6 @@ namespace ME3TweaksModManager.modmanager.starterkit
         }
         #endregion
 
-        #region Coalesced conveniences
-
-        #endregion
         // Might need to port TLK Handler from ME2R...
     }
 }

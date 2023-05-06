@@ -52,25 +52,24 @@ namespace ME3TweaksModManager.ui
 
     // From https://stackoverflow.com/a/59376318/800318
 
-    /**
-     * Note the Constraint property: it determines what the child control considers "Auto" dimensions.
-     * For example, if your control is static (has Height and Width set explicitly), you should set
-     * Constraint to Nothing to clip the fraction of the entire element. If your control is WrapPanel
-     * with Orientation set to Horizontal, Constraint should be set to Width, etc. If you are getting
-     * wrong clipping, try out out different constraints. Note also that Clipper respects you control's
-     * alignment, which can potentially be exploited in an animation (for example, while animating
-     * HeightFraction from 0 to 1, VerticalAlignment.Bottom will mean that the control "slides down",
-     * VerticalAlignment.Center - "opens up").
-     *
-     * Mgamerz Note: You seem to have to set the alignments for this to animate properly.
-     */
+    // * Note the Constraint property: it determines what the child control considers "Auto" dimensions.
+    // * For example, if your control is static (has Height and Width set explicitly), you should set
+    // * Constraint to Nothing to clip the fraction of the entire element. If your control is WrapPanel
+    // * with Orientation set to Horizontal, Constraint should be set to Width, etc. If you are getting
+    // * wrong clipping, try out out different constraints. Note also that Clipper respects you control's
+    // * alignment, which can potentially be exploited in an animation (for example, while animating
+    // * HeightFraction from 0 to 1, VerticalAlignment.Bottom will mean that the control "slides down",
+    // * VerticalAlignment.Center - "opens up").
+    // *
+    // * Mgamerz Note: You seem to have to set the alignments for this to animate properly.
+    // *
 
     public sealed class Clipper : Decorator
     {
-        public static readonly DependencyProperty WidthFractionProperty = DependencyProperty.RegisterAttached("WidthFraction", typeof(double), typeof(Clipper), new PropertyMetadata(1d, OnClippingInvalidated), IsFraction);
-        public static readonly DependencyProperty HeightFractionProperty = DependencyProperty.RegisterAttached("HeightFraction", typeof(double), typeof(Clipper), new PropertyMetadata(1d, OnClippingInvalidated), IsFraction);
-        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register("Background", typeof(Brush), typeof(Clipper), new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
-        public static readonly DependencyProperty ConstraintProperty = DependencyProperty.Register("Constraint", typeof(ConstraintSource), typeof(Clipper), new PropertyMetadata(ConstraintSource.WidthAndHeight, OnClippingInvalidated), IsValidConstraintSource);
+        public static readonly DependencyProperty WidthFractionProperty = DependencyProperty.RegisterAttached(@"WidthFraction", typeof(double), typeof(Clipper), new PropertyMetadata(1d, OnClippingInvalidated), IsFraction);
+        public static readonly DependencyProperty HeightFractionProperty = DependencyProperty.RegisterAttached(@"HeightFraction", typeof(double), typeof(Clipper), new PropertyMetadata(1d, OnClippingInvalidated), IsFraction);
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register(@"Background", typeof(Brush), typeof(Clipper), new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
+        public static readonly DependencyProperty ConstraintProperty = DependencyProperty.Register(@"Constraint", typeof(ConstraintSource), typeof(Clipper), new PropertyMetadata(ConstraintSource.WidthAndHeight, OnClippingInvalidated), IsValidConstraintSource);
 
         private Size _childSize;
         private DependencyPropertySubscriber _childVerticalAlignmentSubcriber;
@@ -272,7 +271,7 @@ namespace ME3TweaksModManager.ui
 
     public class DependencyPropertySubscriber : DependencyObject
     {
-        private static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(object), typeof(DependencyPropertySubscriber), new PropertyMetadata(null, ValueChanged));
+        private static readonly DependencyProperty ValueProperty = DependencyProperty.Register(@"Value", typeof(object), typeof(DependencyPropertySubscriber), new PropertyMetadata(null, ValueChanged));
 
         private readonly PropertyChangedCallback _handler;
 

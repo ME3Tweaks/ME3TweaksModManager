@@ -24,6 +24,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.converters;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.save.shared;
 
 namespace ME3TweaksModManager.modmanager.windows.input
 {

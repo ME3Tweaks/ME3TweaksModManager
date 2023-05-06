@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
+using ME3TweaksModManager.modmanager.save.shared;
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {

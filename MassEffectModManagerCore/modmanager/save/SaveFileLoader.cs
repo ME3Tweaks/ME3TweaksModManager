@@ -7,6 +7,7 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 using ME3TweaksModManager.modmanager.save.game2;
 using ME3TweaksModManager.modmanager.save.game3;
 using ME3TweaksModManager.modmanager.save.le1;
+using ME3TweaksModManager.modmanager.save.shared;
 
 namespace ME3TweaksModManager.modmanager.save
 {

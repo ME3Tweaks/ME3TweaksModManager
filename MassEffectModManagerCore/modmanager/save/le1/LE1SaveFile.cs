@@ -1,5 +1,4 @@
-﻿using ME3TweaksModManager.modmanager.save;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +11,7 @@ using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.Save;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats.Save;
+using ME3TweaksModManager.modmanager.save.shared;
 
 namespace ME3TweaksModManager.modmanager.save.le1
 {

@@ -3,7 +3,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 
-namespace ME3TweaksModManager.modmanager.save
+namespace ME3TweaksModManager.modmanager.save.shared
 {
     public interface ISaveFile : IUnrealSerializable
     {

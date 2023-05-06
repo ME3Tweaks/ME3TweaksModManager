@@ -35,23 +35,23 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             /// <summary>
             /// Game for emails, either ME2 or LE2
             /// </summary>
-            [JsonProperty("game")]
+            [JsonProperty(@"game")]
             public MEGame Game { get; set; }
 
             /// <summary>
             /// Name of mod, used for sequence comments only
             /// </summary>
-            [JsonProperty("modName")]
+            [JsonProperty(@"modName")]
             public string ModName { get; set; }
 
             /// <summary>
             /// Optional: id of pre-existing in memory bool indicating mod is installed. Adds extra sanity check when email is sent.
             /// Email will only send when this bool is true, if field is included
             /// </summary>
-            [JsonProperty("inMemoryBool")]
+            [JsonProperty(@"inMemoryBool")]
             public int? InMemoryBool { get; set; }
 
-            [JsonProperty("emails")]
+            [JsonProperty(@"emails")]
             public List<ME2EmailSingle> Emails { get; set; }
         }
 
@@ -60,38 +60,38 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             /// <summary>
             /// Internal name for email, used for sequence comments only
             /// </summary>
-            [JsonProperty("emailName")]
+            [JsonProperty(@"emailName")]
             public string EmailName { get; set; }
 
             /// <summary>
             /// The plot int for your email. User must determine this themselves, as it is written to save
             /// </summary>
-            [JsonProperty("statusPlotInt")]
+            [JsonProperty(@"statusPlotInt")]
             public int StatusPlotInt { get; set; }
 
             /// <summary>
             /// The text of the conditional that will trigger the email. Must include StatusPlotInt == 0, rest is up to user
             /// </summary>
-            [JsonProperty("triggerConditional")]
+            [JsonProperty(@"triggerConditional")]
             public string TriggerConditional { get; set; }
 
             /// <summary>
             /// String ref of email title
             /// </summary>
-            [JsonProperty("titleStrRef")]
+            [JsonProperty(@"titleStrRef")]
             public int TitleStrRef { get; set; }
 
             /// <summary>
             /// String ref of email description
             /// </summary>
-            [JsonProperty("descStrRef")]
+            [JsonProperty(@"descStrRef")]
             public int DescStrRef { get; set; }
 
             /// <summary>
             /// Optional, transition id to be triggered once email is read.
             /// We might be able to get rid of this, not sure how useful it will be
             /// </summary>
-            [JsonProperty("readTransition")]
+            [JsonProperty(@"readTransition")]
             public int? ReadTransition { get; set; }
         }
 
@@ -106,7 +106,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             if (!target.Game.IsGame2()) return false;
             try
             {
-                var emailSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".emm" });
+                var emailSupercedances = target.GetFileSupercedances(new[] { @".emm" });
                 return emailSupercedances.TryGetValue(EMAIL_MERGE_MANIFEST_FILE, out var infoList) &&
                        infoList.Count > 0;
             }

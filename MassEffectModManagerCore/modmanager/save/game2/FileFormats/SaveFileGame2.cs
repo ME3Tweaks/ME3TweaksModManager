@@ -7,6 +7,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.Save;
+using ME3TweaksModManager.modmanager.save.shared;
 
 namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {

@@ -1186,6 +1186,7 @@
     <system:String xml:space="preserve" x:Key="string_description_blacklistedMod">The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users</system:String>
     <system:String x:Key="string_interp_errorCreatingModFolderX">There was an error creating the folder for this mod: {0}</system:String>
     <!-- 0={Error message} -->
+    <system:String x:Key="string_invalidServerModdesc">An invalid server moddesc was provided for this archive file, please contact Mgamerz with the link to this file and this error message.</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -2711,6 +2712,12 @@
     <system:String x:Key="string_interp_addedStartupFile">Added startup file</system:String>
     <system:String x:Key="string_interp_failedToAddStartupFileX">Failed to add startup file: {0}</system:String>
     <!-- 0={error message} -->
+
+    <!-- Starter Kit Addins -->
+    <system:String x:Key="string_interp_sk_sqmNoBackup">No backup available for {0}, cannot generate squadmate merge files</system:String>
+    <!-- 0={game (ME1, ME2, etc)} -->
+    <system:String x:Key="string_interp_sk_sqmBackupMissingRequiredFile">Required file for squadmate merge not available in backup: {0}</system:String>
+    <!-- 0={filename} -->
 
     <!-- Save Selector -->
     <system:String xml:space="preserve" x:Key="string_tooltip_loadAllSaves">Parses all save files from all careers; this may use a lot of memory if you have a lot of save files.&#10;The default state is unchecked, which only loads the most recent 50 saves from every career</system:String>

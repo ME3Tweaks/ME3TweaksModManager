@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.save.shared;
 
 namespace ME3TweaksModManager.modmanager.converters
 {

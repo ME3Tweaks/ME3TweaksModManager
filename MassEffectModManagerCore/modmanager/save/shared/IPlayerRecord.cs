@@ -1,4 +1,4 @@
-﻿namespace ME3TweaksModManager.modmanager.save
+﻿namespace ME3TweaksModManager.modmanager.save.shared
 {
     public interface IPlayerRecord
     {

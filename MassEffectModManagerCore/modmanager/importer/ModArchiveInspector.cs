@@ -150,7 +150,7 @@ namespace ME3TweaksModManager.modmanager.importer
 
 
             // Used for TPIS information lookup
-            bool useTPIS = true; 
+            bool useTPIS = true;
             long archiveSize = forcedSize > 0 ? forcedSize : archiveStream != null ? archiveStream.Length : new FileInfo(filepath).Length;
 
             if (moddesciniEntries.Count > 0)
@@ -221,7 +221,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     //found some .mem files
                     foreach (var entry in textureModEntries.Where(x => Path.GetExtension(x.FileName) == @".mem"))
                     {
-                        MEMMod memFile = new MEMMod(entry.FileName) { SizeRequiredtoExtract = (long)entry.Size, SelectedForImport = true, IsInArchive = true};
+                        MEMMod memFile = new MEMMod(entry.FileName) { SizeRequiredtoExtract = (long)entry.Size, SelectedForImport = true, IsInArchive = true };
                         addTextureMod(memFile);
                         useTPIS = false;
                     }
@@ -301,7 +301,7 @@ namespace ME3TweaksModManager.modmanager.importer
                         {
                             archiveFile?.DisposeObjectOnly();
                         }
-                        return "An invalid server moddesc was provided for this archive file, please contact Mgamerz with the link to this file and this error message.";
+                        return M3L.GetString(M3L.string_invalidServerModdesc);
                     }
                     //} else
                     //{
