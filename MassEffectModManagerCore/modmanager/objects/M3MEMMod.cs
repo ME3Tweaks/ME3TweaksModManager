@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Localization;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -24,6 +26,7 @@ namespace ME3TweaksModManager.modmanager.objects
     /// <summary>
     /// Contains M3-specific data about a texture mod, along with the MEMMod object.
     /// </summary>
+    [DebuggerDisplay(@"M3MEMMod | {Game} at {FilePath}")]
     public class M3MEMMod : MEMMod, IM3ImageEnabled
     {
         [JsonIgnore]
@@ -42,6 +45,7 @@ namespace ME3TweaksModManager.modmanager.objects
         [JsonProperty(@"title")]
         public string Title { get; set; }
 
+        // Todo: Clean this up because M3MEMMods are never loaded from the texture library. They are just MEMMod files that have special path serialization to allow portability.
         [JsonIgnore]
         public string FileSource => ModdescMod?.ModName ?? M3L.GetString(M3L.string_textureLibrary);
 
@@ -81,7 +85,7 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         /// <summary>
-        /// Gets the relative path to the .mem file
+        /// Gets the relative path to the .mem file, from the texture mod folder name (for content mod files)
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
@@ -222,6 +226,21 @@ namespace ME3TweaksModManager.modmanager.objects
         public override bool ShouldSerializeFilePath()
         {
             return false; // M3MEMMod files should not serialize this variable
+        }
+
+        public List<string> GetRelativeReferences(Mod hostMod)
+        {
+            List<string> references = new List<string>();
+            references.Add(GetRelativePathToMEM());
+            if (ImageAssetName != null)
+            {
+                // Add the referenced image asset
+                references.Add(FilesystemInterposer
+                    .PathCombine(IsInArchive, hostMod.ModImageAssetsPath, ImageAssetName)
+                    .Substring(hostMod.ModPath.Length + (hostMod.ModPath.Length > 1 ? 1 : 0)));
+            }
+            return references;
+
         }
     }
 }

@@ -38,7 +38,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             //Replace or Add references
             foreach (var job in InstallationJobs)
             {
-
+                // Files to install
                 foreach (var jobFile in job.FilesToInstall.Values)
                 {
                     if (job.JobDirectory == @"." || job.JobDirectory == null)
@@ -51,6 +51,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
                 }
 
+                // Alternate dlc: files and image assets for alternates
                 foreach (var dlc in job.AlternateDLCs)
                 {
                     if (dlc.HasRelativeFiles())
@@ -85,6 +86,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
                 }
 
+                // Alternate files: files, merge mods and image assets for alternates
                 foreach (var file in job.AlternateFiles)
                 {
                     if (file.HasRelativeFile())
@@ -162,7 +164,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     foreach (var textureModRef in job.TextureModReferences)
                     {
-                        references.Add(textureModRef.GetRelativePathToMEM());
+                        references.AddRange(textureModRef.GetRelativeReferences(this));
                     }
                 }
 
