@@ -262,7 +262,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             void CompressedModFailedCallback(Mod m)
             {
-                Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += M3L.GetString(M3L.string_interp_XfailedToLoadY, m.ModName, m.LoadFailedReason); });
+                Application.Current.Dispatcher.Invoke(() => { NoModSelectedText += M3L.GetString(M3L.string_interp_XfailedToLoadY, m.ModName, m.LoadFailedReason); });
             }
 
             var archiveSize = ArchiveStream?.Length ?? new FileInfo(archive).Length;

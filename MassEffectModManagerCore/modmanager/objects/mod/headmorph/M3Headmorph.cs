@@ -159,7 +159,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
                     FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModImageAssetsPath, ImageAssetName);
                 references.Add((mod.IsInArchive && mod.ModPath.Length == 0)
                     ? imageAssetPath
-                    : imageAssetPath.Substring(mod.ModPath.Length + 1)); // Add the headmorph file
+                    : imageAssetPath.Substring(mod.ModPath.Length + 1)); // Add the image asset file
             }
 
             return references;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -20,6 +21,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
     /// <summary>
     /// Describes a MEMMod, which is a containing object for a .mem file
     /// </summary>
+    [DebuggerDisplay(@"MEMMod | {Game} at {FilePath}")]
     public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged, IBatchQueueMod
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -126,6 +128,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             {
                 Game = ModFileFormats.GetGameMEMFileIsFor(filePath);
                 ModdedTextures = ModFileFormats.GetFileListForMEMFile(filePath);
+                InitialLoadedSize = new FileInfo(filePath).Length;
             }
         }
 
@@ -253,6 +256,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         {
             return FileExists;
         }
+
+        public string Hash { get; set; }
+        public long Size { get; set; }
+
+        /// <summary>
+        /// The size of the file that was parsed from disk. Used to detect a desync, if the file is large
+        /// </summary>
+        internal long InitialLoadedSize { get; set; }
     }
 }
     
