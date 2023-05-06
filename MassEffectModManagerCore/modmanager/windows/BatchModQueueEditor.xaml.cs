@@ -364,7 +364,7 @@ namespace ME3TweaksModManager.modmanager.windows
             var m = SelectedInstallGroupMod;
             var selectedIndex = ModsInGroup.IndexOf(m);
 
-            if (SelectedInstallGroupMod is BatchMod bm && ModsInGroup.Remove(m))
+            if (SelectedInstallGroupMod is BatchMod bm && ModsInGroup.Remove(m) && bm.IsAvailableForInstall())
             {
                 VisibleFilteredMods.Add(bm.Mod);
             }
@@ -372,7 +372,7 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 VisibleFilteredASIMods.Add(bai.AssociatedMod.OwningMod);
             }
-            else if (SelectedInstallGroupMod is MEMMod m3ai && ModsInGroup.Remove(m3ai)) // covers both types
+            else if (SelectedInstallGroupMod is MEMMod m3ai && ModsInGroup.Remove(m3ai) && m3ai.IsAvailableForInstall()) // covers both types
             {
                 VisibleFilteredMEMMods.Add(m3ai);
             }
