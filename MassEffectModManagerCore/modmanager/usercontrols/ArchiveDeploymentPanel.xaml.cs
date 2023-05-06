@@ -20,6 +20,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.deployment;
@@ -370,6 +371,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             currentDeploymentStep = M3L.GetString(M3L.string_mod);
 
             DateTime lastPercentUpdateTime = DateTime.Now;
+            ProgressBarAnimated = true;
             compressor.Progressing += (a, b) =>
             {
                 //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
@@ -435,6 +437,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             void generatingCompressedFileProgress(uint done, uint total)
             {
+                ProgressBarAnimated = true;
                 ProgressMax = total;
                 ProgressValue = done;
 
@@ -482,10 +485,48 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
-            M3Utilities.HighlightInExplorer(archivePath);
+            // Validation Pass
+            var expectedModCount = modsBeingDeployed.Count;
+            var foundCount = 0;
 
-            e.Result = GetModsNeedingTPMISubmission(modsBeingDeployed);
+            void foundCompressedMod(Mod x)
+            {
+                if (x.ValidMod)
+                {
+                    foundCount++;
+                    M3Log.Information($@"Deployment validation: Mod successfully found in archive: {x.ModName}");
+                }
+            }
+
+            void failedToLoadMod(Mod x)
+            {
+                M3Log.Error($@"Deployment validation: Mod failed to deploy: {x.ModName} - mod did not successfully load on deployment validation!");
+            }
+
+            ProgressBarAnimated = true;
+            ProgressIndeterminate = true;
+            OperationText = M3L.GetString(M3L.string_validatingArchiveFile);
+            ModArchiveInspector.FindModsInArchive(archivePath, addCompressedModCallback: foundCompressedMod, failedToLoadModCallback: failedToLoadMod);
+            ProgressIndeterminate = false;
+            ProgressBarAnimated = false;
+            ProgressMax = 1;
+            ProgressValue = 1;
+
+            if (expectedModCount != foundCount)
+            {
+                OperationText = M3L.GetString(M3L.string_deploymentFailed);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_deploymentFailedWrongNumMods, expectedModCount, foundCount), M3L.GetString(M3L.string_deploymentFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                });
+            }
+            else
+            {
+                // Deployment succeeded
+                OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
+                M3Utilities.HighlightInExplorer(archivePath);
+                e.Result = GetModsNeedingTPMISubmission(modsBeingDeployed);
+            }
         }
 
         private List<Mod> GetModsNeedingTPMISubmission(List<Mod> modsBeingDeployed)
@@ -708,6 +749,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool ProgressIndeterminate { get; set; }
 
         public ObservableCollectionExtended<DeploymentValidationTarget> ValidationTargets { get; } = new ObservableCollectionExtended<DeploymentValidationTarget>();
+
+        /// <summary>
+        /// Is the progress bar animated as if it was filling up
+        /// </summary>
+        public bool ProgressBarAnimated { get; set; } = true;
 
 
         // This is not incorrectly named. It's just got not matching value
