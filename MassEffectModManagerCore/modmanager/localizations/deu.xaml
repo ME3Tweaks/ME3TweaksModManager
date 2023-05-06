@@ -229,6 +229,7 @@
 	<system:String x:Key="string_interp_textureModModifiesExportsX" xml:space="preserve">Diese Texturmod modifiziert die folgenden Texturen:\n{0}</system:String>
         <system:String x:Key="string_gameSelector">Spiel-Selektor</system:String>
         <system:String x:Key="string_dialog_selectGameInstallGroup">Wähle aus, für welches Spiel eine Installationsgruppe erstellt werden soll.</system:String>
+        <system:String x:Key="string_debugTriggerDataReload">Debug: Neuladen der Daten auslösen</system:String>
 	<system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">Es ist kein Backup verfügbar, um 2DAs abzufragen.</system:String>
 	<system:String x:Key="string_2da_errorReading2DAs">Fehler beim Lesen der 2DA-Tabellen aus dem Spiel: {0}</system:String>
 	<system:String x:Key="string_errorReadingTables">Fehler beim Lesen von Tabellen</system:String>
@@ -423,6 +424,9 @@
 	<system:String x:Key="string_creatingCombinedTLKMergeFile">Kombinierte TLK Mergedatei wird erstellt</system:String>
 	<system:String x:Key="string_addingCombinedTLKMergeFile">Kombinierte TLK Mergedatei wird hinzugefügt</system:String>
 	<system:String x:Key="string_tooltip_clickToLEX">Klicke, um in Legendary Explorer Nightly zu öffnen</system:String>
+        <system:String x:Key="string_validatingArchiveFile">Validiere Archivdatei</system:String>
+        <system:String x:Key="string_deploymentFailed">Bereitstellung fehlgeschlagen</system:String>
+        <system:String xml:space="preserve" x:Key="string_interp_dialog_deploymentFailedWrongNumMods">Mod-Bereitstellung fehlgeschlagen: Die im Archiv erwartete Menge an Mods stimmte nicht mit der analysierten Menge überein.\nErwartet: {0}\nErkannt: {1}\n\nBitte melde dies Mgamerz im ME3Tweaks Discord.</system:String>
 	<system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
 	<system:String x:Key="string_interp_extractingX">Entpacke {0}</system:String>
 	<system:String x:Key="string_checkingForUpdates">Aktualisierungen werden gesucht</system:String>
