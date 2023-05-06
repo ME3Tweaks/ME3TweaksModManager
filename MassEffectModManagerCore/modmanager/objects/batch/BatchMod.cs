@@ -45,13 +45,13 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// The hash of the moddesc.ini file - if the one on disk does not match this, options must (should?) be rechosen
         /// </summary>
         [JsonProperty(@"moddeschash")]
-        public string ModDescHash { get; set; }
+        public string Hash { get; set; }
 
         /// <summary>
         /// The original size of the moddesc
         /// </summary>
         [JsonProperty(@"moddescsize")]
-        public long ModDescSize { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// If the moddesc hash does not match the one on disk
@@ -126,7 +126,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 {
                     Mod = m;
                     var localHash = MUtilities.CalculateHash(Mod.ModDescPath);
-                    ChosenOptionsDesync = ModDescHash != null && localHash != ModDescHash;
+                    ChosenOptionsDesync = Hash != null && localHash != Hash;
                     //if (ChosenOptionsDesync)
                     //{
                     //    Debugger.Break();
@@ -150,9 +150,9 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             if (Mod != null)
             {
-                ModDescSize = new FileInfo(Mod.ModDescPath).Length;
-                ModDescHash = MUtilities.CalculateHash(Mod.ModDescPath);
-                if (FileSourceService.TryGetSource(new FileInfo(Mod.ModDescPath).Length, ModDescHash, out var sourceLink))
+                Size = new FileInfo(Mod.ModDescPath).Length;
+                Hash = MUtilities.CalculateHash(Mod.ModDescPath);
+                if (FileSourceService.TryGetSource(new FileInfo(Mod.ModDescPath).Length, Hash, out var sourceLink))
                 {
                     DownloadLink = sourceLink;
                 }

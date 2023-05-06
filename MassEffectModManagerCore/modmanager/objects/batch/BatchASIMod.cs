@@ -58,5 +58,9 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             return AssociatedMod != null;
         }
+
+        // These are not used but are required for IBatchMod interface
+        public string Hash { get; set; }
+        public long Size { get; set; }
     }
 }

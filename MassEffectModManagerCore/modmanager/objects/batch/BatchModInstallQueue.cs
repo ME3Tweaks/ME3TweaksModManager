@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
 using WinCopies.Util;
@@ -78,10 +79,10 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public ObservableCollectionExtended<MEMMod> TextureModsToInstall { get; } = new ObservableCollectionExtended<MEMMod>();
 
         /// <summary>
-        /// SERIALIZATION ONLY - Stores the list of MEM file paths befoer they are parsed into TextureModsToInstall
+        /// SERIALIZATION ONLY - Stores the list of MEM file paths before they are parsed into TextureModsToInstall
         /// </summary>
         [JsonProperty(@"texturemodfiles")]
-        public List<string> SerializeOnly_MEMFilePaths { get; set; }
+        public List<SerializedTextureMod> SerializeOnly_MEMFilePaths { get; set; }
 
         /// <summary>
         /// Only used for UI binding!
@@ -160,7 +161,15 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             try
             {
-                var modernQueue = JsonConvert.DeserializeObject<BatchLibraryInstallQueue>(queueJson);
+                var modernQueue = JsonConvert.DeserializeObject<BatchLibraryInstallQueue>(queueJson, new JsonSerializerSettings()
+                {
+                    Error = (sender, args) =>
+                    {
+                        var currentError = args.ErrorContext.Error.Message;
+                        M3Log.Warning($@"Error deserializing {queueFilename}: {currentError}. Part of this queue will not be deserialized.");
+                        args.ErrorContext.Handled = true; // ignore errors to try to bring up as much as possible
+                    }
+                });
                 modernQueue.BackingFilename = queueFilename;
                 modernQueue.QueueFormatVersion = QUEUE_VERSION_BIQ2;
                 foreach (var mod in modernQueue.ModsToInstall)
@@ -175,14 +184,44 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 // Associate any M3-managed texture mods, otherwise use a basic MEMMod object.
                 if (modernQueue.SerializeOnly_MEMFilePaths != null)
                 {
-                    foreach (var texModPath in modernQueue.SerializeOnly_MEMFilePaths)
+                    var modLibraryPath = M3LoadedMods.GetCurrentModLibraryDirectory();
+                    var textureLibraryPath = M3LoadedMods.GetTextureLibraryDirectory();
+                    var registeredTextureMods = M3LoadedMods.GetAllM3ManagedMEMs(game: modernQueue.Game);
+                    foreach (var textureModEntry in modernQueue.SerializeOnly_MEMFilePaths)
                     {
-                        var matchingM3Entry = M3LoadedMods.GetAllM3ManagedMEMs()
-                            .FirstOrDefault(x =>
-                                x.GetFilePathToMEM().CaseInsensitiveEquals(texModPath)); // Filepath the same!
+                        MEMMod matchingM3Entry = null;
+                        if (textureModEntry.AttachedToModdescMod)
+                        {
+                            var onDiskPath = Path.Combine(modLibraryPath, textureModEntry.TextureModPath);
+                            matchingM3Entry = registeredTextureMods.FirstOrDefault(x => x.GetFilePathToMEM().CaseInsensitiveEquals(onDiskPath)); // Find registered M3MM with same filepath
+                        }
+                        else if (textureModEntry.InTextureLibrary)
+                        {
+                            var onDiskPath = Path.Combine(M3LoadedMods.GetTextureLibraryDirectory(), textureModEntry.TextureModPath);
+                            matchingM3Entry = registeredTextureMods.FirstOrDefault(x => x.GetFilePathToMEM().CaseInsensitiveEquals(onDiskPath)); // Find registered MEMMod with same filepath
+                        }
+                        // Other case is stored entirely on disk
+
                         if (matchingM3Entry == null)
                         {
-                            MEMMod m = new MEMMod(texModPath);
+                            // Will store full path
+                            // Preload with our known data to enable FSS lookups
+                            var expectedPath = textureModEntry.TextureModPath;
+
+                            if (textureModEntry.AttachedToModdescMod)
+                            {
+                                expectedPath = Path.Combine(modLibraryPath, textureModEntry.TextureModPath);
+                            }
+                            else if (textureModEntry.InTextureLibrary)
+                            {
+                                expectedPath = Path.Combine(textureLibraryPath, textureModEntry.TextureModPath);
+                            }
+                            MEMMod m = new MEMMod(expectedPath)
+                            {
+                                Hash = textureModEntry.TextureModHash,
+                                Size = textureModEntry.TextureModSize,
+                            };
+
                             m.ParseMEMData();
                             modernQueue.TextureModsToInstall.Add(m);
                         }
@@ -269,7 +308,47 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 m.PrepareForSave();
             }
 
-            SerializeOnly_MEMFilePaths = TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList(); // Serialize the list
+            SerializeOnly_MEMFilePaths = TextureModsToInstall.Select(x =>
+            {
+                var s = new SerializedTextureMod()
+                {
+                    TextureModPath = x.GetFilePathToMEM(),
+                    TextureModSize = x.Size, // Use the existing saved (in case we can't compute it)
+                    TextureModHash = x.Hash, // Use the existing saved (in case we can't compute it)
+                    AttachedToModdescMod = x is M3MEMMod, // M3MEMMod files are content-mod based texture mods (part of moddesc.ini bundle)
+                    InTextureLibrary = x.GetFilePathToMEM().StartsWith(M3LoadedMods.GetTextureLibraryDirectory(), StringComparison.InvariantCultureIgnoreCase) // If this is part of loose imported texture files
+                };
+
+                if (File.Exists(x.GetFilePathToMEM()))
+                {
+                    s.TextureModSize = new FileInfo(x.GetFilePathToMEM()).Length;
+                    if (x.Hash == null || x.InitialLoadedSize != x.Size || s.TextureModSize < (FileSize.MebiByte * 128))
+                    {
+                        // If we don't have a hash listed we MUST hash this into the object
+                        // If the initial loaded size has changed vs what we stored we must also change it (because the underlying file has changed)
+                        // Hash it. If it's big, we don't hash it, we just trust the size, to save on time.
+                        // I am not fully sure how reliable this system is...
+                        s.TextureModHash = MUtilities.CalculateHash(x.GetFilePathToMEM());
+                    }
+                    else
+                    {
+                        s.TextureModHash = @"0".PadLeft(32); // Hash 0...0
+                    }
+
+                    if (x is M3MEMMod mm && mm.ModdescMod != null)
+                    {
+                        // Store library relative path 
+                        s.TextureModPath = mm.ModdescMod.ModPath.Substring(M3LoadedMods.GetCurrentModLibraryDirectory().Length + 1) + Path.DirectorySeparatorChar + mm.GetRelativePathToMEM();
+                    }
+                    else if (s.InTextureLibrary)
+                    {
+                        // Store library relative path (after import)
+                        s.TextureModPath = x.GetFilePathToMEM().Substring(M3LoadedMods.GetTextureLibraryDirectory().Length + 1);
+                    }
+                }
+
+                return s;
+            }).ToList(); // Serialize the list
 
             // Commit
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);

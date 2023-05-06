@@ -575,7 +575,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         }
 
         /// <summary>
-        /// Returns a list of all ModDesc-owned MEM mods, optionally filtered by game. 
+        /// Returns a list of all known MEMMods in the texture library (content mod or texture library based), optionally filtered by game. 
         /// </summary>
         /// <param name="game">The game to filter against</param>
         /// <returns>A list of paired moddesc mods and a paired texture mod</returns>
