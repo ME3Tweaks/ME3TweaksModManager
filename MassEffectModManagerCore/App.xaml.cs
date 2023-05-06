@@ -444,7 +444,7 @@ namespace ME3TweaksModManager
 
             if (lang == @"deu") // deu is up to date
             {
-                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_RUS, out var enabled, true);
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_DEU, out var enabled, true);
                 return enabled;
             }
 
