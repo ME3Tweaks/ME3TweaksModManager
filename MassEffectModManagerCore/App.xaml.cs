@@ -439,8 +439,6 @@ namespace ME3TweaksModManager
         public static bool IsLanguageSupported(string lang)
         {
             lang = lang.ToLower();
-            if (lang == @"rus") return true;
-            // if (lang == @"pol") return true; // Localization has not been updated since build 124
 
             if (lang == @"deu") // deu is up to date
             {
