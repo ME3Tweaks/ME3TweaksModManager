@@ -519,7 +519,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_textureModsImported = "string_textureModsImported";
 		public const string string_mergingCoalescedFiles = "string_mergingCoalescedFiles";
 		public const string string_mergedCoalescedFiles = "string_mergedCoalescedFiles";
-		public const string string_massEfectModderFiles = "string_massEfectModderFiles";
 		public const string string_selectMemFile = "string_selectMemFile";
 		public const string string_interp_headmorphRequiresDLCCouldNotDetermine = "string_interp_headmorphRequiresDLCCouldNotDetermine";
 		public const string string_interp_headmorphRequiresDLCBadVersionString = "string_interp_headmorphRequiresDLCBadVersionString";
@@ -792,6 +791,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_creatingCombinedTLKMergeFile = "string_creatingCombinedTLKMergeFile";
 		public const string string_addingCombinedTLKMergeFile = "string_addingCombinedTLKMergeFile";
 		public const string string_tooltip_clickToLEX = "string_tooltip_clickToLEX";
+		public const string string_validatingArchiveFile = "string_validatingArchiveFile";
+		public const string string_deploymentFailed = "string_deploymentFailed";
+		public const string string_interp_dialog_deploymentFailedWrongNumMods = "string_interp_dialog_deploymentFailedWrongNumMods";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
 		public const string string_deployment_squadmateOutfitMerge = "string_deployment_squadmateOutfitMerge";
 		public const string string_deployment_sqmIssuesDialogMessage = "string_deployment_sqmIssuesDialogMessage";
@@ -1714,6 +1716,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_textureModModifiesExportsX = "string_interp_textureModModifiesExportsX";
 		public const string string_gameSelector = "string_gameSelector";
 		public const string string_dialog_selectGameInstallGroup = "string_dialog_selectGameInstallGroup";
+		public const string string_debugTriggerDataReload = "string_debugTriggerDataReload";
 		public const string string_notConfigured = "string_notConfigured";
 		public const string string_reconfigurationRequired = "string_reconfigurationRequired";
 		public const string string_interp_configuredTimestamp = "string_interp_configuredTimestamp";

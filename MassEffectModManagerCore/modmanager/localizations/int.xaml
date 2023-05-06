@@ -871,6 +871,10 @@
     <system:String x:Key="string_creatingCombinedTLKMergeFile">Creating combined TLK merge file</system:String>
     <system:String x:Key="string_addingCombinedTLKMergeFile">Adding combined TLK merge file</system:String>
     <system:String x:Key="string_tooltip_clickToLEX">Click to open in Legendary Explorer Nightly</system:String>
+    <system:String x:Key="string_validatingArchiveFile">Validating archive file</system:String>
+    <system:String x:Key="string_deploymentFailed">Deployment failed</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_deploymentFailedWrongNumMods">Mod deployment failed: The amount of mods expected in the archive did not match the amount that were parsed.\nExpected: {0}\nDetected: {1}\n\nPlease report this to Mgamerz on the ME3Tweaks Discord.</system:String>
+    <!-- 0={expectedModCount} 1={foundCount} -->
 
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
@@ -2184,6 +2188,8 @@
     <!-- 0={A list of texture export names, in bullet point form} -->
     <system:String x:Key="string_gameSelector">Game selector</system:String>
     <system:String x:Key="string_dialog_selectGameInstallGroup">Select which game to create an install group for.</system:String>
+    <system:String x:Key="string_debugTriggerDataReload">Debug: Trigger data reload</system:String>
+    <!-- This is only shown in debug builds. It is used to test when a mod becomes available in the library -->
 
     <!-- Batch Mod class -->
     <system:String x:Key="string_notConfigured">Not configured</system:String>
