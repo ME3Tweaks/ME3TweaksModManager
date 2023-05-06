@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
@@ -53,6 +54,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand EditGroupCommand { get; private set; }
         public ICommand DuplicateGroupCommand { get; private set; }
         public ICommand DeleteGroupCommand { get; private set; }
+        public ICommand TriggerDataReloadCommand { get; private set; }
+
         public bool CanCompressPackages => SelectedBatchQueue != null && SelectedBatchQueue.Game is MEGame.ME2 or MEGame.ME3;
 
         private void LoadCommands()
@@ -63,6 +66,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             EditGroupCommand = new GenericCommand(EditGroup, BatchQueueSelected);
             DeleteGroupCommand = new GenericCommand(DeleteGroup, BatchQueueSelected);
             DuplicateGroupCommand = new GenericCommand(DuplicateGroup, BatchQueueSelected);
+            TriggerDataReloadCommand = new GenericCommand(ReloadModData, CanTriggerReload);
+        }
+
+        private bool CanTriggerReload()
+        {
+            return SelectedBatchQueue != null && App.IsDebug;
         }
 
         private void DuplicateGroup()
@@ -240,11 +249,40 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             M3LoadedMods.ModsReloaded -= OnModLibraryReloaded;
 
+            var registeredTextureMods = M3LoadedMods.GetAllM3ManagedMEMs();
             foreach (var queue in AvailableBatchQueues)
             {
                 foreach (var mod in queue.ModsToInstall)
                 {
                     mod.Init();
+                }
+
+                bool rebuildTextureList = false;
+                for (int i = 0; i < queue.TextureModsToInstall.Count; i++)
+                {
+                    var existingEntry = queue.TextureModsToInstall[i];
+                    if (existingEntry is not M3MEMMod && existingEntry != null) // Are we a MEMMod but not an M3MEMMod
+                    {
+                        // See if we need to re-associate it to an M3MEMMod
+                        var matchingEntry = registeredTextureMods.FirstOrDefault(x => x.GetFilePathToMEM().CaseInsensitiveEquals(existingEntry.GetFilePathToMEM())); // Find registered M3MM with same filepath
+                        if (matchingEntry != null)
+                        {
+                            queue.TextureModsToInstall.RemoveAt(i);
+                            queue.TextureModsToInstall.Insert(i, matchingEntry);
+                            rebuildTextureList = true;
+                        }
+                    }
+                    else
+                    {
+                        existingEntry.ParseMEMData();
+                    }
+                }
+
+                if (rebuildTextureList)
+                {
+                    // Re-build the all mods list
+                    queue.AllModsToInstall.RemoveAll(x => x is MEMMod);
+                    queue.AllModsToInstall.AddRange(queue.TextureModsToInstall);
                 }
             }
 
@@ -351,15 +389,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             bool open = false; // If panel is to open or not
 
-            if (mod is BatchMod bm && bm.Mod == null && bm.ModDescHash != null)
+            if (mod is IBatchQueueMod bm && bm.IsAvailableForInstall() == false && bm.Hash != null)
             {
-                if (FileSourceService.TryGetSource(bm.ModDescSize, bm.ModDescHash, out var link))
+                if (FileSourceService.TryGetSource(bm.Size, bm.Hash, out var link))
                 {
                     open = true;
                     SelectedUnavailableModLink = link;
                 }
             }
-
 
             if (open != WebsitePanelStatus)
             {

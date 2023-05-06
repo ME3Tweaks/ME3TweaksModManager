@@ -39,6 +39,12 @@
                 Content="{DynamicResource string_createANewInstallGroup}"
                 Command="{Binding CreateNewGroupCommand}" />
             <Button
+                ui:SharedUIBindings.VisibilityToEnabled="True"
+                HorizontalAlignment="Left"
+                Content="{DynamicResource string_debugTriggerDataReload}"
+                Margin="5,0"
+                Command="{Binding TriggerDataReloadCommand}" />
+            <Button
                 DockPanel.Dock="Left"
                 HorizontalAlignment="Right"
                 Content="{DynamicResource string_close}"
