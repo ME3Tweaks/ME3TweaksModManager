@@ -612,11 +612,11 @@
                                             <DockPanel
                                                 Margin="0,0,0,10">
                                                 <TextBlock
-                                                    Text="{Binding InstallationTimestamp,                                                  Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}"
+                                                    Text="{Binding InstallationTimestamp, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}"
                                                     FontWeight="Bold"
                                                     DockPanel.Dock="Top" />
                                                 <TextBlock
-                                                    Text="{Binding                                                 Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}"
+                                                    Text="{Binding Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}"
                                                     DockPanel.Dock="Top" />
                                                 <TextBlock
                                                     Text="{DynamicResource string_filesInstalledInSession}"
