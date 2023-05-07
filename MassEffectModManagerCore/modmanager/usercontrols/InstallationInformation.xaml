@@ -328,6 +328,7 @@
                                                 Grid.Column="0"
                                                 FontSize="10"
                                                 FontStyle="Italic"
+                                                xml:space="preserve"
                                                 Text="{Binding ModificationSource}"
                                                 VerticalAlignment="Center"
                                                 HorizontalAlignment="Stretch"

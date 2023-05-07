@@ -1,10 +1,13 @@
 ﻿using System.Windows.Input;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
+using ME3TweaksCore.Services.BasegameFileIdentification;
+using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -32,6 +35,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var configBundle = ConfigAssetBundle.FromSingleStream(MEGame.LE1, coalescedStream);
 
             var dlcMountsInOrder = MELoadedDLC.GetDLCNamesInMountOrder(target.Game, target.TargetPath);
+
+            // For BGFIS
+            bool mergedAny = false;
+            string recordedMergeName = @"";
+            void recordMerge(string displayName)
+            {
+                mergedAny = true;
+                recordedMergeName += displayName + "\n"; // do not localize
+            }
+
+
             foreach (var dlc in dlcMountsInOrder)
             {
                 var dlcCookedPath = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName());
@@ -46,13 +60,30 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     M3Log.Information($@"Merging M3 Config Delta {m3cd}");
                     var m3cdasset = ConfigFileProxy.LoadIni(m3cd);
                     ConfigMerge.PerformMerge(configBundle, m3cdasset);
+                    recordMerge($@"{dlc}-{Path.GetFileName(m3cd)}");
                 }
             }
 
-            // Serialize the assets
+            var records = new List<BasegameFileRecord>();
             var coalFile = Path.Combine(M3Directories.GetCookedPath(target), @"Coalesced_INT.bin");
-            configBundle.CommitAssets(coalFile);
+            // Set the BGFIS record name
+            if (mergedAny)
+            {
+                // Serialize the assets
+                configBundle.CommitAssets(coalFile);
 
+                // Submit to BGFIS
+                records.Add(new M3BasegameFileRecord(coalFile, target, recordedMergeName.Trim()));
+                BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(records);
+            }
+            else
+            {
+                coalescedStream.WriteToFile(coalFile);
+            }
+
+
+            // LE1 - It doesn't actually use non-INT Coalesced files, that's only for LE2...
+            /*
             // Copy the coalesced file to the other languages
             var languages = GameLanguage.GetLanguagesForGame(MEGame.LE1);
             foreach (var lang in languages)
@@ -65,9 +96,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     M3Log.Information($@"Copying coalesced file {coalFile} -> {dest}");
                     File.Copy(coalFile, dest, true); // I'm pretty sure coalesced files only differ by their localized editor messages
+                    if (mergedAny)
+                    {
+                        records.Add(new M3BasegameFileRecord(dest, target, recordedMergeName));
+                    }
                 }
             }
 
+            if (mergedAny)
+            {
+                BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(records);
+            }*/
             return true;
         }
 

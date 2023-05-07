@@ -21,5 +21,21 @@ namespace ME3TweaksModManager.me3tweakscoreextended
             this.size = size;
             this.source = modBeingInstalled.ModName + @" " + modBeingInstalled.ModVersionString;
         }
+
+        /// <summary>
+        /// Generates a basegame file record from the file path, the given target, and the display name
+        /// </summary>
+        /// <param name="fullfilepath"></param>
+        /// <param name="target"></param>
+        /// <param name="recordedMergeName"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public M3BasegameFileRecord(string fullfilepath, GameTarget target, string recordedMergeName)
+        {
+            this.file = fullfilepath.Substring(target.TargetPath.Length + 1);
+            this.hash = MUtilities.CalculateHash(fullfilepath);
+            this.game = target.Game.ToGameNum().ToString();
+            this.size = (int)new FileInfo(fullfilepath).Length;
+            this.source = recordedMergeName;
+        }
     }
 }
