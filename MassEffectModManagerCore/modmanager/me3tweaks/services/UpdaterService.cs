@@ -1,31 +1,22 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
-using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
@@ -378,8 +369,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     eparams[$@"NexusRequestsGame{game.Key}"] = string.Join(@",", game.Value);
                 }
                 eparams[@"Response"] = updatexml;
-                Crashes.TrackError(e, eparams);
-
+                var requestForDebug = ErrorAttachmentLog.AttachmentWithText(JsonConvert.SerializeObject(requestData), @"request.json");
+                var responseForDebug = ErrorAttachmentLog.AttachmentWithText(updatexml, @"response.xml");
+                Crashes.TrackError(e, eparams, requestForDebug, responseForDebug);
             }
 
             // OLD URL-ENCODED METHOD
