@@ -1933,7 +1933,7 @@ namespace ME3TweaksModManager
                         {
                             M3Log.Exception(e, @"Error generating ME3Tweaks Merge DLC: ");
                             // This should have a dialog here, right?
-                            M3L.ShowDialog(this, $"Error generating merge DLC: {e.Message}\nMods may not function properly - manually remove the merge DLC (if any) via the 'Manage Target' button.", "Error generating Merge DLC", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_errorGeneratingMergeDLC, e.Message), M3L.GetString(M3L.string_errorGeneratingMergeDLC), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                 }

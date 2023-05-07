@@ -503,6 +503,9 @@
     <system:String x:Key="string_gameNotAvailable">Game not available</system:String>
     <system:String x:Key="string_unsupportedGame">Unsupported game</system:String>
     <system:String x:Key="string_prerequesiteNotMet">Prerequisite not met</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_errorGeneratingMergeDLC">Error generating Merge DLC: {0}\nMods may not function properly - manually remove the merge DLC (if any) via the 'Manage Target' button.</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorGeneratingMergeDLC">Error generating Merge DLC</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>

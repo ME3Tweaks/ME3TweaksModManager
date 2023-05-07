@@ -529,6 +529,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_gameNotAvailable = "string_gameNotAvailable";
 		public const string string_unsupportedGame = "string_unsupportedGame";
 		public const string string_prerequesiteNotMet = "string_prerequesiteNotMet";
+		public const string string_dialog_errorGeneratingMergeDLC = "string_dialog_errorGeneratingMergeDLC";
+		public const string string_errorGeneratingMergeDLC = "string_errorGeneratingMergeDLC";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
