@@ -643,6 +643,7 @@
                                                                     </Style>
                                                                 </DockPanel.Resources>
                                                                 <TextBlock
+                                                                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='OTGame'}"
                                                                     DockPanel.Dock="Right"
                                                                     Text="{Binding ModType}"
                                                                     FontStyle="Italic"
