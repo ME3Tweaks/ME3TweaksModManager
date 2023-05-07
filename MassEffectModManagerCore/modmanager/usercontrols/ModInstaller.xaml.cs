@@ -840,6 +840,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     ModName = assignedDLCName ?? InstallOptionsPackage.ModBeingInstalled.ModName,
                     Version = InstallOptionsPackage.ModBeingInstalled.ModVersionString,
                     InstallTime = DateTime.Now,
+                    NexusUpdateCode = InstallOptionsPackage.ModBeingInstalled.NexusModID,
                 };
 
                 // Metacmm uses observable collections because in some apps it's binded to the interface
