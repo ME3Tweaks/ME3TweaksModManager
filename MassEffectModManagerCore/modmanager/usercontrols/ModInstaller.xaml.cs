@@ -606,7 +606,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Delete existing custom DLC mods with same name
-            foreach (var cdbi in customDLCsBeingInstalled)
+            // 05/08/2023: Restore ME3CMM feature that also removed DLCs that began with 'x' - disabled DLCs
+            foreach (var cdbi in customDLCsBeingInstalled.Concat(customDLCsBeingInstalled.Select(x => 'x' + x))) 
             {
                 var path = Path.Combine(gameDLCPath, cdbi);
                 if (Directory.Exists(path))
