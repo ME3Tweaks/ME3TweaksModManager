@@ -1347,18 +1347,18 @@ namespace ME3TweaksModManager
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
                             var bm = queue.ModsToInstall[modIndex];
+                            modIndex++;
                             if (bm.IsAvailableForInstall())
                             {
-                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].Mod.ModName}");
+                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
                                 bm.UseSavedOptions = queue.UseSavedOptions;
                                 ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             }
                             else
                             {
                                 M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
+                                modInstalled(true); // Trigger next install
                             }
-
-                            modIndex++;
                         }
                         else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
                         {
