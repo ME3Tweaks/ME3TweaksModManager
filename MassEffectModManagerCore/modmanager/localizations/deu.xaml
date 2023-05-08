@@ -1153,6 +1153,8 @@
 	<system:String x:Key="string_gameNotAvailable">Spiel nicht verfügbar</system:String>
 	<system:String x:Key="string_unsupportedGame">Nicht unterstütztes Spiel</system:String>
 	<system:String x:Key="string_prerequesiteNotMet">Voraussetzung nicht erfüllt</system:String>
+        <system:String xml:space="preserve" x:Key="string_dialog_errorGeneratingMergeDLC">Fehler beim Generieren von Merge-DLC: {0}\nMods funktionieren möglicherweise nicht richtig – entferne die Merge-DLC (falls vorhanden) manuell über die Schaltfläche „Ziel verwalten“.</system:String>
+        <system:String x:Key="string_errorGeneratingMergeDLC">Fehler beim Generieren von Merge-DLC</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config-Datei {0}.ini fehlt. Sie sollte sich in {1} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Mass Effect Config-Ordner fehlt. Er sollte sich in {0} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Mass Effect Ini Modder kann nicht gestartet werden</system:String>
