@@ -559,7 +559,7 @@
 	<system:String x:Key="string_installedDLCmods">Installierte DLC-Mods</system:String>
 	<system:String x:Key="string_delete">Löschen</system:String>
 	<system:String x:Key="string_modifiedBasegameFiles">Modifizierte Hauptspiel-Dateien</system:String>
-	<system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Werde versuchen, alle modifizierten Hauptspiel-Dateien und entpackte DLC-Dateien (ME2) wiederherzustellen.</system:String>
+	<system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Versucht alle modifizierten Hauptspieldateien wiederherzustellen</system:String>
 	<system:String x:Key="string_restoreallmodifiedbasegamefiles">Alle modifizierten Hauptspiel-Dateien wiederherstellen</system:String>
 	<system:String x:Key="string_modifiedDLCarchivesSFAR">Modifizierte DLC-Archive (SFAR)</system:String>
 	<system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Werde versuchen, alle modifizierten SFAR-Dateien wiederherzustellen. Alle entpackten Dateien werden dabei auch gelöscht</system:String>
