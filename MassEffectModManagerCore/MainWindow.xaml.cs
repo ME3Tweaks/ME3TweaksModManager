@@ -1334,6 +1334,7 @@ namespace ME3TweaksModManager
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
                     BatchPanelResult = new PanelResult();
+                    HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
                     var target = batchLibrary.SelectedGameTarget;
                     //Install queue
 
