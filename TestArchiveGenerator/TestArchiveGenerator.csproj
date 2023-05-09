@@ -1,25 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows8.0</TargetFramework>
-    <PublishTrimmed>true</PublishTrimmed>
-    <PublishSingleFile>true</PublishSingleFile>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	<Platforms>x64</Platforms>
-	<Version>1.0.1</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<!-- Windows 2004 -->
+		<TargetFrameworks>net6.0-windows10.0.19041</TargetFrameworks>
+		<PublishTrimmed>true</PublishTrimmed>
+		    <PublishSingleFile>true</PublishSingleFile>
+		    <PublishReadyToRun>true</PublishReadyToRun>
+		    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<Platforms>x64</Platforms>
+		<Version>1.0.1</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-	  <ProjectReference Include="..\SevenZip\SevenZip.csproj" />
-	  <ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
+		<ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="7z64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="7z64.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

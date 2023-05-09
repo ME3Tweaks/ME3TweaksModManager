@@ -1,49 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows8.0</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <Authors>Mgamerz</Authors>
-    <Company>ME3Tweaks</Company>
-    <Product>ME3Tweaks Mod Manager Localizer</Product>
-    <Description>Localizes the ME3Tweaks Mod Manager files from Github</Description>
-    <Copyright>2020-2023 ME3Tweaks</Copyright>
-    <ApplicationIcon>localizericon.ico</ApplicationIcon>
-    <Version>2.0.9</Version>
-    <Platforms>x64</Platforms>
-    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<!-- Windows 2004 -->
+		<TargetFrameworks>net6.0-windows10.0.19041</TargetFrameworks>
+		<UseWPF>true</UseWPF>
+		<Authors>Mgamerz</Authors>
+		<Company>ME3Tweaks</Company>
+		<Product>ME3Tweaks Mod Manager Localizer</Product>
+		<Description>Localizes the ME3Tweaks Mod Manager files from Github</Description>
+		<Copyright>2020-2023 ME3Tweaks</Copyright>
+		<ApplicationIcon>localizericon.ico</ApplicationIcon>
+		<Version>2.0.9</Version>
+		<Platforms>x64</Platforms>
+		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<PlatformTarget>x64</PlatformTarget>
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
-    <PackageReference Include="AvalonEdit" Version="6.2.0.78" />
-    <PackageReference Include="Fody" Version="6.7.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Octokit" Version="5.1.0" />
-    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
+		<PackageReference Include="AvalonEdit" Version="6.2.0.78" />
+		<PackageReference Include="Fody" Version="6.7.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Octokit" Version="5.1.0" />
+		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
 
-    <ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <None Include="MainWindow.xaml" />
-    <Compile Remove="MainWindow.xaml.cs" />
-  </ItemGroup>
+		<ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<None Include="MainWindow.xaml" />
+		<Compile Remove="MainWindow.xaml.cs" />
+	</ItemGroup>
 </Project>
