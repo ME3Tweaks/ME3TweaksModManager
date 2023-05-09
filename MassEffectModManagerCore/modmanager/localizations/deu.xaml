@@ -248,7 +248,7 @@
 	<system:String x:Key="string_interp_fullConsoleBoundToConsolekeyValue">Volle Konsole wird mit {0} geöffnet</system:String>
 	<system:String x:Key="string_interp_miniConsoleBoundToTypekeyValue">Mini-Konsole wird mit {0} geöffnet</system:String>
 	<system:String x:Key="string_consoleKeyKeybinder">Tastenbeleger für die Konsolentasten</system:String>
-	<system:String x:Key="string_description_consoleKeyKeybinder">Mit diesem Werkzeug kannst du einstellen, welche Tasten die Konsole und Mini-Konsole in jedem Mass Effect Spiel öffnen. Um die Konsole zu nutzen, installiere die bink Umgehung für dein Spiel über das Werkzeuge-Menü.</system:String>
+	<system:String x:Key="string_description_consoleKeyKeybinder">Mit diesem Werkzeug kannst du einstellen, welche Tasten die Konsole und Mini-Konsole in jedem Mass Effect Spiel öffnen. Um die Konsole zu nutzen, installiere den Bink-Bypass für dein Spiel über das Werkzeuge-Menü.</system:String>
 	<system:String x:Key="string_listeningForKeypress">Warte auf Tastendruck</system:String>
 	<system:String x:Key="string_pressAnyKeyOnYourKeyboardToAssignItFor">Drücke eine beliebige Taste für:</system:String>
 	<system:String x:Key="string_cancelKeyAssignment">Abbrechen</system:String>
@@ -459,10 +459,10 @@
 	<system:String x:Key="string_restore">Wiederherstellen</system:String>
 	<system:String x:Key="string_restoring">Wird wiederhergestellt</system:String>
 	<system:String x:Key="string_thisInstallationHasNoASIModsInstalled">In dieser Installation sind keine ASI-Mods installiert</system:String>
-	<system:String x:Key="string_bypassInstalledASIAndDLCModsWillBeAbleToLoad">Umgehung installiert. ASI- und DLC-Mods können geladen werden</system:String>
-	<system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Umgehung nicht installiert. ASI- und DLC-Mods können nicht geladen werden</system:String>
-	<system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Umgehung installiert. ASI-Mods können geladen werden</system:String>
-	<system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Umgehung nicht installiert. ASI-Mods können nicht geladen werden</system:String>
+	<system:String x:Key="string_bypassInstalledASIAndDLCModsWillBeAbleToLoad">Bypass installiert. ASI- und DLC-Mods können geladen werden</system:String>
+	<system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Bypass nicht installiert. ASI- und DLC-Mods können nicht geladen werden</system:String>
+	<system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Bypass installiert. ASI-Mods können geladen werden</system:String>
+	<system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Bypass nicht installiert. ASI-Mods können nicht geladen werden</system:String>
 	<system:String x:Key="string_interp_unsupportedME1Version">Nicht unterstützte Spielversion: {0}. Die einzige unterstützte Version von MassEffect.exe ist 1.2.20608.0</system:String>
 	<system:String x:Key="string_interp_unsupportedME2Version">Nicht unterstützte Spielversion: {0}. Die einzige unterstützte Version von MassEffect2.exe ist 1.2.1604.0</system:String>
 	<system:String x:Key="string_interp_unsupportedME3Version">Nicht unterstützte Spielversion: {0}. Die einzige unterstützte Version von MassEffect3.exe ist 1.5.5427.124</system:String>
@@ -586,7 +586,7 @@
 	<system:String x:Key="string_installedASIs">Installierte ASIs</system:String>
 	<system:String x:Key="string_tooltip_clickToOpenASIManager">Klicke, um den ASI-Manager zu öffnen</system:String>
 	<system:String x:Key="string_manageASIsWithASIManager">ASIs mit dem ASI-Manager verwalten</system:String>
-	<system:String x:Key="string_binkw32DLCBypass">Binkw32 DLC-Umgehung</system:String>
+	<system:String x:Key="string_binkw32DLCBypass">Binkw32 DLC-Bypass</system:String>
 	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Wiederherstellen von SFARs ohne Backup wird nur ungepackte Dateien löschen, da es keine Backup-Datei gibt, die kopiert werden kann. Dies versetzt das DLC in einen defekten und unbenutzbaren Zustand. Du musst ein Backup einer unmodifizierten Installation des Spiels erstellen, bevor du DLC SFARs korrekt wiederherstellen kannst.</system:String>
 	<system:String x:Key="string_backupNotAvailable">Backup nicht verfügbar</system:String>
 	<system:String x:Key="string_textures">Texturen</system:String>
@@ -694,6 +694,8 @@
         <system:String x:Key="string_exportSave">Spielstand Exportieren</system:String>
         <system:String x:Key="string_legendSave">Legendenspielstand</system:String>
         <system:String x:Key="string_interp_unknownSaveTypeX">Unbekannter Spielstandtyp: {0}</system:String>
+        <system:String xml:space="preserve" x:Key="string_dialog_firstCoalescedMerge">ME3Tweaks Mod Manager ersetzt automatisch die Coalesced_INT.bin-Datei des Hauptspiels für LE1, sodass Mods die LE1 Coalesced Merge-Funktion verwenden können. Manuell installierte/bearbeitete Coalesced_INT.bin-Mods werden von dieser Funktion überschrieben; Sie ist in den Mod-Manager-Einstellungen deaktivierbar.\n\nDas Deaktivieren der LE1 Coalesced Merge-Funktion wird alle Mods beschädigen, die davon abhängen.</system:String>
+        <system:String x:Key="string_information">Information</system:String>
 	<system:String x:Key="string_AvailableMods">Mod-Bibliothek</system:String>
 	<system:String x:Key="string_Language">Sprache</system:String>
 	<system:String x:Key="string_Actions">Aktionen</system:String>
@@ -756,7 +758,7 @@
 	<system:String x:Key="string_MassEffect2LE">Mass Effect 2 (Legendary Edition)</system:String>
 	<system:String x:Key="string_MassEffect3LE">Mass Effect 3 (Legendary Edition)</system:String>
 	<system:String x:Key="string_GenerateStarterKit">Generiere einen neuen DLC-Mod (Starter Kit)</system:String>
-	<system:String x:Key="string_Binkw32Bypasses">Bink Umgehungen</system:String>
+	<system:String x:Key="string_Binkw32Bypasses">Bink-Bypässe</system:String>
 	<system:String x:Key="string_Grantwriteaccesstogamedirectories">Schreibzugriff auf die Spiel-Installationsordner erlauben</system:String>
 	<system:String x:Key="string_Grantswritepermissionstogamedirectories">Erlaubt den Schreibzugriff auf die Spiel-Installationsordner</system:String>
 	<system:String x:Key="string_RunAutoTOC">AutoTOC für ME3 ausführen</system:String>
@@ -811,8 +813,8 @@
 	<system:String x:Key="string_otherSavedTargets">Andere gespeicherte Ziele</system:String>
 	<system:String x:Key="string_cannotEndorseMod">Kann Mod nicht empfehlen</system:String>
 	<system:String x:Key="string_cannotEndorseOwnMod">Du kannst deinen eigenen Mod nicht empfehlen</system:String>
-	<system:String x:Key="string_notLinkedToNexusMods">nicht mit NexusMods verknüpft</system:String>
-	<system:String x:Key="string_notAuthenticated">nicht authentifiziert</system:String>
+	<system:String x:Key="string_notLinkedToNexusMods">Nicht mit NexusMods verknüpft</system:String>
+	<system:String x:Key="string_notAuthenticated">Nicht authentifiziert</system:String>
 	<system:String x:Key="string_gettingEndorsementStatus">Empfehlungsstatus wird geladen</system:String>
 	<system:String x:Key="string_endorseMod">Empfehl diese Mod</system:String>
 	<system:String x:Key="string_modEndorsed">&#x1F44D; Du empfehlst diese Mod bereits</system:String>
@@ -889,7 +891,7 @@
 	<system:String x:Key="string_interp_installedMod">{0} installiert</system:String>
 	<system:String x:Key="string_interp_dialogUnableToAddGameTarget" xml:space="preserve">Kann dieses Spiel nicht als Ziel hinzufügen:\n{0}</system:String>
 	<system:String x:Key="string_gameExecutable">Ausführbare Datei (.exe) des Spiels</system:String>
-	<system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Kann bink-Dateien nicht modifizieren während {0} läuft.</system:String>
+	<system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Kann Bink-Dateien nicht modifizieren während {0} läuft.</system:String>
 	<system:String x:Key="string_tooltip_launchCurrentlySelectedTarget" xml:space="preserve">Starte das aktuell ausgewählte Ziel.&#10;Falls es sich um eine von mehreren Origin-Installationen handelt, wird womöglich stattdessen das aktuell in Origin eingestellte Ziel gestartet</system:String>
 	<system:String x:Key="string_tooltip_applyThisModToTheGame">Installiere diese Mod</system:String>
 	<system:String x:Key="string_tooltip_currentTarget">Aktuelles Modding-Ziel</system:String>
@@ -1073,8 +1075,8 @@
 	<system:String x:Key="string_tutorialui_listOflibraryMods">Dies ist die Liste der zur Installation verfügbaren Mods. Um installierte Mods anzuzeigen, klicke auf 'Ziel verwalten'.</system:String>
 	<system:String x:Key="string_synchronizingEmails">Emails werden synchronisiert</system:String>
 	<system:String x:Key="string_synchronizedEmails">Emails wurden synchronisiert</system:String>
-	<system:String x:Key="string_installingBinkASILoader">Bink ASI loader wird installiert</system:String>
-	<system:String x:Key="string_installedBinkASILoader">Bink ASI loader wurde installiert</system:String>
+	<system:String x:Key="string_installingBinkASILoader">Bink ASI Loader wird installiert</system:String>
+	<system:String x:Key="string_installedBinkASILoader">Bink ASI Loader wurde installiert</system:String>
 	<system:String x:Key="string_seeWhatsInstalled">Sieh, was installiert ist</system:String>
 	<system:String x:Key="string_dragAndDropOperations">Operationen mit Ziehen und Ablegen</system:String>
 	<system:String x:Key="string_decompileCoalescedFileLE1LE2">Coalesced-Datei dekompilieren (LE1/LE2)</system:String>
@@ -1243,9 +1245,9 @@
 	<system:String x:Key="string_failedToApplyAllMixins">Nicht alle Mixins konnten angewendet werden</system:String>
 	<system:String x:Key="string_theFollowingMixinsFailedToApply">Die folgenden Mixins konnten nicht angewendet werden.</system:String>
 	<system:String x:Key="string_compileEllipses">Kompilieren...</system:String>
-	<system:String x:Key="string_compileIntoANewMod">Zu neuem Mod kompilieren</system:String>
+	<system:String x:Key="string_compileIntoANewMod">Zu neuer Mod kompilieren</system:String>
 	<system:String x:Key="string_modNameColon">Mod Name:</system:String>
-	<system:String x:Key="string_tooltip_generatesNewMod" xml:space="preserve">Generiert einen neuen Mod Manager Mod mit diesen Mixins.\nDateien werden aus Vanilla Backup gezogen</system:String>
+	<system:String x:Key="string_tooltip_generatesNewMod" xml:space="preserve">Generiert eine neue Mod Manager Mod mit diesen Mixins.\nDateien werden aus Vanilla Backup gezogen</system:String>
 	<system:String x:Key="string_compileAsANewMod">Als neuen Mod kompilieren</system:String>
 	<system:String x:Key="string_or">Oder</system:String>
 	<system:String x:Key="string_directlyInstallIntoGame">Direkt ins Spiel installieren</system:String>
@@ -1314,7 +1316,7 @@
         <system:String x:Key="string_invalidServerModdesc">Für diese Archivdatei wurde eine ungültige Server-Moddesc bereitgestellt, bitte kontaktiere Mgamerz mit dem Link zu dieser Datei und dieser Fehlermeldung.</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Datei kann nicht heruntergeladen werden: Du musst Premiummitglied bei NexusMods sein, um direct download links zu nutzen</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Datei kann nicht heruntergeladen werden: von NexusMods gelöscht</system:String>
-	<system:String x:Key="string_interp_errorDownloadingModX">Fehler beim Herunterladen des Mods: {0}</system:String>
+	<system:String x:Key="string_interp_errorDownloadingModX">Fehler beim Herunterladen der Mod: {0}</system:String>
 	<system:String x:Key="string_interp_dialog_modNotForThisModManager" xml:space="preserve">Diese Mod ist für „{0}“, was vom ME3Tweaks Mod Manager nicht unterstützt wird. Wahrscheinlich hast du erwartet, dass ein anderer Mod Manager verwendet wird, aber aufgrund des Designs, wie Anwendungen das nxm://-Protokoll verwenden, wird möglicherweise die falsche Anwendung geöffnet.\n\nÖffne den Mod Manager, den du für diesen Mod-Download verwenden möchtest und er sollte sich selbst als Download-Manager für nxm://-Links registrieren. Sobald er geöffnet ist, versuche deinen Download erneut.</system:String>
 	<system:String x:Key="string_modDownloader">Mod Downloader</system:String>
 	<system:String x:Key="string_initializing">Wird vorbereitet</system:String>
@@ -1393,8 +1395,8 @@
 	<system:String x:Key="string_applyingMergemods">Wende Mergemods an</system:String>
 	<system:String x:Key="string_interp_minVersionAppend">(Mindestversion: {0})</system:String>
 	<system:String x:Key="string_notice_directModsDontGoToLibrary">Direkt aus dem Archiv installierte Mods erscheinen nicht in der Mod-Bibliothek</system:String>
-	<system:String x:Key="string_interp_errorInstallingBinkBypassX">Beim Installieren der Bink-Umgehung ist ein Fehler aufgetreten, der für die vollständige Modding-Unterstützung erforderlich ist: {0}</system:String>
-	<system:String x:Key="string_title_errorInstallingBinkBypass">Fehler beim Installieren der Bink-Umgehung</system:String>
+	<system:String x:Key="string_interp_errorInstallingBinkBypassX">Beim Installieren des Bink-Bypasses ist ein Fehler aufgetreten, der für die vollständige Modding-Unterstützung erforderlich ist: {0}</system:String>
+	<system:String x:Key="string_title_errorInstallingBinkBypass">Fehler beim Installieren des Bink-Bypasses</system:String>
 	<system:String x:Key="string_interp_errorInstallingTLKMergesX">Beim Installieren von TLK-Merges ist ein Fehler aufgetreten: {0}</system:String>
 	<system:String x:Key="string_title_errorInstallingTLKMerge">Fehler beim Installieren von TLK-Merge</system:String>
 	<system:String x:Key="string_modRequiresAMDProcessor">Diese Mod kann nur auf einem System mit einem AMD-Prozessor installiert werden.</system:String>
@@ -1758,7 +1760,7 @@
 	<system:String x:Key="string_temporaryCache">Temporärer Cache</system:String>
 	<system:String x:Key="string_selectNexusModsDownloadDirectory">Wähle das NexusMods-Downloadverzeichnis aus</system:String>
 	<system:String x:Key="string_lE1EnableCoalescedMerge">LE1: Coalesced Zusammenführung aktivieren</system:String>
-	<system:String x:Key="string_description_le1CoalescedMergeOption">Wenn du dies deaktivierst, kannst du deine Coalesced-Datei manuell bearbeiten und verhindern, dass .m3cd-Dateien mit der Coalesced-Datei des Basisspiels zusammengeführt werden. Dies kann einige Mods beschädigen. Schalte dies nicht aus, wenn du nicht weißt, was das bedeutet.</system:String>
+	<system:String x:Key="string_description_le1CoalescedMergeOption">Wenn du dies deaktivierst, kannst du deine Coalesced-Datei manuell bearbeiten und verhindern, dass .m3cd-Dateien mit der Coalesced-Datei des Hauptspiels zusammengeführt werden. Dies kann einige Mods beschädigen. Schalte dies nicht aus, wenn du nicht weißt, was das bedeutet.</system:String>
 	<system:String x:Key="string_overlayDisablerInstalled">Erzwungene Abschaltung des Origin-Overlays im Spiel installiert</system:String>
 	<system:String x:Key="string_uninstallDisabler">Erzwungene Abschaltung des Origin-Overlays im Spiel deinstallieren</system:String>
 	<system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Andere d3d9.dll ist installiert, Origin-Overlay im Spiel ist deaktiviert</system:String>
