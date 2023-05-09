@@ -222,10 +222,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
         public static IList<string> Serialize(Stream outStream, string manifestFile)
         {
-
+            M3Log.Information($@"M3MCompiler: Beginning M3M V1 serialization");
             var sourceDir = Directory.GetParent(manifestFile).FullName;
 
             var manifestText = File.ReadAllText(manifestFile);
+            M3Log.Information($@"M3MCompiler: Source json text: {manifestText}", Settings.LogModInstallation); // This is as close as I can get...
 
             // VALIDATE JSON SCHEMA
             var schemaText = new StreamReader(M3Utilities.ExtractInternalFileToStream(ManifestSchemaInternalPath)).ReadToEnd();
@@ -236,6 +237,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
 
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifestText);
+            M3Log.Information($@"M3MCompiler: Json is valid for schema");
 
             // Update manifest
 
@@ -252,6 +254,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                             if (propertyUpdate.PropertyType is @"ArrayProperty")
                             {
                                 var assetFilePath = Path.Combine(sourceDir, propertyUpdate.PropertyAsset);
+                                M3Log.Information($@"M3MCompiler: ArrayProperty file being added into m3m: {assetFilePath}");
                                 if (!File.Exists(assetFilePath))
                                 {
                                     throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_scriptNotFoundX, propertyUpdate.PropertyAsset));
@@ -263,11 +266,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
                     if (mc.AssetUpdate?.AssetName != null)
                     {
-                        if (!File.Exists(Path.Combine(sourceDir, mc.AssetUpdate.AssetName)))
+                        var assetPath = Path.Combine(sourceDir, mc.AssetUpdate.AssetName);
+                        if (!File.Exists(assetPath))
                         {
                             throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_assetNotFoundX, mc.AssetUpdate.AssetName));
                         }
-
+                        M3Log.Information($@"M3MCompiler: Adding merge asset file to m3m: {assetPath}");
                         assets.Add(mc.AssetUpdate.AssetName);
                     }
 
@@ -278,7 +282,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                         {
                             throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_scriptNotFoundX, mc.ScriptUpdate.ScriptFileName));
                         }
-
+                        M3Log.Information($@"M3MCompiler: Adding script update file to m3m: {scriptDiskFile}");
                         mc.ScriptUpdate.ScriptText = File.ReadAllText(scriptDiskFile);
                     }
 
@@ -294,17 +298,21 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                                 throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_scriptNotFoundX, fileName));
                             }
 
+                            M3Log.Information($@"M3MCompiler: Adding AddToClassOrReplace file to m3m: {scriptDiskFile}");
                             mc.AddToClassOrReplace.Scripts[i] = File.ReadAllText(scriptDiskFile);
                         }
                     }
                 }
             }
 
+            M3Log.Information($@"M3MCompiler: Serializing merge mod object");
             outStream.WriteUnrealStringUnicode(JsonConvert.SerializeObject(mm, Formatting.None));
 
+            M3Log.Information($@"M3MCompiler: Serializing {assets.Count} referenced assets");
             outStream.WriteInt32(assets.Count);
             foreach (var asset in assets)
             {
+                M3Log.Information($@"M3MCompiler: Serializing {asset} into m3m");
                 outStream.WriteStringASCII(MMV1_ASSETMAGIC); // MAGIC
                 outStream.WriteUnrealStringUnicode(asset); // ASSET NAME
                 var assetBytes = File.ReadAllBytes(Path.Combine(sourceDir, asset));
@@ -312,6 +320,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 outStream.Write(assetBytes); // ASSET DATA
             }
 
+            M3Log.Information($@"M3MCompiler: V1 serialization complete");
             return null;
         }
     }
