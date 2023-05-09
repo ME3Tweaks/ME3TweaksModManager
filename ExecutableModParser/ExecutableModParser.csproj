@@ -1,23 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows8.0</TargetFramework>
-    <Platforms>x64</Platforms>
-    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<!-- Windows 2004 -->
+		<TargetFrameworks>net6.0-windows10.0.19041</TargetFrameworks>
+		<Platforms>x64</Platforms>
+		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SevenZip\SevenZip.csproj" />
-    <ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="7z64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
+		<ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="7z64.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

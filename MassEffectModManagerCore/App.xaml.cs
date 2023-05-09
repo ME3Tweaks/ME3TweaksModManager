@@ -439,12 +439,42 @@ namespace ME3TweaksModManager
         public static bool IsLanguageSupported(string lang)
         {
             lang = lang.ToLower();
-            if (lang == @"deu") return true;
-            if (lang == @"rus") return true;
-            // if (lang == @"pol") return true; // Localization has not been updated since build 124
-            if (lang == @"ita") return true;
+
+            if (lang == @"deu") // deu is up to date
+            {
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_DEU, out var enabled, true);
+                return enabled;
+            }
+
+            if (lang == @"rus") // Localization is up to date
+            {
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_RUS, out var enabled, true);
+                return enabled;
+            }
+
+            // These localizations have been abandoned; if they are updated serverside, they can be dynamically re-enabled, for the most part
+            if (lang == @"pol") // Localization was abandoned
+            {
+                // This may not be available on first load
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_POL, out var enabled, false);
+                return enabled;
+            }
+
+            if (lang == @"ita") // Localization of build 128 is behind schedule; the localization is disabled but can be restored on serverside
+            {
+                // This may not be available on first load
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_ITA, out var enabled, false);
+                return enabled;
+            }
+
+            if (lang == @"bra") // Localization was abandoned
+            {
+                // This may not be available on first load
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_BRA, out var enabled, false);
+                return enabled;
+            }
+
             if (lang == @"int") return true; // Just in case
-            // if (lang == @"bra") return true; // Localization has not been updated since build 124
             return false;
         }
 

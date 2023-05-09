@@ -36,6 +36,11 @@ namespace ME3TweaksModManager.modmanager
         internal const string M3_GITHUB_PATCH_UPDATE_PREFIX = @"gh_upd-";
         internal const string M3_ME3TWEAKS_PATCH_UPDATE_PREFIX = @"upd-";
         internal const string FEATURE_FLIGHTING_PREFIX = @"flighting";
+        internal const string LOCALIZATION_ENABLED_ITA = @"localization_enabled_ita";
+        internal const string LOCALIZATION_ENABLED_BRA = @"localization_enabled_bra";
+        internal const string LOCALIZATION_ENABLED_RUS = @"localization_enabled_rus";
+        internal const string LOCALIZATION_ENABLED_DEU = @"localization_enabled_deu";
+        internal const string LOCALIZATION_ENABLED_POL = @"localization_enabled_pol";
         #endregion
 
         #region Online fetch
@@ -211,10 +216,15 @@ namespace ME3TweaksModManager.modmanager
         }
         #endregion
 
-
-        public static bool TryGetBool(string key, out bool result)
+        /// <summary>
+        /// Tries to get a boolean from the manifest.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static bool TryGetBool(string key, out bool result, bool defaultResult = false)
         {
-            result = false;
+            result = defaultResult;
             if (TryGetString(key, out var enabledStr) && bool.TryParse(enabledStr, out result))
             {
                 // Nothing, was parsed.

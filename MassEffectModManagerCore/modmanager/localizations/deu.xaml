@@ -229,6 +229,7 @@
 	<system:String x:Key="string_interp_textureModModifiesExportsX" xml:space="preserve">Diese Texturmod modifiziert die folgenden Texturen:\n{0}</system:String>
         <system:String x:Key="string_gameSelector">Spiel-Selektor</system:String>
         <system:String x:Key="string_dialog_selectGameInstallGroup">Wähle aus, für welches Spiel eine Installationsgruppe erstellt werden soll.</system:String>
+        <system:String x:Key="string_debugTriggerDataReload">Debug: Neuladen der Daten auslösen</system:String>
 	<system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">Es ist kein Backup verfügbar, um 2DAs abzufragen.</system:String>
 	<system:String x:Key="string_2da_errorReading2DAs">Fehler beim Lesen der 2DA-Tabellen aus dem Spiel: {0}</system:String>
 	<system:String x:Key="string_errorReadingTables">Fehler beim Lesen von Tabellen</system:String>
@@ -423,6 +424,9 @@
 	<system:String x:Key="string_creatingCombinedTLKMergeFile">Kombinierte TLK Mergedatei wird erstellt</system:String>
 	<system:String x:Key="string_addingCombinedTLKMergeFile">Kombinierte TLK Mergedatei wird hinzugefügt</system:String>
 	<system:String x:Key="string_tooltip_clickToLEX">Klicke, um in Legendary Explorer Nightly zu öffnen</system:String>
+        <system:String x:Key="string_validatingArchiveFile">Validiere Archivdatei</system:String>
+        <system:String x:Key="string_deploymentFailed">Bereitstellung fehlgeschlagen</system:String>
+        <system:String xml:space="preserve" x:Key="string_interp_dialog_deploymentFailedWrongNumMods">Mod-Bereitstellung fehlgeschlagen: Die im Archiv erwartete Menge an Mods stimmte nicht mit der analysierten Menge überein.\nErwartet: {0}\nErkannt: {1}\n\nBitte melde dies Mgamerz im ME3Tweaks Discord.</system:String>
 	<system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
 	<system:String x:Key="string_interp_extractingX">Entpacke {0}</system:String>
 	<system:String x:Key="string_checkingForUpdates">Aktualisierungen werden gesucht</system:String>
@@ -555,7 +559,7 @@
 	<system:String x:Key="string_installedDLCmods">Installierte DLC-Mods</system:String>
 	<system:String x:Key="string_delete">Löschen</system:String>
 	<system:String x:Key="string_modifiedBasegameFiles">Modifizierte Hauptspiel-Dateien</system:String>
-	<system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Werde versuchen, alle modifizierten Hauptspiel-Dateien und entpackte DLC-Dateien (ME2) wiederherzustellen.</system:String>
+	<system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Versucht alle modifizierten Hauptspieldateien wiederherzustellen</system:String>
 	<system:String x:Key="string_restoreallmodifiedbasegamefiles">Alle modifizierten Hauptspiel-Dateien wiederherstellen</system:String>
 	<system:String x:Key="string_modifiedDLCarchivesSFAR">Modifizierte DLC-Archive (SFAR)</system:String>
 	<system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Werde versuchen, alle modifizierten SFAR-Dateien wiederherzustellen. Alle entpackten Dateien werden dabei auch gelöscht</system:String>
@@ -1149,6 +1153,8 @@
 	<system:String x:Key="string_gameNotAvailable">Spiel nicht verfügbar</system:String>
 	<system:String x:Key="string_unsupportedGame">Nicht unterstütztes Spiel</system:String>
 	<system:String x:Key="string_prerequesiteNotMet">Voraussetzung nicht erfüllt</system:String>
+        <system:String xml:space="preserve" x:Key="string_dialog_errorGeneratingMergeDLC">Fehler beim Generieren von Merge-DLC: {0}\nMods funktionieren möglicherweise nicht richtig – entferne die Merge-DLC (falls vorhanden) manuell über die Schaltfläche „Ziel verwalten“.</system:String>
+        <system:String x:Key="string_errorGeneratingMergeDLC">Fehler beim Generieren von Merge-DLC</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config-Datei {0}.ini fehlt. Sie sollte sich in {1} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Mass Effect Config-Ordner fehlt. Er sollte sich in {0} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Mass Effect Ini Modder kann nicht gestartet werden</system:String>

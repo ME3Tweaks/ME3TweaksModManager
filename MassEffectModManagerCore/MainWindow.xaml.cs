@@ -1334,6 +1334,7 @@ namespace ME3TweaksModManager
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
                     BatchPanelResult = new PanelResult();
+                    HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
                     var target = batchLibrary.SelectedGameTarget;
                     //Install queue
 
@@ -1347,18 +1348,18 @@ namespace ME3TweaksModManager
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
                             var bm = queue.ModsToInstall[modIndex];
+                            modIndex++;
                             if (bm.IsAvailableForInstall())
                             {
-                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].Mod.ModName}");
+                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
                                 bm.UseSavedOptions = queue.UseSavedOptions;
                                 ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             }
                             else
                             {
                                 M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
+                                modInstalled(true); // Trigger next install
                             }
-
-                            modIndex++;
                         }
                         else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
                         {
@@ -1922,12 +1923,19 @@ namespace ME3TweaksModManager
                     // Generate a new one - IF NECESSARY!
                     // This is so if user deletes merge DLC it doesn't re-create itself immediately even if it's not necessary, e.g. user removed all merge DLC-eligible items.
 
-                    bool needsGenerated =
-                        SQMOutfitMerge.NeedsMergedGame3(mergeTarget)
-                        || ME2EmailMerge.NeedsMergedGame2(mergeTarget);
+                    bool needsGenerated = SQMOutfitMerge.NeedsMergedGame3(mergeTarget) || ME2EmailMerge.NeedsMergedGame2(mergeTarget);
                     if (needsGenerated)
                     {
-                        mergeDLC.GenerateMergeDLC();
+                        try
+                        {
+                            mergeDLC.GenerateMergeDLC();
+                        }
+                        catch (Exception e)
+                        {
+                            M3Log.Exception(e, @"Error generating ME3Tweaks Merge DLC: ");
+                            // This should have a dialog here, right?
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_errorGeneratingMergeDLC, e.Message), M3L.GetString(M3L.string_errorGeneratingMergeDLC), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                 }
             }

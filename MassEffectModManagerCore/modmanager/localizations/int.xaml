@@ -503,6 +503,9 @@
     <system:String x:Key="string_gameNotAvailable">Game not available</system:String>
     <system:String x:Key="string_unsupportedGame">Unsupported game</system:String>
     <system:String x:Key="string_prerequesiteNotMet">Prerequisite not met</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_errorGeneratingMergeDLC">Error generating Merge DLC: {0}\nMods may not function properly - manually remove the merge DLC (if any) via the 'Manage Target' button.</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorGeneratingMergeDLC">Error generating Merge DLC</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -1041,11 +1044,11 @@
     <!-- 0 = noun of tool (alot installer, mod manager, etc)-->
     <system:String x:Key="string_notInstalledByModManager">Not installed by Mod Manager</system:String>
     <system:String x:Key="string_installationInformation">Installation Information</system:String>
-    <system:String x:Key="string_installationInformationSubheader">Files installed into the basegame and official DLC directories are tracked on a best-effort system. The data may not be 100% accurate.</system:String>
+    <system:String x:Key="string_installationInformationSubheader">Files installed into the basegame and official DLC directories are only tracked if they are installed through ME3Tweaks Mod Manager.</system:String>
     <system:String x:Key="string_installedDLCmods">Installed DLC mods</system:String>
     <system:String x:Key="string_delete">Delete</system:String>
     <system:String x:Key="string_modifiedBasegameFiles">Modified basegame files</system:String>
-    <system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Will attempt to restore all modified basegame + unpacked DLC (ME2) files.</system:String>
+    <system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Will attempt to restore all modified basegame files</system:String>
     <system:String x:Key="string_restoreallmodifiedbasegamefiles">Restore all modified basegame files</system:String>
     <system:String x:Key="string_modifiedDLCarchivesSFAR">Modified DLC archives (SFAR)</system:String>
     <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Will attempt to restore all modified SFARs. Will delete unpacked files too</system:String>
