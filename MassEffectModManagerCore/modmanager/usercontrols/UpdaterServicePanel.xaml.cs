@@ -402,7 +402,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             #endregion
 
             #region Check package files are not natively compressed
+            if (mod.Game.IsOTGame())
             {
+                // LE pacakge files are always compressed.
                 // In brackets to scope
                 M3Log.Information(@"UpdaterServiceUpload: Checking for compressed packages");
                 double numDone = 0;
@@ -410,7 +412,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var compressedPackages = new List<string>();
                 foreach (var f in files)
                 {
-                    CurrentActionText = M3L.GetString(M3L.string_interp_checkingPackagesBeforeUploadX, (numDone * 100 / totalFiles));
+                    CurrentActionText = M3L.GetString(M3L.string_interp_checkingPackagesBeforeUploadX, (int)(numDone * 100 / totalFiles));
                     numDone++;
                     if (f.RepresentsPackageFilePath())
                     {
