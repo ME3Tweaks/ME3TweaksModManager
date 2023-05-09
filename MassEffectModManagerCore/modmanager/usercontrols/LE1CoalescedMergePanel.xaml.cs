@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Input;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
@@ -8,6 +9,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksModManager.me3tweakscoreextended;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -118,6 +120,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
+            if (Settings.OneTimeMessage_LE1CoalescedOverwriteWarning)
+            {
+                M3Log.Information(@"Showing first le1 coalesced merge dialog");
+                var result = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_firstCoalescedMerge), M3L.GetString(M3L.string_information), MessageBoxButton.OKCancel, MessageBoxImage.Information);
+
+                if (result == MessageBoxResult.OK)
+                {
+                    M3Log.Information(@"User accepted LE1 coalesced merge feature");
+                    Settings.OneTimeMessage_LE1CoalescedOverwriteWarning = false;
+                }
+                else
+                {
+                    M3Log.Warning(@"User declined first LE1 coalesced merge");
+                    OnClosing(DataEventArgs.Empty);
+                    return;
+                }
+            }
+
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"CoalescedMerge");
             nbw.DoWork += (a, b) =>
             {

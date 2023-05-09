@@ -4650,6 +4650,7 @@ namespace ME3TweaksModManager
         {
             // Put other settings here as they are added.
             Settings.OneTimeMessage_ModListIsNotListOfInstalledMods = true;
+            Settings.OneTimeMessage_LE1CoalescedOverwriteWarning = true;
         }
 
         private void InstallMEMFile()
