@@ -1,10 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <localizations>
   <nonlocalizedhelpmenudefinition name="changelogs">
     <list localizedtitle="true">
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.1 (Build 128)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/349" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0.1 (Build 127)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/324" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0 (Build 126)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
       <list title="Older changelogs" sort="low">
+        <list title="Mod Manager 8.0">
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0.1 (Build 127)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/324" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0 (Build 126)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+        </list>
         <list title="Mod Manager 7.0">
           <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.7 (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/298" />
           <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.6 (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
@@ -16,7 +19,7 @@
           <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0 BETA (Build 118)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/7.0.0.118" />
         </list>
         <list title="Mod Manager 6.3">
-              <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
         </list>
         <list title="Mod Manager 6.2">
           <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
@@ -105,7 +108,6 @@
       </list>
     </list>
   </nonlocalizedhelpmenudefinition>
-
   <helpmenu lang="int">
     <helpitem icon="Brands_Discord" title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services" />
     <helpitem icon="Brands_Discord" title="Mass Effect Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Server for general Mass Effect modding" />
@@ -113,7 +115,7 @@
     <helpitem icon="Brands_Twitter" title="Mgamerz' Twitter" url="https://twitter.com/Mgamerz" tooltip="Mgamerz's twitter, fun and interesting modding tidbits" />
     <list title="Get Mods">
       <helpitem title="ME3Tweaks Curated Mod List" url="https://me3tweaks.com/mods" tooltip="Browse mods curated by ME3Tweaks" />
-      <helpitem title="NexusMods (Legendary Edition)" url="http://www.nexusmods.com/masseffect3/" tooltip="Browse mods developed for Mass Effect Legendary Edition games on NexusMods" />
+      <helpitem title="NexusMods (Legendary Edition)" url="http://www.nexusmods.com/masseffectlegendaryedition/" tooltip="Browse mods developed for Mass Effect Legendary Edition games on NexusMods" />
       <helpitem title="NexusMods (ME1, OT)" url="http://www.nexusmods.com/masseffect/" tooltip="Browse mods developed for Mass Effect on NexusMods" />
       <helpitem title="NexusMods (ME2, OT)" url="http://www.nexusmods.com/masseffect2/" tooltip="Browse mods developed for Mass Effect 2 on NexusMods" />
       <helpitem title="NexusMods (ME3, OT)" url="http://www.nexusmods.com/masseffect3/" tooltip="Browse mods developed for Mass Effect 3 on NexusMods" />
@@ -129,7 +131,7 @@
       <helpitem title="Does installation order matter" modaltitle="Installation order" modalicon="INFO">For most mods, installation order will not matter as the load order is controlled by a file named mount.dlc. A few Mod Manager mods can automatically change how they install based on what is already installed, so you should typically install them last. Texture mods, such as MEUITM or ALOT, must always be installed at the very end. Mod Manager will refuse to install mods that contain package files after texture mods have been installed to prevent invalid texture pointers from being introduced to the game.</helpitem>
       <helpitem title="Can I get banned from ME3 MP for using mods" modalicon="INFO" modaltitle="Mods and Multiplayer">BioWare has abandoned Mass Effect 3 (OT) since 2013, they do not ban or monitor anything related to Mass Effect 3 anymore. That said, if you are modding Mass Effect 3 multiplayer, you should keep it in private lobbies to be considerate to others.</helpitem>
     </list>
-    <nonlocalizedhelpmenu name="changelogs" title="Changelogs"/>
+    <nonlocalizedhelpmenu name="changelogs" title="Changelogs" />
   </helpmenu>
   <helpmenu lang="deu">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat Server für schnelle Unterstützung zu ME3Tweaks-Produkten und Diensten" />
@@ -157,7 +159,7 @@
       <helpitem title="Mein DLC kann nicht autorisiert werden" modaltitle="DLC kann nicht autorisiert werden" modalicon="INFO" resource="DLC_AUTH_FAIL.png" md5="532698c6707450dbcd1281b65521d584" size="116835">Falls dir nach der Installation eines Mods im Hauptfenster eine Meldung wie im Bild angezeigt wird, wird das/die gelistete/n DLC/s nicht geladen werden.&lt;br&gt;Die Liste könnte leer sein, wenn der Entwickler seinem DLC keinen Namen gegeben hat.&lt;br&gt;Die Installation irgendeines Mods mit Mod Manager sollte diesen Fehler beheben, es sei denn das DLC ist defekt. Ansonsten musst du über das Werkzeuge-Menü den Binkw32 Bypass installieren.</helpitem>
       <helpitem title="Spiel-Dateien wiederhergestellt aber DLC kann immer noch nicht autorisiert werden" modalicon="INFO" modaltitle="DLC kann immer noch nicht autorisiert werden">Wenn ein Mod den du installiert hast Custom DLC enthält (Mod, der in den DLC Ordner des Spiels installiert wird), wird er von einigen Optionen in Mod Manager nicht entfernt. Wenn du versucht hast dein Spiel wiederherzustellen, aber immer noch Probleme mit dem Autorisieren von DLC hast, gehe auf 'Ziel-Info' und lösche alle DLC-Ordner im 'Installierte DLC-Mods' Tab.</helpitem>
     </list>
-    <nonlocalizedhelpmenu name="changelogs" title="Änderungsprotokolle"/>
+    <nonlocalizedhelpmenu name="changelogs" title="Änderungsprotokolle" />
   </helpmenu>
   <helpmenu lang="rus">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Чат-сервер для оперативной помощи по продуктам и сервисам ME3Tweaks" />
@@ -185,7 +187,7 @@
       <helpitem title="Не удается авторизовать мои DLC" modaltitle="DLC не проходят авторизацию" modalicon="INFO" resource="DLC_AUTH_FAIL.png" md5="532698c6707450dbcd1281b65521d584" size="116835">Если после установки мода вы видите на экране в главном меню что-то похожее на приведенный пример, указанные DLC не загрузятся.&lt;br&gt;Список может быть пустым, если разработчик не задал имя для своих DLC.&lt;br&gt;Установка любого мода через Mod Manager должна решить эту проблему, если только DLC не поврежден. В остальных случаях вам нужно будет установить байпас Binkw32 через меню Инструменты.</helpitem>
       <helpitem title="Файлы игры восстановлены, но DLC все равно не авторизуются" modalicon="INFO" modaltitle="DLC по-прежнему не авторизуются">Если вы установили Custom DLC (моды, устанавливаемые в папку DLC), некоторые опции в Mod Manager не смогут их удалить. Если вы выполнили восстановление игры, но проблема авторизации DLC осталась, в панели по клику 'Настройка Игры' удалите все папки DLC, указанные в списке на вкладке 'Установленные DLC-моды'.</helpitem>
     </list>
-    <nonlocalizedhelpmenu name="changelogs" title="История изменений"/>
+    <nonlocalizedhelpmenu name="changelogs" title="История изменений" />
   </helpmenu>
   <helpmenu lang="pol">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Serwer czatu zapewniający szybką obsługę produktów i usług związanych z ME3Tweaks" />
@@ -213,7 +215,7 @@
       <helpitem title="Moje DLC nie przechodzi autoryzacji" modaltitle="DLC nie przechodzi autoryzacji" modalicon="INFO" resource="DLC_AUTH_FAIL.png" md5="532698c6707450dbcd1281b65521d584" size="116835">Jeśli po zainstalowaniu moda w głównym menu wyświetla się podobny komunikat jak ten poniżej, DLC się nie załaduje.&lt;br&gt;Lista może być pusta jeśli twórca nie nadał nazwy dla DLC.&lt;br&gt;Zainstalowanie jakiegokolwiek moda za pomocą Mod Managera powinno rozwiązać problem, jeżeli nie, to oznacza, że DLC jest uszkodzone. W przeciwnym wypadku musisz zainstalować Binkw32 za pomocą Narzędzi.</helpitem>
       <helpitem title="Przywróciłem pliki gry, ale DLC w dalszym ciągu nie przechodzi autoryzacji" modalicon="INFO" modaltitle="DLC nie przechodzi autoryzacji">Jeżeli mod, który zainstalowałeś zawiera Custom DLC (mod, któy jest instalowany do folderu DLC w katalogu gry), niektóre opcje Mod Managera ich nie usuwają. Jeżeli po przywróceniu kopii zapasowej dalej występują problemy z autoryzacją DLC, przejdź do 'Target Info' i usuń wszystkie foldery DLC widniejące na liście 'Installed DLC mods' tab.</helpitem>
     </list>
-    <nonlocalizedhelpmenu name="changelogs" title="Dziennik zmian"/>
+    <nonlocalizedhelpmenu name="changelogs" title="Dziennik zmian" />
   </helpmenu>
   <helpmenu lang="bra">
     <helpitem title="Discord de ME3Tweaks (em inglês)" url="https://discord.gg/s8HA6dc" tooltip="Servidor de Chat para suporte rápido com produtos serviços" />
@@ -241,9 +243,9 @@
       <helpitem title="Meu DLC falha na autorização" modaltitle="DLC falha ao autorizar" modalicon="INFO" resource="DLC_AUTH_FAIL.png" md5="532698c6707450dbcd1281b65521d584" size="116835">Depois de instalar um Mod, se receber uma tela como o exemplo abaixo no menu principal, o DLC listado não será carregado.&lt;br&gt;A lista pode estar em branco se o desenvolvedor não deu um nome ao DLC.&lt;br&gt;Instalar qualquer Mod com o Gerenciador de Mods deve resolver o problema, a não ser que o DLC esteja corrompido. Do contrário será necessário isntalar o Bypass Binkw32 a partir do menu Ferramentas.</helpitem>
       <helpitem title="Restaurei o jogo mas um DLC ainda falha ao autorizar" modalicon="INFO" modaltitle="DLC ainda falha ao autorizar">Se um Mod que instalou tem um DLC Personalizado (um Mod que instalado na pasta de DLCs do jogo), algumas opções do Gerenciador de Mods não podem removê-lo. Se tentou restaurar um jogo mas ainda tem problemas autorizando DLCs, vá a 'Gerenciar Destino' e exclua qualquer DLC listado na aba 'Mods de DLC Instalados'.</helpitem>
     </list>
-    <nonlocalizedhelpmenu name="changelogs" title="Relatórios"/>
+    <nonlocalizedhelpmenu name="changelogs" title="Relatórios" />
   </helpmenu>
- <helpmenu lang="ita">
+  <helpmenu lang="ita">
     <helpitem icon="Brands_Discord" title="Server Discord di ME3Tweaks" url="https://discord.gg/s8HA6dc" tooltip="Server di chatting per un supporto veloce sui prodotti e servizi di ME3Tweaks" />
     <helpitem icon="Brands_Discord" title="Server Discord Pubblico del Modding" url="https://discord.gg/su8XjdUQPw" tooltip="Server per discussioni generali sul modding di Mass Effect" />
     <helpitem icon="Brands_Discord" title="Server Discord di N7 Squad Multiplayer" url="https://discord.gg/n7squad" tooltip="Server di chatting per trovare altri giocatori per il multiplayer di Mass Effect 3" />
