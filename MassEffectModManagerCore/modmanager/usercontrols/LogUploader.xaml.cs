@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.save.shared;
 using ME3TweaksModManager.ui;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
@@ -66,6 +67,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand UploadLogCommand { get; set; }
         public ICommand CancelUploadCommand { get; set; }
         public LogItem SelectedLog { get; set; }
+        public ISaveFile SelectedSaveFile { get; set; }
         public GameTargetWPF SelectedDiagnosticTarget { get; set; }
 
         private void LoadCommands()
@@ -128,6 +130,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     DiagnosticTarget = SelectedDiagnosticTarget,
                     SelectedLog = SelectedLog,
+                    Attachments = GetAttachments(),
                     PerformFullTexturesCheck = TextureCheck,
                     UpdateTaskbarProgressStateCallback = updateTaskbarProgressStateCallback,
                     UpdateProgressCallback = updateProgressCallback,
@@ -160,6 +163,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 OnClosing(DataEventArgs.Empty);
             };
             nbw.RunWorkerAsync();
+        }
+
+        private Dictionary<string, string> GetAttachments()
+        {
+            var attachments = new Dictionary<string, string>();
+
+
+
+            return attachments;
         }
 
         public bool TextureCheck { get; set; } = true;
