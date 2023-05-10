@@ -2137,5 +2137,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_exportSave = "string_exportSave";
 		public const string string_legendSave = "string_legendSave";
 		public const string string_interp_unknownSaveTypeX = "string_interp_unknownSaveTypeX";
+		public const string string_dialog_firstCoalescedMerge = "string_dialog_firstCoalescedMerge";
+		public const string string_information = "string_information";
 	}
 }

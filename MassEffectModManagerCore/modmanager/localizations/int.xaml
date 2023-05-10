@@ -2821,4 +2821,9 @@
     <system:String x:Key="string_interp_unknownSaveTypeX">Unknown save type: {0}</system:String>
     <!-- 0={Number or string} -->
 
+    <!-- LE1 Coalesced Merge -->
+    <system:String xml:space="preserve" x:Key="string_dialog_firstCoalescedMerge">ME3Tweaks Mod Manager replaces the basegame Coalesced_INT.bin file for LE1 automatically so that mods can use the LE1 Coalesced Merge feature. Manually installed/edited Coalesced_INT.bin mods will be overwritten by this feature; you can turn it off in Mod Manager settings.\n\nDisabling the LE1 Coalesced Merge feature will break all mods that depend on it.</system:String>
+    <system:String x:Key="string_information">Information</system:String>
+
+
 </ResourceDictionary>

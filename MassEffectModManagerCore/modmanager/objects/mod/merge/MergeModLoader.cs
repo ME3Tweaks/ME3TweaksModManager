@@ -34,6 +34,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         public static string SerializeManifest(string inputfile, int version)
         {
             var outfile = Path.Combine(Directory.GetParent(inputfile).FullName, Path.GetFileNameWithoutExtension(inputfile) + @".m3m");
+            M3Log.Information($@"M3MCompiler: Serializing {inputfile} to {outfile}");
             using MemoryStream fs = new MemoryStream();
             fs.WriteStringLatin1(MERGEMOD_MAGIC);
             fs.WriteByte((byte)version);
@@ -53,6 +54,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
                 throw new Exception(M3L.GetString(M3L.string_interp_invalidMergeModManifestReason, string.Join('\n', messages)));
             }
 
+            M3Log.Information($@"M3MCompiler: Writing final result to {outfile}");
             fs.WriteToFile(outfile);
             return outfile;
         }

@@ -381,6 +381,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _enableTextureSafetyChecks, value);
         }
 
+        private static bool _oneTimeMessageLe1CoalescedOverwriteWarning = true;
+        public static bool OneTimeMessage_LE1CoalescedOverwriteWarning
+        {
+            get => _oneTimeMessageLe1CoalescedOverwriteWarning;
+            set => SetProperty(ref _oneTimeMessageLe1CoalescedOverwriteWarning, value);
+        }
+
 
         public static readonly string SettingsPath = Path.Combine(M3Filesystem.GetAppDataFolder(), "settings.ini");
 
@@ -451,8 +458,9 @@ namespace ME3TweaksModManager.modmanager
             UseOptimizedTextureRestore = LoadSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", true);
             EnableTextureSafetyChecks = LoadSettingBool(settingsIni, "ModManagerDebug", "EnableTextureSafetyChecks", true);
 
-            // Dismiss messages
+            // Dismiss messages -> True means dialog should be shown
             OneTimeMessage_ModListIsNotListOfInstalledMods = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
+            OneTimeMessage_LE1CoalescedOverwriteWarning = LoadSettingBool(settingsIni, "ModManager", "ShowLE1CoalescedMergeOverwritesFile", true);
 
 
             Loaded = true;
@@ -640,6 +648,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
                 SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
                 SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", OneTimeMessage_ModListIsNotListOfInstalledMods);
+                SaveSettingBool(settingsIni, "ModManager", "ShowLE1CoalescedMergeOverwritesFile", OneTimeMessage_LE1CoalescedOverwriteWarning);
                 SaveSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", ModDownloadCacheFolder);
                 SaveSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", SelectedLE1LaunchOption);
                 SaveSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", SelectedLE2LaunchOption);
