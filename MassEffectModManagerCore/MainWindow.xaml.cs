@@ -3328,7 +3328,8 @@ namespace ME3TweaksModManager
 
                 #endregion
 
-                M3ServiceLoader.LoadServices(bw);
+                M3ServiceLoader.LoadServices(bw, Settings.ForcePullContentNextBoot);
+                Settings.ForcePullContentNextBoot = false; // We have pulled content now
                 PropertyChanged?.Invoke(this,
                     new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
 

@@ -381,6 +381,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _enableTextureSafetyChecks, value);
         }
 
+        private static bool _forcePullContentNextBoot = false;
+        public static bool ForcePullContentNextBoot
+        {
+            get => _forcePullContentNextBoot;
+            set => SetProperty(ref _forcePullContentNextBoot, value);
+        }
+
         private static bool _oneTimeMessageLe1CoalescedOverwriteWarning = true;
         public static bool OneTimeMessage_LE1CoalescedOverwriteWarning
         {
@@ -443,6 +450,7 @@ namespace ME3TweaksModManager.modmanager
             DoubleClickModInstall = LoadSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", false);
 
             SSUILoadAllSaves = LoadSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", false);
+            ForcePullContentNextBoot = LoadSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", false);
 
             // LEGENDARY
             SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
@@ -655,6 +663,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", SelectedLE3LaunchOption);
 
                 SaveSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", EnableLE1CoalescedMerge);
+                SaveSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", ForcePullContentNextBoot);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

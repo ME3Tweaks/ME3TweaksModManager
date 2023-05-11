@@ -123,10 +123,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         /// Loads ME3Tweaks services that depend on the ME3Tweaks server
         /// <param name="bw">background worker that is used when dynamic help is loading to report data to the UI thread via ReportProgress()</param>
         /// </summary>
-        public static void LoadServices(BackgroundWorker bw)
+        public static void LoadServices(BackgroundWorker bw, bool forceOnlineFetch = false)
         {
             // We cache this here in the event that there's some exception.
-            var useCachedContent = FirstContentCheck && !MOnlineContent.CanFetchContentThrottleCheck();
+            var useCachedContent = !forceOnlineFetch && FirstContentCheck && !MOnlineContent.CanFetchContentThrottleCheck();
             FirstContentCheck = false; // Ensure this is false after the initial usage
 
             var messageStart = useCachedContent ? M3L.GetString(M3L.string_loadingME3TweaksServices) : M3L.GetString(M3L.string_refreshingME3TweaksServices);

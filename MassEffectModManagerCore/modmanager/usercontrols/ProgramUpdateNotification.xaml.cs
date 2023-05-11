@@ -393,6 +393,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // Setup executable and parameters
                 process.StartInfo.FileName = updateSwapperExecutable;
                 process.StartInfo.Arguments = args;
+                Settings.ForcePullContentNextBoot = true; // Force content pull after reboot
                 process.Start();
                 M3Log.Information(@"Stopping Mod Manager to apply update");
                 Log.CloseAndFlush();
