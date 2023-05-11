@@ -203,6 +203,11 @@ namespace ME3TweaksModManager
                     foreach (var ii in items)
                     {
                         ii.DownloadedStream.Position = 0;
+                        App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import", new Dictionary<string, string>
+                        {
+                            { @"Method", @"nxm:// link" },
+                            { @"Filename", ii.ModFile?.FileName }
+                        });
                         if (ii.DownloadedStream is FileStream fs)
                         {
                             // Open the file instead
@@ -3883,7 +3888,7 @@ namespace ME3TweaksModManager
                         case @".7z":
                         case @".zip":
                         case @".exe":
-                            App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import", new Dictionary<string, string>
+                            TelemetryInterposer.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string>
                             {
                                 { @"Method", @"Drag & drop" },
                                 { @"Filename", Path.GetFileName(file) }
