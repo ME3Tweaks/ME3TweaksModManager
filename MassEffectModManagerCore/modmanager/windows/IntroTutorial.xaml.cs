@@ -40,9 +40,16 @@ namespace ME3TweaksModManager.modmanager.windows
             Owner = owner;
             PrepareSteps();
 
-            CurrentStep = TutorialSteps[0];
-            LoadCommands();
-            InitializeComponent();
+            if (TutorialSteps.Count > 0)
+            {
+                CurrentStep = TutorialSteps[0];
+                LoadCommands();
+                InitializeComponent();
+            }
+            else
+            {
+                M3Log.Warning(@"Cannot show tutorial: No tutorial steps were loaded");
+            }
         }
 
         /// <summary>

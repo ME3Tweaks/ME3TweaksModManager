@@ -2734,8 +2734,11 @@ namespace ME3TweaksModManager
                 if (TutorialService.ServiceLoaded)
                 {
                     var tutorial = new IntroTutorial(this);
-                    tutorial.Show();
-                    tutorial.Activate();
+                    if (tutorial.TutorialSteps.Any()) // if somehow we get into a phase where there are no steps we cannot show it
+                    {
+                        tutorial.Show();
+                        tutorial.Activate();
+                    }
                 }
             };
             ShowBusyControl(previewPanel);
