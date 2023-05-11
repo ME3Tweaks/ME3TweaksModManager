@@ -1516,5 +1516,16 @@ namespace SevenZip
         {
             return _inStream;
         }
+
+        /// <summary>
+        /// M3: Extracts the file with the specified filename to the specified path on disk
+        /// </summary>
+        /// <param name="inArchiveFileName"></param>
+        /// <param name="outFilePath"></param>
+        public void ExtractFile(string inArchiveFileName, string outFilePath)
+        {
+            using var fs = File.Create(outFilePath);
+            ExtractFile(inArchiveFileName, fs);
+        }
     }
 }
