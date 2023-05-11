@@ -211,8 +211,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
                 extractingCallback?.Invoke(args);
             }
             archive.Progressing += archiveExtractionProgress;
-            M3Log.Information(@"Extracting files...");
-            archive.ExtractFiles(M3LoadedMods.GetTextureLibraryDirectory(), fileIndicesToExtract);
+            M3Log.Information($@"Extracting file: {FilePath}");
+
+            var memPath = Path.Combine(M3LoadedMods.GetTextureLibraryDirectory(), Path.GetFileName(FilePath));
+            archive.ExtractFile(FilePath, memPath);
             archive.Progressing -= archiveExtractionProgress;
 
             // Done with archive
@@ -226,7 +228,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             }
 
             // Put into file directory
-            var memPath = Path.Combine(M3LoadedMods.GetTextureLibraryDirectory(), Path.GetFileName(FilePath));
 
             // But first, inventory and hash the file
             if (sourceNXMLink != null)
@@ -266,4 +267,3 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         internal long InitialLoadedSize { get; set; }
     }
 }
-    
