@@ -368,6 +368,7 @@
                             Width="*" />
                     </Grid.ColumnDefinitions>
                     <ListBox
+                        Name="InstallGroupMods_ListBox"
                         ItemsSource="{Binding ModsInGroup}"
                         SelectedItem="{Binding SelectedInstallGroupMod}"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"

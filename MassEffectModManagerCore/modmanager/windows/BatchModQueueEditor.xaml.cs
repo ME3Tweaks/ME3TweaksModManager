@@ -298,28 +298,45 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void MoveDown()
         {
-            if (SelectedInstallGroupMod is BatchMod || SelectedInstallGroupMod is MEMMod)
+            int numToMove = Keyboard.Modifiers == ModifierKeys.Shift ? 5 : 1; // if holding shift, move 5
+            for (int i = 0; i < numToMove; i++)
             {
-                var mod = SelectedInstallGroupMod;
-                var oldIndex = ModsInGroup.IndexOf(SelectedInstallGroupMod);
-                var newIndex = oldIndex + 1;
-                ModsInGroup.RemoveAt(oldIndex);
-                ModsInGroup.Insert(newIndex, mod);
-                SelectedInstallGroupMod = mod;
+                if (CanMoveDown() && SelectedInstallGroupMod is BatchMod || SelectedInstallGroupMod is MEMMod)
+                {
+                    var mod = SelectedInstallGroupMod;
+                    var oldIndex = ModsInGroup.IndexOf(SelectedInstallGroupMod);
+                    var newIndex = oldIndex + 1;
+                    ModsInGroup.RemoveAt(oldIndex);
+                    ModsInGroup.Insert(newIndex, mod);
+                    SelectedInstallGroupMod = mod;
+                }
             }
+
+            ScrollSelectedModIntoView();
         }
 
         private void MoveUp()
         {
-            if (SelectedInstallGroupMod is BatchMod || SelectedInstallGroupMod is MEMMod)
+            int numToMove = Keyboard.Modifiers == ModifierKeys.Shift ? 5 : 1; // if holding shift, move 5
+            for (int i = 0; i < numToMove; i++)
             {
-                var mod = SelectedInstallGroupMod;
-                var oldIndex = ModsInGroup.IndexOf(SelectedInstallGroupMod);
-                var newIndex = oldIndex - 1;
-                ModsInGroup.RemoveAt(oldIndex);
-                ModsInGroup.Insert(newIndex, mod);
-                SelectedInstallGroupMod = mod;
+                if (CanMoveUp() && SelectedInstallGroupMod is BatchMod || SelectedInstallGroupMod is MEMMod)
+                {
+                    var mod = SelectedInstallGroupMod;
+                    var oldIndex = ModsInGroup.IndexOf(SelectedInstallGroupMod);
+                    var newIndex = oldIndex - 1;
+                    ModsInGroup.RemoveAt(oldIndex);
+                    ModsInGroup.Insert(newIndex, mod);
+                    SelectedInstallGroupMod = mod;
+                }
             }
+            
+            ScrollSelectedModIntoView();
+        }
+
+        private void ScrollSelectedModIntoView()
+        {
+            InstallGroupMods_ListBox.ScrollIntoView(SelectedInstallGroupMod);
         }
 
         private void AddModToInstallGroup()
