@@ -57,6 +57,9 @@ namespace ME3TweaksModManager.modmanager.windows
         /// </summary>
         private void PrepareSteps()
         {
+            if (!TutorialService.ServiceLoaded)
+                return; // Do not load
+
             TutorialSteps.ReplaceAll(TutorialService.GetTutorialSteps());
             //Setup languages.
             foreach (var tutorialStep in TutorialSteps)
