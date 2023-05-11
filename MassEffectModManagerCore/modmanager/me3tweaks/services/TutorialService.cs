@@ -135,6 +135,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             //return; // DONT DO ANYTHING, TESTIN
 #endif
             M3Log.Information(@"TutorialService: Running Touchup");
+            if (!ServiceLoaded)
+            {
+                M3Log.Warning(@"Cannot touchup tutorial: service not loaded.");
+                return;
+            }
             var fileRootPath = M3Filesystem.GetTutorialServiceCache();
             foreach (var step in Database)
             {
