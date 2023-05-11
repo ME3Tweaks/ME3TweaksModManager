@@ -206,12 +206,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var m = new Mod(moddescPath, MEGame.ME3);
             e.Result = m;
             M3Log.Information(@"Mod import complete.");
-            TelemetryInterposer.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()
-            {
-                {@"Mod name", m.ModName},
-                {@"Game", SelectedTarget.Game.ToString()},
-                {@"Folder name", SelectedDLCFolder.DLCFolderName}
-            });
 
             if (!CurrentModInTPMI)
             {

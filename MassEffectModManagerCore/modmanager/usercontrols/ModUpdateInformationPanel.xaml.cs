@@ -228,7 +228,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     {@"Type", @"ModMaker"},
                     {@"ModName", mui.mod.ModName},
-                    {@"Result", mui.CanUpdate ? @"Success" : @"Failed"}
+                    {@"Result", !mui.CanUpdate ? @"Success" : @"Failed"}
                 });
 
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
@@ -289,7 +289,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     {@"Type", @"Classic"},
                     {@"ModName", ui.mod.ModName},
-                    {@"Result", ui.CanUpdate ? @"Success" : @"Failed"}
+                    {@"Result", !ui.CanUpdate ? @"Success" : @"Failed"}
                 });
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 OperationInProgress = false;

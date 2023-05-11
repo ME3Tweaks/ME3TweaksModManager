@@ -169,7 +169,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.QueueName},
-                {@"Group size", SelectedBatchQueue.ModsToInstall.Count.ToString()},
+                {@"Group size", SelectedBatchQueue.AllModsToInstall.Count.ToString()},
                 {@"Game", SelectedBatchQueue.Game.ToString()},
                 {@"TargetPath", SelectedGameTarget?.TargetPath}
             });
