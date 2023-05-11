@@ -117,7 +117,7 @@
 
                 <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3&#10;Sonashii&#10;ConfidenTi&#10;TheFellowJasper" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='pol'}"/>
                 <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='bra'}"/>
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="Krozt&#10;Falcoman94" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='ita'}"/>
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="Krozt&#10;Falcoman94&#10;StargazerKyra" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='ita'}"/>
 
                 <TextBlock Text="Legendary Edition Bink Proxy" Foreground="White" Margin="0,15,0, 0" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Text="By d00t" Foreground="White" TextAlignment="Center" Grid.Row="13" Grid.ColumnSpan="3" FontWeight="Bold"/>
