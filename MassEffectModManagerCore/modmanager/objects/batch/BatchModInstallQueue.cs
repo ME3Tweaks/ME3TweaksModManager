@@ -265,9 +265,10 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             queue.QueueName = lines[line];
             line++;
 
-            if (lines.Length >= line)
+            if (line < lines.Length)
             {
                 // Observed crash when deserializing this in telemetry
+                // Fixed 05/10/2023 - bad <= logic
                 queue.QueueDescription = lines[line];
                 line++;
             }

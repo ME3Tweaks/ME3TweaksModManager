@@ -185,18 +185,16 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         // Index existing files
                         foreach (var v in references)
                         {
-                            updateStatusCallback?.Invoke(
-                                M3L.GetString(M3L.string_interp_indexingForUpdatesXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
+                            updateStatusCallback?.Invoke(M3L.GetString(M3L.string_interp_indexingForUpdatesXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
                             i++;
                             var fpath = Path.Combine(matchingMod.ModPath, v);
-                            if (fpath.RepresentsPackageFilePath())
+                            if (modUpdateInfo.mod.Game.IsOTGame() && fpath.RepresentsPackageFilePath()) //05/08/2023: Only decompress OT packages as LE will always be compressed anyways. We will just double compress it.
                             {
                                 // We need to make sure it's decompressed
                                 var qPackage = MEPackageHandler.QuickOpenMEPackage(fpath);
                                 if (qPackage.IsCompressed)
                                 {
-                                    M3Log.Information(
-                                        $@" >> Decompressing compressed package for update comparison check: {fpath}",
+                                    M3Log.Information($@" >> Decompressing compressed package for update comparison check: {fpath}",
                                         Settings.LogModUpdater);
                                     try
                                     {
