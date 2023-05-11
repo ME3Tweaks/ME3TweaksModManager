@@ -463,7 +463,7 @@ namespace ME3TweaksModManager
             if (lang == @"ita") // Localization of build 128 is behind schedule; the localization is disabled but can be restored on serverside
             {
                 // This may not be available on first load
-                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_ITA, out var enabled, false);
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_ITA, out var enabled, true);
                 return enabled;
             }
 
