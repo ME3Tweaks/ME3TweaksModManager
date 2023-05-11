@@ -204,6 +204,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     SetNextStep(M3L.GetString(M3L.string_preparingForTextureInstall)); // same message
                     var installResult = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
+                    TelemetryInterposer.TrackEvent(@"Installed texture mods", new Dictionary<string, string>()
+                    {
+                        {@"Result", installResult != null ? (installResult.ExitCode == 0 ? @"OK" : $@"Error code {installResult.ExitCode}") : @"Unknown"}
+                    });
                     if (installResult != null)
                     {
                         // If 'installation' occurred (e.g. it got past scan) we need to reload the game target to ensure consistency in the UI

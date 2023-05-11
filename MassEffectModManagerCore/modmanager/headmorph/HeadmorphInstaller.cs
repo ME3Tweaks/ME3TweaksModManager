@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CliWrap.EventStream;
 using CliWrap;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.usercontrols;
 
@@ -26,7 +27,12 @@ namespace ME3TweaksModManager.modmanager.headmorph
             var tseCliToolPath = Path.Combine(tseCliToolFolder, ExternalToolLauncher.ToolNameToExeName(ExternalToolLauncher.TRILOGYSAVEEDITOR_CMD));
 
             var exitCode = await RunTSECLIImportHeadmorph(tseCliToolPath, morphFilename, destSavename);
-
+            TelemetryInterposer.TrackEvent(@"Installed headmorph", new Dictionary<string, string>()
+            {
+                {@"Filename", morphFilename},
+                {@"Destination save", destSavename},
+                {@"Exit code", exitCode.ToString()}
+            });
             return exitCode == 0;
         }
 
