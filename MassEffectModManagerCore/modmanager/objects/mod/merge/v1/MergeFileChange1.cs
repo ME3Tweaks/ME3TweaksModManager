@@ -52,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
 
             // APPLY ASSET UPDATE
-            AssetUpdate?.ApplyUpdate(package, ref export, installingMod, addMergeWeightCompletion);
+            AssetUpdate?.ApplyUpdate(package, ref export, installingMod, addMergeWeightCompletion, gameTarget);
 
             // The below all require a target export so we enforce it here.
             if (export == null)
@@ -375,7 +375,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ref ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted)
+        public bool ApplyUpdate(IMEPackage package, ref ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted, GameTarget target)
         {
             // targetExport CAN BE NULL starting with ModDesc 8.1 mods!
             Stream binaryStream;
@@ -426,6 +426,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                             {
                                 ImportChildrenOfPackages = false, // As roots may be Package, do not port the children, we will do it ourselves
                                 ErrorOccurredCallback = x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
+                                GamePathOverride = target.TargetPath,
                             }, out parent);
                     }
                     else
@@ -441,7 +442,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     {
                         ErrorOccurredCallback = x =>
                             throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
-                        ImportExportDependencies = true // I don't think this is actually necessary...
+                        ImportExportDependencies = true, // I don't think this is actually necessary...
+                        GamePathOverride = target.TargetPath,
                     }, out var newEntry);
                 if (resultst.Any())
                 {
@@ -459,7 +461,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     {
                         ErrorOccurredCallback = x =>
                             throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
-                        ImportExportDependencies = true // I don't think this is actually necessary...
+                        ImportExportDependencies = true, // I don't think this is actually necessary...
+                        GamePathOverride = target.TargetPath,
                     }, out _);
                 if (resultst.Any())
                 {
