@@ -460,10 +460,10 @@ namespace ME3TweaksModManager
                 return enabled;
             }
 
-            if (lang == @"ita") // Localization of build 128 is behind schedule; the localization is disabled but can be restored on serverside
+            if (lang == @"ita") // Localization of build 128 was done but was never committed to github by the localizer; the effective version is several versions behind
             {
                 // This may not be available on first load
-                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_ITA, out var enabled, true);
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_ITA, out var enabled, false);
                 return enabled;
             }
 
