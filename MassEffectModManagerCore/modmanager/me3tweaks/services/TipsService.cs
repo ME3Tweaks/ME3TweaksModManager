@@ -99,7 +99,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 }
             }
 
-            M3Log.Information($@"Unable to load {ServiceLoggingName}: No cached content or online content was available to load");
+            M3Log.Warning($@"Unable to load {ServiceLoggingName}: No cached content or online content was available to load");
             return false;
         }
 
