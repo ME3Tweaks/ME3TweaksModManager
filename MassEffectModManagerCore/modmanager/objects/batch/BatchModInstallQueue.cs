@@ -159,6 +159,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <returns></returns>
         private static BatchLibraryInstallQueue ParseModernQueue(string queueFilename, string queueJson)
         {
+            if (string.IsNullOrWhiteSpace(queueJson))
+            {
+                M3Log.Warning($@"{queueFilename} has no text; this is an invalid queue file");
+                return null;
+            }
+
             try
             {
                 var modernQueue = JsonConvert.DeserializeObject<BatchLibraryInstallQueue>(queueJson, new JsonSerializerSettings()
