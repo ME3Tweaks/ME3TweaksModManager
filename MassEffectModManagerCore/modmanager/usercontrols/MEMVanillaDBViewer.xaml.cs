@@ -95,7 +95,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private static IEnumerable<VanillaEntry> getDBItems(CaseInsensitiveDictionary<List<(int size, string md5)>> db)
+        private static IEnumerable<VanillaEntry> getDBItems(CaseInsensitiveConcurrentDictionary<List<(int size, string md5)>> db)
         {
             var files = new List<VanillaEntry>();
             foreach (var v in db)
