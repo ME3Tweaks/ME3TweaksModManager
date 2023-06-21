@@ -452,6 +452,12 @@ namespace ME3TweaksModManager
                 return enabled;
             }
 
+            if (lang == @"ita") // Localization is up to date
+            {
+                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_ITA, out var enabled, true);
+                return enabled;
+            }
+
             // These localizations have been abandoned; if they are updated serverside, they can be dynamically re-enabled, for the most part
             if (lang == @"pol") // Localization was abandoned
             {
@@ -460,12 +466,6 @@ namespace ME3TweaksModManager
                 return enabled;
             }
 
-            if (lang == @"ita") // Localization of build 128 was done but was never committed to github by the localizer; the effective version is several versions behind
-            {
-                // This may not be available on first load
-                ServerManifest.TryGetBool(ServerManifest.LOCALIZATION_ENABLED_ITA, out var enabled, false);
-                return enabled;
-            }
 
             if (lang == @"bra") // Localization was abandoned
             {
