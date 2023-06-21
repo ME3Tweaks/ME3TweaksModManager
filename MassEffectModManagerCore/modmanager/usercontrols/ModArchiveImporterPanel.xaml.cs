@@ -135,6 +135,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         var dictionary = new CaseInsensitiveDictionary<FileSourceRecord>();
                         foreach (var mod in CompressedMods.OfType<Mod>())
                         {
+                            if (mod.ModDescHash == null)
+                                continue; // We don't add these, they may have been server loaded
                             dictionary[mod.ModDescHash] = new FileSourceRecord()
                             {
                                 DownloadLink = downloadLink,
