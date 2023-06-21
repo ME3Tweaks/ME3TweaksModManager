@@ -10,7 +10,7 @@
     xmlns:fa5="http://schemas.fontawesome.com/icons/"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
-    Width="500">
+    Width="600">
     <DockPanel
         Margin="5,5,5,5">
         <TextBlock
@@ -54,8 +54,7 @@
                     ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                     Width="16"
-                    Height="16"
-                    Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}" />
+                    Height="16" />
                 <TextBlock
                     Text="{Binding CollectionStatusMessage}"
                     VerticalAlignment="Center"
@@ -63,39 +62,71 @@
             </DockPanel>
         </DockPanel>
         <StackPanel>
-            <TextBlock
-                Text="{DynamicResource string_modManagerApplicationLog}"
-                FontSize="14"
-                FontWeight="Bold" />
-            <TextBlock
-                Text="{DynamicResource string_applicationLogDescription}"
-                TextWrapping="Wrap" />
-            <ComboBox
-                Margin="0,4,0,0"
-                SelectedItem="{Binding SelectedLog}"
-                ItemsSource="{Binding AvailableLogs}"
-                Style="{DynamicResource {x:Static adonisUi:Styles.AccentComboBox}}"
-                IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
-            <TextBlock
-                Text="{DynamicResource string_gameDiagnostic}"
-                FontSize="14"
-                FontWeight="Bold"
-                Margin="0,10,0,0" />
-            <TextBlock
-                Text="{DynamicResource string_gameDiagnosticDescription}"
-                TextWrapping="Wrap" />
-            <usercontrols:TargetSelector
+            <GroupBox
+                Header="{DynamicResource string_modManagerApplicationLog}">
+                <StackPanel>
+                    <TextBlock
+                        Text="{DynamicResource string_applicationLogDescription}"
+                        TextWrapping="Wrap" />
+                    <ComboBox
+                        Margin="0,4,0,0"
+                        SelectedItem="{Binding SelectedLog}"
+                        ItemsSource="{Binding AvailableLogs}"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentComboBox}}"
+                        IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox
+                Header="{DynamicResource string_gameDiagnostic}"
+                Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock
+                        Text="{DynamicResource string_gameDiagnosticDescription}"
+                        TextWrapping="Wrap" />
+                    <usercontrols:TargetSelector
                 Theme="Accent"
                 Margin="0,4,0,0"
                 AvailableTargets="{Binding DiagnosticTargets}"
                 SelectedGameTarget="{Binding SelectedDiagnosticTarget}"
                 ToolTip="{DynamicResource string_tooltip_currentTarget}"
                 IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
-            <CheckBox
+                    <TextBlock
+                        Text="Textures check"
+                        FontWeight="Bold"
+                        Margin="0,10,0,0" />
+                    <TextBlock Text="A full textures check can take several minutes, but will validate texture references in all package files."/>
+                    <CheckBox
                 Content="{DynamicResource string_fullTexturesCheck}"
                 ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
                 IsChecked="{Binding TextureCheck}"
                 IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+                    <TextBlock
+                Text="Save file"
+                FontWeight="Bold"
+                Margin="0,10,0,0" />
+                    <TextBlock
+                Text="You can optionally include a save file in your game diagnostic. Only select a save if requested."
+                TextWrapping="Wrap" />
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="No save selected" VerticalAlignment="Center"/>
+                        <Button Content="Select save file" HorizontalAlignment="Right"/>
+                    </StackPanel>
+
+                <TextBlock
+                    Text="Additional features"
+                    FontWeight="Bold"
+                    Margin="0,10,0,0" />
+                <TextBlock Text="A full textures check can take several minutes, but will validate texture references in all package files."/>
+                <CheckBox
+                    Content="{DynamicResource string_fullTexturesCheck}"
+                    ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
+                    IsChecked="{Binding TextureCheck}"
+                    IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+                </StackPanel>
+
+            </GroupBox>
+
             <TextBlock
                 Text="{DynamicResource string_diagShareTheLink}"
                 TextWrapping="Wrap"
