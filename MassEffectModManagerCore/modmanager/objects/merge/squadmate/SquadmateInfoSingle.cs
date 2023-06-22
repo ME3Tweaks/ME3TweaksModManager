@@ -23,7 +23,7 @@ namespace ME3TweaksModManager.modmanager.objects.merge.squadmate
 
         [JsonProperty(@"availableimage")]
         public string AvailableImage { get; set; }
-
+        T
         //[JsonProperty(@"deadimage")]
         //public string DeadImage { get; set; }
 
@@ -35,6 +35,12 @@ namespace ME3TweaksModManager.modmanager.objects.merge.squadmate
 
         [JsonProperty(@"customtoken0")]
         public int CustomToken0 { get; set; }
+
+        /// <summary>
+        /// The availability integer - defaults to -1 for always available
+        /// </summary>
+        [JsonProperty(@"plotflag")]
+        public int PlotFlag { get; set; } = -1;
 
         /// <summary>
         /// The index of the conditional function to check if this outfit is the selected one when loading
