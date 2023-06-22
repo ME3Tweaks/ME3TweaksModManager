@@ -1928,7 +1928,9 @@ namespace ME3TweaksModManager
                     // Generate a new one - IF NECESSARY!
                     // This is so if user deletes merge DLC it doesn't re-create itself immediately even if it's not necessary, e.g. user removed all merge DLC-eligible items.
 
-                    bool needsGenerated = SQMOutfitMerge.NeedsMergedGame3(mergeTarget) || ME2EmailMerge.NeedsMergedGame2(mergeTarget);
+                    bool needsGenerated = 
+                        SQMOutfitMerge.NeedsMerged(mergeTarget)
+                                          || ME2EmailMerge.NeedsMergedGame2(mergeTarget);
                     if (needsGenerated)
                     {
                         try
@@ -1948,7 +1950,7 @@ namespace ME3TweaksModManager
 
             foreach (var v in result.TargetsToSquadmateMergeSync)
             {
-                ShowRunAndDone(() => SQMOutfitMerge.RunGame3SquadmateOutfitMerge(targetMergeMapping[v]),
+                ShowRunAndDone(() => SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v]),
                     M3L.GetString(M3L.string_synchronizingSquadmateOutfits),
                     M3L.GetString(M3L.string_synchronizedSquadmateOutfits));
             }

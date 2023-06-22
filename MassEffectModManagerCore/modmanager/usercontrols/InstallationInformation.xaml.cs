@@ -337,7 +337,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         Result.TargetsToEmailMergeSync.Add(SelectedTarget);
                     }
 
-                    if (SelectedTarget.Game.IsGame3())
+                    if (SelectedTarget.Game.IsGame3() || SelectedTarget.Game == MEGame.LE2) // ME2 is not supported for merge due to having to edit the SWF
                     {
                         Result.TargetsToSquadmateMergeSync.Add(SelectedTarget);
                     }
@@ -361,7 +361,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         Result.TargetsToEmailMergeSync.Add(SelectedTarget);
                     }
 
-                    if (SelectedTarget.Game.IsGame3())
+                    if (SelectedTarget.Game.IsGame3() || SelectedTarget.Game == MEGame.LE2) // ME2 is not supported for merge due to having to edit the SWF
                     {
                         Result.TargetsToSquadmateMergeSync.Add(SelectedTarget);
                     }

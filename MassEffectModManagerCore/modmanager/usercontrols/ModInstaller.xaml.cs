@@ -1423,7 +1423,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     Result.TargetsToAutoTOC.Add(InstallOptionsPackage.InstallTarget);
                 }
 
-                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame3())
+                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame3() || InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE2) // ME2 is not supported for squadmate merge
                 {
                     Result.TargetsToSquadmateMergeSync.Add(InstallOptionsPackage.InstallTarget);
                 }
