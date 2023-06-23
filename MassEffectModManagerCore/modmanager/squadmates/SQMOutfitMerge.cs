@@ -16,8 +16,10 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.merge.dlc;
+using ME3TweaksModManager.modmanager.merge.dlc.LE2;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.merge.squadmate;
+using Microsoft.WindowsAPICodePack.NativeAPI.Consts;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.squadmates
@@ -97,8 +99,8 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     case @"Veteran": return 324;
                     case @"Vixen": return 312;
 
-                    // LOTSB
-                    case @"Liara": return 312;
+                        // LOTSB doesn't use plot streaming for liara
+                        // case @"Liara": return 312;
                 }
             }
             else if (game.IsGame3())
@@ -153,6 +155,8 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
             // Scan squadmate merge files
             var sqmSupercedances = M3Directories.GetFileSupercedances(mergeDLC.Target, new[] { @".sqm" });
+            var squadmateImageInfosLE2 = new List<LE2SquadmateImageInfo>();
+
             if (sqmSupercedances.TryGetValue(SQUADMATE_MERGE_MANIFEST_FILE, out var infoList))
             {
                 infoList.Reverse();
@@ -165,6 +169,13 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     if (!infoPackage.Validate(dlc, mergeDLC.Target, loadedFiles))
                     {
                         continue; // skip this
+                    }
+
+                    IMEPackage imagePackage = null; // Not used for LE3
+                    if (mergeDLC.Target.Game == MEGame.LE2)
+                    {
+                        var henchImagesP = Path.Combine(mergeDLC.Target.GetDLCPath(), dlc, mergeDLC.Target.Game.CookedDirName(), $@"SFXHenchImages_{dlc}.pcc");
+                        imagePackage = MEPackageHandler.OpenMEPackage(henchImagesP);
                     }
 
                     // Enumerate all outfits listed for a single squadmate
@@ -180,7 +191,50 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         }
 
                         outfit.ConditionalIndex = currentConditional++; // This is always incremented, so it might appear out of order in game files depending on how mod order is processed, that should be okay though.
-                        outfit.AppearanceId = appearanceId++; // may need adjusted
+
+                        if (mergeDLC.Target.Game.IsGame2())
+                        {
+                            // This is the 'slot' of the outfit for this squadmate
+                            outfit.AppearanceId = list.Any() ? (list.MaxBy(x => x.AppearanceId).AppearanceId + 1) : GetFirstAvailableSquadmateAppearanceIndexLE2(outfit.HenchName); // Get first unused slot
+
+                            // Todo: If higher than 9 we have too many outfits!!!!
+                            if (outfit.AppearanceId > 9)
+                            {
+                                M3Log.Error(@"Squadmate outfit merge for LE2 only supports 9 outfits per character currently!");
+                            }
+
+                            var availableImage = imagePackage.FindExport(outfit.AvailableImage);
+                            if (availableImage == null)
+                            {
+                                M3Log.Error($@"Available image {outfit.AvailableImage} not found in package: {imagePackage.FilePath}");
+                                continue;
+                            }
+
+                            var selectedImage = imagePackage.FindExport(outfit.HighlightImage);
+                            if (selectedImage == null)
+                            {
+                                M3Log.Error($@"Selected image {outfit.HighlightImage} not found in package: {imagePackage.FilePath}");
+                                continue;
+                            }
+
+                            // Add the source exports to the porting list
+                            squadmateImageInfosLE2.Add(new LE2SquadmateImageInfo()
+                            {
+                                SourceExport = availableImage,
+                                DestinationTextureName = GetTextureExportNameForSquadmateLE2(outfit.HenchName, outfit.AppearanceId, false)
+                            });
+
+                            squadmateImageInfosLE2.Add(new LE2SquadmateImageInfo()
+                            {
+                                SourceExport = selectedImage,
+                                DestinationTextureName = GetTextureExportNameForSquadmateLE2(outfit.HenchName, outfit.AppearanceId, true)
+                            });
+                        }
+                        else if (mergeDLC.Target.Game.IsGame3())
+                        {
+                            // Must be fully unique
+                            outfit.AppearanceId = appearanceId++; // may need adjusted
+                        }
                         outfit.DLCName = dlc;
                         list.Add(outfit);
                         M3Log.Information($@"SQMMERGE: ConditionalIndex for {outfit.HenchName} appearanceid {outfit.AppearanceId}: {outfit.ConditionalIndex}");
@@ -311,10 +365,10 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
 
                     // Relink the conditionals chain
-                    UClass uc = ObjectBinary.From<UClass>(conditionalClass);
-                    uc.UpdateLocalFunctions();
-                    uc.UpdateChildrenChain();
-                    conditionalClass.WriteBinary(uc);
+                    //UClass uc = ObjectBinary.From<UClass>(conditionalClass);
+                    //uc.UpdateLocalFunctions();
+                    //uc.UpdateChildrenChain();
+                    //conditionalClass.WriteBinary(uc);
 
                     startup.Save(startupF);
                 }
@@ -350,11 +404,39 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             properties[@"AddAppearance"] = outfit.AppearanceId.ToString();
                             properties[@"PlotFlag"] = outfit.PlotFlag.ToString();
                             var appearanceStruct = StringStructParser.BuildCommaSeparatedSplitValueList(properties);
-                            partySelectionSection.AddEntry(new CoalesceProperty(@"lstAppearances", new CoalesceValue(appearanceStruct, CoalesceParseAction.AddUnique)));
+                            partySelectionSection.AddEntry(new CoalesceProperty(@"lstAppearances",
+                                new CoalesceValue(appearanceStruct, CoalesceParseAction.AddUnique)));
+                        }
+
+                        configBundle.CommitDLCAssets();
+
+                        // Update squadmate images
+                        // Create and patch BioH_SelectGUI for more squadmate images
+
+                        // Lvl2/3/4 are LOTSB
+                        var packagesToInjectInto = new[] { @"BioH_SelectGUI.pcc", @"BioP_Exp1Lvl2.pcc", @"BioP_Exp1Lvl3.pcc", @"BioP_Exp1Lvl4.pcc" };
+                        using var swfStream = M3Utilities.ExtractInternalFileToStream($@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.TeamSelect.swf");
+                        var swfData = swfStream.ToArray();
+                        foreach (var package in packagesToInjectInto)
+                        {
+                            var packageF = loadedFiles[package];
+                            using var packageP = MEPackageHandler.OpenMEPackage(packageF);
+
+                            // Inject extended SWF
+                            var swf = packageP.FindExport(@"GUI_SF_TeamSelect.TeamSelect");
+                            var rawData = swf.GetProperty<ImmutableByteArrayProperty>(@"RawData");
+                            rawData.Bytes = swfData;
+                            swf.WriteProperty(rawData);
+
+                            // Inject images
+                            foreach (var squadmateImage in squadmateImageInfosLE2)
+                            {
+                                squadmateImage.InjectSquadmateImageIntoPackage(packageP);
+                            }
+
+                            packageP.Save(Path.Combine(cookedDir, package)); // Save into merge DLC
                         }
                     }
-
-                    configBundle.CommitDLCAssets();
                 }
                 else if (mergeDLC.Target.Game.IsGame3())
                 {
@@ -429,6 +511,10 @@ namespace ME3TweaksModManager.modmanager.squadmates
             {
                 var elem = element.GetProp<ArrayProperty<StructProperty>>(@"Elements");
                 sqm.MemberAppearanceValue = elem.Count;
+                if (game.IsGame2())
+                {
+                    sqm.MemberAppearanceValue += 1; // Indexing starts at 1 for Game 2
+                }
                 elem.Add(GeneratePlotStreamingElement(fName, sqm.ConditionalIndex));
             }
         }
@@ -475,63 +561,63 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         return 2500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"mystic") * 10 + 1);
                     }
                 case @"grunt":
-                {
-                    if (appearanceIndex == 1) return 0x6F; // Default
-                    if (appearanceIndex == 2) return 0xCA; // Loyalty
-                    if (appearanceIndex == 3) return 0x118; // DLC
-                    return 3000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"grunt") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0x6F; // Default
+                        if (appearanceIndex == 2) return 0xCA; // Loyalty
+                        if (appearanceIndex == 3) return 0x118; // DLC
+                        return 3000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"grunt") * 10 + 1);
+                    }
                 case @"leading":
-                {
-                    if (appearanceIndex == 1) return 0x78; // Default
-                    if (appearanceIndex == 2) return 0xD1; // Loyalty
-                    return 3500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"leading") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0x78; // Default
+                        if (appearanceIndex == 2) return 0xD1; // Loyalty
+                        return 3500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"leading") * 10 + 1);
+                    }
                 case @"tali":
-                {
-                    if (appearanceIndex == 1) return 0x7F; // Default
-                    if (appearanceIndex == 2) return 0xD8; // Loyalty
-                    if (appearanceIndex == 3) return 0x11F; // DLC
-                    return 4000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"tali") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0x7F; // Default
+                        if (appearanceIndex == 2) return 0xD8; // Loyalty
+                        if (appearanceIndex == 3) return 0x11F; // DLC
+                        return 4000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"tali") * 10 + 1);
+                    }
                 case @"convict":
-                {
-                    if (appearanceIndex == 1) return 0x866; // Default
-                    if (appearanceIndex == 2) return 0xDF; // Loyalty
-                    if (appearanceIndex == 3) return 0x126; // DLC
-                    return 4500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"convict") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0x866; // Default
+                        if (appearanceIndex == 2) return 0xDF; // Loyalty
+                        if (appearanceIndex == 3) return 0x126; // DLC
+                        return 4500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"convict") * 10 + 1);
+                    }
                 case @"geth":
-                {
-                    if (appearanceIndex == 1) return 0x8D; // Default
-                    if (appearanceIndex == 2) return 0xE6; // Loyalty
-                    return 5000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"geth") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0x8D; // Default
+                        if (appearanceIndex == 2) return 0xE6; // Loyalty
+                        return 5000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"geth") * 10 + 1);
+                    }
                 case @"thief":
-                {
-                    if (appearanceIndex == 1) return 0x96; // Default
-                    if (appearanceIndex == 2) return 0xED; // Loyalty
-                    return 5500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"thief") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0x96; // Default
+                        if (appearanceIndex == 2) return 0xED; // Loyalty
+                        return 5500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"thief") * 10 + 1);
+                    }
                 case @"assassin":
-                {
-                    if (appearanceIndex == 1) return 0x9D; // Default
-                    if (appearanceIndex == 2) return 0xF4; // Loyalty
-                    if (appearanceIndex == 3) return 0x12D; // DLC
-                    return 6000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"assassin") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0x9D; // Default
+                        if (appearanceIndex == 2) return 0xF4; // Loyalty
+                        if (appearanceIndex == 3) return 0x12D; // DLC
+                        return 6000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"assassin") * 10 + 1);
+                    }
                 case @"professor":
-                {
-                    if (appearanceIndex == 1) return 0xA6; // Default
-                    if (appearanceIndex == 2) return 0xFB; // Loyalty
-                    return 6500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"professor") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0xA6; // Default
+                        if (appearanceIndex == 2) return 0xFB; // Loyalty
+                        return 6500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"professor") * 10 + 1);
+                    }
                 case @"veteran":
-                {
-                    if (appearanceIndex == 1) return 0xAD; // Default
-                    if (appearanceIndex == 2) return 0x102; // Loyalty
-                    return 7000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"veteran") * 10 + 1);
-                }
+                    {
+                        if (appearanceIndex == 1) return 0xAD; // Default
+                        if (appearanceIndex == 2) return 0x102; // Loyalty
+                        return 7000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"veteran") * 10 + 1);
+                    }
             }
 
             // The custom slot, not sure how we will implement this. I just say it's 'custom' which won't return anything in the next func but the 1 value

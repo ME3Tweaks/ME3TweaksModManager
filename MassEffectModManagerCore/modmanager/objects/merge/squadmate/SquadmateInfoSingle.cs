@@ -23,7 +23,7 @@ namespace ME3TweaksModManager.modmanager.objects.merge.squadmate
 
         [JsonProperty(@"availableimage")]
         public string AvailableImage { get; set; }
-        T
+        
         //[JsonProperty(@"deadimage")]
         //public string DeadImage { get; set; }
 
