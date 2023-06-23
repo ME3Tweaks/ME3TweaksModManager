@@ -111,6 +111,7 @@
 		<None Remove="modmanager\meim\propertymaps\BioGame.xml" />
 		<None Remove="modmanager\meim\propertymaps\BioParty.xml" />
 		<None Remove="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
+		<None Remove="modmanager\merge\dlc\LE2\TeamSelect.swf" />
 		<None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
 		<None Remove="modmanager\objects\mod\merge\v1\schema.json" />
 		<None Remove="modmanager\starterkit\BlankTlkFile.pcc" />
@@ -176,6 +177,7 @@
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioParty.xml" />
+		<EmbeddedResource Include="modmanager\merge\dlc\LE2\TeamSelect.swf" />
 		<EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.pcc" />
 		<EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.upk" />
 		<EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
