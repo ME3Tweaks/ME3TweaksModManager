@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 using FontAwesome5;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.converters
@@ -18,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.converters
         {
             if (value is bool isFemale)
             {
-                return isFemale ? M3L.GetString(M3L.string_female) : M3L.GetString(M3L.string_male);
+                return (isFemale ? M3L.GetString(M3L.string_female) : M3L.GetString(M3L.string_male)).UpperFirst();
             }
             // Something is wrong, data should be a bool
             return M3L.GetString(M3L.string_undefined);
