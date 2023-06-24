@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Threading.Tasks;
+using System.Xml.Linq;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
@@ -414,11 +415,16 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         // Create and patch BioH_SelectGUI for more squadmate images
 
                         // Lvl2/3/4 are LOTSB
-                        var packagesToInjectInto = new[] { @"BioH_SelectGUI.pcc", @"BioP_Exp1Lvl2.pcc", @"BioP_Exp1Lvl3.pcc", @"BioP_Exp1Lvl4.pcc" };
-                        using var swfStream = M3Utilities.ExtractInternalFileToStream($@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.TeamSelect.swf");
+                        var packagesToInjectInto = new[]
+                            { @"BioH_SelectGUI.pcc", @"BioP_Exp1Lvl2.pcc", @"BioP_Exp1Lvl3.pcc", @"BioP_Exp1Lvl4.pcc" };
+                        using var swfStream = M3Utilities.ExtractInternalFileToStream(
+                            $@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.TeamSelect.swf");
                         var swfData = swfStream.ToArray();
-                        foreach (var package in packagesToInjectInto)
+                        Parallel.ForEach(packagesToInjectInto, package =>
                         {
+
+                            //foreach (var package in packagesToInjectInto)
+                            //{
                             var packageF = loadedFiles[package];
                             using var packageP = MEPackageHandler.OpenMEPackage(packageF);
 
@@ -435,7 +441,8 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             }
 
                             packageP.Save(Path.Combine(cookedDir, package)); // Save into merge DLC
-                        }
+                        });
+                        //}
                     }
                 }
                 else if (mergeDLC.Target.Game.IsGame3())
@@ -511,10 +518,6 @@ namespace ME3TweaksModManager.modmanager.squadmates
             {
                 var elem = element.GetProp<ArrayProperty<StructProperty>>(@"Elements");
                 sqm.MemberAppearanceValue = elem.Count;
-                if (game.IsGame2())
-                {
-                    sqm.MemberAppearanceValue += 1; // Indexing starts at 1 for Game 2
-                }
                 elem.Add(GeneratePlotStreamingElement(fName, sqm.ConditionalIndex));
             }
         }
@@ -538,108 +541,109 @@ namespace ME3TweaksModManager.modmanager.squadmates
         {
             // New slots use a fixed base number (increments of 500) and all start at the (appearance index * 10 + 1)
             // glow is offset by 3 and then 7 to the next non-glow for a skip of 10.
+            // We add one to the base index number when calculating to account for the offsets being indexed at 1 and not at 0 (see the texture sheet)
             switch (henchname.ToLowerInvariant())
             {
                 case @"vixen":
                     {
-                        if (appearanceIndex == 1) return 0x4C; // Default
-                        if (appearanceIndex == 2) return 0xB4; // Loyalty
-                        if (appearanceIndex == 3) return 0x109; // DLC
-                        return 1500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"vixen") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x4C; // Default
+                        if (appearanceIndex == 1) return 0xB4; // Loyalty
+                        if (appearanceIndex == 2) return 0x109; // DLC
+                        return 1500 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"vixen") + 1) * 10 + 1);
                     }
                 case @"garrus":
                     {
-                        if (appearanceIndex == 1) return 0x61; // Default
-                        if (appearanceIndex == 2) return 0xBC; // Loyalty
-                        if (appearanceIndex == 3) return 0x111; // DLC
-                        return 2000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"garrus") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x61; // Default
+                        if (appearanceIndex == 1) return 0xBC; // Loyalty
+                        if (appearanceIndex == 2) return 0x111; // DLC
+                        return 2000 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"garrus") + 1) * 10 + 1);
                     }
                 case @"mystic":
                     {
-                        if (appearanceIndex == 1) return 0x68; // Default
-                        if (appearanceIndex == 2) return 0xC3; // Loyalty
-                        return 2500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"mystic") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x68; // Default
+                        if (appearanceIndex == 1) return 0xC3; // Loyalty
+                        return 2500 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"mystic") + 1) * 10 + 1);
                     }
                 case @"grunt":
                     {
-                        if (appearanceIndex == 1) return 0x6F; // Default
-                        if (appearanceIndex == 2) return 0xCA; // Loyalty
-                        if (appearanceIndex == 3) return 0x118; // DLC
-                        return 3000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"grunt") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x6F; // Default
+                        if (appearanceIndex == 1) return 0xCA; // Loyalty
+                        if (appearanceIndex == 2) return 0x118; // DLC
+                        return 3000 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"grunt") + 1) * 10 + 1);
                     }
                 case @"leading":
                     {
-                        if (appearanceIndex == 1) return 0x78; // Default
-                        if (appearanceIndex == 2) return 0xD1; // Loyalty
-                        return 3500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"leading") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x78; // Default
+                        if (appearanceIndex == 1) return 0xD1; // Loyalty
+                        return 3500 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"leading") + 1) * 10 + 1);
                     }
                 case @"tali":
                     {
-                        if (appearanceIndex == 1) return 0x7F; // Default
-                        if (appearanceIndex == 2) return 0xD8; // Loyalty
-                        if (appearanceIndex == 3) return 0x11F; // DLC
-                        return 4000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"tali") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x7F; // Default
+                        if (appearanceIndex == 1) return 0xD8; // Loyalty
+                        if (appearanceIndex == 2) return 0x11F; // DLC
+                        return 4000 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"tali") + 1) * 10 + 1);
                     }
                 case @"convict":
                     {
-                        if (appearanceIndex == 1) return 0x866; // Default
-                        if (appearanceIndex == 2) return 0xDF; // Loyalty
-                        if (appearanceIndex == 3) return 0x126; // DLC
-                        return 4500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"convict") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x866; // Default
+                        if (appearanceIndex == 1) return 0xDF; // Loyalty
+                        if (appearanceIndex == 2) return 0x126; // DLC
+                        return 4500 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"convict") + 1) * 10 + 1);
                     }
                 case @"geth":
                     {
-                        if (appearanceIndex == 1) return 0x8D; // Default
-                        if (appearanceIndex == 2) return 0xE6; // Loyalty
-                        return 5000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"geth") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x8D; // Default
+                        if (appearanceIndex == 1) return 0xE6; // Loyalty
+                        return 5000 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"geth") + 1) * 10 + 1);
                     }
                 case @"thief":
                     {
-                        if (appearanceIndex == 1) return 0x96; // Default
-                        if (appearanceIndex == 2) return 0xED; // Loyalty
-                        return 5500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"thief") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x96; // Default
+                        if (appearanceIndex == 1) return 0xED; // Loyalty
+                        return 5500 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"thief") + 1) * 10 + 1);
                     }
                 case @"assassin":
                     {
-                        if (appearanceIndex == 1) return 0x9D; // Default
-                        if (appearanceIndex == 2) return 0xF4; // Loyalty
-                        if (appearanceIndex == 3) return 0x12D; // DLC
-                        return 6000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"assassin") * 10 + 1);
+                        if (appearanceIndex == 0) return 0x9D; // Default
+                        if (appearanceIndex == 1) return 0xF4; // Loyalty
+                        if (appearanceIndex == 2) return 0x12D; // DLC
+                        return 6000 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"assassin") + 1) * 10 + 1);
                     }
                 case @"professor":
                     {
-                        if (appearanceIndex == 1) return 0xA6; // Default
-                        if (appearanceIndex == 2) return 0xFB; // Loyalty
-                        return 6500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"professor") * 10 + 1);
+                        if (appearanceIndex == 0) return 0xA6; // Default
+                        if (appearanceIndex == 1) return 0xFB; // Loyalty
+                        return 6500 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"professor") + 1) * 10 + 1);
                     }
                 case @"veteran":
                     {
                         if (appearanceIndex == 1) return 0xAD; // Default
                         if (appearanceIndex == 2) return 0x102; // Loyalty
-                        return 7000 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"veteran") * 10 + 1);
+                        return 7000 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"veteran") + 1) * 10 + 1);
                     }
             }
 
             // The custom slot, not sure how we will implement this. I just say it's 'custom' which won't return anything in the next func but the 1 value
-            return 7500 + (GetFirstAvailableSquadmateAppearanceIndexLE2(@"custom") * 10 + 1);
+            return 7500 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"custom") + 1) * 10 + 1);
         }
 
         private static int GetFirstAvailableSquadmateAppearanceIndexLE2(string henchname)
         {
             henchname = henchname.ToLowerInvariant();
-            if (henchname == @"vixen") return 4;
-            if (henchname == @"garrus") return 4;
-            if (henchname == @"mystic") return 3;
-            if (henchname == @"grunt") return 4;
-            if (henchname == @"leading") return 3;
+            if (henchname == @"vixen") return 3;
+            if (henchname == @"garrus") return 3;
+            if (henchname == @"mystic") return 2;
+            if (henchname == @"grunt") return 3;
+            if (henchname == @"leading") return 2;
             if (henchname == @"tali") return 4;
-            if (henchname == @"convict") return 4;
-            if (henchname == @"thief") return 3;
-            if (henchname == @"assassin") return 4;
-            if (henchname == @"professor") return 3;
-            if (henchname == @"veteran") return 3;
+            if (henchname == @"convict") return 3;
+            if (henchname == @"thief") return 2;
+            if (henchname == @"assassin") return 3;
+            if (henchname == @"professor") return 2;
+            if (henchname == @"veteran") return 2;
 
-            return 1; // 13th slot is custom and begins at 1
+            return 1; // 13th slot is custom and begins at 1. 0 is done via the member info struct
         }
     }
 }
