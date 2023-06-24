@@ -322,56 +322,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             protocolKey.SetValue("URL Protocol", "");
             protocolKey.SetValue("", "URL:NXM Protocol");
         }
-
-        private static void SetupM3InNXMHandler(string nxmIniPath)
-        {
-            DuplicatingIni ini = DuplicatingIni.LoadIni(nxmIniPath);
-            var handlers = ini.GetOrAddSection("handlers");
-            var numCurrentHandlersStr = handlers.GetValue("size")?.Value;
-            int.TryParse(numCurrentHandlersStr, out var numCurrentHandlers);
-
-            // Find if M3 has been registered for me/me2/me3
-            bool updated = false;
-            for (int i = 1; i <= numCurrentHandlers; i++)
-            {
-                var games = handlers.GetValue($@"{i}\games");
-                if (games == null)
-                {
-                    // ???
-                    // Is ini configured incorrectly?
-                    M3Log.Warning(@"NXMHandler ini appears to be configured incorrectly");
-                }
-                else
-                {
-                    if (games.Value == "other")
-                    {
-                        M3Log.Information(@"Updating 'other' in nxmhandler");
-                        // We need to update this one
-                        handlers.SetSingleEntry($@"{i}\executable", App.ExecutableLocation.Replace("\\", "\\\\"));
-                        handlers.SetSingleEntry($@"{i}\arguments", "--nxmlink");
-                        updated = true;
-                    }
-                }
-            }
-
-            if (!updated)
-            {
-                // Add ours
-                M3Log.Warning(@"Adding section 'other' in nxmhandler");
-                numCurrentHandlers++;
-                handlers.SetSingleEntry($@"size", numCurrentHandlers);
-                handlers.SetSingleEntry($@"{numCurrentHandlers}\games", "other");
-                handlers.SetSingleEntry($@"{numCurrentHandlers}\executable",
-                    App.ExecutableLocation.Replace("\\", "\\\\"));
-                handlers.SetSingleEntry($@"{numCurrentHandlers}\arguments", "--nxmlink");
-            }
-
-            File.WriteAllText(nxmIniPath, ini.ToString());
-            M3Log.Information(@"Finished configuring nxmhandler");
-            // Register nxm protocol
-
-        }
-
+        
         public static async Task<string> SetupNexusLogin(Action<string> updateStatus)
         {
             // open a web socket to receive the api key
