@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic for LogUploader.xaml
+    /// Interaction logic for NXMHandlerConfigPanel.xaml
     /// </summary>
     public partial class NXMHandlerConfigPanel : MMBusyPanelBase
     {
