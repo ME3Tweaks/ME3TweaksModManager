@@ -20,7 +20,6 @@ using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.dlc.LE2;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.merge.squadmate;
-using Microsoft.WindowsAPICodePack.NativeAPI.Consts;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.squadmates
@@ -29,7 +28,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
     {
         public const string SQUADMATE_MERGE_MANIFEST_FILE = @"SquadmateMergeInfo.sqm";
         public const int STARTING_OUTFIT_CONDITIONAL = 10000;
-
+        private const string SUICIDE_MISSION_STREAMING_PACKAGE_NAME = @"BioP_EndGm_StuntHench.pcc";
         internal class SquadmateMergeInfo
         {
             [JsonProperty(@"game")]
@@ -247,61 +246,82 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
             if (appearanceInfo.Any())
             {
-                var biopGlobal = MEPackageHandler.OpenMEPackage(loadedFiles[@"BioP_Global.pcc"]);
-                var lsk = biopGlobal.Exports.FirstOrDefault(x => x.ClassName == @"LevelStreamingKismet");
-                var persistentLevel = biopGlobal.FindExport(@"TheWorld.PersistentLevel");
+                var cookedDir = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target),
+                    M3MergeDLC.MERGE_DLC_FOLDERNAME, mergeDLC.Target.Game.CookedDirName());
 
-                // Clone LevelStreamingKismets
-                foreach (var sqm in appearanceInfo.Values)
+                var packagesToPatch = new List<string>();
+                packagesToPatch.Add(@"BioP_Global.pcc"); // Game 2 and 3 both use this file as the primary hench streaming
+                if (mergeDLC.Target.Game.IsGame2())
                 {
-                    foreach (var outfit in sqm)
-                    {
-                        var fName = outfit.HenchPackage;
-                        var newLSK = EntryCloner.CloneEntry(lsk);
-                        newLSK.WriteProperty(new NameProperty(fName, @"PackageName"));
+                    // Game 2 has an extra global file for suicide mission
+                    packagesToPatch.Add(SUICIDE_MISSION_STREAMING_PACKAGE_NAME);
+                }
 
-                        if (mergeDLC.Target.Game.IsGame3())
+                foreach (var package in packagesToPatch)
+                {
+                    var streamingPackage = MEPackageHandler.OpenMEPackage(loadedFiles[package]);
+                    var lsk = streamingPackage.Exports.FirstOrDefault(x => x.ClassName == @"LevelStreamingKismet");
+
+                    // Clone LevelStreamingKismets
+                    foreach (var sqm in appearanceInfo.Values)
+                    {
+                        foreach (var outfit in sqm)
                         {
-                            // Game 3 has _Explore files too
-                            fName += @"_Explore";
-                            newLSK = EntryCloner.CloneEntry(lsk);
+                            var fName = outfit.HenchPackage;
+                            if (package == SUICIDE_MISSION_STREAMING_PACKAGE_NAME)
+                            {
+                                // We use END packages since they don't add to party
+                                fName = @"BioH_END_" + fName.Substring(5); // Take the original text after BioH_
+                            }
+
+                            var newLSK = EntryCloner.CloneEntry(lsk);
                             newLSK.WriteProperty(new NameProperty(fName, @"PackageName"));
+                            if (mergeDLC.Target.Game.IsGame3())
+                            {
+                                // Game 3 has _Explore files too
+                                fName += @"_Explore";
+                                newLSK = EntryCloner.CloneEntry(lsk);
+                                newLSK.WriteProperty(new NameProperty(fName, @"PackageName"));
+                            }
                         }
                     }
-                }
 
-                // Update BioWorldInfo
-                // Doesn't have consistent number so we can't find it by instanced full path
-                var bioWorldInfo = biopGlobal.Exports.FirstOrDefault(x => x.ClassName == @"BioWorldInfo");
+                    // Update BioWorldInfo
+                    // Doesn't have consistent number so we can't find it by instanced full path
+                    var bioWorldInfo = streamingPackage.Exports.FirstOrDefault(x => x.ClassName == @"BioWorldInfo");
 
-                var props = bioWorldInfo.GetProperties();
+                    var props = bioWorldInfo.GetProperties();
 
-                // Update Plot Streaming
-                var plotStreaming = props.GetProp<ArrayProperty<StructProperty>>(@"PlotStreaming");
-                foreach (var sqm in appearanceInfo.Values)
-                {
-                    foreach (var outfit in sqm)
+                    // Update Plot Streaming
+                    var plotStreaming = props.GetProp<ArrayProperty<StructProperty>>(@"PlotStreaming");
+                    foreach (var sqm in appearanceInfo.Values)
                     {
-                        // find item to add to
-                        buildPlotElementObject(plotStreaming, outfit, mergeDLC.Target.Game, false);
-                        if (mergeDLC.Target.Game.IsGame3())
+                        foreach (var outfit in sqm)
                         {
-                            buildPlotElementObject(plotStreaming, outfit, mergeDLC.Target.Game, true);
+                            // find item to add to
+                            // Use END if game 2 and we are suicide mission package
+                            buildPlotElementObject(plotStreaming, outfit, mergeDLC.Target.Game, mergeDLC.Target.Game.IsGame2() && package == SUICIDE_MISSION_STREAMING_PACKAGE_NAME);
+                            if (mergeDLC.Target.Game.IsGame3())
+                            {
+                                // Add EXPLORE too
+                                buildPlotElementObject(plotStreaming, outfit, mergeDLC.Target.Game, true);
+                            }
                         }
                     }
+
+
+                    // Update StreamingLevels
+                    var streamingLevels = props.GetProp<ArrayProperty<ObjectProperty>>(@"StreamingLevels");
+                    streamingLevels.ReplaceAll(streamingPackage.Exports
+                        .Where(x => x.ClassName == @"LevelStreamingKismet").Select(x => new ObjectProperty(x)));
+
+                    bioWorldInfo.WriteProperties(props);
+
+                    // Save plot streaming controller package into DLC
+
+                    var outP = Path.Combine(cookedDir, package);
+                    streamingPackage.Save(outP);
                 }
-
-
-                // Update StreamingLevels
-                var streamingLevels = props.GetProp<ArrayProperty<ObjectProperty>>(@"StreamingLevels");
-                streamingLevels.ReplaceAll(biopGlobal.Exports.Where(x => x.ClassName == @"LevelStreamingKismet").Select(x => new ObjectProperty(x)));
-
-                bioWorldInfo.WriteProperties(props);
-
-                // Save BioP_Global into DLC
-                var cookedDir = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target), M3MergeDLC.MERGE_DLC_FOLDERNAME, mergeDLC.Target.Game.CookedDirName());
-                var outP = Path.Combine(cookedDir, @"BioP_Global.pcc");
-                biopGlobal.Save(outP);
 
                 // Generate conditionals file
                 if (mergeDLC.Target.Game.IsGame3())
@@ -503,11 +523,16 @@ namespace ME3TweaksModManager.modmanager.squadmates
             }
         }
 
-        private static void buildPlotElementObject(ArrayProperty<StructProperty> plotStreaming, SquadmateInfoSingle sqm, MEGame game, bool isExplore)
+        private static void buildPlotElementObject(ArrayProperty<StructProperty> plotStreaming, SquadmateInfoSingle sqm, MEGame game, bool isSpecial)
         {
             var fName = sqm.HenchPackage;
             var virtualChunk = $@"BioH_{sqm.HenchName}";
-            if (game.IsGame3() && isExplore)
+            if (game.IsGame2() && isSpecial)
+            {
+                fName = @"BioH_END_" + fName.Substring(5); // Take the original text after BioH_
+                virtualChunk = $@"BioH_END_{sqm.HenchName}";
+            }
+            else if (game.IsGame3() && isSpecial)
             {
                 fName += @"_Explore";
                 virtualChunk += @"_Explore";
