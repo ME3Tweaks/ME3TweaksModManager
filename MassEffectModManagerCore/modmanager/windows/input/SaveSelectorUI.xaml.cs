@@ -686,7 +686,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
                         try
                         {
                             using var saveFileS = File.OpenRead(sf);
-                            var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, Target.Game, sf);
+                            var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, sf);
                             if (saveFile == null)
                             {
                                 continue; // We do not parse this
@@ -927,7 +927,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
             }
         }
 
-        private string GetSaveSubDir(MEGame currentGame)
+        public static string GetSaveSubDir(MEGame currentGame)
         {
             switch (currentGame)
             {

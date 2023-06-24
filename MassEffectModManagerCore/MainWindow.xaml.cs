@@ -160,6 +160,8 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingGame = parsedCommandLineArgs.Value.RelevantGame.Value;
                 if (parsedCommandLineArgs.Value.NXMLink != null)
                     CommandLinePending.PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
+                if (parsedCommandLineArgs.Value.M3Link != null)
+                    CommandLinePending.PendingM3Link = parsedCommandLineArgs.Value.M3Link;
                 if (parsedCommandLineArgs.Value.AutoInstallModdescPath != null)
                     CommandLinePending.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
                 if (parsedCommandLineArgs.Value.GameBoot)
@@ -1928,7 +1930,7 @@ namespace ME3TweaksModManager
                     // Generate a new one - IF NECESSARY!
                     // This is so if user deletes merge DLC it doesn't re-create itself immediately even if it's not necessary, e.g. user removed all merge DLC-eligible items.
 
-                    bool needsGenerated = 
+                    bool needsGenerated =
                         SQMOutfitMerge.NeedsMerged(mergeTarget)
                                           || ME2EmailMerge.NeedsMergedGame2(mergeTarget);
                     if (needsGenerated)
@@ -3350,6 +3352,7 @@ namespace ME3TweaksModManager
                         M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     BackgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    M3ProtocolHandler.SetupProtocolHandler();
                     if (Settings.ConfigureNXMHandlerOnBoot)
                     {
                         NexusModsUtilities.SetupNXMHandling();
@@ -3455,6 +3458,12 @@ namespace ME3TweaksModManager
 
             try
             {
+                if (CommandLinePending.PendingM3Link != null)
+                {
+                    shouldBringToFG = true;
+                    handleM3Link(CommandLinePending.PendingM3Link);
+                    CommandLinePending.PendingM3Link = null;
+                }
                 if (CommandLinePending.PendingNXMLink != null)
                 {
                     shouldBringToFG = true;
@@ -3551,6 +3560,11 @@ namespace ME3TweaksModManager
             //App.PendingGameBoot = null; // this is not cleared here as it will be used at end of applymod above
             CommandLinePending.PendingNXMLink = null;
             return shouldBringToFG;
+        }
+
+        private void handleM3Link(string pendingM3Link)
+        {
+            M3ProtocolHandler.HandleLink(pendingM3Link, this);
         }
 
         /// <summary>
@@ -3848,7 +3862,11 @@ namespace ME3TweaksModManager
 
         private void UploadLog_Click(object sender, RoutedEventArgs e)
         {
-            var logUploaderUI = new LogUploader();
+            ShowLogUploadPanel();
+        }
+        internal void ShowLogUploadPanel()
+        {
+            var logUploaderUI = new LogUploaderPanel();
             logUploaderUI.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(logUploaderUI);
         }
