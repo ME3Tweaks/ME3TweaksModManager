@@ -15,36 +15,28 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save.shared;
+using ME3TweaksModManager.modmanager.windows.input;
 using ME3TweaksModManager.ui;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic for LogUploader.xaml
+    /// Interaction logic for LogUploaderPanel.xaml
     /// </summary>
-    public partial class LogUploader : MMBusyPanelBase
+    [AddINotifyPropertyChangedInterface]
+    public partial class LogUploaderPanel : MMBusyPanelBase
     {
         public bool UploadingLog { get; private set; }
         public string CollectionStatusMessage { get; set; }
         //public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
         public ObservableCollectionExtended<GameTargetWPF> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
-        public LogUploader()
+        public LogUploaderPanel()
         {
             DataContext = this;
             LoadCommands();
         }
-
-        public bool ForceTrue
-        {
-            get => true;
-            set
-            {
-
-            }
-        }
-
 
         private void InitLogUploaderUI()
         {
@@ -66,14 +58,38 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public ICommand UploadLogCommand { get; set; }
         public ICommand CancelUploadCommand { get; set; }
+        public ICommand SelectSaveCommand { get; set; }
         public LogItem SelectedLog { get; set; }
         public ISaveFile SelectedSaveFile { get; set; }
+        public string SelectedSaveText { get; set; } = "No save selected";
         public GameTargetWPF SelectedDiagnosticTarget { get; set; }
 
         private void LoadCommands()
         {
             UploadLogCommand = new GenericCommand(StartLogUploadManual, CanUploadLog);
             CancelUploadCommand = new GenericCommand(CancelUpload, CanCancelUpload);
+            SelectSaveCommand = new GenericCommand(SelectSave, CanSelectSave);
+        }
+
+        private void SelectSave()
+        {
+            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedDiagnosticTarget,
+                "Select a save to include with diagnostic");
+            ssui.Show();
+            ssui.Closed += (sender, args) =>
+            {
+                if (ssui.SaveWasSelected && ssui.SelectedSaveFile != null)
+                {
+                    SelectedSaveFile = ssui.SelectedSaveFile;
+                    SelectedSaveText = Path.GetFileName(SelectedSaveFile.SaveFilePath);
+                }
+            };
+        }
+
+        private bool CanSelectSave()
+        {
+            if (SelectedDiagnosticTarget == null) return false;
+            return SelectedDiagnosticTarget.Game.IsLEGame();
         }
 
         private void StartLogUploadManual()
@@ -134,9 +150,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     PerformFullTexturesCheck = TextureCheck,
                     UpdateTaskbarProgressStateCallback = updateTaskbarProgressStateCallback,
                     UpdateProgressCallback = updateProgressCallback,
+                    SelectedSaveFilePath = SelectedSaveFile?.SaveFilePath,
                     UpdateStatusCallback = updateStatusCallback,
 #if DEBUG
-                    UploadEndpoint = @"https://me3tweaks.com/modmanager/logservice/logupload"
+                    UploadEndpoint = @"https://me3tweaks.com/modmanager/logservice/logupload2"
 #else
                     UploadEndpoint = @"https://me3tweaks.com/modmanager/logservice/logupload"
 #endif
@@ -165,11 +182,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerAsync();
         }
 
-        private Dictionary<string, string> GetAttachments()
+        private Dictionary<string, byte[]> GetAttachments()
         {
-            var attachments = new Dictionary<string, string>();
+            var attachments = new Dictionary<string, byte[]>();
 
-
+            if (SelectedSaveFile != null && File.Exists(SelectedSaveFile.SaveFilePath))
+            {
+                attachments.Add(Path.GetFileName(SelectedSaveFile.SaveFilePath), File.ReadAllBytes(SelectedSaveFile.SaveFilePath));
+            }
 
             return attachments;
         }

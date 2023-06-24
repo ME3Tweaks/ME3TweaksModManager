@@ -19,6 +19,11 @@ namespace ME3TweaksModManager.modmanager.helpers
         public static string PendingNXMLink;
 
         /// <summary>
+        /// A pending M3Link to handle
+        /// </summary>
+        public static string PendingM3Link;
+
+        /// <summary>
         /// 
         /// </summary>
         public static string PendingAutoModInstallPath;

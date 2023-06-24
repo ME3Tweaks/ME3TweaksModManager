@@ -198,6 +198,11 @@ namespace ME3TweaksModManager
                             CommandLinePending.PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
                         }
 
+                        if (parsedCommandLineArgs.Value.M3Link != null)
+                        {
+                            CommandLinePending.PendingM3Link = parsedCommandLineArgs.Value.M3Link;
+                        }
+
                         if (parsedCommandLineArgs.Value.AutoInstallModdescPath != null)
                         {
                             CommandLinePending.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
@@ -756,7 +761,7 @@ namespace ME3TweaksModManager
             HelpText = @"Indicates that this is an upgrade from ME3CMM, and that a migration should take place.")]
         public bool UpgradingFromME3CMM { get; set; }
 
-        [Option(@"nxmlink", HelpText = "Preps Mod Manager for handling an nxm:// link")]
+        [Option(@"nxmlink", HelpText = "Instructs Mod Manager to handle an nxm:// link from nexusmods")]
         public string NXMLink { get; set; }
 
         [Option(@"installmod", HelpText = "Instructs Mod Manager to automatically install the mod from the specified mod path after initialization, to the default target")]
@@ -773,5 +778,9 @@ namespace ME3TweaksModManager
 
         [Option(@"installbink", HelpText = "Instructs Mod Manager to automatically install the bink asi loader to the specified game")]
         public bool AutoInstallBink { get; set; }
+
+        [Option(@"m3link", HelpText = "Instructs Mod Manager to perform a task based on the contents of a me3tweaksmodmanager:// link")]
+        public string M3Link { get; set; }
+
     }
 }

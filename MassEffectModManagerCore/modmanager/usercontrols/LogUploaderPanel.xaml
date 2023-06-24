@@ -1,5 +1,5 @@
 ﻿<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.LogUploader" 
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.LogUploaderPanel" 
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
@@ -109,11 +109,11 @@
                 TextWrapping="Wrap" />
 
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="No save selected" VerticalAlignment="Center"/>
-                        <Button Content="Select save file" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding SelectedSaveText}" VerticalAlignment="Center"/>
+                        <Button Content="Select save file" HorizontalAlignment="Right" Command="{Binding SelectSaveCommand}" Margin="5,0"/>
                     </StackPanel>
 
-                <TextBlock
+                <!--<TextBlock
                     Text="Additional features"
                     FontWeight="Bold"
                     Margin="0,10,0,0" />
@@ -122,7 +122,7 @@
                     Content="{DynamicResource string_fullTexturesCheck}"
                     ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
                     IsChecked="{Binding TextureCheck}"
-                    IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+                    IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />-->
                 </StackPanel>
 
             </GroupBox>

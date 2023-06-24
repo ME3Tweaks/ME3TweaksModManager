@@ -17,11 +17,10 @@ namespace ME3TweaksModManager.modmanager.save
         /// Reads a save file from the given stream to an ISaveFile object
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="game"></param>
         /// <param name="fileName"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static ISaveFile LoadSaveFile(Stream stream, MEGame game, string fileName = null)
+        public static ISaveFile LoadSaveFile(Stream stream, string fileName = null)
         {
             var version = stream.ReadUInt32();
             stream.Position -= 4;
