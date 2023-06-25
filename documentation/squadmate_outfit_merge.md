@@ -1,14 +1,14 @@
 ![Documentation Image](images/documentation_header.png)
 
 ## Adding outfits to squadmates in Mass Effect 2 (LE) and Mass Effect 3 (OT + LE)
-Outfits for squadmates are controlled by a file named `BioP_Global` in Mass Effect 2 and Mass Effect 3. Mass Effect 2 uses an additional file called `BioP_EndGm_StuntHench` to stream in special versions of squadmates during the final mission that don't join your party but are loaded into the level. These file define how to stream in squadmates with the user chosen outfits. With some changes to your DLC mod's config files, you could add outfits to squadmates.
+Outfits for squadmates are controlled by a file named `BioP_Global` in Mass Effect 2 and Mass Effect 3. Mass Effect 2 uses an additional file called `BioP_EndGm_StuntHench` to stream in special versions of squadmates during the final mission that don't join your party but are loaded into the level. These file define how to stream in squadmates with the user chosen outfits.
 
 Note: [GAME 3 ONLY] Due to casual outfits not being able to changed in-game with a UI, this feature does not cover those. Your mod will still need to ship a \_NC file override if you wish to also change that character's casual (such as EDI or Tali).
 
 ### The Problem
-Since outfits are controlled via one or two files, multiple mods cannot add outfits and both work together, due to mods being full file replacement. These files also are not eligible for merge modding.
+Since outfits are controlled via one or two files, multiple mods cannot add outfits and both work together, due to mods being full file replacement. These files also are not eligible for merge modding. With some changes to your DLC mod's config files, you could add outfits to squadmates in LE3. In LE2 it is much more difficult due to many hardcoded things related to the party selection UI.
 
-Squadmate Outfit Merge is a feature in Mod Manager that allows you to define a manifest file about your DLC mod's outfits, and upon installation, Mod Manager will build the necessary packages to make them all work together.
+Squadmate Outfit Merge is a feature in Mod Manager that allows you to define a manifest file about your DLC mod's outfits, and upon installation, Mod Manager will build the necessary packages to make them all work together. It will also inject a more flexible team select UI into LE2, which allows more squadmate outfits.
 
 **This feature does not support the original Mass Effect 2 due to the amount of SWF editing involved, as well as the lack of users modding that game. Mass Effect 1 does not have squadmate outfits due to its armor system.**
 
