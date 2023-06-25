@@ -84,7 +84,6 @@ namespace ME3TweaksModManager.modmanager.squadmates
             M3Log.Information($@"SQMMERGE: Generating outfit int for {game} {squadmateName}");
             if (game.IsGame2())
             {
-                // This is if we ever implement it into Game 2
                 switch (squadmateName)
                 {
                     case @"Convict": return 314;
@@ -98,9 +97,10 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     case @"Thief": return 317;
                     case @"Veteran": return 324;
                     case @"Vixen": return 312;
+                    case @"Assassin": return 319;
 
-                        // LOTSB doesn't use plot streaming for liara
-                        // case @"Liara": return 312;
+                    // LOTSB doesn't use plot streaming for liara
+                    // case @"Liara": return 312;
                 }
             }
             else if (game.IsGame3())
@@ -661,7 +661,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
             if (henchname == @"mystic") return 2;
             if (henchname == @"grunt") return 3;
             if (henchname == @"leading") return 2;
-            if (henchname == @"tali") return 4;
+            if (henchname == @"tali") return 3;
             if (henchname == @"convict") return 3;
             if (henchname == @"thief") return 2;
             if (henchname == @"assassin") return 3;
