@@ -643,8 +643,8 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     }
                 case @"veteran":
                     {
-                        if (appearanceIndex == 1) return 0xAD; // Default
-                        if (appearanceIndex == 2) return 0x102; // Loyalty
+                        if (appearanceIndex == 0) return 0xAD; // Default
+                        if (appearanceIndex == 1) return 0x102; // Loyalty
                         return 7000 + ((GetFirstAvailableSquadmateAppearanceIndexLE2(@"veteran") + 1) * 10 + 1);
                     }
             }
