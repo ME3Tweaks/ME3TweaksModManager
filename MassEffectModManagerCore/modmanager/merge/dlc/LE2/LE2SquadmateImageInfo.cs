@@ -24,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.merge.dlc.LE2
         public string DestinationTextureName { get; set; }
 
 
-        public void InjectSquadmateImageIntoPackage(IMEPackage destinationPackage)
+        public void InjectSquadmateImageIntoPackage(IMEPackage destinationPackage, ArrayProperty<ObjectProperty> swfReferences)
         {
             // We are going to just clone textures and then rename them instead of generating new exports as that's kind of a PITA
 
@@ -34,11 +34,7 @@ namespace ME3TweaksModManager.modmanager.merge.dlc.LE2
 
             // Copy the texture export over
             EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingularWithRelink, SourceExport, destinationPackage, newTexture, true, new RelinkerOptionsPackage(), out _);
-
-            var teamSelect = destinationPackage.FindExport(@"GUI_SF_TeamSelect.TeamSelect");
-            var teamSelectRefs = teamSelect.GetProperty<ArrayProperty<ObjectProperty>>(@"References");
-            teamSelectRefs.Add(new ObjectProperty(newTexture.UIndex));
-            teamSelect.WriteProperty(teamSelectRefs);
+            swfReferences.Add(new ObjectProperty(newTexture.UIndex));
         }
     }
 }

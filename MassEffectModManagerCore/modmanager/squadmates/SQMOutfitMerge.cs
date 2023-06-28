@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
@@ -455,12 +456,19 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         swf.WriteProperty(rawData);
 
                         // Inject images
+                        var teamSelect = packageP.FindExport(@"GUI_SF_TeamSelect.TeamSelect");
+                        var teamSelectRefs = teamSelect.GetProperty<ArrayProperty<ObjectProperty>>(@"References");
                         foreach (var squadmateImage in squadmateImageInfosLE2)
                         {
-                            squadmateImage.InjectSquadmateImageIntoPackage(packageP);
+                            squadmateImage.InjectSquadmateImageIntoPackage(packageP, teamSelectRefs);
                         }
+                        teamSelect.WriteProperty(teamSelectRefs);
 
-                        packageP.Save(Path.Combine(cookedDir, package)); // Save into merge DLC
+                        var time = Stopwatch.StartNew();
+                        var teamSelectPackagePath = Path.Combine(cookedDir, package);
+                        packageP.Save(teamSelectPackagePath); // Save into merge DLC
+                        time.Stop();
+                        M3Log.Information($@"Saved teamselect package {teamSelectPackagePath} in {time.ElapsedMilliseconds}ms");
                     });
                     //}
                 }
