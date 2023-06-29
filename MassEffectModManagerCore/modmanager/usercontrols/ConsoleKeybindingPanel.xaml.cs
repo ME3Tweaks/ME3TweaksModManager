@@ -180,6 +180,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         return; // Don't proceed
                 }
 
+                if (Game == MEGame.LE1)
+                {
+                    // Disable the settings
+                    Settings.IsLE1ConsoleKeySet = Settings.IsLE1MiniConsoleKeySet = false;
+                    Settings.LE1ConsoleKey = Settings.LE1MiniConsoleKey = null;
+                }
+
+                IsResettingKeybinds = true;
                 SetKeyWithThread(@"Tilde", @"Tab", true);
             }
 
@@ -464,7 +472,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
             }
-            private void SetKeyWithThread(string consoleKeyStr = null, string typeKeyStr = null, bool wipeTypeKey = false)
+            private void SetKeyWithThread(string consoleKeyStr = null, string typeKeyStr = null, bool wipeTypeKey = false, bool isResetting = false)
             {
                 OperationInProgress = true;
                 FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
@@ -486,6 +494,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 };
                 nbw.RunWorkerCompleted += (a, b) =>
                 {
+                    IsResettingKeybinds = false;
                     OperationInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
                 };
@@ -506,9 +515,29 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         fs.Dispose();
                         SetIniBasedKeybinds(decomp[@"BIOInput.ini"], consoleKeyStr, typeKeyStr);
                         CoalescedConverter.CompileLE1LE2FromMemory(decomp).WriteToFile(fname);
+
+                        if (!IsResettingKeybinds && Game == MEGame.LE1)
+                        {
+                            if (consoleKeyStr != null)
+                            {
+                                Settings.IsLE1ConsoleKeySet = true;
+                                Settings.LE1ConsoleKey = consoleKeyStr;
+                            }
+
+                            if (typeKeyStr != null)
+                            {
+                                Settings.IsLE1MiniConsoleKeySet = true;
+                                Settings.LE1MiniConsoleKey = typeKeyStr;
+                            }
+                        }
                     }
                 }
             }
+
+            /// <summary>
+            /// Will be true if keybinds are in the process of being reset
+            /// </summary>
+            public bool IsResettingKeybinds { get; set; }
 
             private void SetME2ConsoleKeybinds(string consoleKeyStr, string typeKeyStr)
             {

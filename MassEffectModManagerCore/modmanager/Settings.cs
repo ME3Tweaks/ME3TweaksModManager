@@ -374,6 +374,34 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _enableLE1CoalescedMerge, value);
         }
 
+        private static bool _isLE1ConsoleKeySet;
+        public static bool IsLE1ConsoleKeySet
+        {
+            get => _isLE1ConsoleKeySet;
+            set => SetProperty(ref _isLE1ConsoleKeySet, value);
+        }
+
+        private static string _le1ConsoleKey;
+        public static string LE1ConsoleKey
+        {
+            get => _le1ConsoleKey;
+            set => SetProperty(ref _le1ConsoleKey, value);
+        }
+
+        private static bool _isLE1MiniConsoleKeySet;
+        public static bool IsLE1MiniConsoleKeySet
+        {
+            get => _isLE1MiniConsoleKeySet;
+            set => SetProperty(ref _isLE1MiniConsoleKeySet, value);
+        }
+
+        private static string _le1MiniConsoleKey;
+        public static string LE1MiniConsoleKey
+        {
+            get => _le1MiniConsoleKey;
+            set => SetProperty(ref _le1MiniConsoleKey, value);
+        }
+
         private static bool _enableTextureSafetyChecks = true;
         public static bool EnableTextureSafetyChecks
         {
@@ -470,7 +498,20 @@ namespace ME3TweaksModManager.modmanager
             OneTimeMessage_ModListIsNotListOfInstalledMods = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
             OneTimeMessage_LE1CoalescedOverwriteWarning = LoadSettingBool(settingsIni, "ModManager", "ShowLE1CoalescedMergeOverwritesFile", true);
 
+            // Config Merge
+            IsLE1ConsoleKeySet = LoadSettingBool(settingsIni, "ConfigMerge", "IsLE1ConsoleKeySet", false);
+            if (IsLE1ConsoleKeySet)
+            {
+                // Only read if value is set so we don't have a blank
+                LE1ConsoleKey = LoadSettingString(settingsIni, "ConfigMerge", "LE1ConsoleKey", null);
+            }
 
+            IsLE1MiniConsoleKeySet = LoadSettingBool(settingsIni, "ConfigMerge", "IsLE1MiniConsoleKeySet", false);
+            if (IsLE1MiniConsoleKeySet)
+            {
+                // Only read if value is set so we don't have a blank
+                LE1MiniConsoleKey = LoadSettingString(settingsIni, "ConfigMerge", "LE1MiniConsoleKey", null);
+            }
             Loaded = true;
         }
 
@@ -675,6 +716,33 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", UseOptimizedTextureRestore);
                 SaveSettingBool(settingsIni, "ModManagerDebug", "EnableTextureSafetyChecks", EnableTextureSafetyChecks);
 
+                // Config Merge
+                #region LE1 Console Key
+                SaveSettingBool(settingsIni, "ConfigMerge", "IsLE1ConsoleKeySet", IsLE1ConsoleKeySet);
+                if (!IsLE1ConsoleKeySet)
+                {
+                    // Remove the value if this is not bound
+                    RemoveSetting(settingsIni, "ConfigMerge", "LE1ConsoleKey");
+                }
+                else
+                {
+                    SaveSettingString(settingsIni, "ConfigMerge", "LE1ConsoleKey", LE1ConsoleKey);
+                }
+                #endregion
+
+                #region LE1 Mini Console Key
+                SaveSettingBool(settingsIni, "ConfigMerge", "IsLE1MiniConsoleKeySet", IsLE1MiniConsoleKeySet);
+                if (!IsLE1MiniConsoleKeySet)
+                {
+                    // Remove the value if this is not bound
+                    RemoveSetting(settingsIni, "ConfigMerge", "LE1MiniConsoleKey");
+                }
+                else
+                {
+                    SaveSettingString(settingsIni, "ConfigMerge", "LE1MiniConsoleKey", LE1MiniConsoleKey);
+                }
+                #endregion
+
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
                 return SettingsSaveResult.SAVED;
             }
@@ -689,6 +757,18 @@ namespace ME3TweaksModManager.modmanager
             }
 
             return SettingsSaveResult.FAILED_OTHER;
+        }
+
+        /// <summary>
+        /// Removes a setting value from the settings ini
+        /// </summary>
+        /// <param name="settingsIni"></param>
+        /// <param name="section"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private static bool RemoveSetting(IniData settingsIni, string section, string key)
+        {
+            return settingsIni.Sections[section]?.RemoveKey(key) ?? false;
         }
 
         private static void SaveSettingString(IniData settingsIni, string section, string key, string value)

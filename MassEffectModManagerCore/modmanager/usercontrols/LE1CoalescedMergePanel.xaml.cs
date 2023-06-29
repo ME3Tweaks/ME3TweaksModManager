@@ -3,9 +3,11 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Localization;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksModManager.me3tweakscoreextended;
@@ -66,6 +68,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
+            var consolem3Cd = MakeConsoleM3CD();
+            if (consolem3Cd != null)
+            {
+                M3Log.Information($@"Merging M3 Config Delta for user chosen keybinds");
+                ConfigMerge.PerformMerge(configBundle, consolem3Cd);
+                recordMerge("M3 Console Keybinds"); // we do want this localized
+            }
+
             var records = new List<BasegameFileRecord>();
             var coalFile = Path.Combine(M3Directories.GetCookedPath(target), @"Coalesced_INT.bin");
             // Set the BGFIS record name
@@ -110,6 +120,29 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(records);
             }*/
             return true;
+        }
+
+        /// <summary>
+        /// Generates a dynamic M3CD based on user's LE1 console keybinds they last chose
+        /// </summary>
+        /// <returns></returns>
+        private static CoalesceAsset MakeConsoleM3CD()
+        {
+            if (!Settings.IsLE1ConsoleKeySet && !Settings.IsLE1MiniConsoleKeySet)
+                return null;
+
+            DuplicatingIni m3cdIni = new DuplicatingIni();
+            var bioInput = m3cdIni.GetOrAddSection("BIOInput.ini Engine.Console");
+            if (Settings.IsLE1ConsoleKeySet)
+            {
+                bioInput.SetSingleEntry(">ConsoleKey", Settings.LE1ConsoleKey);
+            }
+            if (Settings.IsLE1MiniConsoleKeySet)
+            {
+                bioInput.SetSingleEntry(">TypeKey", Settings.LE1MiniConsoleKey);
+            }
+
+            return ConfigFileProxy.ParseIni(m3cdIni.ToString());
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
