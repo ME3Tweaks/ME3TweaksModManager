@@ -166,8 +166,17 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     M3Log.Information($@"SQMMERGE: Processing {dlc}");
 
                     var jsonFile = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target), dlc, mergeDLC.Target.Game.CookedDirName(), SQUADMATE_MERGE_MANIFEST_FILE);
-                    var infoPackage = JsonConvert.DeserializeObject<SquadmateMergeInfo>(File.ReadAllText(jsonFile));
-                    if (!infoPackage.Validate(dlc, mergeDLC.Target, loadedFiles))
+                    SquadmateMergeInfo infoPackage = null;
+                    try
+                    {
+                        infoPackage = JsonConvert.DeserializeObject<SquadmateMergeInfo>(File.ReadAllText(jsonFile));
+                    }
+                    catch (Exception ex)
+                    {
+                        M3Log.Exception(ex, $@"Error reading squadmate merge manifest: {jsonFile}. This DLC will not be squadmate merged");
+                    }
+
+                    if (infoPackage == null || !infoPackage.Validate(dlc, mergeDLC.Target, loadedFiles))
                     {
                         continue; // skip this
                     }
@@ -202,19 +211,21 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             if (outfit.AppearanceId > 9)
                             {
                                 M3Log.Error(@"Squadmate outfit merge for LE2 only supports 9 outfits per character currently!");
+                                M3Log.Error($@"This outfit for {outfit.HenchName} will be skipped.");
+                                continue;
                             }
 
                             var availableImage = imagePackage.FindExport(outfit.AvailableImage);
                             if (availableImage == null)
                             {
-                                M3Log.Error($@"Available image {outfit.AvailableImage} not found in package: {imagePackage.FilePath}");
+                                M3Log.Error($@"Available image {outfit.AvailableImage} not found in package: {imagePackage.FilePath}. This outfit will be skipped");
                                 continue;
                             }
 
                             var selectedImage = imagePackage.FindExport(outfit.HighlightImage);
                             if (selectedImage == null)
                             {
-                                M3Log.Error($@"Selected image {outfit.HighlightImage} not found in package: {imagePackage.FilePath}");
+                                M3Log.Error($@"Selected image {outfit.HighlightImage} not found in package: {imagePackage.FilePath}. This outfit will be skipped");
                                 continue;
                             }
 
