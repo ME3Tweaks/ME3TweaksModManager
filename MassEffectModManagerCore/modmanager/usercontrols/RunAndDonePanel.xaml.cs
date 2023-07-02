@@ -12,11 +12,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// </summary>
     public partial class RunAndDonePanel : MMBusyPanelBase
     {
-        private Action runAndDoneDelegate;
+        private Func<object> runAndDoneDelegate;
 
         private readonly BackgroundTask BGTask;
         public string ActionText { get; }
-        public RunAndDonePanel(Action runAndDoneDelegate, string actionText, string endText)
+        public RunAndDonePanel(Func<object> runAndDoneDelegate, string actionText, string endText)
         {
             ActionText = actionText;
             this.runAndDoneDelegate = runAndDoneDelegate;
@@ -34,7 +34,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"RunAndDoneThread");
             nbw.DoWork += (a, b) =>
             {
-                runAndDoneDelegate?.Invoke();
+                b.Result = runAndDoneDelegate?.Invoke();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -43,7 +43,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // Logging is handled in nbw
                     Result.Error = b.Error;
                 }
-                BackgroundTaskEngine.SubmitJobCompletion(BGTask);
+                else if (b.Result is string finalStatus && BGTask != null)
+                {
+                    // If a run and done panel returns a message we suppress updates until all panels are closed
+                    BackgroundTaskEngine.SubmitBackgroundTaskUpdate(BGTask, finalStatus);
+                    BackgroundTaskEngine.SuppressStatusMessageUpdates(); // 
+                }
+
+                if (BGTask != null)
+                {
+                    BackgroundTaskEngine.SubmitJobCompletion(BGTask);
+                }
                 OnClosing(DataEventArgs.Empty);
             };
             nbw.RunWorkerAsync();

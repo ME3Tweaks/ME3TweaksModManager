@@ -139,11 +139,12 @@ namespace ME3TweaksModManager.modmanager.squadmates
         /// </summary>
         /// <param name="mergeDLC"></param>
         /// <exception cref="Exception"></exception>
-        public static void RunSquadmateOutfitMerge(M3MergeDLC mergeDLC)
+        public static string RunSquadmateOutfitMerge(M3MergeDLC mergeDLC)
         {
             if (!mergeDLC.Generated)
-                return; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
+                return null; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
 
+            string result = null;
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath);
             //var mergeFiles = loadedFiles.Where(x =>
             //    x.Key.StartsWith(@"BioH_") && x.Key.Contains(@"_DLC_MOD_") && x.Key.EndsWith(@".pcc") && !x.Key.Contains(@"_LOC_") && !x.Key.Contains(@"_Explore."));
@@ -173,6 +174,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     }
                     catch (Exception ex)
                     {
+                        result = "Error reading squadmate outfit manifest file for mod(s), see logs";
                         M3Log.Exception(ex, $@"Error reading squadmate merge manifest: {jsonFile}. This DLC will not be squadmate merged");
                     }
 
@@ -212,6 +214,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             {
                                 M3Log.Error(@"Squadmate outfit merge for LE2 only supports 9 outfits per character currently!");
                                 M3Log.Error($@"This outfit for {outfit.HenchName} will be skipped.");
+                                result = "Some squadmate outfits were not merged, see logs";
                                 continue;
                             }
 
@@ -219,6 +222,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             if (availableImage == null)
                             {
                                 M3Log.Error($@"Available image {outfit.AvailableImage} not found in package: {imagePackage.FilePath}. This outfit will be skipped");
+                                result = "Some squadmate outfits were not merged, see logs";
                                 continue;
                             }
 
@@ -226,6 +230,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             if (selectedImage == null)
                             {
                                 M3Log.Error($@"Selected image {outfit.HighlightImage} not found in package: {imagePackage.FilePath}. This outfit will be skipped");
+                                result = "Some squadmate outfits were not merged, see logs";
                                 continue;
                             }
 
@@ -390,7 +395,6 @@ namespace ME3TweaksModManager.modmanager.squadmates
                                 {
                                     M3Log.Error(l.Message);
                                 }
-
                                 throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingConditionalFunction, $@"F{outfit.ConditionalIndex}", string.Join('\n', log.AllErrors.Select(x => x.Message))));
                             }
                         }
@@ -534,11 +538,11 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     }
 
                     mergeCoal[@"BIOEngine.xml"] = bioEngineDoc.ToString();
-
-
                     CoalescedConverter.CompileFromMemory(mergeCoal).WriteToFile(mergeCoalFile);
                 }
             }
+
+            return result;
         }
 
         private static void buildPlotElementObject(ArrayProperty<StructProperty> plotStreaming, SquadmateInfoSingle sqm, MEGame game, bool isSpecial)

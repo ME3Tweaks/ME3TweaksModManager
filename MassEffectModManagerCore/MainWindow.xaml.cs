@@ -1430,8 +1430,9 @@ namespace ME3TweaksModManager
             HandlePanelResult(BatchPanelResult);
         }
 
-        private void InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
+        private string InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
         {
+            string result = null;
             foreach (var asi in queue.ASIModsToInstall)
             {
                 if (asi.IsAvailableForInstall())
@@ -1441,8 +1442,11 @@ namespace ME3TweaksModManager
                 else
                 {
                     M3Log.Warning($@"Not installing ASI with update group {asi.UpdateGroup} - not found in manifest");
+                    result = "Some ASI mods were not installed; see logs";
                 }
             }
+
+            return result;
         }
 
         private void OpenMixinManagerPanel()
@@ -1865,6 +1869,8 @@ namespace ME3TweaksModManager
                         GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                         GC.Collect();
                     });
+                    // No more panels, we can show message updates now./s
+                    BackgroundTaskEngine.AllowMessageUpdates();
                 }
                 else
                 {
@@ -1953,14 +1959,17 @@ namespace ME3TweaksModManager
             foreach (var v in result.TargetsToSquadmateMergeSync)
             {
                 ShowRunAndDone(() => SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v]),
-                    M3L.GetString(M3L.string_synchronizingSquadmateOutfits),
-                    M3L.GetString(M3L.string_synchronizedSquadmateOutfits));
+                M3L.GetString(M3L.string_synchronizingSquadmateOutfits),
+                    M3L.GetString(M3L.string_synchronizedSquadmateOutfits),
+                    null);
             }
 
             foreach (var v in result.TargetsToEmailMergeSync)
             {
                 ShowRunAndDone(() => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v]),
-                    M3L.GetString(M3L.string_synchronizingEmails), M3L.GetString(M3L.string_synchronizedEmails));
+                    M3L.GetString(M3L.string_synchronizingEmails), 
+                    M3L.GetString(M3L.string_synchronizedEmails),
+                    null);
             }
 
             foreach (var v in result.TargetsToAutoTOC)
@@ -2030,7 +2039,7 @@ namespace ME3TweaksModManager
             });
         }
 
-        private void ShowRunAndDone(Action action, string startStr, string endStr, Action finishAction = null)
+        private void ShowRunAndDone(Func<object> action, string startStr, string endStr, Action finishAction = null)
         {
             var runAndDone = new RunAndDonePanel(action, startStr, endStr);
             runAndDone.Close += (a, b) =>

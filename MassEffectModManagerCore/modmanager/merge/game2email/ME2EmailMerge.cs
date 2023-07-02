@@ -123,16 +123,16 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
         /// </summary>
         /// <param name="mergeDLC"></param>
         /// <exception cref="Exception"></exception>
-        public static void RunGame2EmailMerge(M3MergeDLC mergeDLC)
+        public static string RunGame2EmailMerge(M3MergeDLC mergeDLC)
         {
             if (!mergeDLC.Generated)
-                return; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
+                return null; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
 
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath);
 
             // File to base modifications on
             loadedFiles.TryGetValue(@"BioD_Nor_103Messages.pcc", out var pccFile);
-            if (pccFile is null) return;
+            if (pccFile is null) return "Emails not merged: Messages file not found";
             using IMEPackage pcc = MEPackageHandler.OpenMEPackage(pccFile);
 
             // Path to Message templates file - different files for ME2/LE2
@@ -161,7 +161,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             // Sanity checks
             if (!Enumerable.Any(emailInfos) || !emailInfos.SelectMany(e => e.Emails).Any())
             {
-                return;
+                return null; // No emails
             }
 
             if (emailInfos.Any(e => e.Game != mergeDLC.Target.Game))
@@ -467,6 +467,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     File.WriteAllText(bioEnginePath, currentBioEngine + bioEngineTextToAdd);
                 }
             }
+
+            return null; // OK
         }
 
         /// <summary>

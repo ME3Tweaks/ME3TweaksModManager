@@ -67,11 +67,16 @@ namespace ME3TweaksModManager.modmanager
         private void InternalSubmitBackgroundTaskUpdate(BackgroundTask bt, string newStr)
         {
             bt.UIText = newStr;
-            if (ActiveTask == bt)
+            if (ActiveTask == bt && !SuppressMessageUpdates)
             {
                 updateTextDelegate(newStr);
             }
         }
+
+        /// <summary>
+        /// If message updates should occur
+        /// </summary>
+        private bool SuppressMessageUpdates { get; set; }
 
         public static BackgroundTask SubmitBackgroundJob(string taskName, string uiText = null, string finishedUiText = null) => Instance.InternalSubmitBackgroundJob(taskName, uiText, finishedUiText);
 
@@ -86,7 +91,7 @@ namespace ME3TweaksModManager.modmanager
 
                 BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
                 backgroundJobs.TryAdd(bt.TaskID, bt);
-                if (uiText != null)
+                if (uiText != null && !SuppressMessageUpdates)
                 {
                     updateTextDelegate(uiText);
                 }
@@ -110,7 +115,7 @@ namespace ME3TweaksModManager.modmanager
                     if (!backgroundJobs.Any())
                     {
                         hideIndicatorDelegate();
-                        if (task.FinishedUIText != null)
+                        if (task.FinishedUIText != null && !SuppressMessageUpdates)
                         {
                             updateTextDelegate(task.FinishedUIText);
                         }
@@ -119,7 +124,10 @@ namespace ME3TweaksModManager.modmanager
                     else
                     {
                         ActiveTask = backgroundJobs.First().Value;
-                        updateTextDelegate(ActiveTask.UIText);
+                        if (!SuppressMessageUpdates)
+                        {
+                            updateTextDelegate(ActiveTask.UIText);
+                        }
                     }
                 }
             }
@@ -139,6 +147,22 @@ namespace ME3TweaksModManager.modmanager
         }
 
         public event EventHandler NotifyBackgroundJobChanged;
+
+        /// <summary>
+        /// Prevents the bottom left text from updating
+        /// </summary>
+        public static void SuppressStatusMessageUpdates()
+        {
+            Instance.SuppressMessageUpdates = true;
+        }
+
+        /// <summary>
+        /// Allows the bottom left text to update
+        /// </summary>
+        public static void AllowMessageUpdates()
+        {
+            Instance.SuppressMessageUpdates = false;
+        }
     }
 
     /// <summary>
