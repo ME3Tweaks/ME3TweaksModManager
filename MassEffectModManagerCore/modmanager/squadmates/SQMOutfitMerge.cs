@@ -590,7 +590,6 @@ namespace ME3TweaksModManager.modmanager.squadmates
             // glow is offset by 3 and then 7 to the next non-glow for a skip of 10.
             // We add one to the base index number when calculating to account for the offsets being indexed at 1 and not at 0 (see the texture sheet)
             var lowerHench = henchname.ToLowerInvariant();
-            var firstAvaialbleAppearanceIndex = GetFirstAvailableSquadmateAppearanceIndexLE2(lowerHench);
             switch (lowerHench)
             {
                 case @"vixen":

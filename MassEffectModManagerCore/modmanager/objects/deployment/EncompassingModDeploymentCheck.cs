@@ -55,6 +55,17 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
             // Commands
             RerunChecksCommand = new GenericCommand(RunChecksWrapper, CanRerunCheck);
 
+            AddChecks();
+        }
+
+        private void ResetChecks()
+        {
+            DeploymentChecklistItems.ClearEx();
+            AddChecks();
+        }
+
+        private void AddChecks()
+        {
             // Checks
             MetadataChecks.AddMetadataChecks(this);
             LanguageChecks.AddLanguageChecks(this);
@@ -90,6 +101,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
         {
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModChecksThread");
             nbw.DoWork += (sender, args) => RunChecks();
+            ResetChecks();
             nbw.RunWorkerAsync();
         }
 
@@ -103,6 +115,5 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
                 check.SetAbandoned();
             }
         }
-
     }
 }

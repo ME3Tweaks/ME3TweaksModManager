@@ -55,8 +55,8 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 var game = item.ModToValidateAgainst.Game;
 
                 // Max 100 blank packages
-                using PackageCache localCache = new PackageCache() { CacheMaxSize = 100};
-                
+                using PackageCache localCache = new PackageCache() { CacheMaxSize = 100 };
+
                 Parallel.ForEach(referencedFiles,
                     new ParallelOptions()
                     {
@@ -88,10 +88,22 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         {
                             if (GlobalUnrealObjectInfo.IsAKnownNativeClass(import.InstancedFullPath, game))
                                 continue; // Don't bother looking up since it'll never be found
+
                             var resolved = EntryImporter.CanResolveImport(import, null, localCache, @"INT", localDirFiles);
                             if (!resolved)
                             {
-                                item.AddInfoWarning($@"Legendary Explorer Core could not resolve import: {import.UIndex} {import.InstancedFullPath} in {relativePath}", new LEXOpenable(import));
+                                if (game.IsGame2())
+                                {
+                                    // Check for the known bad missing ones
+                                    if (import.InstancedFullPath is
+                                            @"BioVFX_Z_TEXTURES.Generic.Glass_Shards_Norm" or
+                                            // The following two have incorrectly spelled names
+                                            // But they aren't in game files anyways
+                                            @"BIOG_Humanoid_MASTER_MTR_R.Skin_HumanHED_SpecMulitplier_Mask" or 
+                                            @"BIOG_Humanoid_MASTER_MTR_R.Skin_HumanScalp_SpecMulitplier_Mask")
+                                        continue; // These are not present in Game 2 files for some reason. According to BioWare they were also never committed to P4
+                                }
+                                item.AddInfoWarning($"Legendary Explorer Core could not resolve import: {import.UIndex} {import.InstancedFullPath} in {relativePath}", new LEXOpenable(import));
                             }
                         }
 #endif

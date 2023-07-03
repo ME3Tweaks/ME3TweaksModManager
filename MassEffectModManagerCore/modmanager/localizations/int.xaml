@@ -884,7 +884,7 @@
     <!-- 0={Filepath} -->
 
     <!-- Misc checks -->
-    <system:String x:Key="string_deployment_squadmateOutfitMerge">Squadmate Outfit Merge</system:String>
+    <system:String x:Key="string_deployment_squadmateOutfitMerge">Squadmate Outfit Merge checks</system:String>
     <system:String x:Key="string_deployment_sqmIssuesDialogMessage">The following issues were found in relation to the Squadmate Outfit Merge feature, which your mod appears to use due to inclusion of a SquadmateMergeInfo.sqm file.</system:String>
     <system:String x:Key="string_deployment_sqmIssuesDialogTitle">Squadmate Outfit Merge issues</system:String>
     <system:String x:Key="string_deployment_sqmIssuesCheckInProgress">Checking for Squadmate Outfit Merge issues</system:String>

@@ -36,8 +36,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 ValidationFunction = CheckModForMiscellaneousIssues
             });
 
-            // Remove this if check if this ever works in ME2/LE2.
-            if (check.ModBeingDeployed.Game.IsGame3())
+            if (check.ModBeingDeployed.Game.IsGame3() || check.ModBeingDeployed.Game == MEGame.LE2)
             {
                 var installableFiles = check.ModBeingDeployed.GetAllInstallableFiles();
                 if (installableFiles.Any(x => Path.GetFileName(x).Equals(SQMOutfitMerge.SQUADMATE_MERGE_MANIFEST_FILE)))
@@ -67,13 +66,23 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             foreach (var mergeManifest in mergeManifests)
             {
-                SQMOutfitMerge.SquadmateMergeInfo mergeInfo = JsonConvert.DeserializeObject<SQMOutfitMerge.SquadmateMergeInfo>(File.ReadAllText(mergeManifest));
-
-                foreach (var henchOutfit in mergeInfo.Outfits)
+                try
                 {
-                    sqmMergeCheckHenchName(item, henchOutfit, item.ModToValidateAgainst.Game);
-                    sqmMergeCheckHenchPackages(item, henchOutfit, installableFiles);
-                    sqmMergeCheckHenchImages(item, henchOutfit, dlcNames, installableFiles);
+                    SQMOutfitMerge.SquadmateMergeInfo mergeInfo =
+                        JsonConvert.DeserializeObject<SQMOutfitMerge.SquadmateMergeInfo>(
+                            File.ReadAllText(mergeManifest));
+
+                    foreach (var henchOutfit in mergeInfo.Outfits)
+                    {
+                        sqmMergeCheckHenchName(item, henchOutfit, item.ModToValidateAgainst.Game);
+                        sqmMergeCheckHenchPackages(item, henchOutfit, installableFiles);
+                        sqmMergeCheckHenchImages(item, henchOutfit, dlcNames, installableFiles);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Exception(ex, $@"Error reading squadmate manifest file {mergeManifest}:");
+                    item.AddBlockingError($"Exception validating outfit manifest {mergeManifest}: {ex.Message}");
                 }
             }
 
@@ -93,11 +102,19 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         private static void sqmMergeCheckHenchPackages(DeploymentChecklistItem item, SquadmateInfoSingle henchOutfit, List<string> installableFiles)
         {
             // Localizations that must be included.
-            var packageBases = new[]
+            var packageBases = new List<string>()
             {
-                henchOutfit.HenchPackage,
-                $@"{henchOutfit.HenchPackage}_Explore",
+                henchOutfit.HenchPackage
             };
+
+            if (item.ModToValidateAgainst.Game == MEGame.LE2)
+            {
+                packageBases.Add($@"BioH_END_{henchOutfit.HenchPackage.Substring(5)}"); // Remove BioH_ from the original package name
+            }
+            else if (item.ModToValidateAgainst.Game.IsGame3())
+            {
+                packageBases.Add($@"{henchOutfit.HenchPackage}_Explore");
+            }
 
             // Make sure base package exist
             foreach (var packageBase in packageBases)
@@ -185,7 +202,33 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
         private static void sqmMergeCheckHenchName(DeploymentChecklistItem item, SquadmateInfoSingle henchOutfit, MEGame game)
         {
-            if (game.IsGame3())
+            if (game == MEGame.LE2)
+            {
+                switch (henchOutfit.HenchName)
+                {
+                    case @"Vixen":
+                    case @"Leading":
+                    case @"Convict":
+                    case @"Geth":
+                    case @"Assassin":
+                    case @"Thief":
+                    case @"Veteran":
+                    case @"Tali":
+                    case @"Mystic":
+                    case @"Garrus":
+                    case @"Professor":
+                    case @"Grunt":
+                        break;
+                    case @"Liara":
+                        // This string is not localized because it will eventually be removed
+                        item.AddSignificantIssue(@"Liara is not supported yet - unsure if/when she will be due to how she is implemented into game files");
+                        break;
+                    default:
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueInvalidHenchId, henchOutfit.HenchName));
+                        break;
+                }
+            }
+            else if (game.IsGame3())
             {
                 switch (henchOutfit.HenchName)
                 {
@@ -202,6 +245,11 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueInvalidHenchId, henchOutfit.HenchName));
                         break;
                 }
+            }
+            else
+            {
+                // Not localized as this is a dev sanity check
+                throw new Exception($@"Cannot check hench name for unsupported game: {game}");
             }
         }
 
