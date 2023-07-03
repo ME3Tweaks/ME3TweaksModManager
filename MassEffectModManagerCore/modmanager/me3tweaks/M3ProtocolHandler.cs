@@ -31,7 +31,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             // Register protocol
             var protocolKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Classes\me3tweaksmodmanager", true);
             protocolKey.SetValue(@"URL Protocol", @"");
-            protocolKey.SetValue("", @"URL:ME3Tweaks Mod Manager Protocol");
+            protocolKey.SetValue(@"", @"URL:ME3Tweaks Mod Manager Protocol");
         }
 
         public static void HandleLink(string m3link, MainWindow window)
@@ -47,22 +47,22 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
             if (link.Command == M3Link.IMPORT_SAVE_COMMAND)
             {
-                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"SaveImport", "Importing save file from ME3Tweaks",
-                    "Imported save file from ME3Tweaks");
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"SaveImport", M3L.GetString(M3L.string_importingSaveFileFromME3Tweaks),
+                    M3L.GetString(M3L.string_importedSaveFileFromME3Tweaks));
                 Task.Run(() =>
                 {
                     var saveinfo = HttpUtility.ParseQueryString(link.Data);
                     var hash = saveinfo[@"hash"];
                     M3Log.Information($@"Downloading ME3Tweaks diagnostic save: {hash}");
 
-                    var storageLink = $"https://me3tweaks.com/modmanager/logservice/saves/{hash}.pcsav";
+                    var storageLink = $@"https://me3tweaks.com/modmanager/logservice/saves/{hash}.pcsav";
                     var saveName = saveinfo[@"name"];
 
                     var download = MOnlineContent.DownloadToMemory(storageLink, hash: hash);
                     if (download.errorMessage == null)
                     {
                         var loadedSave = SaveFileLoader.LoadSaveFile(download.result);
-                       
+
                         // Some day we might want to set it to have a specific proxy_firstname so it gets sorted out into
                         // a proper career. but that's a lot of work and I don't really want to deal with save editing...
 
@@ -83,10 +83,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                     }
                 }).ContinueWithOnUIThread(x =>
                 {
+                    if (x.Exception != null)
                     {
-
-                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                        task.FinishedUIText = M3L.GetString(M3L.string_interp_errorImportingSaveFileX, x.Exception.Message);
                     }
+                    BackgroundTaskEngine.SubmitJobCompletion(task);
                 });
 
                 return;
@@ -107,7 +108,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             var linkContents = link.Substring(22); // remove 'me3tweaksmodmanager://'
             var queryPos = linkContents.IndexOf('?');
             m3pl.Command = (queryPos > 1 ? linkContents.Substring(0, queryPos) : linkContents).ToUpper().Trim('/'); // Some browsers add this on the end
-            m3pl.Data = queryPos > 0 ? linkContents.Substring(queryPos+1) : null;
+            m3pl.Data = queryPos > 0 ? linkContents.Substring(queryPos + 1) : null;
             return m3pl;
         }
 

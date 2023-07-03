@@ -192,11 +192,11 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     var tpmi = TPMIService.GetThirdPartyModInfo(strippedTFCName, item.ModToValidateAgainst.Game);
                     if (tpmi != null)
                     {
-                        item.AddSignificantIssue($"Detected a TFC file from another mod: {tfcName} ({tpmi.modname}). Shipping a TFC from another mod will break various modding tools and may get your mod blacklisted from import if it breaks user installations. TFC files are often not included in patching permissions, your mod may be removed from hosting platforms by including it. Do not include other mods TFC files in your mod.");
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_detectedTFCFromAnotherModTPMI, tfcName, tpmi.modname));
                     }
                     else
                     {
-                        item.AddSignificantIssue($"Detected a TFC file that appears to be from another DLC mod: {tfcName}. Shipping a TFC from another mod will break various modding tools and may get your mod blacklisted from import if it breaks user installations. TFC files are often not included in patching permissions, your mod may be removed from hosting platforms by including it. Do not include other mods TFC files in your mod.");
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_detectedTFCFromAnotherModUnknown, tfcName));
                     }
                 }
 

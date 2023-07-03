@@ -53,7 +53,7 @@
                 Padding="7,5" />
             <xctk:WatermarkTextBox
                 MinWidth="200"
-                Watermark="Type to filter"
+                Watermark="{DynamicResource string_typeToFilter}"
                 DockPanel.Dock="Left"
                 Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock

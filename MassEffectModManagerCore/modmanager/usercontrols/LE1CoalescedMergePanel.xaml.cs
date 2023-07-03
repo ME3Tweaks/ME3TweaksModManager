@@ -71,9 +71,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var consolem3Cd = MakeConsoleM3CD();
             if (consolem3Cd != null)
             {
-                M3Log.Information($@"Merging M3 Config Delta for user chosen keybinds");
+                M3Log.Information(@"Merging M3 Config Delta for user chosen keybinds");
                 ConfigMerge.PerformMerge(configBundle, consolem3Cd);
-                recordMerge("M3 Console Keybinds"); // we do want this localized
+                recordMerge(M3L.GetString(M3L.string_m3ConsoleKeybinds)); // we do want this localized
             }
 
             var records = new List<BasegameFileRecord>();
@@ -132,14 +132,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return null;
 
             DuplicatingIni m3cdIni = new DuplicatingIni();
-            var bioInput = m3cdIni.GetOrAddSection("BIOInput.ini Engine.Console");
+            var bioInput = m3cdIni.GetOrAddSection(@"BIOInput.ini Engine.Console");
             if (Settings.IsLE1ConsoleKeySet)
             {
-                bioInput.SetSingleEntry(">ConsoleKey", Settings.LE1ConsoleKey);
+                bioInput.SetSingleEntry(@">ConsoleKey", Settings.LE1ConsoleKey);
             }
             if (Settings.IsLE1MiniConsoleKeySet)
             {
-                bioInput.SetSingleEntry(">TypeKey", Settings.LE1MiniConsoleKey);
+                bioInput.SetSingleEntry(@">TypeKey", Settings.LE1MiniConsoleKey);
             }
 
             return ConfigFileProxy.ParseIni(m3cdIni.ToString());

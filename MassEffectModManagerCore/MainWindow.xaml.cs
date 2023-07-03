@@ -1442,7 +1442,7 @@ namespace ME3TweaksModManager
                 else
                 {
                     M3Log.Warning($@"Not installing ASI with update group {asi.UpdateGroup} - not found in manifest");
-                    result = "Some ASI mods were not installed; see logs";
+                    result = M3L.GetString(M3L.string_someASIModsWereNotInstalled);
                 }
             }
 
@@ -1967,7 +1967,7 @@ namespace ME3TweaksModManager
             foreach (var v in result.TargetsToEmailMergeSync)
             {
                 ShowRunAndDone(() => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v]),
-                    M3L.GetString(M3L.string_synchronizingEmails), 
+                    M3L.GetString(M3L.string_synchronizingEmails),
                     M3L.GetString(M3L.string_synchronizedEmails),
                     null);
             }

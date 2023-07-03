@@ -81,8 +81,8 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 }
                 catch (Exception ex)
                 {
-                    M3Log.Exception(ex, $@"Error reading squadmate manifest file {mergeManifest}:");
-                    item.AddBlockingError($"Exception validating outfit manifest {mergeManifest}: {ex.Message}");
+                    M3Log.Exception(ex, $@"Error reading/validating squadmate manifest file {mergeManifest}:");
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_exceptionValidatingOutfitManifestMergeManifest, mergeManifest, ex.Message));
                 }
             }
 

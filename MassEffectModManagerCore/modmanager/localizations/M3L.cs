@@ -531,6 +531,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_prerequesiteNotMet = "string_prerequesiteNotMet";
 		public const string string_dialog_errorGeneratingMergeDLC = "string_dialog_errorGeneratingMergeDLC";
 		public const string string_errorGeneratingMergeDLC = "string_errorGeneratingMergeDLC";
+		public const string string_someASIModsWereNotInstalled = "string_someASIModsWereNotInstalled";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -797,6 +798,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deploymentFailed = "string_deploymentFailed";
 		public const string string_interp_dialog_deploymentFailedWrongNumMods = "string_interp_dialog_deploymentFailedWrongNumMods";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
+		public const string string_interp_detectedTFCFromAnotherModTPMI = "string_interp_detectedTFCFromAnotherModTPMI";
+		public const string string_interp_detectedTFCFromAnotherModUnknown = "string_interp_detectedTFCFromAnotherModUnknown";
 		public const string string_deployment_squadmateOutfitMerge = "string_deployment_squadmateOutfitMerge";
 		public const string string_deployment_sqmIssuesDialogMessage = "string_deployment_sqmIssuesDialogMessage";
 		public const string string_deployment_sqmIssuesDialogTitle = "string_deployment_sqmIssuesDialogTitle";
@@ -814,10 +817,12 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deployment_unusedExtraFileTypeFound = "string_deployment_unusedExtraFileTypeFound";
 		public const string string_deployment_nexusUpdaterServiceInfo = "string_deployment_nexusUpdaterServiceInfo";
 		public const string string_interp_compressedTlkDataInfo = "string_interp_compressedTlkDataInfo";
+		public const string string_interp_exceptionValidatingOutfitManifestMergeManifest = "string_interp_exceptionValidatingOutfitManifestMergeManifest";
 		public const string string_deployment_tlkIssueLangPackageNotFound = "string_deployment_tlkIssueLangPackageNotFound";
 		public const string string_deployment_tlkIssueLangPackageWrongNumTLKExports = "string_deployment_tlkIssueLangPackageWrongNumTLKExports";
 		public const string string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount = "string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount";
 		public const string string_deployment_mergemodPackageCheckingReferences = "string_deployment_mergemodPackageCheckingReferences";
+		public const string string_interp_lecCouldNotResolveImport = "string_interp_lecCouldNotResolveImport";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";
@@ -981,6 +986,12 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_selectAGameTargetToGenerateDiagnosticsFor = "string_selectAGameTargetToGenerateDiagnosticsFor";
 		public const string string_compressingForUpload = "string_compressingForUpload";
 		public const string string_uploadingToME3Tweaks = "string_uploadingToME3Tweaks";
+		public const string string_noSaveSelected = "string_noSaveSelected";
+		public const string string_selectASaveToIncludeWithDiagnostic = "string_selectASaveToIncludeWithDiagnostic";
+		public const string string_description_fullTexturesCheck = "string_description_fullTexturesCheck";
+		public const string string_saveFile = "string_saveFile";
+		public const string string_description_saveFile = "string_description_saveFile";
+		public const string string_selectSaveFile = "string_selectSaveFile";
 		public const string string_importModsFromArchiveFile = "string_importModsFromArchiveFile";
 		public const string string_importMods = "string_importMods";
 		public const string string_compressPackages = "string_compressPackages";
@@ -2004,6 +2015,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_synchronizingSquadmateOutfits = "string_synchronizingSquadmateOutfits";
 		public const string string_synchronizedSquadmateOutfits = "string_synchronizedSquadmateOutfits";
 		public const string string_synchronizingSquadmateOutfitFiles = "string_synchronizingSquadmateOutfitFiles";
+		public const string string_errorReadingSquadmateOutfitManifestFileSeeLogs = "string_errorReadingSquadmateOutfitManifestFileSeeLogs";
+		public const string string_someSquadmateOutfitsWereNotMergedSeeLogs = "string_someSquadmateOutfitsWereNotMergedSeeLogs";
 		public const string string_interp_ssp_unopenedParenthsisFound = "string_interp_ssp_unopenedParenthsisFound";
 		public const string string_interp_ssp_unclosedParenthesisFound = "string_interp_ssp_unclosedParenthesisFound";
 		public const string string_licenseViewer = "string_licenseViewer";
@@ -2139,5 +2152,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_unknownSaveTypeX = "string_interp_unknownSaveTypeX";
 		public const string string_dialog_firstCoalescedMerge = "string_dialog_firstCoalescedMerge";
 		public const string string_information = "string_information";
+		public const string string_m3ConsoleKeybinds = "string_m3ConsoleKeybinds";
+		public const string string_importingSaveFileFromME3Tweaks = "string_importingSaveFileFromME3Tweaks";
+		public const string string_importedSaveFileFromME3Tweaks = "string_importedSaveFileFromME3Tweaks";
+		public const string string_interp_errorImportingSaveFileX = "string_interp_errorImportingSaveFileX";
 	}
 }

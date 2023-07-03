@@ -174,7 +174,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     }
                     catch (Exception ex)
                     {
-                        result = "Error reading squadmate outfit manifest file for mod(s), see logs";
+                        result = M3L.GetString(M3L.string_errorReadingSquadmateOutfitManifestFileSeeLogs);
                         M3Log.Exception(ex, $@"Error reading squadmate merge manifest: {jsonFile}. This DLC will not be squadmate merged");
                     }
 
@@ -214,7 +214,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             {
                                 M3Log.Error(@"Squadmate outfit merge for LE2 only supports 9 outfits per character currently!");
                                 M3Log.Error($@"This outfit for {outfit.HenchName} will be skipped.");
-                                result = "Some squadmate outfits were not merged, see logs";
+                                result = M3L.GetString(M3L.string_someSquadmateOutfitsWereNotMergedSeeLogs);
                                 continue;
                             }
 
@@ -222,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             if (availableImage == null)
                             {
                                 M3Log.Error($@"Available image {outfit.AvailableImage} not found in package: {imagePackage.FilePath}. This outfit will be skipped");
-                                result = "Some squadmate outfits were not merged, see logs";
+                                result = M3L.GetString(M3L.string_someSquadmateOutfitsWereNotMergedSeeLogs);
                                 continue;
                             }
 
@@ -230,7 +230,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             if (selectedImage == null)
                             {
                                 M3Log.Error($@"Selected image {outfit.HighlightImage} not found in package: {imagePackage.FilePath}. This outfit will be skipped");
-                                result = "Some squadmate outfits were not merged, see logs";
+                                result = M3L.GetString(M3L.string_someSquadmateOutfitsWereNotMergedSeeLogs);
                                 continue;
                             }
 

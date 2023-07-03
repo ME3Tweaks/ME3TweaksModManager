@@ -506,6 +506,7 @@
     <system:String xml:space="preserve" x:Key="string_dialog_errorGeneratingMergeDLC">Error generating Merge DLC: {0}\nMods may not function properly - manually remove the merge DLC (if any) via the 'Manage Target' button.</system:String>
     <!-- 0={Error message} -->
     <system:String x:Key="string_errorGeneratingMergeDLC">Error generating Merge DLC</system:String>
+    <system:String x:Key="string_someASIModsWereNotInstalled">Some ASI mods were not installed; see logs</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -882,6 +883,10 @@
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
     <!-- 0={Filepath} -->
+    <system:String x:Key="string_interp_detectedTFCFromAnotherModTPMI">Detected a TFC file from another mod: {0} ({1}). Shipping a TFC from another mod will break various modding tools and may get your mod blacklisted from import if it breaks user installations. TFC files are often not included in patching permissions, your mod may be removed from hosting platforms by including it. Do not include other mods TFC files in your mod.</system:String>
+    <!-- 0={Filename} 1={Mod name} -->
+    <system:String x:Key="string_interp_detectedTFCFromAnotherModUnknown">Detected a TFC file that appears to be from another DLC mod: {0}. Shipping a TFC from another mod will break various modding tools and may get your mod blacklisted from import if it breaks user installations. TFC files are often not included in patching permissions, your mod may be removed from hosting platforms by including it. Do not include other mods TFC files in your mod.</system:String>
+    <!-- 0={Filename} -->
 
     <!-- Misc checks -->
     <system:String x:Key="string_deployment_squadmateOutfitMerge">Squadmate Outfit Merge checks</system:String>
@@ -910,6 +915,8 @@
     <!-- 0={Mod name} 1={game (ME1/ME2... etc)} -->
     <system:String x:Key="string_interp_compressedTlkDataInfo">This mod uses the {0} task header. A compressed version of the xml files was detected ({1}); this file will be used in deployment instead of individual xml files. If this is not what you intended, remove the compressed file and Mod Manager will serialize a new one on deployment.</system:String>
     <!-- 0 = GAME1_EMBEDDED_TLK, 1 = filepath - both of these values are hardcoded and will never change unless something gets refactored, which it hopefully never will -->
+    <system:String x:Key="string_interp_exceptionValidatingOutfitManifestMergeManifest">Exception validating outfit manifest {0}: {1}</system:String>
+    <!-- 0={File path} 1={Exception message} -->
 
     <!-- Language checks -->
     <system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Localized TLK package {0} was not found. Users who play the game with their language/voiceover set to {1} ({2}) will have blank strings from this mod. See the Mod Manager documentation for more information.</system:String>
@@ -922,6 +929,8 @@
     <!-- Package checks -->
     <system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Checking references in mergemods [{0}/{1}]</system:String>
     <!-- 0={Number} 1={Number} -->
+    <system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core could not resolve import: {0} {1} in {2}</system:String>
+    <!-- 0={Number} 1={Instanced full path of import} 2={File path} -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and Legendary Explorer.</system:String>
@@ -1121,6 +1130,12 @@
     <system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Select a game target to generate diagnostics for</system:String>
     <system:String x:Key="string_compressingForUpload">Compressing for upload</system:String>
     <system:String x:Key="string_uploadingToME3Tweaks">Uploading to ME3Tweaks</system:String>
+    <system:String x:Key="string_noSaveSelected">No save selected</system:String>
+    <system:String x:Key="string_selectASaveToIncludeWithDiagnostic">Select a save to include with diagnostic</system:String>
+    <system:String x:Key="string_description_fullTexturesCheck">A full textures check can take several minutes, but will validate texture references in all package files.</system:String>
+    <system:String x:Key="string_saveFile">Save file</system:String>
+    <system:String x:Key="string_description_saveFile">You can optionally include a save file in your game diagnostic. Only select a save if requested.</system:String>
+    <system:String x:Key="string_selectSaveFile">Select save file</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>
@@ -2599,8 +2614,10 @@
     <system:String x:Key="string_synchronizingSquadmateOutfits">Synchronizing squadmate outfits</system:String>
     <system:String x:Key="string_synchronizedSquadmateOutfits">Synchronized squadmate outfits</system:String>
     <system:String x:Key="string_synchronizingSquadmateOutfitFiles">Synchronizing squadmate outfits</system:String>
+    <system:String x:Key="string_errorReadingSquadmateOutfitManifestFileSeeLogs">Error reading squadmate outfit manifest file for mod(s), see logs</system:String>
+    <system:String x:Key="string_someSquadmateOutfitsWereNotMergedSeeLogs">Some squadmate outfits were not merged, see logs</system:String>
 
-    <!-- StringStructParser-->
+<!-- StringStructParser-->
     <system:String x:Key="string_interp_ssp_unopenedParenthsisFound">Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position {0} in string {1}</system:String>
     <!-- 0={Position} 1={Original string} -->
     <system:String x:Key="string_interp_ssp_unclosedParenthesisFound">Unclosed opening parenthesis encountered while parsing parenthesis split list in {0}</system:String>
@@ -2824,6 +2841,13 @@
     <!-- LE1 Coalesced Merge -->
     <system:String xml:space="preserve" x:Key="string_dialog_firstCoalescedMerge">ME3Tweaks Mod Manager replaces the basegame Coalesced_INT.bin file for LE1 automatically so that mods can use the LE1 Coalesced Merge feature. Manually installed/edited Coalesced_INT.bin mods will be overwritten by this feature; you can turn it off in Mod Manager settings.\n\nDisabling the LE1 Coalesced Merge feature will break all mods that depend on it.</system:String>
     <system:String x:Key="string_information">Information</system:String>
+    <system:String x:Key="string_m3ConsoleKeybinds">M3 Console Keybinds</system:String>
+    <!-- This is the name assigned to the entry that is shown in Modified Basegame Files when you set the keybinds for LE1 and they persist across merges. It's a mod name essentially, but its OK to localize for the user-->
 
+    <!-- M3 Protocol Handler -->
+    <system:String x:Key="string_importingSaveFileFromME3Tweaks">Importing save file from ME3Tweaks</system:String>
+    <system:String x:Key="string_importedSaveFileFromME3Tweaks">Imported save file from ME3Tweaks</system:String>
+    <system:String x:Key="string_interp_errorImportingSaveFileX">Error importing save file: {0}</system:String>
+    <!-- 0={Error message} -->
 
 </ResourceDictionary>

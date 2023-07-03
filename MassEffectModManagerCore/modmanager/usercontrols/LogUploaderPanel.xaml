@@ -1,14 +1,6 @@
 ﻿<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.LogUploaderPanel" 
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
-    xmlns:fa5="http://schemas.fontawesome.com/icons/"
-    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.LogUploaderPanel"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
     Width="600">
     <DockPanel
@@ -84,36 +76,42 @@
                         Text="{DynamicResource string_gameDiagnosticDescription}"
                         TextWrapping="Wrap" />
                     <usercontrols:TargetSelector
-                Theme="Accent"
-                Margin="0,4,0,0"
-                AvailableTargets="{Binding DiagnosticTargets}"
-                SelectedGameTarget="{Binding SelectedDiagnosticTarget}"
-                ToolTip="{DynamicResource string_tooltip_currentTarget}"
-                IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+                        Theme="Accent"
+                        Margin="0,4,0,0"
+                        AvailableTargets="{Binding DiagnosticTargets}"
+                        SelectedGameTarget="{Binding SelectedDiagnosticTarget}"
+                        ToolTip="{DynamicResource string_tooltip_currentTarget}"
+                        IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
                     <TextBlock
-                        Text="Textures check"
+                        Text="{DynamicResource string_texturesCheck}"
                         FontWeight="Bold"
                         Margin="0,10,0,0" />
-                    <TextBlock Text="A full textures check can take several minutes, but will validate texture references in all package files."/>
+                    <TextBlock
+                        Text="{DynamicResource string_description_fullTexturesCheck}" />
                     <CheckBox
-                Content="{DynamicResource string_fullTexturesCheck}"
-                ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
-                IsChecked="{Binding TextureCheck}"
-                IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+                        Content="{DynamicResource string_fullTexturesCheck}"
+                        ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
+                        IsChecked="{Binding TextureCheck}"
+                        IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
                     <TextBlock
-                Text="Save file"
-                FontWeight="Bold"
-                Margin="0,10,0,0" />
+                        Text="{DynamicResource string_saveFile}"
+                        FontWeight="Bold"
+                        Margin="0,10,0,0" />
                     <TextBlock
-                Text="You can optionally include a save file in your game diagnostic. Only select a save if requested."
-                TextWrapping="Wrap" />
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding SelectedSaveText}" VerticalAlignment="Center"/>
-                        <Button Content="Select save file" HorizontalAlignment="Right" Command="{Binding SelectSaveCommand}" Margin="5,0"/>
+                        Text="{DynamicResource string_description_saveFile}"
+                        TextWrapping="Wrap" />
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Text="{Binding SelectedSaveText}"
+                            VerticalAlignment="Center" />
+                        <Button
+                            Content="{DynamicResource string_selectSaveFile}"
+                            HorizontalAlignment="Right"
+                            Command="{Binding SelectSaveCommand}"
+                            Margin="5,0" />
                     </StackPanel>
-
-                <!--<TextBlock
+                    <!--<TextBlock
                     Text="Additional features"
                     FontWeight="Bold"
                     Margin="0,10,0,0" />
@@ -124,9 +122,7 @@
                     IsChecked="{Binding TextureCheck}"
                     IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />-->
                 </StackPanel>
-
             </GroupBox>
-
             <TextBlock
                 Text="{DynamicResource string_diagShareTheLink}"
                 TextWrapping="Wrap"

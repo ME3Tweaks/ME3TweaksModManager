@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                                             @"BIOG_Humanoid_MASTER_MTR_R.Skin_HumanScalp_SpecMulitplier_Mask")
                                         continue; // These are not present in Game 2 files for some reason. According to BioWare they were also never committed to P4
                                 }
-                                item.AddInfoWarning($"Legendary Explorer Core could not resolve import: {import.UIndex} {import.InstancedFullPath} in {relativePath}", new LEXOpenable(import));
+                                item.AddInfoWarning(M3L.GetString(M3L.string_interp_lecCouldNotResolveImport, import.UIndex, import.InstancedFullPath, relativePath), new LEXOpenable(import));
                             }
                         }
 #endif

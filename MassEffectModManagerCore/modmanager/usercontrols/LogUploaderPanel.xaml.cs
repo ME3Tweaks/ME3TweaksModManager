@@ -61,7 +61,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand SelectSaveCommand { get; set; }
         public LogItem SelectedLog { get; set; }
         public ISaveFile SelectedSaveFile { get; set; }
-        public string SelectedSaveText { get; set; } = "No save selected";
+        public string SelectedSaveText { get; set; } = M3L.GetString(M3L.string_noSaveSelected);
         public GameTargetWPF SelectedDiagnosticTarget { get; set; }
 
         private void LoadCommands()
@@ -74,7 +74,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void SelectSave()
         {
             SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedDiagnosticTarget,
-                "Select a save to include with diagnostic");
+                M3L.GetString(M3L.string_selectASaveToIncludeWithDiagnostic));
             ssui.Show();
             ssui.Closed += (sender, args) =>
             {
