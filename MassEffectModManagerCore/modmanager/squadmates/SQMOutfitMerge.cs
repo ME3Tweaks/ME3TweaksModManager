@@ -686,6 +686,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
             if (henchname == @"grunt") return 3;
             if (henchname == @"leading") return 2;
             if (henchname == @"tali") return 3;
+            if (henchname == @"geth") return 2;
             if (henchname == @"convict") return 3;
             if (henchname == @"thief") return 2;
             if (henchname == @"assassin") return 3;
