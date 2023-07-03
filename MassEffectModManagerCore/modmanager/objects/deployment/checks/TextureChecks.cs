@@ -7,10 +7,12 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -68,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 {
                     var relativePath = f.Substring(item.ModToValidateAgainst.ModPath.Length + 1);
                     M3Log.Information(@"Checking file for broken textures: " + f);
-                    using var package = MEPackageHandler.UnsafePartialLoad(f, x=> x.IsTexture() && !x.IsDefaultObject); // 06/12/2022 - Use unsafe partial load to increase performance
+                    using var package = MEPackageHandler.UnsafePartialLoad(f, x => x.IsTexture() && !x.IsDefaultObject); // 06/12/2022 - Use unsafe partial load to increase performance
                     if (package.Game != item.ModToValidateAgainst.Game)
                         continue; // Don't bother checking this
                     if (package.LECLTagData.WasSavedWithMEM)
@@ -175,7 +177,31 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 }
             }
 
+            // Mod Manager 8.2: Check if shipping another mods TFC
+            var dlcFolderDests = item.ModToValidateAgainst.GetAllPossibleCustomDLCFolders();
+            foreach (var tfc in allTFCs)
+            {
+                var tfcName = Path.GetFileName(tfc);
+                string strippedTFCName = Path.GetFileNameWithoutExtension(tfcName);
+                if (strippedTFCName.Contains(@"DLC_MOD"))
+                {
+                    strippedTFCName = strippedTFCName.Substring(strippedTFCName.IndexOf(@"DLC_MOD"));
+                    if (dlcFolderDests.Contains(strippedTFCName))
+                        continue; // DLC belongs to this mod
 
+                    var tpmi = TPMIService.GetThirdPartyModInfo(strippedTFCName, item.ModToValidateAgainst.Game);
+                    if (tpmi != null)
+                    {
+                        item.AddSignificantIssue($"Detected a TFC file from another mod: {tfcName} ({tpmi.modname}). Shipping a TFC from another mod will break various modding tools and may get your mod blacklisted from import if it breaks user installations. TFC files are often not included in patching permissions, your mod may be removed from hosting platforms by including it. Do not include other mods TFC files in your mod.");
+                    }
+                    else
+                    {
+                        item.AddSignificantIssue($"Detected a TFC file that appears to be from another DLC mod: {tfcName}. Shipping a TFC from another mod will break various modding tools and may get your mod blacklisted from import if it breaks user installations. TFC files are often not included in patching permissions, your mod may be removed from hosting platforms by including it. Do not include other mods TFC files in your mod.");
+                    }
+                }
+
+                Debug.WriteLine(tfc);
+            }
 
             if (!item.HasAnyMessages())
             {

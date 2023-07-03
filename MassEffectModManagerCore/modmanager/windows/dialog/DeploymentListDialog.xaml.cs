@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.deployment.checks;
 using ME3TweaksModManager.modmanager.usercontrols;
 using PropertyChanged;
+using static ME3TweaksModManager.modmanager.usercontrols.BackupFileFetcher;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -57,6 +59,7 @@ namespace ME3TweaksModManager.modmanager.windows
             SetupMessages();
             InitializeComponent();
             Owner = owner;
+            MessagesView.Filter = FilterMessages;
         }
 
         private void SetupMessages()
@@ -89,6 +92,11 @@ namespace ME3TweaksModManager.modmanager.windows
             }
         }
 
+        /// <summary>
+        /// Text that is being used to filter the shown items list
+        /// </summary>
+        public string FilterText { get; set; }
+
         public string StatusText
         {
             get
@@ -113,6 +121,21 @@ namespace ME3TweaksModManager.modmanager.windows
                     LEXLauncher.LaunchLEX(Application.Current.MainWindow, m.Message.Openable.FilePath, m.Message.Openable.EntryUIndex, currentTaskCallback, setPercentDoneCallback, () => LEXLaunchInProgress = false);
                 }
             }
+        }
+
+        public ICollectionView MessagesView => CollectionViewSource.GetDefaultView(Messages);
+        private bool FilterMessages(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(FilterText) && obj is DCIMessage bobj)
+            {
+                return bobj.Message.Message.Contains(FilterText, StringComparison.InvariantCultureIgnoreCase);
+            }
+            return true;
+        }
+
+        public void OnFilterTextChanged()
+        {
+            MessagesView.Refresh();
         }
     }
 }

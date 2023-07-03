@@ -3,6 +3,7 @@
     mc:Ignorable="d"
     WindowStartupLocation="CenterOwner"
     DataContext="{Binding RelativeSource={RelativeSource Self}}" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="{Binding DCI.DialogTitle}"
     Width="640"
     Height="480">
@@ -50,10 +51,16 @@
                 Click="CopyItemsToClipBoard_Click"
                 Content="{DynamicResource string_copyItemsToClipboard}"
                 Padding="7,5" />
+            <xctk:WatermarkTextBox
+                MinWidth="200"
+                Watermark="Type to filter"
+                DockPanel.Dock="Left"
+                Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock
                 Text="{Binding StatusText}"
                 Margin="8,0,0,0"
                 VerticalAlignment="Center" />
+ 
         </DockPanel>
         <ListBox
             HorizontalAlignment="Stretch"
@@ -62,7 +69,7 @@
             HorizontalContentAlignment="Stretch"
             BorderThickness="1"
             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
-            ItemsSource="{Binding Messages}">
+            ItemsSource="{Binding MessagesView}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>

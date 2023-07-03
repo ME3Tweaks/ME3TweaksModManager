@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
                         // Todo: Check for bad properties?
 
-#if DEBUG
+#if IMPORT_DEBUG
                         // Maybe enable in 8.1 - import resolution needs improvement
                         var localDirFiles = Directory.GetFiles(Directory.GetParent(package.FilePath).FullName);
                         foreach (var import in package.Imports)
