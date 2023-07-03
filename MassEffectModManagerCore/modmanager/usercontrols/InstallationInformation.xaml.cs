@@ -462,8 +462,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 void notifyRestoredCallback(object itemRestored)
                 {
+                    if (SelectedTarget == null)
+                        return; // User may have closed panel or something
                     if (itemRestored is ModifiedFileObject mf)
                     {
+
                         if (SelectedTarget.Game is MEGame.ME3 or MEGame.LE1 or MEGame.LE2 or MEGame.LE3)
                             Result.TargetsToAutoTOC.Add(SelectedTarget);
                         Application.Current.Dispatcher.Invoke(delegate
