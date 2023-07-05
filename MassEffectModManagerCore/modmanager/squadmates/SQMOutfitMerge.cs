@@ -143,7 +143,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
         {
             if (!mergeDLC.Generated)
                 return null; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
-
+            Stopwatch sw = Stopwatch.StartNew();
             string result = null;
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath);
             //var mergeFiles = loadedFiles.Where(x =>
@@ -368,8 +368,9 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     var conditionalClass = startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
 
                     // Add Conditional Functions
+                    var packageCache = new RelativePackageCache() { RootPath = mergeDLC.Target.GetBioGamePath() };
                     FileLib fl = new FileLib(startup);
-                    bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = mergeDLC.Target.GetBioGamePath() }, mergeDLC.Target.TargetPath);
+                    bool initialized = fl.Initialize(packageCache, mergeDLC.Target.TargetPath);
                     if (!initialized)
                     {
                         throw new Exception(@"FileLib for script update could not initialize, cannot install conditionals");
@@ -387,7 +388,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             scText = scText.Replace(@"%SQUADMATEOUTFITPLOTINT%", GetSquadmateOutfitInt(outfit.HenchName, MEGame.LE2).ToString());
                             scText = scText.Replace(@"%OUTFITINDEX%", outfit.MemberAppearanceValue.ToString());
 
-                            MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(conditionalClass, scText, fl);
+                            MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(conditionalClass, scText, fl, packageCache);
                             if (log.AllErrors.Any())
                             {
                                 M3Log.Error($@"Error compiling function F{outfit.ConditionalIndex}:");
@@ -542,6 +543,8 @@ namespace ME3TweaksModManager.modmanager.squadmates
                 }
             }
 
+            sw.Stop();
+            M3Log.Information($@"Ran SQMOutfitMerge in {sw.ElapsedMilliseconds}ms");
             return result;
         }
 

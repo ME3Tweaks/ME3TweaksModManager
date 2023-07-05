@@ -1404,36 +1404,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
-
-            // Only make changes if user didn't cancel
-            if (!InstallationCancelled)
-            {
-                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame1() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
-                {
-                    Result.TargetsToPlotManagerSync.Add(InstallOptionsPackage.InstallTarget);
-                }
-
-                if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE1)
-                {
-                    Result.TargetsToCoalescedMerge.Add(InstallOptionsPackage.InstallTarget);
-                }
-
-                if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME3 || InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
-                {
-                    Result.TargetsToAutoTOC.Add(InstallOptionsPackage.InstallTarget);
-                }
-
-                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame3() || InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE2) // ME2 is not supported for squadmate merge
-                {
-                    Result.TargetsToSquadmateMergeSync.Add(InstallOptionsPackage.InstallTarget);
-                }
-
-                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
-                {
-                    Result.TargetsToEmailMergeSync.Add(InstallOptionsPackage.InstallTarget);
-                }
-            }
-
             if (e.Error != null)
             {
                 M3Log.Error(@"An error occurred during mod installation.");
@@ -1587,6 +1557,36 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         M3Log.Fatal(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
                         throw new Exception(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
                     }
+                }
+            }
+
+            // This must go after handling of result so the variable is properly set
+            // Only make changes if user didn't cancel
+            if (!InstallationCancelled)
+            {
+                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame1() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
+                {
+                    Result.TargetsToPlotManagerSync.Add(InstallOptionsPackage.InstallTarget);
+                }
+
+                if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE1)
+                {
+                    Result.TargetsToCoalescedMerge.Add(InstallOptionsPackage.InstallTarget);
+                }
+
+                if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME3 || InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+                {
+                    Result.TargetsToAutoTOC.Add(InstallOptionsPackage.InstallTarget);
+                }
+
+                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame3() || InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE2) // ME2 is not supported for squadmate merge
+                {
+                    Result.TargetsToSquadmateMergeSync.Add(InstallOptionsPackage.InstallTarget);
+                }
+
+                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
+                {
+                    Result.TargetsToEmailMergeSync.Add(InstallOptionsPackage.InstallTarget);
                 }
             }
 

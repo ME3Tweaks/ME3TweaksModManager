@@ -2544,7 +2544,10 @@ namespace ME3TweaksModManager
                         ModInstaller mi = new ModInstaller(miop);
                         mi.Close += (c, d) =>
                         {
-
+                            if (mi.InstallationCancelled || !mi.InstallationSucceeded)
+                            {
+                                modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
+                            }
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                             installCompletedCallback?.Invoke(mi.InstallationSucceeded && !mi.InstallationCancelled);
                             ReleaseBusyControl();
