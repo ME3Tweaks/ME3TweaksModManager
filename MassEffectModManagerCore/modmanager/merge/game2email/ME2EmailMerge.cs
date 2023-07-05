@@ -9,6 +9,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
+using LegendaryExplorerCore.Unreal.ObjectInfo;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
@@ -123,12 +124,18 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
         /// </summary>
         /// <param name="mergeDLC"></param>
         /// <exception cref="Exception"></exception>
-        public static string RunGame2EmailMerge(M3MergeDLC mergeDLC)
+        public static string RunGame2EmailMerge(M3MergeDLC mergeDLC, Action<string> progressChanged)
         {
             if (!mergeDLC.Generated)
                 return null; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
 
-            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath);
+            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath, forceReload: true);
+
+            //DotTrace.EnsurePrerequisite();
+            //var config = new DotTrace.Config();
+            //config.SaveToDir("E:\\sto");
+            //DotTrace.Attach(config);
+            //DotTrace.StartCollectingData();
 
             // File to base modifications on
             loadedFiles.TryGetValue(@"BioD_Nor_103Messages.pcc", out var pccFile);
@@ -177,7 +184,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             // Setup conditionals
             ExportEntry ConditionalClass = startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
             FileLib fl = new FileLib(startup);
-            bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(mergeDLC.Target) });
+            bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(mergeDLC.Target) }, gameRootPath: mergeDLC.Target.TargetPath);
             if (!initialized)
             {
                 throw new Exception(
@@ -230,15 +237,23 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             ExportEntry ExamplePlotInt = SeqTools.GetVariableLinksOfNode(ExampleSetInt)[0].LinkedNodes[0] as ExportEntry;
             #endregion
 
+            var cache = new RelativePackageCache() { RootPath = mergeDLC.Target.TargetPath }; // This significantly improves performance
+            foreach (var v in EntryImporter.FilesSafeToImportFrom(mergeDLC.Target.Game))
+            {
+                var f = cache.GetCachedPackage(loadedFiles[v]);
+            }
+
             int messageID = SeqTools.GetOutboundLinksOfNode(ArchiveSwitch).Count + 1;
             int currentSwCount = ArchiveSwitch.GetProperty<IntProperty>(@"LinkCount").Value;
-
+            int done = 0;
+            int totalEmails = emailInfos.Sum(x => x.Emails.Count);
             foreach (var emailMod in emailInfos)
             {
                 string modName = @"DLC_MOD_" + emailMod.ModName;
 
                 foreach (var email in emailMod.Emails)
                 {
+                    M3Log.Information($@"Merging email {email.EmailName}");
                     string emailName = modName + "_" + email.EmailName;
                     if (string.IsNullOrEmpty(email.TriggerConditional))
                     {
@@ -248,7 +263,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 
                     // Create send transition
                     int transitionId = WriteTransition(StateEventMap, email.StatusPlotInt);
-                    int conditionalId = WriteConditional(ConditionalClass, fl, email.TriggerConditional);
+                    int conditionalId = WriteConditional(ConditionalClass, fl, email.TriggerConditional, cache);
 
                     #region SendMessage
                     //////////////
@@ -426,6 +441,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     messageID++;
                     currentSwCount++;
                     #endregion
+
+                    progressChanged?.Invoke($@"{M3L.GetString(M3L.string_synchronizingEmails)} {(int)(done++ * 100.0f / totalEmails)}%");
                 }
             }
             KismetHelper.CreateOutputLink(LastMarkRead, @"Out", MarkReadOutLink);
@@ -450,6 +467,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             startup.Save(startupF);
 
             // Make sure lines are written to BIOEngine.ini and BIOGame.ini
+            // Todo: Change to config bundle
             var bioGameText = new StreamReader(M3Utilities.GetResourceStream(
                     $@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.BIOGame.ini"))
                 .ReadToEnd();
@@ -467,7 +485,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     File.WriteAllText(bioEnginePath, currentBioEngine + bioEngineTextToAdd);
                 }
             }
-
+            //DotTrace.SaveData(); // End profiling
+            //DotTrace.Detach();
             return null; // OK
         }
 
@@ -478,7 +497,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
         /// <param name="fl"></param>
         /// <param name="innerFunctionText"></param>
         /// <returns>ID of new conditional</returns>
-        private static int WriteConditional(ExportEntry conditionalClass, FileLib fl, string innerFunctionText)
+        private static int WriteConditional(ExportEntry conditionalClass, FileLib fl, string innerFunctionText, PackageCache cache)
         {
             // Add Conditional Functions
             var conditionals = conditionalClass.GetChildren().ToList();
@@ -487,23 +506,22 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             var conditionalId = conditionals.Any() ? conditionalIds.Max() + 1 : STARTING_EMAIL_CONDITIONAL;
             if (conditionalId <= 0) conditionalId = STARTING_EMAIL_CONDITIONAL;
 
-            var funcToClone = conditionalClass.FileRef.FindExport($@"{conditionalClass.InstancedFullPath}.TemplateFunction");
-            var func = EntryCloner.CloneTree(funcToClone);
-            func.ObjectName = $@"F{conditionalId}";
-            func.indexValue = 0;
+            //var funcToClone = conditionalClass.FileRef.FindExport($@"{conditionalClass.InstancedFullPath}.TemplateFunction");
+            //var func = EntryCloner.CloneTree(funcToClone);
+            //func.ObjectName = $@"F{conditionalId}";
+            //func.indexValue = 0;
 
             var fullFunctionText = $@"public function bool F{conditionalId}(BioWorldInfo bioWorld, int Argument) {{ {innerFunctionText} }}";
-
-            (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(func, fullFunctionText, fl);
+            var log = UnrealScriptCompiler.AddOrReplaceInClass(conditionalClass, fullFunctionText, fl, cache);
             if (log.AllErrors.Any())
             {
-                M3Log.Error($@"Error compiling function {func.InstancedFullPath}:");
+                M3Log.Error($@"Error compiling function F{conditionalId}");
                 foreach (var l in log.AllErrors)
                 {
                     M3Log.Error(l.Message);
                 }
 
-                throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingConditionalFunction, func, string.Join('\n', log.AllErrors.Select(x => x.Message))));
+                throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingConditionalFunction, $@"F{conditionalId}", string.Join('\n', log.AllErrors.Select(x => x.Message))));
             }
 
             return conditionalId;

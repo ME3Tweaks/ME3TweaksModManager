@@ -12,11 +12,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// </summary>
     public partial class RunAndDonePanel : MMBusyPanelBase
     {
-        private Func<object> runAndDoneDelegate;
+        private Func<Action<string>, object> runAndDoneDelegate;
 
         private readonly BackgroundTask BGTask;
-        public string ActionText { get; }
-        public RunAndDonePanel(Func<object> runAndDoneDelegate, string actionText, string endText)
+        public string ActionText { get; private set; }
+
+        private void UpdateActionText(string message)
+        {
+            ActionText = message;
+        }
+
+        public RunAndDonePanel(Func<Action<string>, object> runAndDoneDelegate, string actionText, string endText)
         {
             ActionText = actionText;
             this.runAndDoneDelegate = runAndDoneDelegate;
@@ -34,7 +40,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"RunAndDoneThread");
             nbw.DoWork += (a, b) =>
             {
-                b.Result = runAndDoneDelegate?.Invoke();
+                b.Result = runAndDoneDelegate?.Invoke(UpdateActionText);
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {

@@ -1372,7 +1372,7 @@ namespace ME3TweaksModManager
                         {
                             if (queue.ASIModsToInstall.Any())
                             {
-                                ShowRunAndDone(() => InstallBatchASIs(target, queue), M3L.GetString(M3L.string_installingASIMods),
+                                ShowRunAndDone((updateUIString) => InstallBatchASIs(target, queue), M3L.GetString(M3L.string_installingASIMods),
                                     M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
                             }
                             else
@@ -1958,7 +1958,7 @@ namespace ME3TweaksModManager
 
             foreach (var v in result.TargetsToSquadmateMergeSync)
             {
-                ShowRunAndDone(() => SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v]),
+                ShowRunAndDone((updateUIString) => SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v], updateUIString),
                 M3L.GetString(M3L.string_synchronizingSquadmateOutfits),
                     M3L.GetString(M3L.string_synchronizedSquadmateOutfits),
                     null);
@@ -1966,7 +1966,7 @@ namespace ME3TweaksModManager
 
             foreach (var v in result.TargetsToEmailMergeSync)
             {
-                ShowRunAndDone(() => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v]),
+                ShowRunAndDone((updateUIString) => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v], updateUIString),
                     M3L.GetString(M3L.string_synchronizingEmails),
                     M3L.GetString(M3L.string_synchronizedEmails),
                     null);
@@ -2039,7 +2039,7 @@ namespace ME3TweaksModManager
             });
         }
 
-        private void ShowRunAndDone(Func<object> action, string startStr, string endStr, Action finishAction = null)
+        private void ShowRunAndDone(Func<Action<string>,object> action, string startStr, string endStr, Action finishAction = null)
         {
             var runAndDone = new RunAndDonePanel(action, startStr, endStr);
             runAndDone.Close += (a, b) =>

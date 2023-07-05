@@ -139,7 +139,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
         /// </summary>
         /// <param name="mergeDLC"></param>
         /// <exception cref="Exception"></exception>
-        public static string RunSquadmateOutfitMerge(M3MergeDLC mergeDLC)
+        public static string RunSquadmateOutfitMerge(M3MergeDLC mergeDLC, Action<string> updateUIText)
         {
             if (!mergeDLC.Generated)
                 return null; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 

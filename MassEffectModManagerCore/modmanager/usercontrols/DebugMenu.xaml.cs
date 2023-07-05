@@ -56,7 +56,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             M3MergeDLC dlc = new M3MergeDLC(target);
             M3MergeDLC.RemoveMergeDLC(target);
             dlc.GenerateMergeDLC();
-            SQMOutfitMerge.RunSquadmateOutfitMerge(dlc);
+            SQMOutfitMerge.RunSquadmateOutfitMerge(dlc, null);
         }
 
         private static void TestEmailMerge_Click(MainWindow window)
@@ -66,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             M3MergeDLC dlc = new M3MergeDLC(target);
             M3MergeDLC.RemoveMergeDLC(target);
             dlc.GenerateMergeDLC();
-            ME2EmailMerge.RunGame2EmailMerge(dlc);
+            ME2EmailMerge.RunGame2EmailMerge(dlc, null);
         }
 
         private static void ShowMEMViewer(MainWindow window)
