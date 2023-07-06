@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.VisualStyles;
+using Dark.Net;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
@@ -32,6 +33,7 @@ namespace ME3TweaksModManager.modmanager.windows
             AvailableHeadmorphs.ReplaceAll(mod.GetJob(ModJob.JobHeader.HEADMORPHS).HeadMorphFiles);
             LoadCommands();
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
         }
 
         public GenericCommand SelectHeadmorphCommand { get; set; }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using Dark.Net;
 using IniParser.Model;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCoreWPF.UI;
@@ -36,6 +37,7 @@ namespace ME3TweaksModManager.modmanager.windows
             EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game);
             LoadCommands();
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
 
             // Tabs that can edit content
             editorControls.Add(metadataEditor_control);

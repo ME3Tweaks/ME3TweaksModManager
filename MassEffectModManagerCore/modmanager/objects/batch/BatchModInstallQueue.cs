@@ -13,8 +13,10 @@ using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
+using SevenZip.EventArguments;
 using WinCopies.Util;
 
 namespace ME3TweaksModManager.modmanager.objects.batch
@@ -23,7 +25,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
     /// Batch queue binded class
     /// </summary>
     [AddINotifyPropertyChangedInterface]
-    public class BatchLibraryInstallQueue
+    public class BatchLibraryInstallQueue : IImportableMod
     {
         /// <summary>
         /// The name of the batch queue file. This does not include the path.
@@ -39,10 +41,11 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public MEGame Game { get; internal set; }
 
         /// <summary>
-        /// The name of the batch queue
+        /// The original text of the biq - used during extraction to ensure serialized data in the archive matches output data
         /// </summary>
-        [JsonProperty(@"queuename")]
-        public string QueueName { get; internal set; }
+        [JsonIgnore]
+        public string BiqTextForExtraction { get; private set; }
+
 
         /// <summary>
         /// The description of the batch queue
@@ -50,9 +53,13 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         [JsonProperty(@"description")]
         public string QueueDescription { get; internal set; }
 
-        private const int QUEUE_VERSION_TXT = 1;
-        private const int QUEUE_VERSION_BIQ = 2;
-        private const int QUEUE_VERSION_BIQ2 = 3;
+        public const int QUEUE_VERSION_TXT = 1;
+        public const int QUEUE_VERSION_BIQ = 2;
+        public const int QUEUE_VERSION_BIQ2 = 3;
+
+        public const string QUEUE_VERSION_TXT_EXTENSION = @".txt";
+        public const string QUEUE_VERSION_BIQ_EXTENSION = @".biq";
+        public const string QUEUE_VERSION_BIQ2_EXTENSION = @".biq2";
 
         /// <summary>
         /// The version of the queue that was used when serializing it from disk. If not specified this will default to the latest
@@ -113,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <param name="queueFile"></param>
         /// <param name="allLoadedMods"></param>
         /// <returns></returns>
-        public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile)
+        public static BatchLibraryInstallQueue LoadInstallQueue(string queueFile)
         {
             // Check for size is commented out while we try to debug this problem
             if (!File.Exists(queueFile) /*|| new FileInfo(queueFile).Length == 0*/) return null;
@@ -121,7 +128,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             var queueFilename = Path.GetFileName(queueFile);
 
             var extension = Path.GetExtension(queueFile);
-            if (extension == @".biq2")
+            if (extension == QUEUE_VERSION_BIQ2_EXTENSION)
             {
                 // Mod Manager 8 format that can store options
                 return ParseModernQueue(queueFilename, File.ReadAllText(queueFile));
@@ -131,7 +138,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             result.BackingFilename = queueFilename;
             string[] lines = File.ReadAllLines(queueFile);
             int line = 0;
-            if (extension == @".biq")
+            if (extension == QUEUE_VERSION_BIQ_EXTENSION)
             {
                 //New Mod Manager 6 format
                 if (Enum.TryParse<MEGame>(lines[line], out var game))
@@ -157,13 +164,14 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// </summary>
         /// <param name="queueJson"></param>
         /// <returns></returns>
-        private static BatchLibraryInstallQueue ParseModernQueue(string queueFilename, string queueJson)
+        public static BatchLibraryInstallQueue ParseModernQueue(string queueFilename, string queueJson, bool cacheText = false)
         {
             if (string.IsNullOrWhiteSpace(queueJson))
             {
                 M3Log.Warning($@"{queueFilename} has no text; this is an invalid queue file");
                 return null;
             }
+
 
             try
             {
@@ -176,6 +184,10 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                         args.ErrorContext.Handled = true; // ignore errors to try to bring up as much as possible
                     }
                 });
+                if (cacheText)
+                {
+                    modernQueue.BiqTextForExtraction = queueJson;
+                }
                 modernQueue.BackingFilename = queueFilename;
                 modernQueue.QueueFormatVersion = QUEUE_VERSION_BIQ2;
                 foreach (var mod in modernQueue.ModsToInstall)
@@ -244,7 +256,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 modernQueue.AllModsToInstall.AddRange(modernQueue.ModsToInstall);
                 modernQueue.AllModsToInstall.AddRange(modernQueue.ASIModsToInstall);
                 modernQueue.AllModsToInstall.AddRange(modernQueue.TextureModsToInstall);
-
+                modernQueue.ValidMod = true;
                 return modernQueue;
             }
             catch (Exception e)
@@ -268,7 +280,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         private static void ParseLegacyQueue(BatchLibraryInstallQueue queue, string[] lines, int line)
         {
             M3Log.Information(@"Deserializing legacy queue");
-            queue.QueueName = lines[line];
+            queue.ModName = lines[line];
             line++;
 
             if (line < lines.Length)
@@ -360,7 +372,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             // Commit
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
 
-            var savePath = getSaveName(newName ?? QueueName, canOverwrite);
+            var savePath = getSaveName(newName ?? ModName, canOverwrite);
             File.WriteAllText(savePath, json);
 
             SerializeOnly_MEMFilePaths = null; // Clear
@@ -419,6 +431,61 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             }
 
             return false;
+        }
+
+        #region IImportableMod interface
+        [JsonIgnore]
+        public bool SelectedForImport { get; set; }
+
+        /// <summary>
+        /// The name of the batch queue
+        /// </summary>
+        [JsonProperty(@"queuename")]
+        public string ModName { get; set; }
+        [JsonIgnore]
+        public bool ValidMod { get; private set; }
+        [JsonIgnore]
+        public bool IsInArchive { get; init; }
+        [JsonIgnore]
+        public long SizeRequiredtoExtract { get; set; }
+
+        public void ExtractFromArchive(string archiveFilePath, string sanitizedPath, bool compressPackages,
+            Action<string> textUpdateCallback = null, Action<DetailedProgressEventArgs> extractionProgressCallback = null, Action<string, int, int> compressedPackageCallback = null,
+            bool testRun = false, Stream archiveStream = null, NexusProtocolLink sourceNXMLink = null)
+        {
+
+        }
+        #endregion
+
+        // Referenced by ModArchiveImporterPanel xaml
+        public string ImporterDescription
+        {
+            get
+            {
+                var str = "Mods that will be installed by install group:\n";
+
+                foreach (var v in AllModsToInstall)
+                {
+                    if (v is Mod m)
+                    {
+                        str += $" - {m.ModName} {m.ModVersionString} (Content mod)\n";
+                    }
+                    else if (v is M3MEMMod t)
+                    {
+                        str += $" - {t.ModName} (Texture mod)\n";
+
+                    }
+                    else if (v is BatchASIMod a)
+                    {
+                        str += $" - {a.AssociatedMod.Name} (ASI mod)\n";
+
+                    }
+                }
+
+                str += "\nImporting will add this install group to Batch Installer.";
+
+                return str;
+            }
         }
     }
 

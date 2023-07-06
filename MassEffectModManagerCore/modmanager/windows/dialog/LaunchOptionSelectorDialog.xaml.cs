@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Dark.Net;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.objects.launcher;
@@ -53,6 +54,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
             LoadCommands();
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
         }
 
         private void PopulatePackages()

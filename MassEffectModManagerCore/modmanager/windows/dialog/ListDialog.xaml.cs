@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Dark.Net;
 using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.windows
@@ -20,6 +21,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ListDialog(List<string> listItems, string title, string message, Window owner, int width = 0, int height = 0)
         {
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
             Title = title;
             ListDialog_Message.Text = message;
             items = listItems;

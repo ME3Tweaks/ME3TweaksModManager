@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Dark.Net;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ME3TweaksModManager.modmanager.windows
@@ -28,6 +29,8 @@ namespace ME3TweaksModManager.modmanager.windows
         public PromptDialog(string question, string title, string defaultValue = @"", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
         {
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+
             txtQuestion.Text = question;
             Title = title;
             txtResponse.Text = defaultValue;

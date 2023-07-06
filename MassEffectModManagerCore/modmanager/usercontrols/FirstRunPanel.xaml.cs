@@ -163,7 +163,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 Settings.DarkTheme = !Settings.DarkTheme;
                 //Settings.Save();
-                mainwindow.SetTheme();
+                mainwindow.SetTheme(true);
             }
         }
 

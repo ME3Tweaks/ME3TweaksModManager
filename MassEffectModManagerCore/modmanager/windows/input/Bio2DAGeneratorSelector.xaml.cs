@@ -7,6 +7,7 @@ using ME3TweaksModManager.modmanager.objects.starterkit;
 using System.Windows;
 using LegendaryExplorerCore.Helpers;
 using Microsoft.WindowsAPICodePack.COMNative.MediaDevices;
+using Dark.Net;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -23,6 +24,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             Game = game;
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
         }
 
         private List<Bio2DAOption> LoadOptions()

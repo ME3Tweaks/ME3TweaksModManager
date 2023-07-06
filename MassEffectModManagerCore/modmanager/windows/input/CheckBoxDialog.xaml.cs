@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Windows;
+using Dark.Net;
 using LegendaryExplorerCore.Misc;
 using PropertyChanged;
 using CheckBoxSelectionPair = ME3TweaksModManager.ui.CheckBoxSelectionPair;
@@ -36,6 +37,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
 
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
         }
 
         public int RequestedHeight { get; set; }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using Dark.Net;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -45,6 +46,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 CurrentStep = TutorialSteps[0];
                 LoadCommands();
                 InitializeComponent();
+                DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
             }
             else
             {

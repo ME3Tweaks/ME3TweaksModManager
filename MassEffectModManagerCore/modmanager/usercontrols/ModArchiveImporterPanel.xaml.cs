@@ -11,6 +11,7 @@ using IniParser.Model;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.FileSource;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
@@ -22,6 +23,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
@@ -378,7 +380,27 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 });
             }
 
-            ScanFailureReason = ModArchiveInspector.FindModsInArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, AddTextureModCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
+            void AddBIQCallback(BatchLibraryInstallQueue biq)
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    CompressedMods.Add(biq);
+                    if (CompressedMods.Count > 1 && !openedMultipanel)
+                    {
+                        Storyboard sb = FindResource(@"OpenWebsitePanel") as Storyboard;
+                        if (sb.IsSealed)
+                        {
+                            sb = sb.Clone();
+                        }
+                        Storyboard.SetTarget(sb, MultipleModsPopupPanel);
+                        sb.Begin();
+                        openedMultipanel = true;
+                    }
+                    CompressedMods.Sort(x => x.ModName);
+                });
+            }
+
+            ScanFailureReason = ModArchiveInspector.FindModsInArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, AddTextureModCallback, AddBIQCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
         }
 
         protected override void OnClosing(DataEventArgs args)
@@ -520,6 +542,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ProgressValue = 0;
                 ProgressMaximum = 100;
                 ProgressIndeterminate = true;
+
+                if (mod is BatchLibraryInstallQueue biq)
+                {
+                    var result = ExtractBiq(biq);
+                    if (result == ModImportResult.None)
+                    {
+                        ImportedBatchQueue = true;
+                        extractedMods.Add(mod);
+                    }
+                    continue;
+                }
                 //Ensure directory
                 var modDirectory = M3LoadedMods.GetExtractionDirectoryForMod(mod);
                 var sanitizedPath = Path.Combine(modDirectory, M3Utilities.SanitizePath(mod.ModName));
@@ -596,8 +629,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     catch (Exception ex)
                     {
-                        M3Log.Exception(ex,
-                            @"Error creating mod library during extraction. Telemetry shows it may be related to this issue: https://stackoverflow.com/questions/61719649/directory-createdirectory-could-not-find-file-errors:");
+                        M3Log.Exception(ex, @"Error creating mod library during extraction. Telemetry shows it may be related to this issue: https://stackoverflow.com/questions/61719649/directory-createdirectory-could-not-find-file-errors:");
                         e.Result = (ex, ModImportResult.ERROR_COULD_NOT_CREATE_MOD_FOLDER);
                         return;
                     }
@@ -640,6 +672,34 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 extractedMods.Add(mod);
             }
             e.Result = extractedMods;
+        }
+
+        private ModImportResult ExtractBiq(BatchLibraryInstallQueue biq)
+        {
+            var destPath = Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(),
+                biq.ModName + BatchLibraryInstallQueue.QUEUE_VERSION_BIQ2_EXTENSION);
+            if (File.Exists(destPath))
+            {
+                bool abort = false;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var result = M3L.ShowDialog(Window.GetWindow(this),
+                        $"An install group with the name {biq.ModName} already exists. Importing this group will overwrite the existing group.",
+                        "Install group already exists", MessageBoxButton.OKCancel, MessageBoxImage.Warning,
+                        MessageBoxResult.Cancel);
+                    if (result == MessageBoxResult.Cancel)
+                    {
+                        abort = true;
+                    }
+                });
+                if (abort)
+                {
+                    return ModImportResult.USER_ABORTED_IMPORT;
+                }
+            }
+            M3Log.Information($@"Writing batch installer group to {destPath}");
+            File.WriteAllText(destPath, biq.BiqTextForExtraction);
+            return ModImportResult.None;
         }
 
         /// <summary>
@@ -748,6 +808,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// If this UI imported a texture mod file
         /// </summary>
         public bool ImportedTextureMod { get; set; }
+
+        /// <summary>
+        /// If this UI imported a batch queue file
+        /// </summary>
+        public bool ImportedBatchQueue { get; set; }
 
 
         private void LoadCommands()

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using Dark.Net;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
@@ -75,10 +76,12 @@ namespace ME3TweaksModManager.modmanager.windows
             Games = MEGameSelector.GetGameSelectorsIncludingLauncher().ToArray();
 
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+
             if (queueToEdit != null)
             {
                 SelectedGame = queueToEdit.Game;
-                GroupName = queueToEdit.QueueName;
+                GroupName = queueToEdit.ModName;
                 GroupDescription = queueToEdit.QueueDescription;
                 ModsInGroup.ReplaceAll(queueToEdit.ModsToInstall);
                 ModsInGroup.AddRange(queueToEdit.ASIModsToInstall);
@@ -422,7 +425,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             var queue = new BatchLibraryInstallQueue();
             queue.Game = SelectedGame;
-            queue.QueueName = GroupName;
+            queue.ModName = GroupName;
             queue.QueueDescription = M3Utilities.ConvertNewlineToBr(GroupDescription);
 
             // Content mods

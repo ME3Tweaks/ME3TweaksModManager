@@ -2,6 +2,7 @@
     x:Class="ME3TweaksModManager.modmanager.usercontrols.BatchModLibrary"
     DataContext="{Binding RelativeSource={RelativeSource Self}}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
+    xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
     MinWidth="700"
     MinHeight="550">
     <DockPanel>
@@ -45,6 +46,12 @@
                 Margin="5,0"
                 Command="{Binding TriggerDataReloadCommand}" />
             <Button
+                Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                HorizontalAlignment="Left"
+                Content="{DynamicResource string_deploy}"
+                Margin="5,0"
+                Command="{Binding DeployQueueCommand}" />
+            <Button
                 DockPanel.Dock="Left"
                 HorizontalAlignment="Right"
                 Content="{DynamicResource string_close}"
@@ -62,7 +69,7 @@
                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                 BorderThickness="1"
                 IsTextSearchEnabled="True"
-                TextSearch.TextPath="QueueName"
+                TextSearch.TextPath="ModName"
                 Width="250"
                 MinHeight="280">
                 <ListBox.Resources>
@@ -76,7 +83,7 @@
                                 Height="16"
                                 Margin="0,0,5,0" />
                             <TextBlock
-                                Text="{Binding QueueName}" />
+                                Text="{Binding ModName}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.Resources>

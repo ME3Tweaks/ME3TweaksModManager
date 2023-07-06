@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using AuthenticodeExaminer;
 using CommandLine;
+using Dark.Net;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
@@ -344,6 +345,9 @@ namespace ME3TweaksModManager
 
                 M3Log.Information("Loading settings");
                 Settings.Load();
+
+                // Set title bar color
+                DarkNet.Instance.SetCurrentProcessTheme(Settings.DarkTheme ? Theme.Dark : Theme.Light);
 
                 if (Settings.ShowedPreviewPanel && !Settings.EnableTelemetry)
                 {

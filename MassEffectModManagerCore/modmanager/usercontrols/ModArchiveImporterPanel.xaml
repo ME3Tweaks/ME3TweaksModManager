@@ -10,6 +10,7 @@
     xmlns:interfaces="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.interfaces"
     xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
     xmlns:texture="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.texture"
+    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
     mc:Ignorable="d"
     MinWidth="700"
     MinHeight="550"
@@ -191,6 +192,34 @@
                                     VerticalAlignment="Center" />
                             </StackPanel>
                         </DataTemplate>
+                        <DataTemplate DataType="{x:Type batch:BatchLibraryInstallQueue}">
+                            <StackPanel
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                                <CheckBox
+                                    IsChecked="{Binding SelectedForImport}"
+                                    VerticalContentAlignment="Center"
+                                    Visibility="{Binding ValidMod, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <fa5:ImageAwesome
+                                    Icon="Solid_Cubes"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="5,0,5,0"
+                                    Visibility="{Binding ValidMod, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <fa5:ImageAwesome
+                                    Foreground="Red"
+                                    Icon="Solid_Ban"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="5,0,5,0"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding ValidMod, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
+                                <TextBlock
+                                    Text="{Binding ModName}"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
                         <Style
                             TargetType="ListBox"
                             BasedOn="{StaticResource {x:Type ListBox}}">
@@ -225,6 +254,10 @@
                             <!-- MEMMod-->
                             <Binding
                                 Path="SelectedMod.UIDescription"
+                                Mode="OneWay" />
+                            <!-- BatchLibraryInstallQueue-->
+                            <Binding
+                                Path="SelectedMod.ImporterDescription"
                                 Mode="OneWay" />
                             <Binding
                                 Path="NoModSelectedText"

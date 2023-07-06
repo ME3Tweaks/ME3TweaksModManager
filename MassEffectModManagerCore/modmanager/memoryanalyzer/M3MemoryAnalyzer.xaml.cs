@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Dark.Net;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
@@ -56,6 +57,7 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
             Refresh();
             LoadCommands();
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
 
             //  DispatcherTimer setup
             dispatcherTimer = new DispatcherTimer();

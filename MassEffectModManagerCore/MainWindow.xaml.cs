@@ -16,6 +16,7 @@ using System.Xml;
 using System.Xml.Linq;
 using AdonisUI;
 using CommandLine;
+using Dark.Net;
 using FontAwesome5;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Coalesced;
@@ -334,9 +335,9 @@ namespace ME3TweaksModManager
 
             InitializeSingletons();
             LoadCommands();
-            SetTheme();
+            SetTheme(true);
             InitializeComponent();
-
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
 
             //Change language if not INT
             if (App.InitialLanguage != @"int")
@@ -2039,7 +2040,7 @@ namespace ME3TweaksModManager
             });
         }
 
-        private void ShowRunAndDone(Func<Action<string>,object> action, string startStr, string endStr, Action finishAction = null)
+        private void ShowRunAndDone(Func<Action<string>, object> action, string startStr, string endStr, Action finishAction = null)
         {
             var runAndDone = new RunAndDonePanel(action, startStr, endStr);
             runAndDone.Close += (a, b) =>
@@ -4281,6 +4282,11 @@ namespace ME3TweaksModManager
                     M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_textureModsImportedHowToUse),
                         M3L.GetString(M3L.string_textureModsImported), MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+
+                if (modInspector.ImportedBatchQueue)
+                {
+                    M3L.ShowDialog(this, "Install groups can be found in Batch Installer, located in the Mod Management menu.", "Install group imported", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             };
 
             BatchPanelResult = new PanelResult();
@@ -4393,9 +4399,23 @@ namespace ME3TweaksModManager
             ShowBusyControl(autoTocUI);
         }
 
-        internal void SetTheme()
+        internal void SetTheme(bool isFirstBoot)
         {
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
+            if (!isFirstBoot)
+            {
+                foreach (Window w in Application.Current.Windows)
+                {
+                    try
+                    {
+                        DarkNet.Instance.SetWindowThemeWpf(w, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+                    }
+                    catch
+                    {
+                        // Visual Studio adds an 'AdornerWindow' which doesn't like this call
+                    }
+                }
+            }
         }
 
         private void Documentation_Click(object sender, RoutedEventArgs e)

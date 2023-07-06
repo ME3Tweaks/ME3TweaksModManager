@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using Dark.Net;
 using IniParser;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
@@ -34,6 +35,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ME3CMMMigrationWindow()
         {
             InitializeComponent();
+            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
             Tasks.Add(MigratingModsTask);
             Tasks.Add(MigratingSettings);
             Tasks.Add(CleaningUpTask);

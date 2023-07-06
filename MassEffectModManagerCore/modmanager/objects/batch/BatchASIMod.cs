@@ -60,7 +60,9 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         }
 
         // These are not used but are required for IBatchMod interface
+        [JsonIgnore]
         public string Hash { get; set; }
+        [JsonIgnore]
         public long Size { get; set; }
     }
 }

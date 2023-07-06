@@ -13,6 +13,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.usercontrols;
@@ -36,6 +37,7 @@ namespace ME3TweaksModManager.modmanager.importer
             Action<Mod> addCompressedModCallback = null,
             Action<Mod> failedToLoadModCallback = null,
             Action<MEMMod> addTextureMod = null,
+            Action<BatchLibraryInstallQueue> addBiq = null,
             Action<string> currentOperationTextCallback = null,
             Action showALOTLauncher = null,
             string forcedMD5 = null,
@@ -83,6 +85,7 @@ namespace ME3TweaksModManager.modmanager.importer
             var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
             var me2mods = new List<ArchiveFileInfo>(); //ME2 RCW Mods
             var textureModEntries = new List<ArchiveFileInfo>(); //TPF MEM MOD files
+            var batchQueueEntries = new List<ArchiveFileInfo>(); //BIQ2 files (old biq are not supported)
             bool isAlotFile = false;
             try
             {
@@ -91,6 +94,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     if (!entry.IsDirectory)
                     {
                         string fname = Path.GetFileName(entry.FileName);
+                        var extension = Path.GetExtension(fname);
                         if (fname.Equals(@"ALOTInstaller.exe", StringComparison.InvariantCultureIgnoreCase))
                         {
                             isAlotFile = true;
@@ -104,13 +108,17 @@ namespace ME3TweaksModManager.modmanager.importer
                             //for unofficial lookups
                             sfarEntries.Add(entry);
                         }
-                        else if (Path.GetExtension(fname) == @".me2mod")
+                        else if (extension == @".me2mod")
                         {
                             me2mods.Add(entry);
                         }
-                        else if (Path.GetExtension(fname) == @".mem" || Path.GetExtension(fname) == @".tpf" || Path.GetExtension(fname) == @".mod")
+                        else if (extension is @".mem" or @".tpf" or @".mod")
                         {
                             textureModEntries.Add(entry);
+                        }
+                        else if (extension is BatchLibraryInstallQueue.QUEUE_VERSION_BIQ2_EXTENSION)
+                        {
+                            batchQueueEntries.Add(entry);
                         }
                     }
                 }
@@ -131,11 +139,29 @@ namespace ME3TweaksModManager.modmanager.importer
                 else
                 {
                     archiveFile?.DisposeObjectOnly();
-
                 }
                 return null;
             }
 
+            if (batchQueueEntries.Any() && !filepath.EndsWith(@".7z"))
+            {
+                M3Log.Error(@"Batch queues cannot be imported if they are not deployed by mod manager!");
+                Mod failed = new Mod(false);
+                failed.ModName = M3L.GetString(M3L.string_archiveError);
+                failed.LoadFailedReason = "Batch install groups must be deployed via ME3Tweaks Mod Manager in order to be imported. Contact the developer of this file.";
+                failedToLoadModCallback?.Invoke(failed);
+                addCompressedModCallback?.Invoke(failed);
+                if (closeStreamOnComplete)
+                {
+                    archiveFile?.Dispose();
+                }
+                else
+                {
+                    archiveFile?.DisposeObjectOnly();
+                }
+
+                return null;
+            }
 
             // This updates the found files list to
             // scrub out files that may be also referenced
@@ -146,6 +172,7 @@ namespace ME3TweaksModManager.modmanager.importer
                 sfarEntries.RemoveAll(x => x.FileName.StartsWith(rootPath, StringComparison.InvariantCultureIgnoreCase));
                 textureModEntries.RemoveAll(x => x.FileName.StartsWith(rootPath, StringComparison.InvariantCultureIgnoreCase));
                 me2mods.RemoveAll(x => x.FileName.StartsWith(rootPath, StringComparison.InvariantCultureIgnoreCase));
+                batchQueueEntries.RemoveAll(x => x.FileName.StartsWith(rootPath, StringComparison.InvariantCultureIgnoreCase));
             }
 
 
@@ -225,6 +252,21 @@ namespace ME3TweaksModManager.modmanager.importer
                         addTextureMod(memFile);
                         useTPIS = false;
                     }
+                }
+            }
+            else if (batchQueueEntries.Any())
+            {
+                foreach (var entry in batchQueueEntries)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    archiveFile.ExtractFile(entry.Index, ms);
+                    ms.Position = 0;
+                    StreamReader reader = new StreamReader(ms);
+                    string text = reader.ReadToEnd();
+                    var biq = BatchLibraryInstallQueue.ParseModernQueue(Path.GetFileName(entry.FileName), text, cacheText: true);
+                    addBiq(biq);
+                    biq.SelectedForImport = biq.ValidMod;
+                    useTPIS = false;
                 }
             }
 

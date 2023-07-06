@@ -30,7 +30,9 @@ using ME3TweaksModManager.modmanager.windows.input;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.Win32;
 using Newtonsoft.Json;
+using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -55,6 +57,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand DuplicateGroupCommand { get; private set; }
         public ICommand DeleteGroupCommand { get; private set; }
         public ICommand TriggerDataReloadCommand { get; private set; }
+        public ICommand DeployQueueCommand { get; private set; }
 
         public bool CanCompressPackages => SelectedBatchQueue != null && SelectedBatchQueue.Game is MEGame.ME2 or MEGame.ME3;
 
@@ -67,6 +70,40 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             DeleteGroupCommand = new GenericCommand(DeleteGroup, BatchQueueSelected);
             DuplicateGroupCommand = new GenericCommand(DuplicateGroup, BatchQueueSelected);
             TriggerDataReloadCommand = new GenericCommand(ReloadModData, CanTriggerReload);
+            DeployQueueCommand = new GenericCommand(DeployQueue, CanDeployQueue);
+        }
+
+        private bool CanDeployQueue()
+        {
+            return SelectedBatchQueue != null && SelectedBatchQueue.QueueFormatVersion >= 3; // Must be saved new
+        }
+
+        private void DeployQueue()
+        {
+            SaveFileDialog d = new SaveFileDialog
+            {
+                Title= "Select deployment destination",
+                Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",
+                FileName = $@"{SelectedBatchQueue.ModName}_installgroup.7z"
+            };
+            if (d.ShowDialog() != true)
+            {
+                return;
+            }
+
+            var sourceFile = Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), SelectedBatchQueue.BackingFilename);
+
+            // Compression
+            var compressor = new SevenZipCompressor();
+
+            // Pass 1: Directories
+            // Stored uncompressed
+            compressor.CustomParameters.Add(@"s", @"off");
+            compressor.CompressionMode = CompressionMode.Create;
+            compressor.CompressionLevel = CompressionLevel.Ultra;
+            compressor.CompressFiles(d.FileName, sourceFile);
+
+            M3Utilities.OpenExplorer(Directory.GetParent(d.FileName).FullName);
         }
 
         private bool CanTriggerReload()
@@ -79,18 +116,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SelectedBatchQueue == null) return;
 
             var result = PromptDialog.Prompt(window, M3L.GetString(M3L.string_enterANewNameForTheDuplicatedInstallGroup), M3L.GetString(M3L.string_enterNewName),
-                            M3L.GetString(M3L.string_interp_defaultDuplicateName, SelectedBatchQueue.QueueName), true);
+                            M3L.GetString(M3L.string_interp_defaultDuplicateName, SelectedBatchQueue.ModName), true);
             if (!string.IsNullOrWhiteSpace(result))
             {
                 var originalQueue = SelectedBatchQueue; // Cache in event we lose reference to this after possible reload. We don't want to set name on wrong object.
-                var originalName = SelectedBatchQueue.QueueName;
+                var originalName = SelectedBatchQueue.ModName;
                 try
                 {
                     var destPath = Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(),
                         result + Path.GetExtension(SelectedBatchQueue.BackingFilename));
                     if (!File.Exists(destPath))
                     {
-                        SelectedBatchQueue.QueueName = result;
+                        SelectedBatchQueue.ModName = result;
                         SelectedBatchQueue.Save(false, destPath);
                         parseBatchFiles(destPath);
                     }
@@ -109,7 +146,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 finally
                 {
                     // If we reload list this variable may become null.
-                    originalQueue.QueueName = originalName; // Restore if we had an error
+                    originalQueue.ModName = originalName; // Restore if we had an error
                 }
             }
 
@@ -117,7 +154,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void DeleteGroup()
         {
-            var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_deleteTheSelectedBatchQueue, SelectedBatchQueue.QueueName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_deleteTheSelectedBatchQueue, SelectedBatchQueue.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
                 File.Delete(Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), SelectedBatchQueue.BackingFilename));
@@ -168,7 +205,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
-                {@"Group name", SelectedBatchQueue.QueueName},
+                {@"Group name", SelectedBatchQueue.ModName},
                 {@"Group size", SelectedBatchQueue.AllModsToInstall.Count.ToString()},
                 {@"Game", SelectedBatchQueue.Game.ToString()},
                 {@"TargetPath", SelectedGameTarget?.TargetPath}
@@ -326,7 +363,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     try
                     {
 
-                        var queue = BatchLibraryInstallQueue.ParseInstallQueue(file);
+                        var queue = BatchLibraryInstallQueue.LoadInstallQueue(file);
                         if (queue != null && queue.Game.IsEnabledGeneration())
                         {
                             AvailableBatchQueues.Add(queue);
