@@ -1398,6 +1398,12 @@ namespace ME3TweaksModManager
         {
             if (queue.TextureModsToInstall.Any(x => x.IsAvailableForInstall()))
             {
+                // This must be done first since this could run a merge which will 
+                // desync the texture map state. So this must be run before
+                HandleBatchPanelResult = true;
+                HandlePanelResult(BatchPanelResult);
+                HandleBatchPanelResult = false; // Flip back after things get queued
+
                 TextureInstallerPanel tip = new TextureInstallerPanel(target, queue.TextureModsToInstall.Where(x => x.IsAvailableForInstall()).Select(x => x.GetFilePathToMEM()).ToList());
                 tip.Close += (sender, args) =>
                 {
@@ -1425,10 +1431,6 @@ namespace ME3TweaksModManager
                     queue.Save(true); // Commit the result
                 }
             }
-
-            // This ensures final result is handled
-            HandleBatchPanelResult = true;
-            HandlePanelResult(BatchPanelResult);
         }
 
         private string InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)

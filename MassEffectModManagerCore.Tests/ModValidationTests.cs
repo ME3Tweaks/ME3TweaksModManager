@@ -12,6 +12,7 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -98,6 +99,7 @@ namespace ME3TweaksModManager.Tests
             var compressedModsDirectory = GlobalTest.GetTestingDataDirectoryFor(@"compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();
             List<MEMMod> textureModsFoundInArchive = new List<MEMMod>();
+            List<BatchLibraryInstallQueue> batchQueuesFoundInArchive = new List<BatchLibraryInstallQueue>();
 
             void addModCallback(Mod m)
             {
@@ -109,6 +111,11 @@ namespace ME3TweaksModManager.Tests
             {
                 Console.WriteLine($"Found texture mod in archive: {m.ModName}");
                 textureModsFoundInArchive.Add(m);
+            }
+
+            void addBatchQueue(BatchLibraryInstallQueue m)
+            {
+                Console.WriteLine($"Found batch queue in archive: {m.ModName}");
             }
 
             void failedModCallback(Mod m)
@@ -124,8 +131,8 @@ namespace ME3TweaksModManager.Tests
             {
                 modsFoundInArchive.Clear();
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
-                Console.WriteLine($"Inspecting archive: { archive}");
-                ModArchiveInspector.FindModsInArchive(archive, addModCallback, failedModCallback,addTextureMod, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
+                Console.WriteLine($"Inspecting archive: {archive}");
+                ModArchiveInspector.FindModsInArchive(archive, addModCallback, failedModCallback, addTextureMod, addBatchQueue, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
                 Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count(x => x.ValidMod), $"{archive} did not parse correct amount of mods.");
 
                 foreach (var v in modsFoundInArchive)
