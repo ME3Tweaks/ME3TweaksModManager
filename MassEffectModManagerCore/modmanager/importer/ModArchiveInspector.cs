@@ -148,7 +148,7 @@ namespace ME3TweaksModManager.modmanager.importer
                 M3Log.Error(@"Batch queues cannot be imported if they are not deployed by mod manager!");
                 Mod failed = new Mod(false);
                 failed.ModName = M3L.GetString(M3L.string_archiveError);
-                failed.LoadFailedReason = "Batch install groups must be deployed via ME3Tweaks Mod Manager in order to be imported. Contact the developer of this file.";
+                failed.LoadFailedReason = M3L.GetString(M3L.string_description_invalidBatchQueueArchive);
                 failedToLoadModCallback?.Invoke(failed);
                 addCompressedModCallback?.Invoke(failed);
                 if (closeStreamOnComplete)

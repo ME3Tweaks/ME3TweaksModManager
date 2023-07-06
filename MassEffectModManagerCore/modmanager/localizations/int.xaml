@@ -507,6 +507,8 @@
     <!-- 0={Error message} -->
     <system:String x:Key="string_errorGeneratingMergeDLC">Error generating Merge DLC</system:String>
     <system:String x:Key="string_someASIModsWereNotInstalled">Some ASI mods were not installed; see logs</system:String>
+    <system:String x:Key="string_dialog_importedBatchInstallGroup">Install groups can be found in Batch Installer, located in the Mod Management menu.</system:String>
+    <system:String x:Key="string_installGroupImported">Install group imported</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -1205,6 +1207,10 @@
     <system:String x:Key="string_interp_errorCreatingModFolderX">There was an error creating the folder for this mod: {0}</system:String>
     <!-- 0={Error message} -->
     <system:String x:Key="string_invalidServerModdesc">An invalid server moddesc was provided for this archive file, please contact Mgamerz with the link to this file and this error message.</system:String>
+    <system:String x:Key="string_description_invalidBatchQueueArchive">Batch install groups must be deployed via ME3Tweaks Mod Manager in order to be imported. Contact the developer of this file.</system:String>
+    <system:String x:Key="string_dialog_biqAlreadyExists">An install group with the name {0} already exists. Importing this group will overwrite the existing group.</system:String>
+    <!-- 0={Install group name} -->
+    <system:String x:Key="string_installGroupAlreadyExists">Install group already exists</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -2215,6 +2221,14 @@
     <system:String x:Key="string_reconfigurationRequired">Reconfiguration required</system:String>
     <system:String x:Key="string_interp_configuredTimestamp">Configured {0}</system:String>
     <!-- 0={time, e.g. 12-01-2022} -->
+    <system:String xml:space="preserve" x:Key="string_uiImportInstallGroupPrefix">Mods that will be installed by install group:\n</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_xContentMod"> - {0} {1} (Content mod)\n</system:String>
+    <!-- 0={m.ModName} 1={m.ModVersionString} -->
+    <system:String xml:space="preserve" x:Key="string_interp_xTextureMod"> - {0} (Texture mod)\n</system:String>
+    <!-- 0={t.ModName} -->
+    <system:String xml:space="preserve" x:Key="string_interp_xASIMod"> - {0} (ASI mod)\n</system:String>
+    <!-- 0={a.AssociatedMod.Name} -->
+    <system:String xml:space="preserve" x:Key="string_uiImportInstallGroupSuffix">\nImporting will add this install group to Batch Installer.</system:String>
 
     <!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
@@ -2849,5 +2863,9 @@
     <system:String x:Key="string_importedSaveFileFromME3Tweaks">Imported save file from ME3Tweaks</system:String>
     <system:String x:Key="string_interp_errorImportingSaveFileX">Error importing save file: {0}</system:String>
     <!-- 0={Error message} -->
+
+    <!-- Game 2 Email Merge -->
+    <system:String x:Key="string_emailsNotMergedMessagesFileNotFound">Emails not merged: Messages file not found</system:String>
+    <system:String x:Key="string_game2EmailMergeWrongGame">Game 2 email merge manifest targets incorrect game</system:String>
 
 </ResourceDictionary>

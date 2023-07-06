@@ -684,8 +684,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     var result = M3L.ShowDialog(Window.GetWindow(this),
-                        $"An install group with the name {biq.ModName} already exists. Importing this group will overwrite the existing group.",
-                        "Install group already exists", MessageBoxButton.OKCancel, MessageBoxImage.Warning,
+                        M3L.GetString(M3L.string_dialog_biqAlreadyExists, biq.ModName),
+                        M3L.GetString(M3L.string_installGroupAlreadyExists), MessageBoxButton.OKCancel, MessageBoxImage.Warning,
                         MessageBoxResult.Cancel);
                     if (result == MessageBoxResult.Cancel)
                     {

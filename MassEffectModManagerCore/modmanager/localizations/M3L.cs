@@ -532,6 +532,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_errorGeneratingMergeDLC = "string_dialog_errorGeneratingMergeDLC";
 		public const string string_errorGeneratingMergeDLC = "string_errorGeneratingMergeDLC";
 		public const string string_someASIModsWereNotInstalled = "string_someASIModsWereNotInstalled";
+		public const string string_dialog_importedBatchInstallGroup = "string_dialog_importedBatchInstallGroup";
+		public const string string_installGroupImported = "string_installGroupImported";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -1045,6 +1047,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_description_blacklistedMod = "string_description_blacklistedMod";
 		public const string string_interp_errorCreatingModFolderX = "string_interp_errorCreatingModFolderX";
 		public const string string_invalidServerModdesc = "string_invalidServerModdesc";
+		public const string string_description_invalidBatchQueueArchive = "string_description_invalidBatchQueueArchive";
+		public const string string_dialog_biqAlreadyExists = "string_dialog_biqAlreadyExists";
+		public const string string_installGroupAlreadyExists = "string_installGroupAlreadyExists";
 		public const string string_modupdatesavailable = "string_modupdatesavailable";
 		public const string string_downloadUpdate = "string_downloadUpdate";
 		public const string string_downloadUpdateFromNexusMods = "string_downloadUpdateFromNexusMods";
@@ -1734,6 +1739,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_notConfigured = "string_notConfigured";
 		public const string string_reconfigurationRequired = "string_reconfigurationRequired";
 		public const string string_interp_configuredTimestamp = "string_interp_configuredTimestamp";
+		public const string string_uiImportInstallGroupPrefix = "string_uiImportInstallGroupPrefix";
+		public const string string_interp_xContentMod = "string_interp_xContentMod";
+		public const string string_interp_xTextureMod = "string_interp_xTextureMod";
+		public const string string_interp_xASIMod = "string_interp_xASIMod";
+		public const string string_uiImportInstallGroupSuffix = "string_uiImportInstallGroupSuffix";
 		public const string string_importAnInstalledDLCMod = "string_importAnInstalledDLCMod";
 		public const string string_description_importFromGameToModManager = "string_description_importFromGameToModManager";
 		public const string string_modsInstalledByManagedSolutionCannotBeImported = "string_modsInstalledByManagedSolutionCannotBeImported";
@@ -2156,5 +2166,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_importingSaveFileFromME3Tweaks = "string_importingSaveFileFromME3Tweaks";
 		public const string string_importedSaveFileFromME3Tweaks = "string_importedSaveFileFromME3Tweaks";
 		public const string string_interp_errorImportingSaveFileX = "string_interp_errorImportingSaveFileX";
+		public const string string_emailsNotMergedMessagesFileNotFound = "string_emailsNotMergedMessagesFileNotFound";
+		public const string string_game2EmailMergeWrongGame = "string_game2EmailMergeWrongGame";
 	}
 }

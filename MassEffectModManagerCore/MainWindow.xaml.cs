@@ -4287,7 +4287,7 @@ namespace ME3TweaksModManager
 
                 if (modInspector.ImportedBatchQueue)
                 {
-                    M3L.ShowDialog(this, "Install groups can be found in Batch Installer, located in the Mod Management menu.", "Install group imported", MessageBoxButton.OK, MessageBoxImage.Information);
+                    M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_importedBatchInstallGroup), M3L.GetString(M3L.string_installGroupImported), MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             };
 

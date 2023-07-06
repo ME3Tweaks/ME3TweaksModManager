@@ -139,7 +139,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 
             // File to base modifications on
             loadedFiles.TryGetValue(@"BioD_Nor_103Messages.pcc", out var pccFile);
-            if (pccFile is null) return "Emails not merged: Messages file not found";
+            if (pccFile is null) return M3L.GetString(M3L.string_emailsNotMergedMessagesFileNotFound);
             using IMEPackage pcc = MEPackageHandler.OpenMEPackage(pccFile);
 
             // Path to Message templates file - different files for ME2/LE2
@@ -173,7 +173,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 
             if (emailInfos.Any(e => e.Game != mergeDLC.Target.Game))
             {
-                throw new Exception(@"Game 2 email merge manifest targets incorrect game");
+                throw new Exception(M3L.GetString(M3L.string_game2EmailMergeWrongGame));
             }
 
             // Startup File

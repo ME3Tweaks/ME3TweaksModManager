@@ -18,6 +18,7 @@ using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
 using SevenZip.EventArguments;
 using WinCopies.Util;
+using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.objects.batch
 {
@@ -462,27 +463,27 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             get
             {
-                var str = "Mods that will be installed by install group:\n";
+                var str = M3L.GetString(M3L.string_uiImportInstallGroupPrefix);
 
                 foreach (var v in AllModsToInstall)
                 {
                     if (v is Mod m)
                     {
-                        str += $" - {m.ModName} {m.ModVersionString} (Content mod)\n";
+                        str += M3L.GetString(M3L.string_interp_xContentMod, m.ModName, m.ModVersionString);
                     }
                     else if (v is M3MEMMod t)
                     {
-                        str += $" - {t.ModName} (Texture mod)\n";
+                        str += M3L.GetString(M3L.string_interp_xTextureMod, t.ModName);
 
                     }
                     else if (v is BatchASIMod a)
                     {
-                        str += $" - {a.AssociatedMod.Name} (ASI mod)\n";
+                        str += M3L.GetString(M3L.string_interp_xASIMod, a.AssociatedMod.Name);
 
                     }
                 }
 
-                str += "\nImporting will add this install group to Batch Installer.";
+                str += M3L.GetString(M3L.string_uiImportInstallGroupSuffix);
 
                 return str;
             }
