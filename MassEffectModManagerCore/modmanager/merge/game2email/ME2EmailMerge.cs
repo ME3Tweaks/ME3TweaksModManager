@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Kismet;
@@ -12,6 +13,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.Unreal.ObjectInfo;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
+using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
@@ -26,8 +28,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 {
     public class ME2EmailMerge
     {
-        public const int STARTING_EMAIL_CONDITIONAL = 10100;
-        private const int STARTING_EMAIL_TRANSITION = 90000;
+
         private const string EMAIL_MERGE_MANIFEST_FILE = @"EmailMergeInfo.emm";
         private const string EMAIL_MERGE_FILE_SUFFIX = @".emm";
 
@@ -219,7 +220,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             ExportEntry DisplayMessageContainer =
                 pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Display_Messages");
             ExportEntry DisplayMessageOutLink =
-                pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Display_Messages.SeqCond_CompareBool_0");
+                pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Display_Messages.SeqCond_CompareBool_0"); // This is the last thing before finish sequence
 
             ExportEntry LastDisplayMessage = SeqTools.FindOutboundConnectionsToNode(DisplayMessageOutLink, KismetHelper.GetSequenceObjects(DisplayMessageContainer).OfType<ExportEntry>())[0];
             KismetHelper.RemoveOutputLinks(LastDisplayMessage);
@@ -254,7 +255,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                 foreach (var email in emailMod.Emails)
                 {
                     M3Log.Information($@"Merging email {email.EmailName}");
-                    string emailName = modName + "_" + email.EmailName;
+                    string emailName = modName + @"_" + email.EmailName;
                     if (string.IsNullOrEmpty(email.TriggerConditional))
                     {
                         email.TriggerConditional =
@@ -262,8 +263,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     }
 
                     // Create send transition
-                    int transitionId = WriteTransition(StateEventMap, email.StatusPlotInt);
-                    int conditionalId = WriteConditional(ConditionalClass, fl, email.TriggerConditional, cache);
+                    int transitionId = WriteTransition(mergeDLC, StateEventMap, email.StatusPlotInt);
+                    int conditionalId = WriteConditional(mergeDLC, ConditionalClass, fl, email.TriggerConditional, cache);
 
                     #region SendMessage
                     //////////////
@@ -467,24 +468,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             startup.Save(startupF);
 
             // Make sure lines are written to BIOEngine.ini and BIOGame.ini
-            // Todo: Change to config bundle
-            var bioGameText = new StreamReader(M3Utilities.GetResourceStream(
-                    $@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.BIOGame.ini"))
-                .ReadToEnd();
-            File.WriteAllText(Path.Combine(mergeDlcCookedDir, @"BIOGame.ini"), bioGameText);
+            M3MergeDLC.AddPlotDataToConfig(mergeDLC);
 
-            var bioEngineTextToAdd = new StreamReader(M3Utilities.GetResourceStream(
-                    $@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.BIOEngineStartupPackages.ini"))
-                .ReadToEnd();
-            var bioEnginePath = Path.Combine(mergeDlcCookedDir, @"BIOEngine.ini");
-            if (File.Exists(bioEnginePath))
-            {
-                var currentBioEngine = File.ReadAllText(bioEnginePath);
-                if (!currentBioEngine.Contains(@"[Engine.StartupPackages]"))
-                {
-                    File.WriteAllText(bioEnginePath, currentBioEngine + bioEngineTextToAdd);
-                }
-            }
             //DotTrace.SaveData(); // End profiling
             //DotTrace.Detach();
             return null; // OK
@@ -497,14 +482,10 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
         /// <param name="fl"></param>
         /// <param name="innerFunctionText"></param>
         /// <returns>ID of new conditional</returns>
-        private static int WriteConditional(ExportEntry conditionalClass, FileLib fl, string innerFunctionText, PackageCache cache)
+        private static int WriteConditional(M3MergeDLC mergeDLC, ExportEntry conditionalClass, FileLib fl, string innerFunctionText, PackageCache cache)
         {
             // Add Conditional Functions
-            var conditionals = conditionalClass.GetChildren().ToList();
-            var conditionalIds = conditionals.Select(c => int.TryParse(c.ObjectName.Name[1..], out int id) ? id : -1);
-
-            var conditionalId = conditionals.Any() ? conditionalIds.Max() + 1 : STARTING_EMAIL_CONDITIONAL;
-            if (conditionalId <= 0) conditionalId = STARTING_EMAIL_CONDITIONAL;
+            var conditionalId = mergeDLC.CurrentConditional++;
 
             //var funcToClone = conditionalClass.FileRef.FindExport($@"{conditionalClass.InstancedFullPath}.TemplateFunction");
             //var func = EntryCloner.CloneTree(funcToClone);
@@ -533,7 +514,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
         /// <param name="map"></param>
         /// <param name="integerId"></param>
         /// <returns></returns>
-        private static int WriteTransition(BioStateEventMap map, int integerId)
+        private static int WriteTransition(M3MergeDLC mergeDLC, BioStateEventMap map, int integerId)
         {
             var transition = new BioStateEventMap.BioStateEvent();
             transition.Elements = new List<BioStateEventMap.BioStateEventElement>();
@@ -563,7 +544,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                 Type = BioStateEventMap.BioStateEventElementType.Int
             });
 
-            transition.ID = Enumerable.Any(map.StateEvents) ? map.StateEvents.Last().ID + 1 : STARTING_EMAIL_TRANSITION;
+            transition.ID = mergeDLC.CurrentTransition++;
             map.StateEvents.Add(transition);
 
             return transition.ID;

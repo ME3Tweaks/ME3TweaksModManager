@@ -1350,8 +1350,13 @@ namespace ME3TweaksModManager
                     int modIndex = 0;
 
                     //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
-                    void modInstalled(bool successful)
+                    void modInstalled(bool successful, bool isfirst = false)
                     {
+                        if (!isfirst)
+                        {
+                            M3Log.Information($@"ModInstalled() being called - successful: {successful}");
+                        }
+
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
@@ -1388,7 +1393,7 @@ namespace ME3TweaksModManager
                         }
                     }
 
-                    modInstalled(true); //kick off first installation
+                    modInstalled(true, true); //kick off first installation
                 }
             };
             ShowBusyControl(batchLibrary);
@@ -1414,6 +1419,7 @@ namespace ME3TweaksModManager
             }
             else
             {
+                HandleBatchPanelResult = true; // We should handle the results
                 FinishBatchInstall(queue); // Advance to next step
             }
 
@@ -2525,7 +2531,7 @@ namespace ME3TweaksModManager
         /// <param name="recordOptionsToBM">If options chosen should be saved back to the BatchMod object</param>
         /// <param name="useSavedBatchOptions">If options saved in the BatchMod object should be used</param>
         private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null,
-            bool? installCompressed = null, Action<bool> installCompletedCallback = null)
+            bool? installCompressed = null, Action<bool,bool> installCompletedCallback = null)
         {
             if (!M3Utilities.IsGameRunning(mod.Game))
             {
@@ -2552,7 +2558,7 @@ namespace ME3TweaksModManager
                                 modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
                             }
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                            installCompletedCallback?.Invoke(mi.InstallationSucceeded && !mi.InstallationCancelled);
+                            installCompletedCallback?.Invoke(mi.InstallationSucceeded && !mi.InstallationCancelled, false);
                             ReleaseBusyControl();
                         };
                         ShowBusyControl(mi);
@@ -2560,7 +2566,7 @@ namespace ME3TweaksModManager
                     else
                     {
                         // User canceled the options
-                        installCompletedCallback?.Invoke(false); // Canceled
+                        installCompletedCallback?.Invoke(false, false); // Canceled
                         modInstallTask.FinishedUIText = M3L.GetString(M3L.string_installationAborted);
                         BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                     }
@@ -3551,8 +3557,9 @@ namespace ME3TweaksModManager
                         GameTargetWPF t = GetCurrentTarget(m.Game);
                         if (t != null)
                         {
-                            ApplyMod(m, t, installCompletedCallback: installed =>
+                            ApplyMod(m, t, installCompletedCallback: (installed, isFirst) =>
                             {
+                                // isFirst is not used
                                 CommandLinePending.PendingAutoModInstallPath = null;
                                 if (installed)
                                 {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
@@ -121,5 +123,52 @@ namespace ME3TweaksModManager.modmanager.merge.dlc
         /// If the merge DLC was generated
         /// </summary>
         public bool Generated { get; set; }
+
+        public const int STARTING_CONDITIONAL = 10000;
+        public const int STARTING_TRANSITION = 90000;
+
+        /// <summary>
+        /// These can be used by MUST BE INCREMENTED ON USE
+        /// </summary>
+        public int CurrentConditional = STARTING_CONDITIONAL;
+        /// <summary>
+        /// These can be used by MUST BE INCREMENTED ON USE
+        /// </summary>
+        public int CurrentTransition = STARTING_TRANSITION;
+
+        /// <summary>
+        /// Adds the plot data into the config folder if necessary
+        /// </summary>
+        /// <param name="mergeDLC"></param>
+        public static void AddPlotDataToConfig(M3MergeDLC mergeDLC)
+        {
+            var configBundle = ConfigAssetBundle.FromDLCFolder(mergeDLC.Target.Game, Path.Combine(mergeDLC.Target.GetDLCPath(), M3MergeDLC.MERGE_DLC_FOLDERNAME, mergeDLC.Target.Game.CookedDirName()), M3MergeDLC.MERGE_DLC_FOLDERNAME);
+
+            // add startup file
+            var bioEngine = configBundle.GetAsset(@"BIOEngine.ini");
+            var startupSection = bioEngine.GetOrAddSection(@"Engine.StartupPackages");
+            startupSection.AddEntryIfUnique(new CoalesceProperty(@"DLCStartupPackage", new CoalesceValue($@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}", CoalesceParseAction.AddUnique)));
+            if (mergeDLC.Target.Game.IsGame2())
+            {
+                // Game 3 uses Conditionals.cnd
+                // Game 1 merges into basegame directly
+                startupSection.AddEntryIfUnique(new CoalesceProperty(@"Package",
+                    new CoalesceValue($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}",
+                        CoalesceParseAction.AddUnique)));
+                startupSection.AddEntryIfUnique(new CoalesceProperty(@"Package",
+                    new CoalesceValue($@"PlotManagerAuto{M3MergeDLC.MERGE_DLC_FOLDERNAME}",
+                        CoalesceParseAction.AddUnique)));
+
+
+                // Add conditionals 
+                var bioGame = configBundle.GetAsset(@"BIOGame.ini");
+                var bioWorldInfoConfig = bioGame.GetOrAddSection(@"SFXGame.BioWorldInfo");
+                bioWorldInfoConfig.AddEntryIfUnique(new CoalesceProperty(@"ConditionalClasses",
+                    new CoalesceValue($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals",
+                        CoalesceParseAction.AddUnique)));
+            }
+
+            configBundle.CommitDLCAssets();
+        }
     }
 }

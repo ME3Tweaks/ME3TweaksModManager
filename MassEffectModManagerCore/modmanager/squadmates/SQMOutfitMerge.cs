@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Coalesced;
@@ -28,7 +29,6 @@ namespace ME3TweaksModManager.modmanager.squadmates
     public class SQMOutfitMerge
     {
         public const string SQUADMATE_MERGE_MANIFEST_FILE = @"SquadmateMergeInfo.sqm";
-        public const int STARTING_OUTFIT_CONDITIONAL = 10000;
         private const string SUICIDE_MISSION_STREAMING_PACKAGE_NAME = @"BioP_EndGm_StuntHench.pcc";
         internal class SquadmateMergeInfo
         {
@@ -153,7 +153,6 @@ namespace ME3TweaksModManager.modmanager.squadmates
             var appearanceInfo = new CaseInsensitiveDictionary<List<SquadmateInfoSingle>>();
 
             int appearanceId = mergeDLC.Target.Game.IsGame3() ? 255 : 3; // starting // LE2 is 0-8, LE3 does not care
-            int currentConditional = STARTING_OUTFIT_CONDITIONAL;
 
             // Scan squadmate merge files
             var sqmSupercedances = M3Directories.GetFileSupercedances(mergeDLC.Target, new[] { @".sqm" });
@@ -202,7 +201,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             appearanceInfo[outfit.HenchName] = list;
                         }
 
-                        outfit.ConditionalIndex = currentConditional++; // This is always incremented, so it might appear out of order in game files depending on how mod order is processed, that should be okay though.
+                        outfit.ConditionalIndex = mergeDLC.CurrentConditional++; // This is always incremented, so it might appear out of order in game files depending on how mod order is processed, that should be okay though.
 
                         if (mergeDLC.Target.Game.IsGame2())
                         {
@@ -415,20 +414,10 @@ namespace ME3TweaksModManager.modmanager.squadmates
                 // Add startup package, member appearances
                 if (mergeDLC.Target.Game.IsGame2())
                 {
-                    var configBundle = ConfigAssetBundle.FromDLCFolder(mergeDLC.Target.Game, cookedDir, M3MergeDLC.MERGE_DLC_FOLDERNAME);
-
-                    // add startup file
-                    var bioEngine = configBundle.GetAsset(@"BIOEngine.ini");
-                    var startupSection = bioEngine.GetOrAddSection(@"Engine.StartupPackages");
-                    startupSection.AddEntry(new CoalesceProperty(@"DLCStartupPackage", new CoalesceValue($@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}", CoalesceParseAction.AddUnique)));
-                    startupSection.AddEntry(new CoalesceProperty(@"Package", new CoalesceValue($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}", CoalesceParseAction.AddUnique)));
-
-                    // Add conditionals 
-                    var bioGame = configBundle.GetAsset(@"BIOGame.ini");
-                    var bioWorldInfoConfig = bioGame.GetOrAddSection(@"SFXGame.BioWorldInfo");
-                    bioWorldInfoConfig.AddEntry(new CoalesceProperty(@"ConditionalClasses", new CoalesceValue($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals", CoalesceParseAction.AddUnique)));
+                    M3MergeDLC.AddPlotDataToConfig(mergeDLC);
 
                     // Add appearances to list
+                    var configBundle = ConfigAssetBundle.FromDLCFolder(mergeDLC.Target.Game, cookedDir, M3MergeDLC.MERGE_DLC_FOLDERNAME);
                     var bioUi = configBundle.GetAsset(@"BIOUI.ini");
                     var partySelectionSection = bioUi.GetOrAddSection(@"SFXGame.BioSFHandler_PartySelection");
 
@@ -453,6 +442,9 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     // Create and patch BioH_SelectGUI for more squadmate images
 
                     // Lvl2/3/4 are LOTSB
+                    int numDone = 0;
+                    int numToDo = 5;
+                    updateUIText?.Invoke(M3L.GetString(M3L.string_synchronizingSquadmateOutfits) + @" 0%");
                     var packagesToInjectInto = new[]
                         { @"BioH_SelectGUI.pcc", @"BioP_Exp1Lvl2.pcc", @"BioP_Exp1Lvl3.pcc", @"BioP_Exp1Lvl4.pcc" };
                     using var swfStream = M3Utilities.ExtractInternalFileToStream($@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.TeamSelect.swf");
@@ -485,8 +477,28 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         packageP.Save(teamSelectPackagePath); // Save into merge DLC
                         time.Stop();
                         M3Log.Information($@"Saved teamselect package {teamSelectPackagePath} in {time.ElapsedMilliseconds}ms");
+
+                        var count = Interlocked.Increment(ref numDone);
+                        updateUIText?.Invoke(M3L.GetString(M3L.string_synchronizingSquadmateOutfits) + $@" {(int)(count * 100.0f / numToDo)}%");
+
                     });
                     //}
+
+                    // Patch Zaeed's loyalty mission, as it waits specifically for his 00 outfit to load
+                    var zaeedLoyF = loadedFiles[@"BioD_ZyaVTL_110Jungle.pcc"];
+                    using var zaeedLoyP = MEPackageHandler.OpenMEPackage(zaeedLoyF);
+
+                    // We could edit the name and it'd be easier, but we want to ensure compatibility
+                    // So we have to change the value.
+                    var wait = zaeedLoyP.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Level_Startup.SeqAct_WaitForLevelsVisible_0");
+                    var levelNames = wait.GetProperty<ArrayProperty<NameProperty>>(@"LevelNames");
+                    levelNames[0] = new NameProperty(@"BioH_Veteran"); // We do not do _00, we use virtual
+                    wait.WriteProperty(levelNames);
+                    var savePath = Path.Combine(cookedDir, Path.GetFileName(zaeedLoyF));
+                    zaeedLoyP.Save(savePath); // Save into merge DLC
+                    var count = Interlocked.Increment(ref numDone);
+                    updateUIText?.Invoke(M3L.GetString(M3L.string_synchronizingSquadmateOutfits) + $@" {(int)(count * 100.0f / numToDo)}%");
+
                 }
                 else if (mergeDLC.Target.Game.IsGame3())
                 {
