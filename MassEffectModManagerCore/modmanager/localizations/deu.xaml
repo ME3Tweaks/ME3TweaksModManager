@@ -202,6 +202,11 @@
 	<system:String x:Key="string_notConfigured">Nicht konfiguriert</system:String>
 	<system:String x:Key="string_reconfigurationRequired">Rekonfiguration wird benötigt</system:String>
 	<system:String x:Key="string_interp_configuredTimestamp">{0} konfiguriert</system:String>
+	<system:String x:Key="string_uiImportInstallGroupPrefix" xml:space="preserve">Mods, die von der Installationsgruppe installiert werden:\n</system:String>
+	<system:String x:Key="string_interp_xContentMod" xml:space="preserve">- {0} {1} (Content-Mod)\n</system:String>
+	<system:String x:Key="string_interp_xTextureMod" xml:space="preserve">- {0} {1} (Textur-Mod)\n</system:String>
+	<system:String x:Key="string_interp_xASIMod" xml:space="preserve">- {0} {1} (ASI-Mod)\n</system:String>
+	<system:String x:Key="string_uiImportInstallGroupSuffix" xml:space="preserve">\nDurch den Import wird diese Installationsgruppe zum Stapelinstallator hinzugefügt.</system:String>
 	<system:String x:Key="string_batchModInstaller">Stapelinstallierer für Mods</system:String>
 	<system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Stapelinstallierer für Mods ermöglicht dir, eine Gruppe von Mods auf einmal zu installieren</system:String>
 	<system:String x:Key="string_createANewInstallGroup">Neue Installationsgruppe erstellen</system:String>
@@ -227,9 +232,9 @@
 	<system:String x:Key="string_anInstallGroupWithThisNameAlreadyExists">Es existiert bereits eine Installationsgruppe mit diesem Namen.</system:String>
 	<system:String x:Key="string_interp_errorDuplicatingInstallGroupX">Fehler beim Duplizieren der Installationsgruppe: {0}</system:String>
 	<system:String x:Key="string_interp_textureModModifiesExportsX" xml:space="preserve">Diese Texturmod modifiziert die folgenden Texturen:\n{0}</system:String>
-        <system:String x:Key="string_gameSelector">Spiel-Selektor</system:String>
-        <system:String x:Key="string_dialog_selectGameInstallGroup">Wähle aus, für welches Spiel eine Installationsgruppe erstellt werden soll.</system:String>
-        <system:String x:Key="string_debugTriggerDataReload">Debug: Neuladen der Daten auslösen</system:String>
+	<system:String x:Key="string_gameSelector">Spiel-Selektor</system:String>
+	<system:String x:Key="string_dialog_selectGameInstallGroup">Wähle aus, für welches Spiel eine Installationsgruppe erstellt werden soll.</system:String>
+	<system:String x:Key="string_debugTriggerDataReload">Debug: Neuladen der Daten auslösen</system:String>
 	<system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">Es ist kein Backup verfügbar, um 2DAs abzufragen.</system:String>
 	<system:String x:Key="string_2da_errorReading2DAs">Fehler beim Lesen der 2DA-Tabellen aus dem Spiel: {0}</system:String>
 	<system:String x:Key="string_errorReadingTables">Fehler beim Lesen von Tabellen</system:String>
@@ -362,7 +367,7 @@
 	<system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">Das TLK-Paket von DLC-Mod {0} enthält keinen nutzbaren TLK-export.</system:String>
 	<system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">Das TLK-Paket von DLC-Mod {0} enthält die angegebene string id {1} nicht, doch dies ist zwingend nötig.</system:String>
 	<system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">DLC-Mod {0} gibt im [GUI]-Bereich der AutoLoad.ini keine gültige NameStrRef an. Dieses Attribut wird zu Modding-Szene Zwecken benötigt.</system:String>
-	<system:String x:Key="string_interp_noMountDlcFile">Custom DLC {0} hat keine mount.dlc-Datei. Dieser DLC wird im Spiel nicht geladen!</system:String>
+	<system:String x:Key="string_interp_noMountDlcFile">Custom DLC {0} hat keine mount.dlc-Datei. Diese DLC wird im Spiel nicht geladen!</system:String>
 	<system:String x:Key="string_interp_me2NoBioEngineFile">Custom DLC {0} hat keine BioEngine.ini-Datei. Diese Datei wird von allen DLC-Mods benötigt, da sie mindestens eine TLK-Datei benötigen und die TLK-Datei auf der module number der BioEngine.ini basiert</system:String>
 	<system:String x:Key="string_interp_me2MissingInvalidModuleNum">Custom DLC {0} gibt keine module number an oder hat keinen gültigen ganzzahligen Wert (> 0) für diesen DLC. Jeder DLC braucht eine wohldefinierte, eindeutige module number.</system:String>
 	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">Die TLK {1} von Custom DLC {0} enthält die in mount.dlc angegebene TLK string ID {2} nicht.</system:String>
@@ -424,9 +429,9 @@
 	<system:String x:Key="string_creatingCombinedTLKMergeFile">Kombinierte TLK Mergedatei wird erstellt</system:String>
 	<system:String x:Key="string_addingCombinedTLKMergeFile">Kombinierte TLK Mergedatei wird hinzugefügt</system:String>
 	<system:String x:Key="string_tooltip_clickToLEX">Klicke, um in Legendary Explorer Nightly zu öffnen</system:String>
-        <system:String x:Key="string_validatingArchiveFile">Validiere Archivdatei</system:String>
-        <system:String x:Key="string_deploymentFailed">Bereitstellung fehlgeschlagen</system:String>
-        <system:String xml:space="preserve" x:Key="string_interp_dialog_deploymentFailedWrongNumMods">Mod-Bereitstellung fehlgeschlagen: Die im Archiv erwartete Menge an Mods stimmte nicht mit der analysierten Menge überein.\nErwartet: {0}\nErkannt: {1}\n\nBitte melde dies Mgamerz im ME3Tweaks Discord.</system:String>
+	<system:String x:Key="string_validatingArchiveFile">Validiere Archivdatei</system:String>
+	<system:String x:Key="string_deploymentFailed">Bereitstellung fehlgeschlagen</system:String>
+	<system:String x:Key="string_interp_dialog_deploymentFailedWrongNumMods" xml:space="preserve">Mod-Bereitstellung fehlgeschlagen: Die im Archiv erwartete Menge an Mods stimmte nicht mit der analysierten Menge überein.\nErwartet: {0}\nErkannt: {1}\n\nBitte melde dies Mgamerz im ME3Tweaks Discord.</system:String>
 	<system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
 	<system:String x:Key="string_interp_extractingX">Entpacke {0}</system:String>
 	<system:String x:Key="string_checkingForUpdates">Aktualisierungen werden gesucht</system:String>
@@ -448,6 +453,8 @@
 	<system:String x:Key="string_debugReload">Debug neu laden</system:String>
 	<system:String x:Key="string_deleteFromLibrary">Aus der Bibliothek entfernen</system:String>
 	<system:String x:Key="string_visitWebsite">Website aufrufen</system:String>
+	<system:String x:Key="string_emailsNotMergedMessagesFileNotFound">E-Mails nicht zusammengeführt: Nachrichtendatei nicht gefunden</system:String>
+	<system:String x:Key="string_game2EmailMergeWrongGame">Das E-Mail-Zusammenführungsmanifest von Spiel 2 zielt auf das falsche Spiel ab.</system:String>
 	<system:String x:Key="string_autobootSave">Spielstand Auto-Starten</system:String>
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Ungültiges Ziel: {0} wurde nicht im Spiel-Installationsordner gefunden.</system:String>
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Ungültiges Ziel: Dies ist mittels cmm_vanilla-Datei als geschütztes Backup markiert</system:String>
@@ -469,6 +476,7 @@
 	<system:String x:Key="string_binkw32ASILoader">Binkw32 ASI Loader</system:String>
 	<system:String x:Key="string_binkw32ASIBypass">Binkw32 ASI Bypass</system:String>
 	<system:String x:Key="string_bink2w64ASILoader">Bink2w64 ASI Loader</system:String>
+	<system:String x:Key="string_undefined">Undefiniert</system:String>
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Diese Zielinstallation enthält modifizierte Texturen</system:String>
 	<system:String x:Key="string_headmorphSelector">Headmorph-Selektor</system:String>
 	<system:String x:Key="string_selectHeadmorph">Headmorph auswählen</system:String>
@@ -501,8 +509,8 @@
 	<system:String x:Key="string_defaultDescriptionForImportedMod">Diese Mod wurde aus einer Installation von {0} in {1} importiert.</system:String>
 	<system:String x:Key="string_dlcImportingNexusModsWatermark">https://nexusmods.com/masseffect (empfohlen)</system:String>
 	<system:String x:Key="string_conflictDetector">Kollisionserkennung</system:String>
-	<system:String x:Key="string_conflictDetectorDescription">Wenn Dateien mit gleichem Namen in mehreren DLCs enthalten sind, benutzt das Spiel die Datei mit der höchsten Einhängungspriorität. Die Kollisionserkennung zeigt dir Konflikte zwischen Dateien deiner DLC-Mods. Dieses Werkzeug ist NUR FÜR ENTWICKLER, versuche nicht die Ergebnisse zu interpretieren, wenn du nicht weißt wie die Spieldateien funktionieren!</system:String>
-	<system:String x:Key="string_interp_mountPriorityX">Einhängungspriorität {0}</system:String>
+	<system:String x:Key="string_conflictDetectorDescription">Wenn Dateien mit gleichem Namen in mehreren DLCs enthalten sind, benutzt das Spiel die Datei mit der höchsten Mount-Priorität. Die Kollisionserkennung zeigt dir Konflikte zwischen Dateien deiner DLC-Mods. Dieses Werkzeug ist NUR FÜR ENTWICKLER, versuche nicht die Ergebnisse zu interpretieren, wenn du nicht weißt wie die Spieldateien funktionieren!</system:String>
+	<system:String x:Key="string_interp_mountPriorityX">Mount-Priorität {0}</system:String>
 	<system:String x:Key="string_interp_XModsSuperceded">{0} Mod(s) überschrieben</system:String>
 	<system:String x:Key="string_dialog_cannotImportModTextureMarkersFound">Dieser Mod enthält Dateien, die als Teil einer Installation mit modifizierten Texturen markiert wurden. Mods die von Texturmods verändert wurden, können nicht importiert werden.</system:String>
 	<system:String x:Key="string_cannotImportMod">Mod kann nicht importiert werden</system:String>
@@ -528,7 +536,7 @@
 	<system:String x:Key="string_locateCustomFile">Benutzerdefinierte Datei suchen</system:String>
 	<system:String x:Key="string_interp_dialog_memForDifferentGame">Die ausgewählte .mem-Datei ist nicht für {0}, sondern für {1}. Diese .mem-Datei kann in dieser Installationsgruppe nicht verwendet werden.</system:String>
 	<system:String x:Key="string_wrongGame">Falsches Spiel</system:String>
-        <system:String x:Key="string_selectATextureMod">Wähle eine Textur Mod</system:String>
+	<system:String x:Key="string_selectATextureMod">Wähle eine Textur Mod</system:String>
 	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Während Texturmods installiert sind können keine Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
 	<system:String x:Key="string_cannotRestoreSfarFiles">SFAR-Dateien können nicht wiederhergestellt werden</system:String>
 	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Wenn Dateien wiederhergestellt werden während ein Texturmod installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
@@ -638,6 +646,9 @@
 	<system:String x:Key="string_tooltip_autoResume">Weist das Spiel an, automatisch zu versuchen, den zuletzt gespeicherten Spielstand fortzusetzen</system:String>
 	<system:String x:Key="string_noForceFeedback">Kein Force-Feedback</system:String>
 	<system:String x:Key="string_tooltip_disablesControllerVibration">Schaltet die Controllervibration aus</system:String>
+	<system:String x:Key="string_dialog_firstCoalescedMerge" xml:space="preserve">ME3Tweaks Mod Manager ersetzt automatisch die Coalesced_INT.bin-Datei des Hauptspiels für LE1, sodass Mods die LE1 Coalesced Merge-Funktion verwenden können. Manuell installierte/bearbeitete Coalesced_INT.bin-Mods werden von dieser Funktion überschrieben; Sie ist in den Mod-Manager-Einstellungen deaktivierbar.\n\nDas Deaktivieren der LE1 Coalesced Merge-Funktion wird alle Mods beschädigen, die davon abhängen.</system:String>
+	<system:String x:Key="string_information">Information</system:String>
+	<system:String x:Key="string_m3ConsoleKeybinds">M3 Konsolen-Tastenkombi</system:String>
 	<system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly konnte nicht heruntergeladen werden: {0}</system:String>
 	<system:String x:Key="string_licenseViewer">Lizenzen</system:String>
 	<system:String x:Key="string_dialogCouldNotSetDataToClipboard" xml:space="preserve">Daten konnten nicht in Zwischenablage geschrieben werden:\n</system:String>
@@ -677,6 +688,15 @@
 	<system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Wähle eine Zielinstallation, für die Diagnosedaten gesammelt werden sollen</system:String>
 	<system:String x:Key="string_compressingForUpload">Wird zum Hochladen komprimiert</system:String>
 	<system:String x:Key="string_uploadingToME3Tweaks">Wird zu ME3Tweaks hochgeladen</system:String>
+	<system:String x:Key="string_noSaveSelected">Kein Spielstand ausgewählt</system:String>
+	<system:String x:Key="string_selectASaveToIncludeWithDiagnostic">Wähle einen Spielstand aus, der in die Diagnose einbezogen werden soll</system:String>
+	<system:String x:Key="string_description_fullTexturesCheck">Eine vollständige Texturprüfung kann mehrere Minuten dauern, validiert jedoch Texturreferenzen in allen Paketdateien.</system:String>
+	<system:String x:Key="string_saveFile">Spielstand</system:String>
+	<system:String x:Key="string_description_saveFile">Optional kann ein Spielstand in die Spieldiagnose eingebunden werden. Wähle nur einen Spielstand auf, wenn er angefordert wird.</system:String>
+	<system:String x:Key="string_selectSaveFile">Wähle Spielstand</system:String>
+	<system:String x:Key="string_importingSaveFileFromME3Tweaks">Importiere Spielstand von ME3Tweaks</system:String>
+	<system:String x:Key="string_importedSaveFileFromME3Tweaks">Spielstand von ME3Tweaks importiert</system:String>
+	<system:String x:Key="string_interp_errorImportingSaveFileX">Fehler beim Importieren der Sicherungsdatei: {0}</system:String>
 	<system:String x:Key="string_loadingME3TweaksServices">ME3Tweaks-Dienste werden geladen</system:String>
 	<system:String x:Key="string_refreshingME3TweaksServices">ME3Tweaks-Dienste werden aktualisiert</system:String>
 	<system:String x:Key="string_loadedME3TweaksServices">ME3Tweaks-Dienste wurden geladen</system:String>
@@ -686,16 +706,6 @@
 	<system:String x:Key="string_textureLibrary">Texturbibliothek</system:String>
 	<system:String x:Key="string_interp_XpartOfY" xml:space="preserve">{0}\n\nTeil von {1}</system:String>
 	<system:String x:Key="string_interp_XpartOfTextureLibrary" xml:space="preserve">{0}\n\nTeil der Texturbibliothek</system:String>
-        <system:String x:Key="string_undefined">Undefiniert</system:String>
-        <system:String x:Key="string_autoSave">Automatisches Speichern</system:String>
-        <system:String x:Key="string_quickSave">Schnellspeicherung</system:String>
-        <system:String x:Key="string_restartMission">Mission neu starten</system:String>
-        <system:String x:Key="string_interp_saveX">Spielstand {0}</system:String>
-        <system:String x:Key="string_exportSave">Spielstand Exportieren</system:String>
-        <system:String x:Key="string_legendSave">Legendenspielstand</system:String>
-        <system:String x:Key="string_interp_unknownSaveTypeX">Unbekannter Spielstandtyp: {0}</system:String>
-        <system:String xml:space="preserve" x:Key="string_dialog_firstCoalescedMerge">ME3Tweaks Mod Manager ersetzt automatisch die Coalesced_INT.bin-Datei des Hauptspiels für LE1, sodass Mods die LE1 Coalesced Merge-Funktion verwenden können. Manuell installierte/bearbeitete Coalesced_INT.bin-Mods werden von dieser Funktion überschrieben; Sie ist in den Mod-Manager-Einstellungen deaktivierbar.\n\nDas Deaktivieren der LE1 Coalesced Merge-Funktion wird alle Mods beschädigen, die davon abhängen.</system:String>
-        <system:String x:Key="string_information">Information</system:String>
 	<system:String x:Key="string_AvailableMods">Mod-Bibliothek</system:String>
 	<system:String x:Key="string_Language">Sprache</system:String>
 	<system:String x:Key="string_Actions">Aktionen</system:String>
@@ -1144,7 +1154,6 @@
 	<system:String x:Key="string_textureModsImported">Textur Mod(s) importiert</system:String>
 	<system:String x:Key="string_mergingCoalescedFiles">Führe Coalesced-Datein zusammen</system:String>
 	<system:String x:Key="string_mergedCoalescedFiles">Coalesced-Dateien zusammengeführt</system:String>
-	<system:String x:Key="string_massEfectModderFiles">Mass Effect Modder Dateien</system:String>
 	<system:String x:Key="string_selectMemFile">.mem Datei auswählen</system:String>
 	<system:String x:Key="string_interp_headmorphRequiresDLCCouldNotDetermine">Dieser Headmorph erfordert die Installation von {0} Version {1} oder höher, aber Mod Manager konnte die installierte Version nicht ermitteln. Installiere {0} mit Mod Manager und installiere dann diesen Headmorph.</system:String>
 	<system:String x:Key="string_interp_headmorphRequiresDLCBadVersionString">Dieser Headmorph erfordert die Installation von {0} Version {1} oder höher, aber Mod Manager konnte die installierte Version nicht anhand der Versionszeichenfolge {2} ermitteln. Wende dich an den Entwickler dieser Mod, um dieses Problem zu beheben.</system:String>
@@ -1155,8 +1164,11 @@
 	<system:String x:Key="string_gameNotAvailable">Spiel nicht verfügbar</system:String>
 	<system:String x:Key="string_unsupportedGame">Nicht unterstütztes Spiel</system:String>
 	<system:String x:Key="string_prerequesiteNotMet">Voraussetzung nicht erfüllt</system:String>
-        <system:String xml:space="preserve" x:Key="string_dialog_errorGeneratingMergeDLC">Fehler beim Generieren von Merge-DLC: {0}\nMods funktionieren möglicherweise nicht richtig – entferne die Merge-DLC (falls vorhanden) manuell über die Schaltfläche „Ziel verwalten“.</system:String>
-        <system:String x:Key="string_errorGeneratingMergeDLC">Fehler beim Generieren von Merge-DLC</system:String>
+	<system:String x:Key="string_dialog_errorGeneratingMergeDLC" xml:space="preserve">Fehler beim Generieren von Merge-DLC: {0}\nMods funktionieren möglicherweise nicht richtig – entferne die Merge-DLC (falls vorhanden) manuell über die Schaltfläche „Ziel verwalten“.</system:String>
+	<system:String x:Key="string_errorGeneratingMergeDLC">Fehler beim Generieren von Merge-DLC</system:String>
+	<system:String x:Key="string_someASIModsWereNotInstalled">Einige ASI-Mods wurden nicht installiert; siehe Protokolle</system:String>
+	<system:String x:Key="string_dialog_importedBatchInstallGroup">Installationsgruppen sind im Stapelinstallator unter dem Mod-Verwaltungsmenü auffindbar.</system:String>
+	<system:String x:Key="string_installGroupImported">Installationsgruppe importiert</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config-Datei {0}.ini fehlt. Sie sollte sich in {1} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Mass Effect Config-Ordner fehlt. Er sollte sich in {0} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Mass Effect Ini Modder kann nicht gestartet werden</system:String>
@@ -1182,7 +1194,7 @@
 	<system:String x:Key="string_mEMVanillaDatabaseViewer">MEM Vanilla DB Anzeige</system:String>
 	<system:String x:Key="string_viewInformationInTheVanillaDatabaseUsedForBackupVerification">Lasse dir Informationen aus der vanilla Datenbank anzeigen, die für Backupverifikation benutzt wird</system:String>
 	<system:String x:Key="string_textureExportsNotListedInThisMemFile">[Texturexporte sind in dieser .mem-Datei nicht aufgeführt]</system:String>
-        <system:String x:Key="string_textureModsMustBeImportedBeforeUse">Texturmods müssen importiert werden, bevor sie verwendet werden können</system:String>
+	<system:String x:Key="string_textureModsMustBeImportedBeforeUse">Texturmods müssen importiert werden, bevor sie verwendet werden können</system:String>
 	<system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Merge-Mod hat keinen korrekten magischen Header</system:String>
 	<system:String x:Key="string_interp_unsupportedMergeModVersionVersionX">Nicht unterstützte Merge-Mod Version: {0}</system:String>
 	<system:String x:Key="string_interp_invalidMergeModManifestReason" xml:space="preserve">Ungültiges Merge-Mod Manifest:\n{0}</system:String>
@@ -1228,6 +1240,7 @@
 	<system:String x:Key="string_deployment_unusedExtraFileTypeFound">{0}-Datei könnte mir diesem Mod installiert werden: {1}. Die Datei sollte entfernt werden, da sie nie vom Spiel benutzt wird. Um derartige Dateien dennoch zu inkludieren, nutze 'additionaldeploymentfolders' unter dem [UPDATES] header.</system:String>
 	<system:String x:Key="string_deployment_nexusUpdaterServiceInfo">{0} ({1}) ist nicht in der Liste der erlaubten Mods des NexusMods Aktualisierungsdienst. Damit Aktualisierungen für diese Mod gesucht werden können, muss sie beim Dienst registriert werden (aufgrund der Funktionsweise der NexusMods API). Du kannst die Mod über den #nexusupdate-rules Kanel im ME3Tweaks Discord eintragen lassen.</system:String>
 	<system:String x:Key="string_interp_compressedTlkDataInfo">Diese Mod benutzt den {0} task header. Eine komprimierte Version der XML-Dateien wurde gefunden ({1}); diese Datei wird bei der Veröffentlichung statt der individuellen XML-Dateien benutzt. Falls du dies nicht beabsichtigst, entferne die komprimierte Datei damit Mod Manager bei der Veröffentlichung eine Neue erstellt.</system:String>
+	<system:String x:Key="string_interp_exceptionValidatingOutfitManifestMergeManifest">Ausnahme beim Validieren des Outfit-Manifests {0}: {1}</system:String>
 	<system:String x:Key="string_interp_appliesToX">Wird angewendet auf {0}</system:String>
 	<system:String x:Key="string_interp_partOfX">Teil von {0}</system:String>
 	<system:String x:Key="string_interp_versionX">Version {0}</system:String>
@@ -1313,7 +1326,10 @@
 	<system:String x:Key="string_blacklistedMod">Gesperrter Mod</system:String>
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Die Entwickler von ME3Tweaks Mod Manager haben diese Datei aus einer der folgenden Gründe gesperrt:\n - Der/die Mod(s) in dieser Datei funktionieren bekanntermaßen nicht und wurden von ihrem Autor aufgegeben\n - Der/die Mod(s) in dieser Datei sind destruktiv für das Spiel für Endbenutzer</system:String>
 	<system:String x:Key="string_interp_errorCreatingModFolderX">Beim Erstellen des Ordners für diese Mod ist ein Fehler aufgetreten: {0}</system:String>
-        <system:String x:Key="string_invalidServerModdesc">Für diese Archivdatei wurde eine ungültige Server-Moddesc bereitgestellt, bitte kontaktiere Mgamerz mit dem Link zu dieser Datei und dieser Fehlermeldung.</system:String>
+	<system:String x:Key="string_invalidServerModdesc">Für diese Archivdatei wurde eine ungültige Server-Moddesc bereitgestellt, bitte kontaktiere Mgamerz mit dem Link zu dieser Datei und dieser Fehlermeldung.</system:String>
+	<system:String x:Key="string_description_invalidBatchQueueArchive">Installationsgruppen müssen über den ME3Tweaks Mod Manager bereitgestellt werden, um importiert zu werden. Kontaktiere den Entwickler dieser Datei.</system:String>
+	<system:String x:Key="string_dialog_biqAlreadyExists">Eine Installationsgruppe mit dem Namen {0} ist bereits vorhanden. Durch den Import dieser Gruppe wird die vorhandene Gruppe überschrieben.</system:String>
+	<system:String x:Key="string_installGroupAlreadyExists">Bereits existierende Installationsgruppe</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Datei kann nicht heruntergeladen werden: Du musst Premiummitglied bei NexusMods sein, um direct download links zu nutzen</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Datei kann nicht heruntergeladen werden: von NexusMods gelöscht</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Fehler beim Herunterladen der Mod: {0}</system:String>
@@ -1386,7 +1402,7 @@
 	<system:String x:Key="string_interp_optionGroupX">Optionsgruppe: {0}</system:String>
 	<system:String x:Key="string_installTo">Installieren nach:</system:String>
 	<system:String x:Key="string_tooltip_targetThatTheModWillBeInstalledTo">Ziel, in das die Mod installiert wird</system:String>
-	<system:String x:Key="string_tooltip_modinstaller_compressPackages" xml:space="preserve">Komprimieren der Pakete wird den benötigten Speicherplatz der meisten Mods reduzieren&#10;Mit Komprimieren dauert die Installation eines Mods länger</system:String>
+	<system:String x:Key="string_tooltip_modinstaller_compressPackages" xml:space="preserve">Komprimieren der Pakete wird den benötigten Speicherplatz der meisten Mods reduzieren&#10;Mit Komprimieren dauert die Installation einer Mod länger</system:String>
 	<system:String x:Key="string_interp_error_singleRequiredDlcMissing">{0} setzt voraus, dass mindestens eins der folgenden DLCs installiert ist:{1}</system:String>
 	<system:String x:Key="string_warningTexturesAreInstalled" xml:space="preserve">Texturen sind installiert und diese Mod installiert oder verändert Paketdateien. Du kannst mit der Installation dieser Mod fortfahren, aber neue Dateien werden nicht die aktualisierten, bereits installierten Texturen enthalten.\n\nTexturmods sollten erst nach allen Paketmods installiert werden.\n\nInstallation Fortsetzen?</system:String>
 	<system:String x:Key="string_warningTextureModsAreInstalled">Warnung: Texturmods sind installiert</system:String>
@@ -1773,6 +1789,7 @@
 	<system:String x:Key="string_oigPanelHeader" xml:space="preserve">Das Origin-Overlay ist dafür bekannt, wesentliche Leistungseinbußen in den Mass Effect-Spielen zu verursachen. Während es zwar in den Origin-Einstellungen abgeschaltet werden kann, funktioniert diese Einstellung nicht für die Steam-Version von Mass Effect 3. Du kannst eine überschreibende d3d9.dll installieren, die die Abschaltung des Overlays erzwingt.&#10;&#10;Überschreiben mit anderen d3d9.dll, wie z.B. mit Reshade, deaktiviert das Overlay ebenfalls.</system:String>
 	<system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Keine Origin-basierten Installationsziele sind für dieses Spiel vorhanden</system:String>
 	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Überprüfung von Referenzen in Mergemods [{0}/{1}]</system:String>
+	<system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core konnte Import nicht auflösen: {0} {1} in {2}</system:String>
 	<system:String x:Key="string_syncingPlotManager">Plot Manager wird synchronisiert</system:String>
 	<system:String x:Key="string_interp_plotManagerSyncForX">PlotManager-Synchronisierung für {0}</system:String>
 	<system:String x:Key="string_interp_errorCompilingFunctionReason" xml:space="preserve">Fehler beim Kompilieren von Funktion {0}: {1}</system:String>
@@ -1834,6 +1851,26 @@
 	<system:String x:Key="string_interp_copyingX">{0} wird kopiert</system:String>
 	<system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">Das gewählte Verzeichnis ist nicht leer: {0}. ALLE NICHT-SPIELDATEIEN UND -ORDNER IN DIESEM VERZEICHNIS WERDEN GELÖSCHT. Bist du sicher, dass du fortfahren willst?</system:String>
 	<system:String x:Key="string_interp_failedToRestoreGameDueToErrorX">Fehler beim Wiederherstellen des Spiels: {0}</system:String>
+	<system:String x:Key="string_tooltip_loadAllSaves" xml:space="preserve">Analysiert alle Spielstände aller Karrieren; Dies kann viel Arbeitsspeicher bei vielen Spielständen beanspruchen.&#10;Standardmäßig ist dies deaktiviert, wodurch nur die letzten 50 Spielstände aus jeder Karriere geladen werden</system:String>
+	<system:String x:Key="string_loadAllSavesMayUseALotOfMemory">Alle Spielstände laden (kann viel Arbeitsspeicher verbrauchen)</system:String>
+	<system:String x:Key="string_selectThisSave">Spielstand auswählen</system:String>
+	<system:String x:Key="string_careers">Karrieren</system:String>
+	<system:String x:Key="string_saves">Spielstände</system:String>
+	<system:String x:Key="string_lastPlayed">Zuletzt gepsielt:</system:String>
+	<system:String x:Key="string_timePlayed">Spieldauer:</system:String>
+	<system:String x:Key="string_difficulty">Schwierigkeitsgrad:</system:String>
+	<system:String x:Key="string_gender">Geschlecht:</system:String>
+	<system:String x:Key="string_readingSavedGames">Lese Spielstände</system:String>
+	<system:String x:Key="string_selectASaveFile">Wähle eine Spielstand-Datei</system:String>
+	<system:String x:Key="string_interp_unknownMapX">Unbekannte Karte: {0}</system:String>
+	<system:String x:Key="string_saveSelector">Spielstand-Selektor</system:String>
+	<system:String x:Key="string_autoSave">Automatisches Speichern</system:String>
+	<system:String x:Key="string_quickSave">Schnellspeicherung</system:String>
+	<system:String x:Key="string_restartMission">Mission neu starten</system:String>
+	<system:String x:Key="string_interp_saveX">Spielstand {0}</system:String>
+	<system:String x:Key="string_exportSave">Spielstand Exportieren</system:String>
+	<system:String x:Key="string_legendSave">Legendenspielstand</system:String>
+	<system:String x:Key="string_interp_unknownSaveTypeX">Unbekannter Spielstandtyp: {0}</system:String>
 	<system:String x:Key="string_interp_noBackupMessage">Es ist keine Sicherung von {0} verfügbar. Wenn du fortfährst, kannst du kein Spiel-Backup erstellen, da das Spiel modifiziert wird. Bist du sicher, dass du dies tun möchtest?</system:String>
 	<system:String x:Key="string_backupWarning">Backup Warnung</system:String>
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Ungültiger Begleitername: {0}. Dieser Wert unterscheidet zwischen Groß- und Kleinschreibung</system:String>
@@ -1841,6 +1878,10 @@
 	<system:String x:Key="string_synchronizingSquadmateOutfits">Gruppenmitglieder-Outfits werden synchronisiert</system:String>
 	<system:String x:Key="string_synchronizedSquadmateOutfits">Gruppenmitglieder-Outfits wurden synchronisiert</system:String>
 	<system:String x:Key="string_synchronizingSquadmateOutfitFiles">Gruppenmitglieder-Outfits werden synchronisiert</system:String>
+	<system:String x:Key="string_errorReadingSquadmateOutfitManifestFileSeeLogs">Fehler beim Lesen der Gruppenmitglieder-Outfit-Manifestdatei der Mod(s), siehe Protokolle</system:String>
+	<system:String x:Key="string_someSquadmateOutfitsWereNotMergedSeeLogs">Einige Gruppenmitglieder-Outfits wurden nicht zusammengeführt, siehe Protokolle</system:String>
+	<system:String x:Key="string_interp_sk_sqmNoBackup">Kein Backup für {0} verfügbar, Squadmate-Merge-Dateien können nicht erstellt werden</system:String>
+	<system:String x:Key="string_interp_sk_sqmBackupMissingRequiredFile">Erforderliche Datei für Squadmate-Merge nicht im Backup verfügbar: {0}</system:String>
 	<system:String x:Key="string_starterKitAddins">Starter-Kit-Add-Ins</system:String>
 	<system:String x:Key="string_addStartupFile">Startup-Datei hinzufügen</system:String>
 	<system:String x:Key="string_addPlotManagerData">PlotManager-Daten hinzufügen</system:String>
@@ -1848,35 +1889,20 @@
 	<system:String x:Key="string_interp_addModSettingsMenuStub">Mod-Einstellungsmenü-Stummel hinzufügen</system:String>
 	<system:String x:Key="string_selectDLCMod">DLC Mod auswählen</system:String>
 	<system:String x:Key="string_selectADLCFolderToAddAStartupFileTo">Wähle einen DLC-Ordner aus, dem eine Startdatei hinzugefügt werden soll.</system:String>
-        <system:String x:Key="string_selectAnOperation">Wähle einen Vorgang aus</system:String>
-        <system:String x:Key="string_addingModSettingsMenuData">Mod-Einstellungsmenüdaten werden hinzugefügt...</system:String>
-        <system:String x:Key="string_addedModSettingsMenuData">Mod-Einstellungsmenüdaten hinzugefügt</system:String>
-        <system:String x:Key="string_dialog_squadmateMergeBackupRequired">Das Hinzufügen von Squadmate-Merge-Dateien zu einer Mod erfordert ein Backup des Spiels, um Dateien daraus zu ziehen.</system:String>
-        <system:String x:Key="string_interp_addingPlotManagerData">Plot-Manager-Daten werden hinzugefügt...</system:String>
-        <system:String x:Key="string_interp_addedPlotManagerData">Plot-Manager-Daten hinzugefügt</system:String>
-        <system:String x:Key="string_interp_failedToAddModSettingsMenuDataX">Mod-Einstellungsmenüdaten konnten nicht hinzugefügt werden: {0}</system:String>
-        <system:String x:Key="string_interp_addingSquadmateOutfitMergeFilesForX">Squadmate-Outfit-Merge-Dateien für {0} werden hinzugefügt...</system:String>
-        <system:String x:Key="string_interp_addedSquadmateOutfitMergeFilesForX">Squadmate-Outfit-Merge-Dateien für {0} hinzugefügt</system:String>
-        <system:String x:Key="string_interp_failedToAddSquadmateOutfitMergeFilesForHenchXY">Squadmate-Outfit-Merge-Dateien für {0} konnten nicht hinzugefügt werden: {1}</system:String>
-        <system:String x:Key="string_interp_failedToAddPlotManagerDataX">Plot-Manager-Daten konnten nicht hinzugefügt werden: {0}</system:String>
-        <system:String x:Key="string_interp_addingStartupFile">Startup-Datei wird hinzugefügt...</system:String>
-        <system:String x:Key="string_interp_addedStartupFile">Startup-Datei hinzugefügt</system:String>
-        <system:String x:Key="string_interp_failedToAddStartupFileX">Startup-Datei konnte nicht hinzugefügt werden: {0}</system:String>
-        <system:String x:Key="string_interp_sk_sqmNoBackup">Kein Backup für {0} verfügbar, Squadmate-Merge-Dateien können nicht erstellt werden</system:String>
-        <system:String x:Key="string_interp_sk_sqmBackupMissingRequiredFile">Erforderliche Datei für Squadmate-Merge nicht im Backup verfügbar: {0}</system:String>
-        <system:String xml:space="preserve" x:Key="string_tooltip_loadAllSaves">Analysiert alle Spielstände aller Karrieren; Dies kann viel Arbeitsspeicher bei vielen Spielständen beanspruchen.&#10;Standardmäßig ist dies deaktiviert, wodurch nur die letzten 50 Spielstände aus jeder Karriere geladen werden</system:String>
-        <system:String x:Key="string_loadAllSavesMayUseALotOfMemory">Alle Spielstände laden (kann viel Arbeitsspeicher verbrauchen)</system:String>
-        <system:String x:Key="string_selectThisSave">Spielstand auswählen</system:String>
-        <system:String x:Key="string_careers">Karrieren</system:String>
-        <system:String x:Key="string_saves">Spielstände</system:String>
-        <system:String x:Key="string_lastPlayed">Zuletzt gepsielt:</system:String>
-        <system:String x:Key="string_timePlayed">Spieldauer:</system:String>
-        <system:String x:Key="string_difficulty">Schwierigkeitsgrad:</system:String>
-        <system:String x:Key="string_gender">Geschlecht:</system:String>
-        <system:String x:Key="string_readingSavedGames">Lese Spielstände</system:String>
-        <system:String x:Key="string_selectASaveFile">Wähle eine Spielstand-Datei</system:String>
-        <system:String x:Key="string_interp_unknownMapX">Unbekannte Karte: {0}</system:String>
-        <system:String x:Key="string_saveSelector">Spielstand-Selektor</system:String>
+	<system:String x:Key="string_selectAnOperation">Wähle einen Vorgang aus</system:String>
+	<system:String x:Key="string_addingModSettingsMenuData">Mod-Einstellungsmenüdaten werden hinzugefügt...</system:String>
+	<system:String x:Key="string_addedModSettingsMenuData">Mod-Einstellungsmenüdaten hinzugefügt</system:String>
+	<system:String x:Key="string_dialog_squadmateMergeBackupRequired">Das Hinzufügen von Squadmate-Merge-Dateien zu einer Mod erfordert ein Backup des Spiels, um Dateien daraus zu ziehen.</system:String>
+	<system:String x:Key="string_interp_addingPlotManagerData">Plot-Manager-Daten werden hinzugefügt...</system:String>
+	<system:String x:Key="string_interp_addedPlotManagerData">Plot-Manager-Daten hinzugefügt</system:String>
+	<system:String x:Key="string_interp_failedToAddModSettingsMenuDataX">Mod-Einstellungsmenüdaten konnten nicht hinzugefügt werden: {0}</system:String>
+	<system:String x:Key="string_interp_addingSquadmateOutfitMergeFilesForX">Squadmate-Outfit-Merge-Dateien für {0} werden hinzugefügt...</system:String>
+	<system:String x:Key="string_interp_addedSquadmateOutfitMergeFilesForX">Squadmate-Outfit-Merge-Dateien für {0} hinzugefügt</system:String>
+	<system:String x:Key="string_interp_failedToAddSquadmateOutfitMergeFilesForHenchXY">Squadmate-Outfit-Merge-Dateien für {0} konnten nicht hinzugefügt werden: {1}</system:String>
+	<system:String x:Key="string_interp_failedToAddPlotManagerDataX">Plot-Manager-Daten konnten nicht hinzugefügt werden: {0}</system:String>
+	<system:String x:Key="string_interp_addingStartupFile">Startup-Datei wird hinzugefügt...</system:String>
+	<system:String x:Key="string_interp_addedStartupFile">Startup-Datei hinzugefügt</system:String>
+	<system:String x:Key="string_interp_failedToAddStartupFileX">Startup-Datei konnte nicht hinzugefügt werden: {0}</system:String>
 	<system:String x:Key="string_title_starterkit">DLC-Mod Starter Kit Generator</system:String>
 	<system:String x:Key="string_newDLCModInformation">Info für neuen DLC-Mod</system:String>
 	<system:String x:Key="string_modName">Mod-Name</system:String>
@@ -1886,10 +1912,10 @@
 	<system:String x:Key="string_internalName">Interner Name</system:String>
 	<system:String x:Key="string_internalNameTLKID">Interner Name TLK ID</system:String>
 	<system:String x:Key="string_dLCModuleNumber">DLC-Modulnummer</system:String>
-	<system:String x:Key="string_mountPriority">Einhängungspriorität</system:String>
-	<system:String x:Key="string_mountFlag">Einhängungsmarker</system:String>
+	<system:String x:Key="string_mountPriority">Mount-Priorität</system:String>
+	<system:String x:Key="string_mountFlag">Mount-Marker</system:String>
 	<system:String x:Key="string_decriptionHintText">Mod Manager Beschreibung, die Benutzer sehen werden, wenn sie deinen Mod im Mod Manager auswählen. Du kannst diese Beschreibung später bearbeiten, um deinen Mod genauer zu beschreiben.</system:String>
-	<system:String x:Key="string_ensureYouAreUsingAUniqueMountPriority">Stelle sicher, dass du eine einzigartige Einhängungspriorität für deinen Mod benutzt.</system:String>
+	<system:String x:Key="string_ensureYouAreUsingAUniqueMountPriority">Stelle sicher, dass du eine einzigartige Mount-Priorität für deinen Mod benutzt.</system:String>
 	<system:String x:Key="string_existingKnownDLC">Bekannte existierende DLCs</system:String>
 	<system:String x:Key="string_generateStarterKit">Starter Kit generieren</system:String>
 	<system:String x:Key="string_noSaveFileDependencyOnDLC">Spielstand ist nicht von DLC abhängig</system:String>
@@ -1912,7 +1938,7 @@
 	<system:String x:Key="string_interp_dialogMountPrioirtyConflicts" xml:space="preserve">Die DLC-Mount-Priorität dieser Mod kollidiert mit vorhandenem DLC:{0}\n\nMount-Prioritäten werden benutzt, um zu bestimmen welche Dateien im Falle uneindeutiger Paketnamen benutzt werden (Datei mit gleichem Namen existiert an mehreren Orten). Kollidierende Werte werden undefiniertes Verhalten verursachen und sollten vermieden werden. Wenn du kollidierende Mods veröffentlichst, die nicht Teil der selben Mod Gruppe sind (zum Beispiel Mod-Varianten), ist es wahrscheinlich, dass deine Mod von Mod-Werkzeugen gesperrt wird.\n\nTrotzdem fortsetzen?</system:String>
 	<system:String x:Key="string_conflictingDLCMountPriorityNumbers">Kollidierende DLC-Mount-Prioritäten</system:String>
 	<system:String x:Key="string_dialog_discourageUseOfSPSaveRequired" xml:space="preserve">Du hast ausgewählt, dass Spielstände von diesem Mod abhängig sind. Wenn ein Benutzer deinen Mod (absichtlich oder durch Reparatur) entfernt, können Spielstände die mit diesem Mod erstellt wurden, nicht mehr geladen werden. Das ist in den meisten Fällen nicht wünschenswert für den Endbenutzer. Du solltest diese Option nur wählen, wenn du wirklich weißt, was du tust.\n\nDiesen Einhängungsmarker trotzdem benutzen?</system:String>
-	<system:String x:Key="string_undesirableMountFlag">Nicht wünschenswerter Einhängungsmarker</system:String>
+	<system:String x:Key="string_undesirableMountFlag">Nicht wünschenswerter Mount-Marker</system:String>
 	<system:String x:Key="string_interp_dialogWillDeleteExistingMod" xml:space="preserve">Erstellen dieser Mod wird einen in der Mod-Bibliothek vorhandenen Ordner löschen:\n{0}\n\nFortsetzen?</system:String>
 	<system:String x:Key="string_dialogErrorDeletingExistingMod">Fehler beim Löschen eines vorhandenen Mod-Ordners. Wahrscheinlich ist der Ordner oder eine Datei darin in einem anderen Programm geöffnet. Schau ins Mod Manager Ereignisprotokoll für weitere Informationen</system:String>
 	<system:String x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory" xml:space="preserve">Beim Löschen eines vorhandenen Mod-Ordners ist ein Fehler aufgetreten:\n{0}</system:String>
@@ -1943,7 +1969,7 @@
 	<system:String x:Key="string_submitToME3Tweaks">An ME3Tweaks senden</system:String>
 	<system:String x:Key="string_submitting">Wird gesendet...</system:String>
 	<system:String x:Key="string_submitted">Gesendet</system:String>
-	<system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 unterstützt bisher keine Einhängungsmarker in Mod Manager</system:String>
+	<system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 unterstützt bisher keine Mount-Marker in Mod Manager</system:String>
 	<system:String x:Key="string_mE3TweaksTPMISubmission">ME3Tweaks TPMI Einsendung</system:String>
 	<system:String x:Key="string_telemetryPanelHeader">Du kannst deine Mod-Info bei der Third Party Mod Identification (Drittanbieter-Mod Indentifikations-) Datenbank einreichen. Damit erlaubst du ME3Tweaks, der Modding-Szene bessere Dienste anzubieten.</system:String>
 	<system:String x:Key="string_dLCFolderNameColon">DLC Ordner Name:</system:String>
@@ -1952,8 +1978,8 @@
 	<system:String x:Key="string_developerColon">Entwickler:</system:String>
 	<system:String x:Key="string_modSiteColon">Mod-Website:</system:String>
 	<system:String x:Key="string_tLKIDColon">TLK ID:</system:String>
-	<system:String x:Key="string_mountPriorityColon">Einhängungspriorität:</system:String>
-	<system:String x:Key="string_mountFlagColon">Einhängungsmarker:</system:String>
+	<system:String x:Key="string_mountPriorityColon">Mount-Priorität:</system:String>
+	<system:String x:Key="string_mountFlagColon">Mount-Marker:</system:String>
 	<system:String x:Key="string_moduleNumberColon">Modulnummer:</system:String>
 	<system:String x:Key="string_interp_errorSubmittingModInformation">Fehler beim Senden der Mod-Informationen: {0}</system:String>
 	<system:String x:Key="string_errorSubmitting">Fehler beim Senden</system:String>
@@ -1961,6 +1987,8 @@
 	<system:String x:Key="string_hashingFiles">Dateien werden gehasht</system:String>
 	<system:String x:Key="string_creatingArchive">Archiv wird erstellt</system:String>
 	<system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">TFC {0} kann nicht in /BIOGame/CookedPCConsole in LE1 installiert werden. Zusätzliche Spiel-TFCs müssen über einen benutzerdefinierten DLC-Ordner hinzugefügt werden.</system:String>
+	<system:String x:Key="string_interp_detectedTFCFromAnotherModTPMI">TFC-Datei von einer anderen Mod erkannt: {0} ({1}). Das Versenden von TFCs anderer Mods beschädigt Modding-Tools und kann zum ausschluss beim Importieren führen, wenn dadurch Benutzerinstallationen beschädigt werden. TFCs sind oft nicht in den Patch-Berechtigungen enthalten, deine Mod kann dadurch von Hosting-Plattformen entfernt werden, indem du sie einschließt. Füge keine TFCs anderer Mods in deine Mod ein.</system:String>
+	<system:String x:Key="string_interp_detectedTFCFromAnotherModUnknown">TFC-Datei erkannt, die möglicherweise von einer anderen Mod ist: {0}. Das Versenden von TFCs anderer Mods beschädigt Modding-Tools und kann zum ausschluss beim Importieren führen, wenn dadurch Benutzerinstallationen beschädigt werden. TFCs sind oft nicht in den Patch-Berechtigungen enthalten, deine Mod kann dadurch von Hosting-Plattformen entfernt werden, indem du sie einschließt. Füge keine TFCs anderer Mods in deine Mod ein.</system:String>
 	<system:String x:Key="string_preparingToInstallTextures">Vorbereitung zur Installation von Texturen</system:String>
 	<system:String x:Key="string_installingTextureMods">Installiere Textur Mods</system:String>
 	<system:String x:Key="string_installedTextureMods">Textur Mods installiert</system:String>

@@ -202,6 +202,11 @@
 	<system:String x:Key="string_notConfigured">Не настроено</system:String>
 	<system:String x:Key="string_reconfigurationRequired">Требуется перенастройка</system:String>
 	<system:String x:Key="string_interp_configuredTimestamp">Настроено {0}</system:String>
+	<system:String x:Key="string_uiImportInstallGroupPrefix" xml:space="preserve">Моды, которые будут установлены группой:\n</system:String>
+	<system:String x:Key="string_interp_xContentMod" xml:space="preserve">- {0} {1} (Контент-мод)\n</system:String>
+	<system:String x:Key="string_interp_xTextureMod" xml:space="preserve">- {0} (Текстурный мод)\n</system:String>
+	<system:String x:Key="string_interp_xASIMod" xml:space="preserve">- {0} (ASI-мод)\n</system:String>
+	<system:String x:Key="string_uiImportInstallGroupSuffix" xml:space="preserve">\nИмпортирование добавит данную группу установки в Batch Installer</system:String>
 	<system:String x:Key="string_batchModInstaller">Групповой Установщик Модов</system:String>
 	<system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Групповой Установщик Модов позволяет устанавливать группу модов подряд. позволяя быстро воссоздавать определенную конфигурацию игры.</system:String>
 	<system:String x:Key="string_createANewInstallGroup">Создать новую группу установки</system:String>
@@ -448,6 +453,8 @@
 	<system:String x:Key="string_debugReload">Перезагрузка отладки</system:String>
 	<system:String x:Key="string_deleteFromLibrary">Удалить из библиотеки</system:String>
 	<system:String x:Key="string_visitWebsite">Посетить веб-сайт</system:String>
+	<system:String x:Key="string_emailsNotMergedMessagesFileNotFound">Письма не объединены: Файл сообщений не найден</system:String>
+	<system:String x:Key="string_game2EmailMergeWrongGame">Манифест объединения писем Game 2 ссылается на неверную игру</system:String>
 	<system:String x:Key="string_autobootSave">Сохранение автозагрузки</system:String>
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Недопустимый путь: {0} не обнаружен в папке игры.</system:String>
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Недопустимый путь: Отмечен как архивный наличием файла cmm_vanilla</system:String>
@@ -1160,6 +1167,8 @@
 	<system:String x:Key="string_dialog_errorGeneratingMergeDLC" xml:space="preserve">Ошибка генерации Merge DLC: {0}Моды могут работать неправильно - удалите вручную Merge DLC (если есть) через панель 'Настройка Игры'.</system:String>
 	<system:String x:Key="string_errorGeneratingMergeDLC">Ошибка генерации Merge DLC</system:String>
 	<system:String x:Key="string_someASIModsWereNotInstalled">Некоторые ASI-моды не были установлены; подробнее в логах</system:String>
+	<system:String x:Key="string_dialog_importedBatchInstallGroup">Группы установки можно найти в Batch Installer, расположенном в меню Управление Модами</system:String>
+	<system:String x:Key="string_installGroupImported">Группы установки импортированы</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Директория Mass Effect Config отсутствует. Она должна находиться в {0}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Невозможно запустить Mass Effect Ini Modder</system:String>
@@ -1318,6 +1327,9 @@
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Разработчики ME3Tweaks Mod Manager внесли данный файл в черный список по одной из следующих причин:\n - Мод(ы) в данном файле не работает или заброшен\n - Мод(ы) в данном файле повреждает игру у конечных пользователей</system:String>
 	<system:String x:Key="string_interp_errorCreatingModFolderX">Произошла ошибка создания папки для данного мода: {0}</system:String>
 	<system:String x:Key="string_invalidServerModdesc">Для данного архива был предоставлен недопустимый moddesc сервера, пожалуйста отправьте Mgamerz ссылку на данный файл и сообщение об ошибке.</system:String>
+	<system:String x:Key="string_description_invalidBatchQueueArchive">Batch-группы установки должны быть преобразованы посредством ME3Tweaks Mod Manager для возможности их импортирования. Свяжитесь с разработчиком данного файла.</system:String>
+	<system:String x:Key="string_dialog_biqAlreadyExists">Группа установки с именем {0} уже существует. Импортирование данной группы перезапишет существующую.</system:String>
+	<system:String x:Key="string_installGroupAlreadyExists">Группа установки уже существует</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Невозможно скачать файл: Необходимо иметь премиум-подписку NexusMods для использования прямых ссылок.</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Невозможно скачать файл: Удалено с NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Ошибка загрузки мода: {0}</system:String>
