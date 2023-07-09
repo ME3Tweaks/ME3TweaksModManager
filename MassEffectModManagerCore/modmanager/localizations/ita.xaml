@@ -202,6 +202,11 @@
 	<system:String x:Key="string_notConfigured">Non configurato</system:String>
 	<system:String x:Key="string_reconfigurationRequired">Riconfigurazione richiesta</system:String>
 	<system:String x:Key="string_interp_configuredTimestamp">Configurato {0}</system:String>
+	<system:String x:Key="string_uiImportInstallGroupPrefix" xml:space="preserve">Mod che saranno installate dal gruppo di installazione:\n</system:String>
+	<system:String x:Key="string_interp_xContentMod" xml:space="preserve">- {0} {1} (Mod di contenuti)\n</system:String>
+	<system:String x:Key="string_interp_xTextureMod" xml:space="preserve">- {0} (Mod texture)\n</system:String>
+	<system:String x:Key="string_interp_xASIMod" xml:space="preserve">- {0} (Mod ASI)\n</system:String>
+	<system:String x:Key="string_uiImportInstallGroupSuffix" xml:space="preserve">\nL'importazione aggiungera' questo gruppo di installazione all'Installer di Gruppo</system:String>
 	<system:String x:Key="string_batchModInstaller">Installer per gruppi di mod</system:String>
 	<system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">L'installer per gruppi di mod ti permette di installare un gruppo di mod tutte di fila, permettendoti di ricreare velocemente una specifica installazione del gioco.</system:String>
 	<system:String x:Key="string_createANewInstallGroup">Crea un nuovo gruppo di installazione</system:String>
@@ -448,6 +453,8 @@
 	<system:String x:Key="string_debugReload">Ricarica del debug</system:String>
 	<system:String x:Key="string_deleteFromLibrary">Rimuovi dalla libreria</system:String>
 	<system:String x:Key="string_visitWebsite">Visita il sito</system:String>
+	<system:String x:Key="string_emailsNotMergedMessagesFileNotFound">Merge delle email non effettuato: file dei messaggi non trovato</system:String>
+	<system:String x:Key="string_game2EmailMergeWrongGame">Il manifesto del merge delle email del gioco 2 punta al gioco sbagliato</system:String>
 	<system:String x:Key="string_autobootSave">Avvio automatico salvataggio</system:String>
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Obiettivo non valido: {0} non è stato trovato nella cartella di gioco.</system:String>
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Obiettivo non valido: Impostato come backup protetto con il file cmm_vanilla</system:String>
@@ -687,7 +694,7 @@
 	<system:String x:Key="string_saveFile">Salvataggio</system:String>
 	<system:String x:Key="string_description_saveFile">In maniera opzionale, puoi includere un salvataggio nelle tue diagnostiche del gioco. Seleziona un salvataggio solo se richiesto.</system:String>
 	<system:String x:Key="string_selectSaveFile">Seleziona un salvataggio.</system:String>
-	<system:String x:Key="string_importingSaveFileFromME3Tweaks">Importazione del salvagattio da ME3Tweaks in corso</system:String>
+	<system:String x:Key="string_importingSaveFileFromME3Tweaks">Importazione del salvataggio da ME3Tweaks in corso</system:String>
 	<system:String x:Key="string_importedSaveFileFromME3Tweaks">Salvataggio importato da ME3Tweaks</system:String>
 	<system:String x:Key="string_interp_errorImportingSaveFileX">Errore nell'importazione del salvataggio: {0}</system:String>
 	<system:String x:Key="string_loadingME3TweaksServices">Caricamento dei servizi di ME3Tweaks</system:String>
@@ -1160,6 +1167,8 @@
 	<system:String x:Key="string_dialog_errorGeneratingMergeDLC" xml:space="preserve">Errore nella generazione del DLC Merge: {0}\nLe mod potrebbero non funzionare correttamente - se esistente, rimuovere il DLC merge manualmente tramite il pulsante "Gestisci Installazione"</system:String>
 	<system:String x:Key="string_errorGeneratingMergeDLC">Errore nella generazione del DLC Merge</system:String>
 	<system:String x:Key="string_someASIModsWereNotInstalled">Alcune mod ASI non sono state installate, vedi i log per maggiori informazioni</system:String>
+	<system:String x:Key="string_dialog_importedBatchInstallGroup">I gruppi di installazione si trovano nell'Installer di Gruppo, situato nel menu di Gestione Mod.</system:String>
+	<system:String x:Key="string_installGroupImported">Gruppo di installazione importato</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Il file di configurazione di Mass Effect {0}.ini è mancante. Dovrebbe trovarsi in {1}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">La cartella di configurazione di Mass Effect è mancante. Dovrebbe trovarsi in {0}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect Ini Modder</system:String>
@@ -1318,6 +1327,9 @@
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Gli sviluppatori di ME3Tweaks Mod Manager hanno messo questo file in blacklist per una delle seguenti ragioni:\n - La (o le) mod presente in questo file è famosa per non funzionare ed è stata abbandonata\n - La (o le) mod in questo file è distruttiva per l'utente finale</system:String>
 	<system:String x:Key="string_interp_errorCreatingModFolderX">C'è stato un errore durante la creazione della cartella per questa mod: {0}</system:String>
 	<system:String x:Key="string_invalidServerModdesc">Per questo file archivio è stato selezionato un server moddesc non valido, per favore contatta Mgamerz con il link a questo file e questo messaggio di errore.</system:String>
+	<system:String x:Key="string_description_invalidBatchQueueArchive">I gruppi di installazione devono essere spediti tramite ME3Tweaks Mod Manager per poter essere importati. Contatta lo sviluppatore di questo file.</system:String>
+	<system:String x:Key="string_dialog_biqAlreadyExists">Un gruppo di installazione dal nome {0} esiste gia'. Importando questo gruppo si sovrascrivera' il gruppo gia' esistente.</system:String>
+	<system:String x:Key="string_installGroupAlreadyExists">Gruppo di installazione gia' esistente</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Impossibile scaricare il file: devi essere un iscritto premium a NexusMods per usare i link a download diretto.</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Impossibile scaricare file: Cancellato da NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Errore nel download della mod: {0}</system:String>
