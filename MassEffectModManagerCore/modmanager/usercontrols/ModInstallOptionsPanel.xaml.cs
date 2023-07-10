@@ -23,6 +23,8 @@ using ME3TweaksModManager.modmanager.objects.exceptions;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.batch;
 using Serilog.Filters;
+using static ME3TweaksModManager.modmanager.usercontrols.ModInstaller;
+using ME3TweaksCore.Targets;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -121,6 +123,41 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SetupOptions(bool initialSetup)
         {
+            var missingRequiredDLC = ModBeingInstalled.ValidateRequiredModulesAreInstalled(SelectedGameTarget);
+            if (missingRequiredDLC.Count > 0)
+            {
+                M3Log.Error(@"Required DLC is missing for installation against target: " + string.Join(@", ", missingRequiredDLC));
+                PreventInstallUntilTargetChange = true;
+
+                string dlcText = "";
+                foreach (var dlc in missingRequiredDLC)
+                {
+                    var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName, ModBeingInstalled.Game);
+                    if (info != null)
+                    {
+                        dlcText += $"\n - {info.modname} ({dlc.DLCFolderName})"; //Do not localize
+                    }
+                    else
+                    {
+                        dlcText += $"\n - {dlc.DLCFolderName}"; //Do not localize
+                    }
+
+                    if (dlc.MinVersion != null)
+                    {
+                        dlcText += @" " + M3L.GetString(M3L.string_interp_minVersionAppend, dlc.MinVersion);
+                    }
+                }
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+
+                if (InstallationTargets.Count == 1)
+                {
+                    // There are no other options
+                    OnClosing(DataEventArgs.Empty);
+                }
+                return;
+
+            }
+
             AlternateGroups.ClearEx();
 
             //Write check
@@ -576,6 +613,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanInstall()
         {
+            if (PreventInstallUntilTargetChange) return false;
             foreach (var group in AlternateGroups)
             {
                 if (group.IsMultiSelector)
@@ -600,7 +638,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void BeginInstallingMod()
         {
-            if (IsInstallingMod) // Prevents double calls to this method
+            // Do not install if double clicked or if install is disabled
+            if (PreventInstallUntilTargetChange || IsInstallingMod) // Prevents double calls to this method
                 return;
             IsInstallingMod = true;
 
@@ -673,6 +712,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+
+
             GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
             InitializeComponent();
             InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game));
