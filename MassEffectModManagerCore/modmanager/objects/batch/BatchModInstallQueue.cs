@@ -325,7 +325,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             // Prepare for save
             foreach (var m in ModsToInstall)
             {
-                m.PrepareForSave();
+                m?.PrepareForSave();
             }
 
             SerializeOnly_MEMFilePaths = TextureModsToInstall.Select(x =>
