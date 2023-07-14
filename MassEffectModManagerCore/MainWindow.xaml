@@ -1085,7 +1085,6 @@
                         </MenuItem>
                         <!-- GAME 3 -->
                         <MenuItem
-                            ui:SharedUIBindings.GenerationLE="True"
                             Header="{DynamicResource string_decompileCoalescedFileGame3}"
                             ToolTip="{DynamicResource string_tooltip_decompileCoalGame3}"
                             Command="{Binding DecompileCoalescedCommand}"
@@ -1100,7 +1099,6 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            ui:SharedUIBindings.GenerationLE="True"
                             Header="{DynamicResource string_compileCoalescedFileGame3}"
                             ToolTip="{DynamicResource string_tooltip_compileCoalGame3}"
                             Command="{Binding CompileCoalescedCommand}"
