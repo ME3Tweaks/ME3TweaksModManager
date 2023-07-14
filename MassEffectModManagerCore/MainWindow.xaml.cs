@@ -936,30 +936,9 @@ namespace ME3TweaksModManager
             }
         }
 
-        private void OpenTSE()
+        public void OpenTSE()
         {
-            void notInstalled()
-            {
-                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_tseNotInstalled), M3L.GetString(M3L.string_tSENotInstalled), MessageBoxButton.OK, MessageBoxImage.Warning);
-                M3Utilities.OpenWebpage(@"https://github.com/KarlitosVII/trilogy-save-editor/releases/latest");
-            }
-
-            var tseInstallPath = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall\{6A0B979E-271B-4E50-A4C3-487C8E584070}_is1", @"Inno Setup: App Path", null);
-            if (tseInstallPath == null)
-            {
-                notInstalled();
-                return;
-            }
-
-            var tseExecutable = Path.Combine(tseInstallPath, @"trilogy-save-editor.exe");
-            if (File.Exists(tseExecutable))
-            {
-                M3Utilities.RunProcess(tseExecutable);
-            }
-            else
-            {
-                notInstalled();
-            }
+            TrilogySaveEditorHelper.OpenTSE(this);
         }
 
         private void OpenLaunchOptionSelector()
@@ -2531,7 +2510,7 @@ namespace ME3TweaksModManager
         /// <param name="recordOptionsToBM">If options chosen should be saved back to the BatchMod object</param>
         /// <param name="useSavedBatchOptions">If options saved in the BatchMod object should be used</param>
         private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null,
-            bool? installCompressed = null, Action<bool,bool> installCompletedCallback = null)
+            bool? installCompressed = null, Action<bool, bool> installCompletedCallback = null)
         {
             if (!M3Utilities.IsGameRunning(mod.Game))
             {

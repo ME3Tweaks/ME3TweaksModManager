@@ -7,11 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using LegendaryExplorerCore.Gammtek;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Services;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save;
 using ME3TweaksModManager.modmanager.windows.input;
+using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
@@ -53,6 +56,13 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 {
                     var saveinfo = HttpUtility.ParseQueryString(link.Data);
                     var hash = saveinfo[@"hash"];
+                    string gameStr = saveinfo[@"game"];
+                    MEGame? game = null;
+                    if (gameStr != null)
+                    {
+                        game = Enum<MEGame>.Parse(gameStr);
+                    }
+
                     M3Log.Information($@"Downloading ME3Tweaks diagnostic save: {hash}");
 
                     var storageLink = $@"https://me3tweaks.com/modmanager/logservice/saves/{hash}.pcsav";
@@ -62,19 +72,24 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                     if (download.errorMessage == null)
                     {
                         var loadedSave = SaveFileLoader.LoadSaveFile(download.result);
-
+                        var sf = JsonConvert.SerializeObject(loadedSave);
+                        Debug.WriteLine(sf);
                         // Some day we might want to set it to have a specific proxy_firstname so it gets sorted out into
                         // a proper career. but that's a lot of work and I don't really want to deal with save editing...
 
-                        var baseSavePath =
-                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare",
-                                SaveSelectorUI.GetSaveSubDir(loadedSave.Game));
-                        var careerPath = Path.Combine(baseSavePath, @"ModManagerDiagSaves");
+                        var baseSavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", SaveSelectorUI.GetSaveSubDir(game ?? loadedSave.Game));
+                        var careerPath = Path.Combine(baseSavePath, GetDiagnosticCareerName(game ?? loadedSave.Game));
                         Directory.CreateDirectory(careerPath);
 
                         var finalSavePath = Path.Combine(careerPath, saveName);
                         M3Log.Information($@"Installing save file to {finalSavePath} ME3Tweaks diagnostic save: {hash}");
                         download.result.WriteToFile(finalSavePath);
+
+                        if (saveinfo[@"openintse"] is string str && bool.TryParse(str, out var openInSTE) && openInSTE)
+                        {
+                            M3Log.Information(@"Opening save in TSE");
+                            TrilogySaveEditorHelper.OpenTSE(window, finalSavePath);
+                        }
                     }
                     else
                     {
@@ -92,6 +107,26 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
                 return;
             }
+        }
+
+        private static string GetDiagnosticCareerName(MEGame game)
+        {
+            string baseName = @"ModManagerDiagSaves";
+
+            switch (game)
+            {
+                case MEGame.ME1: // ME1 is not supported for this feature
+                case MEGame.LE1:
+                    return baseName;
+                case MEGame.ME2:
+                    return baseName + @"_03_Diag_070123";
+                case MEGame.ME3:
+                case MEGame.LE2:
+                case MEGame.LE3:
+                    return baseName + @"_03_Diag_070123_0000000";
+            }
+
+            throw new Exception(@"Unsupported game for this feature!");
         }
     }
 
