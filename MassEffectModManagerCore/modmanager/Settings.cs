@@ -423,6 +423,12 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _oneTimeMessageLe1CoalescedOverwriteWarning, value);
         }
 
+        private static bool _skipDarkNetHandling = false;
+        public static bool SkipDarkNetHandling
+        {
+            get => _skipDarkNetHandling;
+            set => SetProperty(ref _skipDarkNetHandling, value);
+        }
 
         public static readonly string SettingsPath = Path.Combine(M3Filesystem.GetAppDataFolder(), "settings.ini");
 
@@ -473,6 +479,7 @@ namespace ME3TweaksModManager.modmanager
 
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
+            SkipDarkNetHandling = LoadSettingBool(settingsIni, "UI", "SkipDarkNetHandling", false);
 
             ConfigureNXMHandlerOnBoot = LoadSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", true);
             DoubleClickModInstall = LoadSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", false);

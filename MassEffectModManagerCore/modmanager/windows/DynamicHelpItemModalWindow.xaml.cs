@@ -51,7 +51,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 }
             }
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
         }
 
         private void OK_Click(object sender, RoutedEventArgs e)

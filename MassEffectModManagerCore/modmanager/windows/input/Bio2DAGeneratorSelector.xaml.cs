@@ -24,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             Game = game;
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
         }
 
         private List<Bio2DAOption> LoadOptions()

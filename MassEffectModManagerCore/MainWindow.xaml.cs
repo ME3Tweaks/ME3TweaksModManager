@@ -36,6 +36,7 @@ using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.deployment;
 using ME3TweaksModManager.modmanager.headmorph;
@@ -337,7 +338,7 @@ namespace ME3TweaksModManager
             LoadCommands();
             SetTheme(true);
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
 
             //Change language if not INT
             if (App.InitialLanguage != @"int")
@@ -4396,7 +4397,7 @@ namespace ME3TweaksModManager
                 {
                     try
                     {
-                        DarkNet.Instance.SetWindowThemeWpf(w, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+                        w.ApplyDefaultTheming();
                     }
                     catch
                     {

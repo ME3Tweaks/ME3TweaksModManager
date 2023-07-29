@@ -76,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.windows
             Games = MEGameSelector.GetGameSelectorsIncludingLauncher().ToArray();
 
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
 
             if (queueToEdit != null)
             {

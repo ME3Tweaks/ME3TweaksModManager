@@ -35,7 +35,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ME3CMMMigrationWindow()
         {
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
             Tasks.Add(MigratingModsTask);
             Tasks.Add(MigratingSettings);
             Tasks.Add(CleaningUpTask);

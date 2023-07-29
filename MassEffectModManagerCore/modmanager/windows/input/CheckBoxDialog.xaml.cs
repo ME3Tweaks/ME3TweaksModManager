@@ -37,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
 
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
         }
 
         public int RequestedHeight { get; set; }

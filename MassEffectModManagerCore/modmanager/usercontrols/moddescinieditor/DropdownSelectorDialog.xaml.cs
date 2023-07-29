@@ -26,7 +26,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             LoadCommands();
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
         }
 
         public static object GetSelection<T>(Window owner,

@@ -32,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.windows
             AvailableMods.ReplaceAll(shownMods);
             LoadCommands();
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDefaultTheming();
         }
 
 
