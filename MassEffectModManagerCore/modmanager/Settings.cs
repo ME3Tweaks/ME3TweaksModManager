@@ -686,6 +686,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
                 SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
                 SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
+                SaveSettingBool(settingsIni, "UI", "SkipDarkNetHandling", SkipDarkNetHandling);
                 SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
                 SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
                 SaveSettingString(settingsIni, "ModManager", "Language", Language);
