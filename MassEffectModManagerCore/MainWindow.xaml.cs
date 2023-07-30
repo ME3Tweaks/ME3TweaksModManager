@@ -338,7 +338,7 @@ namespace ME3TweaksModManager
             LoadCommands();
             SetTheme(true);
             InitializeComponent();
-            this.ApplyDefaultDarkNetWindowStyle();
+            this.ApplyDarkNetWindowStyle();
 
             //Change language if not INT
             if (App.InitialLanguage != @"int")
@@ -4397,7 +4397,7 @@ namespace ME3TweaksModManager
                 {
                     try
                     {
-                        w.ApplyDefaultDarkNetWindowStyle();
+                        w.ApplyDarkNetWindowStyle();
                     }
                     catch
                     {

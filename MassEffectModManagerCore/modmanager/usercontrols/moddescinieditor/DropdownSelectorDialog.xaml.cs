@@ -26,7 +26,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             LoadCommands();
             InitializeComponent();
-            this.ApplyDefaultDarkNetWindowStyle();
+            this.ApplyDarkNetWindowStyle();
         }
 
         public static object GetSelection<T>(Window owner,

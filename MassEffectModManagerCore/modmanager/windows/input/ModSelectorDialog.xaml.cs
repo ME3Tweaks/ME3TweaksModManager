@@ -32,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.windows
             AvailableMods.ReplaceAll(shownMods);
             LoadCommands();
             InitializeComponent();
-            this.ApplyDefaultDarkNetWindowStyle();
+            this.ApplyDarkNetWindowStyle();
         }
 
 

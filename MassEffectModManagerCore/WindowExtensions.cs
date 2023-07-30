@@ -6,7 +6,7 @@ namespace ME3TweaksModManager
 {
     public static class WindowExtensions
     {
-        public static void ApplyDefaultDarkNetWindowStyle(this Window window)
+        public static void ApplyDarkNetWindowStyle(this Window window)
         {
             if (Settings.SkipDarkNetHandling)
             {

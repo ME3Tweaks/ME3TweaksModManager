@@ -33,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.windows
             TelemetryInterposer.TrackEvent(@"Launched MEIM");
             DataContext = this;
             InitializeComponent();
-            this.ApplyDefaultDarkNetWindowStyle();
+            this.ApplyDarkNetWindowStyle();
 
             string configFileFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\BioWare\Mass Effect\Config";
             if (Directory.Exists(configFileFolder))

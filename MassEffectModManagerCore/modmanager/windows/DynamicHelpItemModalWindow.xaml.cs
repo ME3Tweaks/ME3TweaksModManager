@@ -51,7 +51,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 }
             }
             InitializeComponent();
-            this.ApplyDefaultDarkNetWindowStyle();
+            this.ApplyDarkNetWindowStyle();
         }
 
         private void OK_Click(object sender, RoutedEventArgs e)

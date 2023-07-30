@@ -35,7 +35,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ME3CMMMigrationWindow()
         {
             InitializeComponent();
-            this.ApplyDefaultDarkNetWindowStyle();
+            this.ApplyDarkNetWindowStyle();
             Tasks.Add(MigratingModsTask);
             Tasks.Add(MigratingSettings);
             Tasks.Add(CleaningUpTask);
