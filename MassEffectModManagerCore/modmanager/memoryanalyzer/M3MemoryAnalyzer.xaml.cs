@@ -57,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
             Refresh();
             LoadCommands();
             InitializeComponent();
-            this.ApplyDefaultTheming();
+            this.ApplyDefaultDarkNetWindowStyle();
 
             //  DispatcherTimer setup
             dispatcherTimer = new DispatcherTimer();

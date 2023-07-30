@@ -24,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             Game = game;
             InitializeComponent();
-            this.ApplyDefaultTheming();
+            this.ApplyDefaultDarkNetWindowStyle();
         }
 
         private List<Bio2DAOption> LoadOptions()

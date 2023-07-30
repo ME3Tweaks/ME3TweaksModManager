@@ -76,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.windows
             Games = MEGameSelector.GetGameSelectorsIncludingLauncher().ToArray();
 
             InitializeComponent();
-            this.ApplyDefaultTheming();
+            this.ApplyDefaultDarkNetWindowStyle();
 
             if (queueToEdit != null)
             {

@@ -45,7 +45,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             Owner = owner;
             SelectedMod = selectedMod;
             InitializeComponent();
-            this.ApplyDefaultTheming();
+            this.ApplyDefaultDarkNetWindowStyle();
 
 
             AvailableFeatures.Add(new StarterKitAddinFeature(M3L.GetString(M3L.string_addStartupFile), AddStartupFile, validGames: new[] { MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 }));

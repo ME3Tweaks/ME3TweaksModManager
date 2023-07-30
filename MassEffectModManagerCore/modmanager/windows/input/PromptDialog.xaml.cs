@@ -29,7 +29,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public PromptDialog(string question, string title, string defaultValue = @"", bool selectText = false, int selectionStart = -1, int selectionEnd = -1, InputType inputType = InputType.Text)
         {
             InitializeComponent();
-            this.ApplyDefaultTheming();
+            this.ApplyDefaultDarkNetWindowStyle();
 
             txtQuestion.Text = question;
             Title = title;

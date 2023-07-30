@@ -59,7 +59,7 @@ namespace ME3TweaksModManager.modmanager.windows
             DCI = dci;
             SetupMessages();
             InitializeComponent();
-            this.ApplyDefaultTheming();
+            this.ApplyDefaultDarkNetWindowStyle();
             Owner = owner;
             MessagesView.Filter = FilterMessages;
         }

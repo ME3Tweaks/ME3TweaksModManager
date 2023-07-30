@@ -469,7 +469,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
             }
             LoadCommands();
             InitializeComponent();
-            this.ApplyDefaultTheming();
+            this.ApplyDefaultDarkNetWindowStyle();
 
             SaveCareersView.Filter = FilterCareers;
             CareerSaveFilesView.Filter = FilterSaves;
