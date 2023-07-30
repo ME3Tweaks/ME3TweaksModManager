@@ -15,7 +15,7 @@ namespace ME3TweaksModManager.modmanager.windows
             LicenseText = licenseText;
             LoadCommands();
             InitializeComponent();
-            this.ApplyDarkNetWindowStyle();
+            this.ApplyDarkNetWindowTheme();
         }
 
         public string LicenseText { get; set; }

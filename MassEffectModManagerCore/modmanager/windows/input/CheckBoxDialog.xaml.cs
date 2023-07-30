@@ -37,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
 
             InitializeComponent();
-            this.ApplyDarkNetWindowStyle();
+            this.ApplyDarkNetWindowTheme();
         }
 
         public int RequestedHeight { get; set; }

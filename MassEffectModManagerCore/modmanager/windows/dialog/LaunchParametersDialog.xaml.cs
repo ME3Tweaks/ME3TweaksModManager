@@ -78,7 +78,7 @@ namespace ME3TweaksModManager.modmanager.windows
             LoadPackage(package);
             LoadCommands();
             InitializeComponent();
-            this.ApplyDarkNetWindowStyle();
+            this.ApplyDarkNetWindowTheme();
         }
 
         private void LoadPackage(LaunchOptionsPackage package)

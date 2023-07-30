@@ -37,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.windows
             EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game);
             LoadCommands();
             InitializeComponent();
-            this.ApplyDarkNetWindowStyle();
+            this.ApplyDarkNetWindowTheme();
 
             // Tabs that can edit content
             editorControls.Add(metadataEditor_control);

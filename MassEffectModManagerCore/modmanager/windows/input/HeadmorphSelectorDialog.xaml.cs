@@ -33,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.windows
             AvailableHeadmorphs.ReplaceAll(mod.GetJob(ModJob.JobHeader.HEADMORPHS).HeadMorphFiles);
             LoadCommands();
             InitializeComponent();
-            this.ApplyDarkNetWindowStyle();
+            this.ApplyDarkNetWindowTheme();
         }
 
         public GenericCommand SelectHeadmorphCommand { get; set; }

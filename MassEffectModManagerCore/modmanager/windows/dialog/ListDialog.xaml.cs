@@ -21,7 +21,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ListDialog(List<string> listItems, string title, string message, Window owner, int width = 0, int height = 0)
         {
             InitializeComponent();
-            this.ApplyDarkNetWindowStyle();
+            this.ApplyDarkNetWindowTheme();
             Title = title;
             ListDialog_Message.Text = message;
             items = listItems;
