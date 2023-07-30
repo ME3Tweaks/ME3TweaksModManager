@@ -23,7 +23,6 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
-using ME3TweaksModManager;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
