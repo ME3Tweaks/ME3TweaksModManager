@@ -8,7 +8,7 @@ namespace ME3TweaksModManager.extensions
     {
         public static void ApplyDarkNetWindowTheme(this Window window)
         {
-            if (Settings.SkipDarkNetHandling)
+            if (Settings.SkipDarkNet)
             {
                 return;
             }

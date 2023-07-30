@@ -423,11 +423,11 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _oneTimeMessageLe1CoalescedOverwriteWarning, value);
         }
 
-        private static bool _skipDarkNetHandling = false;
-        public static bool SkipDarkNetHandling
+        private static bool _skipDarkNet = false;
+        public static bool SkipDarkNet
         {
-            get => _skipDarkNetHandling;
-            set => SetProperty(ref _skipDarkNetHandling, value);
+            get => _skipDarkNet;
+            set => SetProperty(ref _skipDarkNet, value);
         }
 
         public static readonly string SettingsPath = Path.Combine(M3Filesystem.GetAppDataFolder(), "settings.ini");
@@ -479,7 +479,7 @@ namespace ME3TweaksModManager.modmanager
 
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
-            SkipDarkNetHandling = LoadSettingBool(settingsIni, "UI", "SkipDarkNetHandling", false);
+            SkipDarkNet = LoadSettingBool(settingsIni, "UI", "SkipDarkNet", false);
 
             ConfigureNXMHandlerOnBoot = LoadSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", true);
             DoubleClickModInstall = LoadSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", false);
@@ -686,7 +686,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
                 SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
                 SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
-                SaveSettingBool(settingsIni, "UI", "SkipDarkNetHandling", SkipDarkNetHandling);
+                SaveSettingBool(settingsIni, "UI", "SkipDarkNet", SkipDarkNet);
                 SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
                 SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
                 SaveSettingString(settingsIni, "ModManager", "Language", Language);
