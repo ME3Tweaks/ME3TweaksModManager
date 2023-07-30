@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Dark.Net;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.windows

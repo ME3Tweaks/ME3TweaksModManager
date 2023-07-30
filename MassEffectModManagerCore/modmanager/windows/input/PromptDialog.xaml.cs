@@ -1,4 +1,5 @@
 ﻿using Dark.Net;
+using ME3TweaksModManager.extensions;
 using System.Windows;
 using System.Windows.Controls;
 

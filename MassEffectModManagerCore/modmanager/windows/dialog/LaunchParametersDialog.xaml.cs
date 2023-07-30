@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using Dark.Net;
 using Newtonsoft.Json;
 using Pathoschild.FluentNexus.Models;
+using ME3TweaksModManager.extensions;
 
 namespace ME3TweaksModManager.modmanager.windows
 {

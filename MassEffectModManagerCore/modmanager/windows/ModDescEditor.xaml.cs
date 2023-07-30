@@ -8,6 +8,7 @@ using Dark.Net;
 using IniParser.Model;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.exceptions;
 using ME3TweaksModManager.modmanager.loaders;

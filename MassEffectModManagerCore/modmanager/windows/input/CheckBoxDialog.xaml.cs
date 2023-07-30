@@ -2,6 +2,7 @@
 using System.Windows;
 using Dark.Net;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.extensions;
 using PropertyChanged;
 using CheckBoxSelectionPair = ME3TweaksModManager.ui.CheckBoxSelectionPair;
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Dark.Net;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.windows

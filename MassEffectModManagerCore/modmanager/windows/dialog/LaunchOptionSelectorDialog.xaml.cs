@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using Dark.Net;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using Microsoft.WindowsAPICodePack.PortableDevices.EventSystem;
 using Pathoschild.FluentNexus.Models;

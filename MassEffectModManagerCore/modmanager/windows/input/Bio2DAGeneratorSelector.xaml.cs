@@ -8,6 +8,7 @@ using System.Windows;
 using LegendaryExplorerCore.Helpers;
 using Microsoft.WindowsAPICodePack.COMNative.MediaDevices;
 using Dark.Net;
+using ME3TweaksModManager.extensions;
 
 namespace ME3TweaksModManager.modmanager.windows
 {

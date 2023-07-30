@@ -2,7 +2,7 @@
 using ME3TweaksModManager.modmanager;
 using System.Windows;
 
-namespace ME3TweaksModManager
+namespace ME3TweaksModManager.extensions
 {
     public static class WindowExtensions
     {
