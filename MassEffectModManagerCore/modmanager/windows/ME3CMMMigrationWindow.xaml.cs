@@ -12,6 +12,7 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -35,7 +36,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ME3CMMMigrationWindow()
         {
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDarkNetWindowTheme();
             Tasks.Add(MigratingModsTask);
             Tasks.Add(MigratingSettings);
             Tasks.Add(CleaningUpTask);

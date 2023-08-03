@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using Dark.Net;
 using FontAwesome5;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
@@ -51,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 }
             }
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDarkNetWindowTheme();
         }
 
         private void OK_Click(object sender, RoutedEventArgs e)

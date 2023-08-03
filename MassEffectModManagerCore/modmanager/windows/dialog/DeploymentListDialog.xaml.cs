@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Data;
 using Dark.Net;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.deployment.checks;
@@ -59,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.windows
             DCI = dci;
             SetupMessages();
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDarkNetWindowTheme();
             Owner = owner;
             MessagesView.Filter = FilterMessages;
         }

@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Dark.Net;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.meim;
@@ -33,7 +34,7 @@ namespace ME3TweaksModManager.modmanager.windows
             TelemetryInterposer.TrackEvent(@"Launched MEIM");
             DataContext = this;
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDarkNetWindowTheme();
 
             string configFileFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\BioWare\Mass Effect\Config";
             if (Directory.Exists(configFileFolder))

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Dark.Net;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.windows
@@ -15,7 +16,7 @@ namespace ME3TweaksModManager.modmanager.windows
             LicenseText = licenseText;
             LoadCommands();
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDarkNetWindowTheme();
         }
 
         public string LicenseText { get; set; }

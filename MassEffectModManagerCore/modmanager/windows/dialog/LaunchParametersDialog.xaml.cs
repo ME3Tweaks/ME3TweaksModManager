@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using Dark.Net;
 using Newtonsoft.Json;
 using Pathoschild.FluentNexus.Models;
+using ME3TweaksModManager.extensions;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -78,7 +79,7 @@ namespace ME3TweaksModManager.modmanager.windows
             LoadPackage(package);
             LoadCommands();
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDarkNetWindowTheme();
         }
 
         private void LoadPackage(LaunchOptionsPackage package)

@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Dark.Net;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
@@ -26,7 +27,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             LoadCommands();
             InitializeComponent();
-            DarkNet.Instance.SetWindowThemeWpf(this, Settings.DarkTheme ? Theme.Dark : Theme.Light);
+            this.ApplyDarkNetWindowTheme();
         }
 
         public static object GetSelection<T>(Window owner,
