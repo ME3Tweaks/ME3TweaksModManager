@@ -96,5 +96,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
                 parent.RaiseEvent(eventArg);
             }
         }
+
+        private void AlternateItemCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+            var element = (FrameworkElement)sender;
+            if (DataContext is AlternateGroup group)
+            {
+                group.TrySelectOption(group.AlternateOptions[0]);
+                if (element?.ToolTip is ToolTip tp)
+                    tp.IsOpen = false; // Close the tooltip
+            }
+        }
     }
 }
