@@ -993,8 +993,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // Stage: M3CD for LE2, LE3
-            if (InstallOptionsPackage.ModBeingInstalled.Game is MEGame.LE2 or MEGame.LE3)
-            {
+            if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame3()){
                 foreach (var dlcFolderInstalled in addedDLCFolders)
                 {
                     ConfigMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget), Path.GetFileName(dlcFolderInstalled));
