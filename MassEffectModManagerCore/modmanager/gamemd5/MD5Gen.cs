@@ -13,13 +13,26 @@ namespace ME3TweaksModManager.modmanager.gamemd5
 
         public static void UpdateMD5Map(MEGame game, string directory, string outName)
         {
-            var outF = $@"C:\Users\mgame\source\repos\ME3Tweaks\MassEffectModManager\ME3TweaksModManager\modmanager\gamemd5\{outName}";
+            var outF = $@"B:\UserProfile\source\repos\ME3Tweaks\MassEffectModManager\submodules\ME3TweaksCore\ME3TweaksCore\Assets\VanillaDatabase\{outName}";
             var db = VanillaDatabaseService.LoadDatabaseFor(game, false);
 
+            // UPDATE CODE GOES HERE
+
+            #region ME2 Update 08/14/2023 - Discovered english text version of Engine.pcc which normally for some reason has japanese strings for server/client stuff (Unused)
+            if (game == MEGame.ME2)
+            {
+                var list = db[@"BioGame\CookedPC\Engine.pcc"];
+                db[@"BioGame\CookedPC\Engine.pcc"].Add(1923772, @"d70a7b02725b2f812e3df6faee5f97b1");
+            }
+            #endregion
+            #region Remove Config folder from LE games
+            /*
             if (game.IsLEGame())
             {
                 db.RemoveAll(x => x.Key.Contains(@"BioGame\Config")); // Do not include config files
-            }
+            }*/
+            #endregion
+            // END UPDATE CODE
 
             MemoryStream mapStream = new MemoryStream();
 
