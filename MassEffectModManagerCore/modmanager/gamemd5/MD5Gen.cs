@@ -37,31 +37,35 @@ namespace ME3TweaksModManager.modmanager.gamemd5
             MemoryStream mapStream = new MemoryStream();
 
             // Name Table
-            mapStream.WriteInt32(db.Count); // Num Entries
+            mapStream.WriteInt32(db.Count); // Num unique filenames
             foreach (var f in db.Keys)
             {
                 mapStream.WriteStringASCIINull(f);
             }
 
             // Data Table
-            mapStream.WriteInt32(db.Count);
-            int idx = 0;
+            mapStream.WriteInt32(db.Sum(x => x.Value.Count));
+            int nameTableIndex = 0;
             foreach (var f in db)
             {
-                mapStream.WriteInt32(idx); // Name Table IDX. Update this code for duplicates support
-                mapStream.WriteInt32(f.Value[0].size); // Size
-                var md5 = f.Value[0].md5;
-                for (int i = 0; i < 32; i++)
+                foreach (var instance in f.Value)
                 {
-                    byte b = 0;
-                    b |= HexToInt(md5[i]);
-                    b = (byte)(b << 4);
-                    i++;
-                    b |= HexToInt(md5[i]);
+                    mapStream.WriteInt32(nameTableIndex); // The name of the file, as index in name table
+                    mapStream.WriteInt32(instance.size); // Size
+                    var md5 = instance.md5;
+                    for (int i = 0; i < 32; i++)
+                    {
+                        byte b = 0;
+                        b |= HexToInt(md5[i]);
+                        b = (byte)(b << 4);
+                        i++;
+                        b |= HexToInt(md5[i]);
 
-                    mapStream.WriteByte(b);
+                        mapStream.WriteByte(b);
+                    }
                 }
-                idx++;
+
+                nameTableIndex++;
             }
 
             var compBytes = LZMA.Compress(mapStream.ToArray());
