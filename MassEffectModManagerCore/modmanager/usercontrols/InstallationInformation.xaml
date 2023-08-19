@@ -324,6 +324,7 @@
                                                 HorizontalAlignment="Stretch"
                                                 Background="Transparent" />
                                             <TextBlock
+                                                TextWrapping="Wrap"
                                                 Grid.Row="1"
                                                 Grid.Column="0"
                                                 FontSize="10"
