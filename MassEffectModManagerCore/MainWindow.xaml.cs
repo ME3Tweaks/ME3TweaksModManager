@@ -29,6 +29,7 @@ using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore;
+using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
@@ -696,6 +697,8 @@ namespace ME3TweaksModManager
         public ICommand InstallHeadmorphCommand { get; set; }
         public ICommand ApplyM3HeadmorphCommand { get; set; }
         public ICommand LE1CoalescedMergeCommand { get; set; }
+        public ICommand BetaDiagToolOpenAllPackagesCommand { get; set; }
+
 
         private void LoadCommands()
         {
@@ -757,6 +760,34 @@ namespace ME3TweaksModManager
             InstallHeadmorphCommand = new GenericCommand(BeginInstallingHeadmorph, CanInstallHeadmorph);
             ApplyM3HeadmorphCommand = new GenericCommand(BeginInstallingM3Headmorph, CanInstallM3Headmorph);
             StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget.Game.IsLEGame());
+
+            BetaDiagToolOpenAllPackagesCommand = new GenericCommand(DiagAllOpenPackages, CanRunGameDiagTool);
+
+        }
+
+        private void DiagAllOpenPackages()
+        {
+            List<string> issues = new List<string>();
+            ShowRunAndDone(updateUIString =>
+            {
+                issues = DiagnosticTools.VerifyPackages(SelectedGameTarget,
+                                       (x, y) => updateUIString?.Invoke($"Checking packages {x}/{y}"));
+                return $"Finished package check: {issues.Count} issues found";
+
+            }, "Checking packages", "Finished checking packages", () =>
+                {
+                    if (issues.Count > 0)
+                    {
+                        ListDialog ld = new ListDialog(issues, "Package check found issues",
+                            "The following packages failed to open:", this);
+                        ld.Show();
+                    }
+                });
+        }
+
+        private bool CanRunGameDiagTool()
+        {
+            return SelectedGameTarget != null && SelectedGameTarget.Game.IsMEGame();
         }
 
         private void SelectSpecificSaveForBoot()
@@ -3876,6 +3907,7 @@ namespace ME3TweaksModManager
 
         public string CurrentModEndorsementStatus { get; private set; } = M3L.GetString(M3L.string_endorseMod);
         public bool IsEndorsingMod { get; private set; }
+
         public bool CanOpenMEIM()
         {
             //ensure not already open

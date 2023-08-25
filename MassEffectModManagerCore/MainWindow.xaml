@@ -1394,8 +1394,11 @@
                     Header="{DynamicResource string_beta}"
                     Visibility="{Binding Path=(modmanager:Settings.BetaMode), Converter={StaticResource BoolToVisibilityConverter}}"
                     Padding="4">
+                    <!--<MenuItem
+                        Header="{DynamicResource string_blankItemToAvoidBreakingTheInterface}" />-->
                     <MenuItem
-                        Header="{DynamicResource string_blankItemToAvoidBreakingTheInterface}" />
+                        Header="Diagnostic tool: Open all packages from current target game"
+                        Command="{Binding BetaDiagToolOpenAllPackagesCommand}"/>
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"

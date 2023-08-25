@@ -487,6 +487,7 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 if (x.Exception != null)
                 {
+                    M3Log.Exception(x.Exception, @"Error generating mod:");
                     M3L.ShowDialog(this, x.Exception.Message, M3L.GetString(M3L.string_errorGeneratingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     IsBusy = false;
                 }
