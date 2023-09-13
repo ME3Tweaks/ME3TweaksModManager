@@ -423,11 +423,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     {
                         // Port it in
                         EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, pEntry, package, parent, true, new RelinkerOptionsPackage()
-                            {
-                                ImportChildrenOfPackages = false, // As roots may be Package, do not port the children, we will do it ourselves
-                                ErrorOccurredCallback = x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
-                                GamePathOverride = target.TargetPath,
-                            }, out parent);
+                        {
+                            ImportChildrenOfPackages = false, // As roots may be Package, do not port the children, we will do it ourselves
+                            ErrorOccurredCallback = x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
+                            GamePathOverride = target.TargetPath,
+                        }, out parent);
                     }
                     else
                     {
@@ -541,7 +541,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             for (int i = 0; i < Scripts.Length; i++)
             {
                 Debug.WriteLine(M3L.GetString(M3L.string_interp_updatingX, targetExport.InstancedFullPath));
-                MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl);
+                MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl, gameRootOverride: gameTarget.TargetPath);
 
                 if (log.HasErrors)
                 {
