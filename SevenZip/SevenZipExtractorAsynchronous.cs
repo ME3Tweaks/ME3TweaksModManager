@@ -72,7 +72,7 @@
         /// </summary>
         /// <param name="fileName">The file full name in the archive file table.</param>
         /// <param name="stream">The stream where the file is to be unpacked.</param>
-        private delegate void ExtractFileByFileNameDelegate(string fileName, Stream stream);
+        private delegate void ExtractFileByFileNameDelegate(string fileName, Stream stream, bool caseSensitive = true);
 
         /// <summary>
         /// The delegate to use in BeginExtractFile (by index).

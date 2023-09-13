@@ -1048,14 +1048,15 @@ namespace SevenZip
         /// </summary>
         /// <param name="fileName">The file full name in the archive file table.</param>
         /// <param name="stream">The stream where the file is to be unpacked.</param>
-        public void ExtractFile(string fileName, Stream stream)
+        // ME3Tweaks: add caseSensitive = true
+        public void ExtractFile(string fileName, Stream stream, bool caseSensitive = true)
         {
             DisposedCheck();
             InitArchiveFileData(false);
             int index = -1;
             foreach (ArchiveFileInfo afi in _archiveFileData)
             {
-                if (afi.FileName == fileName && !afi.IsDirectory)
+                if (afi.FileName.Equals(fileName, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase) && !afi.IsDirectory)
                 {
                     index = afi.Index;
                     break;

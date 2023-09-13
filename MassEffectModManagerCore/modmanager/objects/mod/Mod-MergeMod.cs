@@ -19,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 // Load from archive
                 sourceStream = new MemoryStream();
-                Archive.ExtractFile(fullPath, sourceStream);
+                Archive.ExtractFile(fullPath, sourceStream, false);
                 sourceStream.Position = 0;
             }
             else
