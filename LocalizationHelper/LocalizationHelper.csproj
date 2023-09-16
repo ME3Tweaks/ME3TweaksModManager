@@ -29,8 +29,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
-		<PackageReference Include="AvalonEdit" Version="6.2.0.78" />
-		<PackageReference Include="Fody" Version="6.7.0">
+		<PackageReference Include="AvalonEdit" Version="6.3.0.90" />
+		<PackageReference Include="Fody" Version="6.8.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
