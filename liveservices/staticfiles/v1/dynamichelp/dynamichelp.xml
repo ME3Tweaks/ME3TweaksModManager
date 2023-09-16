@@ -2,6 +2,7 @@
 <localizations>
   <nonlocalizedhelpmenudefinition name="changelogs">
     <list localizedtitle="true">
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.2.2 (Build 131)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/384" />
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.2.1 (Build 130)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/380" />
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.2 (Build 129)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/371" />
       <list title="Older changelogs" sort="low">
