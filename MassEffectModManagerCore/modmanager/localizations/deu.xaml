@@ -204,8 +204,8 @@
 	<system:String x:Key="string_interp_configuredTimestamp">{0} konfiguriert</system:String>
 	<system:String x:Key="string_uiImportInstallGroupPrefix" xml:space="preserve">Mods, die von der Installationsgruppe installiert werden:\n</system:String>
 	<system:String x:Key="string_interp_xContentMod" xml:space="preserve">- {0} {1} (Content-Mod)\n</system:String>
-	<system:String x:Key="string_interp_xTextureMod" xml:space="preserve">- {0} {1} (Textur-Mod)\n</system:String>
-	<system:String x:Key="string_interp_xASIMod" xml:space="preserve">- {0} {1} (ASI-Mod)\n</system:String>
+	<system:String x:Key="string_interp_xTextureMod" xml:space="preserve">- {0} (Textur-Mod)\n</system:String>
+	<system:String x:Key="string_interp_xASIMod" xml:space="preserve">- {0} (ASI-Mod)\n</system:String>
 	<system:String x:Key="string_uiImportInstallGroupSuffix" xml:space="preserve">\nDurch den Import wird diese Installationsgruppe zum Stapelinstallator hinzugefügt.</system:String>
 	<system:String x:Key="string_batchModInstaller">Stapelinstallierer für Mods</system:String>
 	<system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Stapelinstallierer für Mods ermöglicht dir, eine Gruppe von Mods auf einmal zu installieren</system:String>
