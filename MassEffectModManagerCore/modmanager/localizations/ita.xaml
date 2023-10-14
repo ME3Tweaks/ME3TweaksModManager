@@ -206,7 +206,7 @@
 	<system:String x:Key="string_interp_xContentMod" xml:space="preserve">- {0} {1} (Mod di contenuti)\n</system:String>
 	<system:String x:Key="string_interp_xTextureMod" xml:space="preserve">- {0} (Mod texture)\n</system:String>
 	<system:String x:Key="string_interp_xASIMod" xml:space="preserve">- {0} (Mod ASI)\n</system:String>
-	<system:String x:Key="string_uiImportInstallGroupSuffix" xml:space="preserve">\nL'importazione aggiungera' questo gruppo di installazione all'Installer di Gruppo</system:String>
+	<system:String x:Key="string_uiImportInstallGroupSuffix" xml:space="preserve">\nL'importazione aggiungerà questo gruppo di installazione all'Installer di Gruppo</system:String>
 	<system:String x:Key="string_batchModInstaller">Installer per gruppi di mod</system:String>
 	<system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">L'installer per gruppi di mod ti permette di installare un gruppo di mod tutte di fila, permettendoti di ricreare velocemente una specifica installazione del gioco.</system:String>
 	<system:String x:Key="string_createANewInstallGroup">Crea un nuovo gruppo di installazione</system:String>
@@ -690,10 +690,10 @@
 	<system:String x:Key="string_uploadingToME3Tweaks">Caricamento su ME3Tweaks</system:String>
 	<system:String x:Key="string_noSaveSelected">Nessun salvataggio selezionato</system:String>
 	<system:String x:Key="string_selectASaveToIncludeWithDiagnostic">Seleziona un salvataggio da includere nella diagnostica</system:String>
-	<system:String x:Key="string_description_fullTexturesCheck">Un controllo texture completo può richiedere alcuni minuti, ma validerà i riferilmenti alle texture in tutti i pacchetti file.</system:String>
+	<system:String x:Key="string_description_fullTexturesCheck">Un controllo texture completo può richiedere alcuni minuti, ma validerà i riferimenti alle texture in tutti i pacchetti file.</system:String>
 	<system:String x:Key="string_saveFile">Salvataggio</system:String>
-	<system:String x:Key="string_description_saveFile">In maniera opzionale, puoi includere un salvataggio nelle tue diagnostiche del gioco. Seleziona un salvataggio solo se richiesto.</system:String>
-	<system:String x:Key="string_selectSaveFile">Seleziona un salvataggio.</system:String>
+	<system:String x:Key="string_description_saveFile">In maniera opzionale, puoi includere un salvataggio nelle tue diagnostiche del gioco. Seleziona un salvataggio solo se richiesto</system:String>
+	<system:String x:Key="string_selectSaveFile">Seleziona un salvataggio</system:String>
 	<system:String x:Key="string_importingSaveFileFromME3Tweaks">Importazione del salvataggio da ME3Tweaks in corso</system:String>
 	<system:String x:Key="string_importedSaveFileFromME3Tweaks">Salvataggio importato da ME3Tweaks</system:String>
 	<system:String x:Key="string_interp_errorImportingSaveFileX">Errore nell'importazione del salvataggio: {0}</system:String>
@@ -1166,7 +1166,7 @@
 	<system:String x:Key="string_prerequesiteNotMet">Prerequisiti non soddisfatti</system:String>
 	<system:String x:Key="string_dialog_errorGeneratingMergeDLC" xml:space="preserve">Errore nella generazione del DLC Merge: {0}\nLe mod potrebbero non funzionare correttamente - se esistente, rimuovere il DLC merge manualmente tramite il pulsante "Gestisci Installazione"</system:String>
 	<system:String x:Key="string_errorGeneratingMergeDLC">Errore nella generazione del DLC Merge</system:String>
-	<system:String x:Key="string_someASIModsWereNotInstalled">Alcune mod ASI non sono state installate, vedi i log per maggiori informazioni</system:String>
+	<system:String x:Key="string_someASIModsWereNotInstalled">Alcune mod ASI non sono state installate; vedi i log per maggiori informazioni</system:String>
 	<system:String x:Key="string_dialog_importedBatchInstallGroup">I gruppi di installazione si trovano nell'Installer di Gruppo, situato nel menu di Gestione Mod.</system:String>
 	<system:String x:Key="string_installGroupImported">Gruppo di installazione importato</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Il file di configurazione di Mass Effect {0}.ini è mancante. Dovrebbe trovarsi in {1}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
@@ -1328,8 +1328,8 @@
 	<system:String x:Key="string_interp_errorCreatingModFolderX">C'è stato un errore durante la creazione della cartella per questa mod: {0}</system:String>
 	<system:String x:Key="string_invalidServerModdesc">Per questo file archivio è stato selezionato un server moddesc non valido, per favore contatta Mgamerz con il link a questo file e questo messaggio di errore.</system:String>
 	<system:String x:Key="string_description_invalidBatchQueueArchive">I gruppi di installazione devono essere spediti tramite ME3Tweaks Mod Manager per poter essere importati. Contatta lo sviluppatore di questo file.</system:String>
-	<system:String x:Key="string_dialog_biqAlreadyExists">Un gruppo di installazione dal nome {0} esiste gia'. Importando questo gruppo si sovrascrivera' il gruppo gia' esistente.</system:String>
-	<system:String x:Key="string_installGroupAlreadyExists">Gruppo di installazione gia' esistente</system:String>
+	<system:String x:Key="string_dialog_biqAlreadyExists">Un gruppo di installazione dal nome {0} esiste già. Importando questo gruppo si sovrascriverà il gruppo già esistente.</system:String>
+	<system:String x:Key="string_installGroupAlreadyExists">Gruppo di installazione già esistente</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Impossibile scaricare il file: devi essere un iscritto premium a NexusMods per usare i link a download diretto.</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Impossibile scaricare file: Cancellato da NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Errore nel download della mod: {0}</system:String>
@@ -1878,7 +1878,7 @@
 	<system:String x:Key="string_synchronizingSquadmateOutfits">Sincronizzazione dell'outfit del compagno di squadra</system:String>
 	<system:String x:Key="string_synchronizedSquadmateOutfits">Vestiti del compagno di squadra sincronizzati</system:String>
 	<system:String x:Key="string_synchronizingSquadmateOutfitFiles">Sincronizzazione dell'outfit del compagno di squadra</system:String>
-	<system:String x:Key="string_errorReadingSquadmateOutfitManifestFileSeeLogs">Errore nella lettura del file manifesto dell'outfit del compagno di squadra per questa/e mod, veri i log</system:String>
+	<system:String x:Key="string_errorReadingSquadmateOutfitManifestFileSeeLogs">Errore nella lettura del file manifesto dell'outfit del compagno di squadra per questa/e mod, vedi i log</system:String>
 	<system:String x:Key="string_someSquadmateOutfitsWereNotMergedSeeLogs">Non è stato effettuato il merge dell'outfit di alcuni compagni di squadra, vedi i log</system:String>
 	<system:String x:Key="string_interp_sk_sqmNoBackup">Nessun backup disponibile per {0}, impossibile generare i file di merge dei compagni di squadra</system:String>
 	<system:String x:Key="string_interp_sk_sqmBackupMissingRequiredFile">Il file necessario per il merge dei compagni di squadra non è disponibile all'interno del backup: {0}</system:String>
@@ -1987,8 +1987,8 @@
 	<system:String x:Key="string_hashingFiles">Hashing dei file</system:String>
 	<system:String x:Key="string_creatingArchive">Creazione dell'archivio</system:String>
 	<system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Impossibile installare il TFC {0} in /BIOGame/CookedPCConsole per LE1. Bisogna aggiungere TFC per il gioco addizionali tramite una cartella DLC Custom.</system:String>
-	<system:String x:Key="string_interp_detectedTFCFromAnotherModTPMI">È stato rilevato un file TFC appartenente ad un'altra mod: {0} ({1}). Spedire un file TFC appartenente ad un'altra mod rompera' numerosi strumenti di modding, e potrebbe far si che la tua mod sia aggiunta alla lista nera degli import nel caso rompa le installazioni degli utenti. I file TFC spesso non sono inclusi nei permessi delle patch, se aggiunti nella tua mod essa potrebbe essere rimossa dalle piattaforme di hosting. Non includere file TFC di altre mod nella tua mod.</system:String>
-	<system:String x:Key="string_interp_detectedTFCFromAnotherModUnknown">È stato rilevato un file TFC che sembra appartenere ad un'altra mod DLC: {0}. Spedire un file TFC appartenente ad un'altra mod rompera' numerosi strumenti di modding, e potrebbe far si che la tua mod sia aggiunta alla lista nera degli import nel caso rompa le installazion idegli utenti. I file TFC spesso non sono inclusi nei permessi delle patch, se aggiunti nella tua mod essa potrebbe essere rimossa dalle piattaforme di hosting. Non includere file TFC di altre mod nella tua mod.</system:String>
+	<system:String x:Key="string_interp_detectedTFCFromAnotherModTPMI">È stato rilevato un file TFC appartenente ad un'altra mod: {0} ({1}). Spedire un file TFC appartenente ad un'altra mod romperà numerosi strumenti di modding e potrebbe far si che la tua mod sia aggiunta alla lista nera degli import, nel caso rompa le installazioni degli utenti. I file TFC spesso non sono inclusi nei permessi delle patch, se aggiunti nella tua mod, essa potrebbe essere rimossa dalle piattaforme di hosting. Non includere file TFC di altre mod nella tua mod.</system:String>
+	<system:String x:Key="string_interp_detectedTFCFromAnotherModUnknown">È stato rilevato un file TFC che sembra appartenere ad un'altra mod DLC: {0}. Spedire un file TFC appartenente ad un'altra mod romperà numerosi strumenti di modding e potrebbe far si che la tua mod sia aggiunta alla lista nera degli import, nel caso rompa le installazion idegli utenti. I file TFC spesso non sono inclusi nei permessi delle patch, se aggiunti nella tua mod essa potrebbe essere rimossa dalle piattaforme di hosting. Non includere file TFC di altre mod nella tua mod.</system:String>
 	<system:String x:Key="string_preparingToInstallTextures">Preparazione all'installazione delle texture in corso</system:String>
 	<system:String x:Key="string_installingTextureMods">Installazione delle mod texture in corso</system:String>
 	<system:String x:Key="string_installedTextureMods">Mod texture installate</system:String>
