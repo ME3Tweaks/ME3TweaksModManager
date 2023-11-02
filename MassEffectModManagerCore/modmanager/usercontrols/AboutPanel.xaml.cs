@@ -19,7 +19,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     public partial class AboutPanel : MMBusyPanelBase
     {
         public bool TelemetryKeyAvailable => APIKeys.HasAppCenterKey;
-        public string BuildDate { get; set; }
         public string NetVersion => Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
 
         public ObservableCollectionExtended<LibraryCredit> Libraries { get; } = new ObservableCollectionExtended<LibraryCredit>();
@@ -45,7 +44,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public AboutPanel()
         {
             SetupLibCredits();
-            BuildDate = App.BuildDate;
         }
 
         private void SetupLibCredits()

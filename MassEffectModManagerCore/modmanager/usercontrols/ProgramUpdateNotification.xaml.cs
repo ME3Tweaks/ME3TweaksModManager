@@ -33,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class ProgramUpdateNotification : MMBusyPanelBase
     {
-        public string CurrentVersion => $@"{App.AppVersion} ({App.BuildDate}) Build {App.BuildNumber}";
+        public string CurrentVersion => $@"{App.AppVersion} ({BuildHelper.BuildDateString}) Build {App.BuildNumber}";
         public string LatestVersion { get; set; }
         public string Changelog { get; set; }
         public string PrimaryDownloadLink { get; }

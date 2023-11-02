@@ -96,9 +96,6 @@ namespace ME3TweaksModManager
             @"Windows 11 (not EOL versions)"
         };
 
-        public static string BuildDate;
-        public static bool IsSigned;
-
         /// <summary>
         /// If telemetry has been flushed after checking if it is enabled.
         /// </summary>
@@ -253,32 +250,9 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Running as " + Environment.UserName);
                 M3Log.Information(@"Executable location: " + ExecutableLocation);
                 M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
-                //Get build date
-                var info = new FileInspector(App.ExecutableLocation);
-                var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
 
-                if (signTime != null)
-                {
-                    BuildDateTime = signTime.Value;
-                    BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy @ hh:mm");
-                    var signer = info.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
-                    if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
-                    {
-                        IsSigned = true;
-                        M3Log.Information(@"Build signed by ME3Tweaks. Build date: " + BuildDate);
-                    }
-                    else
-                    {
-                        M3Log.Warning(@"Build signed, but not by ME3Tweaks");
-                    }
-                }
-                else
-                {
-                    BuildDate = @"WARNING: This build is not signed by ME3Tweaks";
-#if !DEBUG
-                    M3Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
-#endif
-                }
+                //Get build date
+                BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });
 
                 if (args.Length > 0)
                 {

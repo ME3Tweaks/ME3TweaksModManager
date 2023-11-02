@@ -152,11 +152,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     UpdateProgressCallback = updateProgressCallback,
                     SelectedSaveFilePath = SelectedSaveFile?.SaveFilePath,
                     UpdateStatusCallback = updateStatusCallback,
-#if DEBUG
-                    UploadEndpoint = @"https://me3tweaks.com/modmanager/logservice/logupload2"
-#else
-                    UploadEndpoint = @"https://me3tweaks.com/modmanager/logservice/logupload"
-#endif
                 };
 
                 b.Result = LogCollector.SubmitDiagnosticLog(package);
