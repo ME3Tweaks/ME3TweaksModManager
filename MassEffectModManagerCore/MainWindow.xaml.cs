@@ -156,8 +156,8 @@ namespace ME3TweaksModManager
                 args = args.Skip(1).Take(args.Length - 1).ToArray();
             }
 
-            var result = Parser.Default.ParseArguments<Options>(args);
-            if (result is Parsed<Options> parsedCommandLineArgs)
+            var result = Parser.Default.ParseArguments<CLIOptions>(args);
+            if (result is Parsed<CLIOptions> parsedCommandLineArgs)
             {
                 if (parsedCommandLineArgs.Value.RelevantGame != null)
                     CommandLinePending.PendingGame = parsedCommandLineArgs.Value.RelevantGame.Value;
@@ -173,6 +173,8 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingInstallASIID = parsedCommandLineArgs.Value.AutoInstallASIGroupID;
                 if (parsedCommandLineArgs.Value.AutoInstallBink != false)
                     CommandLinePending.PendingInstallBink = parsedCommandLineArgs.Value.AutoInstallBink;
+                if (parsedCommandLineArgs.Value.CreateMergeDLC != false)
+                    CommandLinePending.PendingMergeDLCCreation = parsedCommandLineArgs.Value.CreateMergeDLC;
                 return handleInitialPending();
             }
 
@@ -3556,6 +3558,32 @@ namespace ME3TweaksModManager
                     }
 
                     CommandLinePending.ClearGameDependencies();
+                }
+
+                if (CommandLinePending.PendingMergeDLCCreation && CommandLinePending.PendingGame != null)
+                {
+                    GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
+                    if (t != null)
+                    {
+                        // Need standard entry to merge DLC
+                        // Todo: This might need to be put into a run and done to ensure it executes in-order
+                        var result = new PanelResult()
+                        {
+                            TargetsToEmailMergeSync = { t },
+                            TargetsToCoalescedMerge = { t },
+                            TargetsToSquadmateMergeSync = { t },
+                            TargetsToPlotManagerSync = { t },
+                            TargetsToAutoTOC = { t },
+                        };
+
+                        if (t.Game != MEGame.LE1)
+                        {
+                            result.TargetsToCoalescedMerge.Clear(); // Don't do it on non-LE1 games
+                        }
+
+                        // Handle the panel result
+                        HandlePanelResult(result);
+                    }
                 }
 
                 if (CommandLinePending.PendingAutoModInstallPath != null &&

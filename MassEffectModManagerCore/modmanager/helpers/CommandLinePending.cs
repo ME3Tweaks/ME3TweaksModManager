@@ -27,11 +27,16 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// 
         /// </summary>
         public static string PendingAutoModInstallPath;
-        
+
         /// <summary>
         /// If game should be booted after all other options have been performed
         /// </summary>
         public static bool PendingGameBoot;
+
+        /// <summary>
+        /// If a target should have M3 DLC merge performed on it
+        /// </summary>
+        public static bool PendingMergeDLCCreation;
 
         /// <summary>
         /// Game for other options
@@ -59,11 +64,12 @@ namespace ME3TweaksModManager.modmanager.helpers
                 PendingInstallASIID = 0;
                 PendingGameBoot = false;
                 PendingInstallBink = false;
+                PendingMergeDLCCreation = false;
                 return;
             }
 
             // If nothing else needs done, reset PendingGame
-            if (PendingGameBoot == false && PendingAutoModInstallPath == null && PendingInstallASIID == 0)
+            if (PendingGameBoot == false && PendingAutoModInstallPath == null && PendingInstallASIID == 0 && PendingMergeDLCCreation == false)
                 PendingGame = null;
         }
 
@@ -74,7 +80,13 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             if (PendingGameBoot == false || PendingGame == null)
                 return false;
-            return PendingAutoModInstallPath != null || PendingInstallASIID > 0 || PendingInstallBink;
+
+            // If stuff is pending you cannot boot the game yet.
+            if (PendingAutoModInstallPath != null || PendingInstallASIID > 0 || PendingInstallBink || PendingMergeDLCCreation)
+                return false;
+
+            // Nothing is pending
+            return true;
         }
     }
 }

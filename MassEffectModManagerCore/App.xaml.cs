@@ -156,8 +156,8 @@ namespace ME3TweaksModManager
 
                 if (args.Length > 1)
                 {
-                    var result = Parser.Default.ParseArguments<Options>(args);
-                    if (result is Parsed<Options> parsedCommandLineArgs)
+                    var result = Parser.Default.ParseArguments<CLIOptions>(args);
+                    if (result is Parsed<CLIOptions> parsedCommandLineArgs)
                     {
                         //Parsing completed
                         if (parsedCommandLineArgs.Value.UpdateBoot)
@@ -209,9 +209,14 @@ namespace ME3TweaksModManager
                             CommandLinePending.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
                         }
 
-                        if (parsedCommandLineArgs.Value.GameBoot != false)
+                        if (parsedCommandLineArgs.Value.GameBoot)
                         {
                             CommandLinePending.PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
+                        }
+
+                        if (parsedCommandLineArgs.Value.CreateMergeDLC)
+                        {
+                            CommandLinePending.PendingMergeDLCCreation = parsedCommandLineArgs.Value.CreateMergeDLC;
                         }
                     }
                     else
@@ -745,7 +750,7 @@ namespace ME3TweaksModManager
 #endif
     }
 
-    class Options
+    class CLIOptions
     {
         public string UpdateDest { get; set; }
 
@@ -782,6 +787,9 @@ namespace ME3TweaksModManager
 
         [Option(@"installbink", HelpText = "Instructs Mod Manager to automatically install the bink asi loader to the specified game")]
         public bool AutoInstallBink { get; set; }
+
+        [Option(@"createmergedlc", HelpText = "Instructs Mod Manager to automatically (re)create a merge DLC for the given game.")]
+        public bool CreateMergeDLC { get; set; }
 
         [Option(@"m3link", HelpText = "Instructs Mod Manager to perform a task based on the contents of a me3tweaksmodmanager:// link")]
         public string M3Link { get; set; }

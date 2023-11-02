@@ -712,8 +712,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
-
             GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
             InitializeComponent();
             InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game));
