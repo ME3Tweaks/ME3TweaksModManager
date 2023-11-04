@@ -103,9 +103,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             InstallCommand = new GenericCommand(BeginInstallingMod, CanInstall);
         }
 
-
-
-
         /// <summary>
         /// Weave-called when SelectedGameTarget changes
         /// </summary>
@@ -688,6 +685,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 InstallTarget = SelectedGameTarget,
                 ModBeingInstalled = ModBeingInstalled,
                 SelectedOptions = optionsMap,
+                BatchMode = BatchMod != null,
+                IsFirstBatchMod = BatchMod?.IsFirstBatchMod ?? false,
                 SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected) // ME1 Read only option
             };
 

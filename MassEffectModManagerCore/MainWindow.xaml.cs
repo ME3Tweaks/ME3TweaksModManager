@@ -155,7 +155,6 @@ namespace ME3TweaksModManager
             {
                 args = args.Skip(1).Take(args.Length - 1).ToArray();
             }
-
             var result = Parser.Default.ParseArguments<CLIOptions>(args);
             if (result is Parsed<CLIOptions> parsedCommandLineArgs)
             {
@@ -1354,6 +1353,7 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
+                    bool isFirstInstall = true;
                     BatchPanelResult = new PanelResult();
                     HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
                     var target = batchLibrary.SelectedGameTarget;
@@ -1379,7 +1379,9 @@ namespace ME3TweaksModManager
                             {
                                 M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
                                 bm.UseSavedOptions = queue.UseSavedOptions;
+                                bm.IsFirstBatchMod = isFirstInstall;
                                 ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
+                                isFirstInstall = false;
                             }
                             else
                             {
@@ -2552,11 +2554,8 @@ namespace ME3TweaksModManager
                 {
                     Crashes.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
                 }
-                BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall",
-                    M3L.GetString(M3L.string_interp_installingMod, mod.ModName),
-                    M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget,
-                    installCompressed, batchMod);
+                BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
+                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod);
                 //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modOptionsPicker.Close += (a, b) =>
                 {
@@ -3557,6 +3556,7 @@ namespace ME3TweaksModManager
                         }
                     }
 
+                    CommandLinePending.PendingInstallASIID = 0;
                     CommandLinePending.ClearGameDependencies();
                 }
 
@@ -3583,6 +3583,7 @@ namespace ME3TweaksModManager
 
                         // Handle the panel result
                         HandlePanelResult(result);
+                        CommandLinePending.PendingMergeDLCCreation = false;
                     }
                 }
 

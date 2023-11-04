@@ -105,6 +105,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         }
 
         /// <summary>
+        /// Indiciates this is the first mod being installed
+        /// </summary>
+        [JsonIgnore]
+        public bool IsFirstBatchMod { get; set; }
+
+        /// <summary>
         /// If the saved options for this batch mod should be used by the installer
         /// </summary>
         [JsonIgnore]
