@@ -198,8 +198,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             ExportEntry LastSendMessage = KismetHelper.GetSequenceObjects(SendMessageContainer).OfType<ExportEntry>()
                 .FirstOrDefault(e =>
                 {
-                    var outbound = SeqTools.GetOutboundLinksOfNode(e);
-                    return outbound.Count == 1 && outbound[0].Count == 0;
+                    var output = KismetHelper.GetOutputLinksOfNode(e);
+                    return output.Count == 1 && output[0].Count == 0;
                 });
             ExportEntry TemplateSendMessage = resources.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Send_MessageTemplate");
             ExportEntry TemplateSendMessageBoolCheck = resources.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Send_MessageTemplate_BoolCheck");
@@ -209,7 +209,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             // This is the only section that does not gracefully handle different DLC installations - DLC_CER is required atm
             ExportEntry MarkReadContainer = pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Mark_Read");
             ExportEntry LastMarkRead = pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Mark_Read.DLC_CER");
-            ExportEntry MarkReadOutLink = SeqTools.GetOutboundLinksOfNode(LastMarkRead)[0][0].LinkedOp as ExportEntry;
+            ExportEntry MarkReadOutLink = KismetHelper.GetOutputLinksOfNode(LastMarkRead)[0][0].LinkedOp as ExportEntry;
             KismetHelper.RemoveOutputLinks(LastMarkRead);
 
             ExportEntry TemplateMarkRead = resources.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Mark_ReadTemplate");
@@ -222,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             ExportEntry DisplayMessageOutLink =
                 pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Display_Messages.SeqCond_CompareBool_0"); // This is the last thing before finish sequence
 
-            ExportEntry LastDisplayMessage = SeqTools.FindOutboundConnectionsToNode(DisplayMessageOutLink, KismetHelper.GetSequenceObjects(DisplayMessageContainer).OfType<ExportEntry>())[0];
+            ExportEntry LastDisplayMessage = KismetHelper.FindOutputConnectionsToNode(DisplayMessageOutLink, KismetHelper.GetSequenceObjects(DisplayMessageContainer).OfType<ExportEntry>())[0];
             KismetHelper.RemoveOutputLinks(LastDisplayMessage);
             var DisplayMessageVariableLinks = LastDisplayMessage.GetProperty<ArrayProperty<StructProperty>>(@"VariableLinks");
             ExportEntry TemplateDisplayMessage =
@@ -234,8 +234,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             ExportEntry ArchiveOutLink =
                 pcc.FindExport(
                     @"TheWorld.PersistentLevel.Main_Sequence.Archive_Message.BioSeqAct_PMCheckConditional_1");
-            ExportEntry ExampleSetInt = SeqTools.GetOutboundLinksOfNode(ArchiveSwitch)[0][0].LinkedOp as ExportEntry;
-            ExportEntry ExamplePlotInt = SeqTools.GetVariableLinksOfNode(ExampleSetInt)[0].LinkedNodes[0] as ExportEntry;
+            ExportEntry ExampleSetInt = KismetHelper.GetOutputLinksOfNode(ArchiveSwitch)[0][0].LinkedOp as ExportEntry;
+            ExportEntry ExamplePlotInt = KismetHelper.GetVariableLinksOfNode(ExampleSetInt)[0].LinkedNodes[0] as ExportEntry;
             #endregion
 
             var cache = new RelativePackageCache() { RootPath = mergeDLC.Target.TargetPath }; // This significantly improves performance
@@ -244,7 +244,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                 var f = cache.GetCachedPackage(loadedFiles[v]);
             }
 
-            int messageID = SeqTools.GetOutboundLinksOfNode(ArchiveSwitch).Count + 1;
+            int messageID = KismetHelper.GetOutputLinksOfNode(ArchiveSwitch).Count + 1;
             int currentSwCount = ArchiveSwitch.GetProperty<IntProperty>(@"LinkCount").Value;
             int done = 0;
             int totalEmails = emailInfos.Sum(x => x.Emails.Count);
@@ -435,9 +435,9 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     newPlotInt.WriteProperty(new IntProperty(email.StatusPlotInt, @"m_nIndex"));
                     newPlotInt.WriteProperty(new StrProperty(emailName, @"m_sRefName"));
 
-                    var linkedVars = SeqTools.GetVariableLinksOfNode(newSetInt);
+                    var linkedVars = KismetHelper.GetVariableLinksOfNode(newSetInt);
                     linkedVars[0].LinkedNodes = new List<IEntry>() { newPlotInt };
-                    SeqTools.WriteVariableLinksToNode(newSetInt, linkedVars);
+                    KismetHelper.WriteVariableLinksToNode(newSetInt, linkedVars);
 
                     messageID++;
                     currentSwCount++;

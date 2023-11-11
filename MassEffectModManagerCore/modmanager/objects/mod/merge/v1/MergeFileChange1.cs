@@ -599,7 +599,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             if (MUtilities.CalculateHash(new MemoryStream(targetExport.Data)) == EntryMD5)
             {
                 M3Log.Information($@"Applying sequence skip: Skipping {targetExport.InstancedFullPath} through on link {OutboundLinkNameToUse}");
-                SeqTools.SkipSequenceElement(targetExport, outboundLinkName: OutboundLinkNameToUse);
+                KismetHelper.SkipSequenceElement(targetExport, outboundLinkName: OutboundLinkNameToUse);
             }
             else
             {
