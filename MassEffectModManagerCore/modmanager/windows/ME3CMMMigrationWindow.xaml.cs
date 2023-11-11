@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.windows
                                         Directory.CreateDirectory(targetDir);
                                         CopyDir.CopyAll_ProgressBar(new DirectoryInfo(modDirToMove), new DirectoryInfo(targetDir));
                                         M3Log.Information(@" >> Deleting existing directory");
-                                        M3Utilities.DeleteFilesAndFoldersRecursively(modDirToMove);
+                                        MUtilities.DeleteFilesAndFoldersRecursively(modDirToMove);
                                     }
 
                                     M3Log.Information($@"Migrated {modDirToMove}");
@@ -312,7 +312,7 @@ namespace ME3TweaksModManager.modmanager.windows
                                             try
                                             {
                                                 M3Log.Information(@"Deleting directory: " + entry);
-                                                M3Utilities.DeleteFilesAndFoldersRecursively(entry, true);
+                                                MUtilities.DeleteFilesAndFoldersRecursively(entry, true);
                                             }
                                             catch (Exception e)
                                             {

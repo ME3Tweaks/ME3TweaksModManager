@@ -559,64 +559,6 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
-        public static async Task<bool> DeleteFilesAndFoldersRecursivelyAsync(string targetDirectory, bool throwOnFailed = false)
-        {
-            return await Task.FromResult(DeleteFilesAndFoldersRecursively(targetDirectory, throwOnFailed));
-        }
-
-        public static bool DeleteFilesAndFoldersRecursively(string targetDirectory, bool throwOnFailed = false)
-        {
-            if (!Directory.Exists(targetDirectory))
-            {
-                Debug.WriteLine("Directory to delete doesn't exist: " + targetDirectory);
-                return true;
-            }
-
-            bool result = true;
-            foreach (string file in Directory.GetFiles(targetDirectory))
-            {
-                File.SetAttributes(file, FileAttributes.Normal); //remove read only
-                try
-                {
-                    //Debug.WriteLine("Deleting file: " + file);
-                    File.Delete(file);
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error($"Unable to delete file: {file}. It may be open still: {e.Message}");
-                    if (throwOnFailed)
-                    {
-                        throw;
-                    }
-
-                    return false;
-                }
-            }
-
-            foreach (string subDir in Directory.GetDirectories(targetDirectory))
-            {
-                result &= DeleteFilesAndFoldersRecursively(subDir, throwOnFailed);
-            }
-
-            Thread.Sleep(10); // This makes the difference between whether it works or not. Sleep(0) is not enough.
-            try
-            {
-                Directory.Delete(targetDirectory);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error($"Unable to delete directory: {targetDirectory}. It may be open still or may not be actually empty: {e.Message}");
-                if (throwOnFailed)
-                {
-                    throw;
-                }
-
-                return false;
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Reads all lines from a file, attempting to do so even if the file is in use by another process
         /// </summary>
@@ -1017,91 +959,9 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
-        //Step 1: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
-        private static string RemoveSpecialCharactersUsingCustomMethod(this string expression, bool removeSpecialLettersHavingASign = true, bool allowPeriod = false)
-        {
-            var newCharacterWithSpace = " ";
-            var newCharacter = "";
-
-            // Return carriage handling
-            // ASCII LINE-FEED character (LF),
-            expression = expression.Replace("\n", newCharacterWithSpace);
-            // ASCII CARRIAGE-RETURN character (CR)
-            expression = expression.Replace("\r", newCharacterWithSpace);
-
-            // less than : used to redirect input, allowed in Unix filenames, see Note 1
-            expression = expression.Replace(@"<", newCharacter);
-            // greater than : used to redirect output, allowed in Unix filenames, see Note 1
-            expression = expression.Replace(@">", newCharacter);
-            // colon: used to determine the mount point / drive on Windows;
-            // used to determine the virtual device or physical device such as a drive on AmigaOS, RT-11 and VMS;
-            // used as a pathname separator in classic Mac OS. Doubled after a name on VMS,
-            // indicates the DECnet nodename (equivalent to a NetBIOS (Windows networking) hostname preceded by "\\".).
-            // Colon is also used in Windows to separate an alternative data stream from the main file.
-            expression = expression.Replace(@":", newCharacter);
-            // quote : used to mark beginning and end of filenames containing spaces in Windows, see Note 1
-            expression = expression.Replace(@"""", newCharacter);
-            // slash : used as a path name component separator in Unix-like, Windows, and Amiga systems.
-            // (The MS-DOS command.com shell would consume it as a switch character, but Windows itself always accepts it as a separator.[16][vague])
-            expression = expression.Replace(@"/", newCharacter);
-            // backslash : Also used as a path name component separator in MS-DOS, OS/2 and Windows (where there are few differences between slash and backslash); allowed in Unix filenames, see Note 1
-            expression = expression.Replace(@"\", newCharacter);
-            // vertical bar or pipe : designates software pipelining in Unix and Windows; allowed in Unix filenames, see Note 1
-            expression = expression.Replace(@"|", newCharacter);
-            // question mark : used as a wildcard in Unix, Windows and AmigaOS; marks a single character. Allowed in Unix filenames, see Note 1
-            expression = expression.Replace(@"?", newCharacter);
-            expression = expression.Replace(@"!", newCharacter);
-            // asterisk or star : used as a wildcard in Unix, MS-DOS, RT-11, VMS and Windows. Marks any sequence of characters
-            // (Unix, Windows, later versions of MS-DOS) or any sequence of characters in either the basename or extension
-            // (thus "*.*" in early versions of MS-DOS means "all files". Allowed in Unix filenames, see note 1
-            expression = expression.Replace(@"*", newCharacter);
-            // percent : used as a wildcard in RT-11; marks a single character.
-            expression = expression.Replace(@"%", newCharacter);
-            // period or dot : allowed but the last occurrence will be interpreted to be the extension separator in VMS, MS-DOS and Windows.
-            // In other OSes, usually considered as part of the filename, and more than one period (full stop) may be allowed.
-            // In Unix, a leading period means the file or folder is normally hidden.
-            if (!allowPeriod)
-            {
-                expression = expression.Replace(@".", newCharacter);
-            }
-
-            // space : allowed (apart MS-DOS) but the space is also used as a parameter separator in command line applications.
-            // This can be solved by quoting, but typing quotes around the name every time is inconvenient.
-            //expression = expression.Replace(@"%", " ");
-            expression = expression.Replace(@"  ", newCharacter);
-
-            if (removeSpecialLettersHavingASign)
-            {
-                // Because then issues to zip
-                // More at : http://www.thesauruslex.com/typo/eng/enghtml.htm
-                expression = expression.Replace(@"ê", "e");
-                expression = expression.Replace(@"ë", "e");
-                expression = expression.Replace(@"ï", "i");
-                expression = expression.Replace(@"œ", "oe");
-            }
-
-            return expression;
-        }
-
         internal static void OpenExplorer(string path)
         {
             Process.Start("explorer", path);
-        }
-
-        /// <summary>
-        /// Sanitizes a path by removing disallowed characters
-        /// </summary>
-        /// <param name="path">Path string</param>
-        /// <returns>Sanitized path string</returns>
-        public static string SanitizePath(string path, bool allowPeriod = false)
-        {
-            path = path.RemoveSpecialCharactersUsingCustomMethod(allowPeriod: allowPeriod);
-            if (path.ContainsAnyInvalidCharacters())
-            {
-                path = path.RemoveSpecialCharactersUsingFrameworkMethod();
-            }
-
-            return path;
         }
 
         internal static List<string> GetPackagesInDirectory(string path, bool subdirectories)

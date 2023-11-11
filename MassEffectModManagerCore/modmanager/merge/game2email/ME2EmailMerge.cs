@@ -15,6 +15,9 @@ using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Localization;
+using ME3TweaksCore.ME3Tweaks.M3Merge;
+using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -185,7 +188,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             // Setup conditionals
             ExportEntry ConditionalClass = startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
             FileLib fl = new FileLib(startup);
-            bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(mergeDLC.Target) }, gameRootPath: mergeDLC.Target.TargetPath);
+            bool initialized = fl.Initialize(new TargetPackageCache() { RootPath = M3Directories.GetBioGamePath(mergeDLC.Target) }, gameRootPath: mergeDLC.Target.TargetPath);
             if (!initialized)
             {
                 throw new Exception(
@@ -238,7 +241,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             ExportEntry ExamplePlotInt = SeqTools.GetVariableLinksOfNode(ExampleSetInt)[0].LinkedNodes[0] as ExportEntry;
             #endregion
 
-            var cache = new RelativePackageCache() { RootPath = mergeDLC.Target.TargetPath }; // This significantly improves performance
+            var cache = new TargetPackageCache() { RootPath = mergeDLC.Target.TargetPath }; // This significantly improves performance
             foreach (var v in EntryImporter.FilesSafeToImportFrom(mergeDLC.Target.Game))
             {
                 var f = cache.GetCachedPackage(loadedFiles[v]);
@@ -502,7 +505,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     M3Log.Error(l.Message);
                 }
 
-                throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingConditionalFunction, $@"F{conditionalId}", string.Join('\n', log.AllErrors.Select(x => x.Message))));
+                throw new Exception(LC.GetString(LC.string_interp_errorCompilingConditionalFunction, $@"F{conditionalId}", string.Join('\n', log.AllErrors.Select(x => x.Message))));
             }
 
             return conditionalId;

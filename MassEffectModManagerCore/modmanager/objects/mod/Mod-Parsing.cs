@@ -7,6 +7,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.gameini;
@@ -23,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 {
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     [AddINotifyPropertyChangedInterface]
-    public partial class Mod : IImportableMod
+    public partial class Mod : IImportableMod, IM3Mod
     {
 
         private static readonly string[] DirectorySeparatorChars = new[] { @"\", @"/" };
@@ -367,7 +368,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// List of DLC requirements for this mod to be able to install
         /// </summary>
-        public List<DLCRequirement> RequiredDLC = new List<DLCRequirement>();
+        public List<DLCRequirement> RequiredDLC { get; set; } = new List<DLCRequirement>();
 
         /// <summary>
         /// List of DLC, of which at least one must be installed

@@ -1,13 +1,10 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.objects.starterkit;
 using System.Windows;
 using LegendaryExplorerCore.Helpers;
-using Microsoft.WindowsAPICodePack.COMNative.MediaDevices;
-using Dark.Net;
+using ME3TweaksCore.ME3Tweaks.StarterKit;
 using ME3TweaksModManager.extensions;
 
 namespace ME3TweaksModManager.modmanager.windows

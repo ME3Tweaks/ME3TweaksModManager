@@ -388,7 +388,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         private string getSaveName(string groupName, bool canOverwrite)
         {
             var batchfolder = M3LoadedMods.GetBatchInstallGroupsDirectory();
-            var newFname = M3Utilities.SanitizePath(groupName);
+            var newFname = MUtilities.SanitizePath(groupName);
             if (string.IsNullOrWhiteSpace(newFname))
             {
                 // Has generic name. We have to make a generic name instead

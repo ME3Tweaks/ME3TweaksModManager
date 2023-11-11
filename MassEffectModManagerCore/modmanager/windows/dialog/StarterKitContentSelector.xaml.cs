@@ -14,7 +14,6 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
 using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
-using TaskExtensions = LegendaryExplorerCore.Helpers.TaskExtensions;
 
 namespace ME3TweaksModManager.modmanager.windows.dialog
 {
@@ -70,20 +69,19 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             Task.Run(() =>
             {
                 OperationInProgress = true;
-                List<Action<IniData>> moddescAddinDelegates = new List<Action<IniData>>();
-                StarterKitAddins.AddModSettingsMenu(SelectedMod, SelectedMod.Game,
-                    Path.Combine(SelectedMod.ModPath, dlcFolderPath), moddescAddinDelegates);
+                List<Action<DuplicatingIni>> moddescAddinDelegates = new List<Action<DuplicatingIni>>();
+                StarterKitAddins.AddModSettingsMenu(SelectedMod, SelectedMod.Game, Path.Combine(SelectedMod.ModPath, dlcFolderPath), moddescAddinDelegates);
 
                 if (moddescAddinDelegates.Any())
                 {
-                    var iniParser = new FileIniDataParser();
-                    var iniData = iniParser.ReadFile(SelectedMod.ModDescPath);
+                    var iniParser = new DuplicatingIni();
+                    var iniData = DuplicatingIni.LoadIni(SelectedMod.ModDescPath);
                     foreach (var del in moddescAddinDelegates)
                     {
                         del(iniData);
                     }
 
-                    File.WriteAllText(SelectedMod.ModDescPath, iniData.ToString());
+                    iniData.WriteToFile(SelectedMod.ModDescPath);
                     ReloadMod = true;
                 }
             }).ContinueWithOnUIThread(x =>

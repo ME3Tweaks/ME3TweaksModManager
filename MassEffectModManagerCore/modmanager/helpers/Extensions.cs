@@ -967,19 +967,6 @@ namespace ME3TweaksModManager.modmanager.helpers
             return containsKeywords.Any(keyword => input.IndexOf(keyword, comparisonType) >= 0);
         }
 
-        // Step 2: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
-        public static bool ContainsAnyInvalidCharacters(this string path)
-        {
-            return (!string.IsNullOrEmpty(path) && path.IndexOfAny(Path.GetInvalidPathChars()) >= 0);
-        }
-
-        //Step 3: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
-        public static string RemoveSpecialCharactersUsingFrameworkMethod(this string path)
-        {
-            return Path.GetInvalidFileNameChars().Aggregate(path, (current, c) => current.Replace(c.ToString(), string.Empty));
-        }
-
-
         public static Stream ToStream(this string s, bool bom = false)
         {
             return s.ToStream(/*bom ? new UTF8Encoding(false) : */Encoding.UTF8);

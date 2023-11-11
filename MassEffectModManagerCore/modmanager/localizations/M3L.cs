@@ -1462,7 +1462,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_dialogWillDeleteExistingMod = "string_interp_dialogWillDeleteExistingMod";
 		public const string string_dialogErrorDeletingExistingMod = "string_dialogErrorDeletingExistingMod";
 		public const string string_interp_errorOccuredWhileDeletingExistingModDirectory = "string_interp_errorOccuredWhileDeletingExistingModDirectory";
-		public const string string_generatingMod = "string_generatingMod";
 		public const string string_interp_valueMustBeBetweenXAndY = "string_interp_valueMustBeBetweenXAndY";
 		public const string string_dialog_devModeAdvert = "string_dialog_devModeAdvert";
 		public const string string_enableDeveloperFeaturesQuestion = "string_enableDeveloperFeaturesQuestion";
@@ -2020,13 +2019,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_lE1EnableCoalescedMerge = "string_lE1EnableCoalescedMerge";
 		public const string string_description_le1CoalescedMergeOption = "string_description_le1CoalescedMergeOption";
 		public const string string_noItemsSelected = "string_noItemsSelected";
-		public const string string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive = "string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive";
-		public const string string_interp_errorCompilingConditionalFunction = "string_interp_errorCompilingConditionalFunction";
-		public const string string_synchronizingSquadmateOutfits = "string_synchronizingSquadmateOutfits";
 		public const string string_synchronizedSquadmateOutfits = "string_synchronizedSquadmateOutfits";
 		public const string string_synchronizingSquadmateOutfitFiles = "string_synchronizingSquadmateOutfitFiles";
-		public const string string_errorReadingSquadmateOutfitManifestFileSeeLogs = "string_errorReadingSquadmateOutfitManifestFileSeeLogs";
-		public const string string_someSquadmateOutfitsWereNotMergedSeeLogs = "string_someSquadmateOutfitsWereNotMergedSeeLogs";
 		public const string string_interp_ssp_unopenedParenthsisFound = "string_interp_ssp_unopenedParenthsisFound";
 		public const string string_interp_ssp_unclosedParenthesisFound = "string_interp_ssp_unclosedParenthesisFound";
 		public const string string_licenseViewer = "string_licenseViewer";

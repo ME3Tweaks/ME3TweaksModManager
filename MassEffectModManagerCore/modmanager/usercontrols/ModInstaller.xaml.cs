@@ -615,7 +615,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     M3Log.Information($@"Deleting existing DLC directory: {path}");
                     try
                     {
-                        M3Utilities.DeleteFilesAndFoldersRecursively(path, true);
+                        MUtilities.DeleteFilesAndFoldersRecursively(path, true);
                     }
                     catch (UnauthorizedAccessException)
                     {
@@ -624,7 +624,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             // for some reason we don't have permission to do this.
                             M3Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
                             M3Utilities.CreateDirectoryWithWritePermission(path, true);
-                            M3Utilities.DeleteFilesAndFoldersRecursively(path);
+                            MUtilities.DeleteFilesAndFoldersRecursively(path);
                         }
                         catch (Exception finalException)
                         {
@@ -1018,7 +1018,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (Directory.Exists(outdatedDLCInGame))
                 {
                     M3Log.Information(@"Deleting outdated custom DLC folder: " + outdatedDLCInGame);
-                    M3Utilities.DeleteFilesAndFoldersRecursively(outdatedDLCInGame);
+                    MUtilities.DeleteFilesAndFoldersRecursively(outdatedDLCInGame);
                 }
             }
 
@@ -1063,7 +1063,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (sfarStagingDirectory != null)
             {
-                M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
+                MUtilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
             }
 
             if (numFilesToInstall == numdone)

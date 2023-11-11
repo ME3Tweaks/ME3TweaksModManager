@@ -555,7 +555,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 //Ensure directory
                 var modDirectory = M3LoadedMods.GetExtractionDirectoryForMod(mod);
-                var sanitizedPath = Path.Combine(modDirectory, M3Utilities.SanitizePath(mod.ModName));
+                var sanitizedPath = Path.Combine(modDirectory, MUtilities.SanitizePath(mod.ModName));
 
 
                 if (mod is Mod && Directory.Exists(sanitizedPath))
@@ -581,7 +581,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     try
                     {
                         ActionText = M3L.GetString(M3L.string_deletingExistingModInLibrary);
-                        var deletedOK = M3Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath);
+                        var deletedOK = MUtilities.DeleteFilesAndFoldersRecursively(sanitizedPath);
                         if (!deletedOK)
                         {
                             M3Log.Error(@"Could not delete existing mod directory.");

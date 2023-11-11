@@ -124,7 +124,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private bool CanCompileAsNewMod()
         {
             if (OperationInProgress || !AtLeastOneMixinSelected) return false;
-            if (string.IsNullOrWhiteSpace(NewModName) || string.IsNullOrWhiteSpace(M3Utilities.SanitizePath(NewModName))) return false;
+            if (string.IsNullOrWhiteSpace(NewModName) || string.IsNullOrWhiteSpace(MUtilities.SanitizePath(NewModName))) return false;
             return true;
         }
 
@@ -133,7 +133,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MixinManager CompileAsNewModThread");
             List<string> failedApplications = new List<string>();
             var modname = NewModName;
-            var modpath = Path.Combine(M3LoadedMods.GetME3ModsDirectory(), M3Utilities.SanitizePath(modname));
+            var modpath = Path.Combine(M3LoadedMods.GetME3ModsDirectory(), MUtilities.SanitizePath(modname));
             if (Directory.Exists(modpath))
             {
                 var result = M3L.ShowDialog(mainwindow,
@@ -178,7 +178,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 if (Directory.Exists(modpath))
                 {
-                    M3Utilities.DeleteFilesAndFoldersRecursively(modpath);
+                    MUtilities.DeleteFilesAndFoldersRecursively(modpath);
                 }
 
                 ProgressBarMax = mixins.Count();

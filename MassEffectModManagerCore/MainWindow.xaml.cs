@@ -32,6 +32,8 @@ using ME3TweaksCore;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Localization;
+using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
@@ -1731,7 +1733,7 @@ namespace ME3TweaksModManager
             if (confirmationResult == MessageBoxResult.Yes)
             {
                 M3Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
-                if (M3Utilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
+                if (MUtilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
                 {
                     M3LoadedMods.Instance.RemoveMod(selectedMod);
                     return true;
@@ -1979,7 +1981,7 @@ namespace ME3TweaksModManager
             foreach (var v in result.TargetsToSquadmateMergeSync)
             {
                 ShowRunAndDone((updateUIString) => SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v], updateUIString),
-                M3L.GetString(M3L.string_synchronizingSquadmateOutfits),
+                LC.GetString(LC.string_synchronizingSquadmateOutfits),
                     M3L.GetString(M3L.string_synchronizedSquadmateOutfits),
                     null);
             }

@@ -803,8 +803,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             }
 
             //Delete empty subdirectories
-            M3Utilities.DeleteEmptySubdirectories(modPath);
-            M3Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
+            MUtilities.DeleteEmptySubdirectories(modPath);
+            MUtilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             //We're done!
             return true;
         }
@@ -816,7 +816,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             var stagingPath = M3Filesystem.GetUpdaterServiceUploadStagingPath();
             if (Directory.Exists(stagingPath))
             {
-                M3Utilities.DeleteFilesAndFoldersRecursively(stagingPath);
+                MUtilities.DeleteFilesAndFoldersRecursively(stagingPath);
             }
             Directory.CreateDirectory(stagingPath);
 

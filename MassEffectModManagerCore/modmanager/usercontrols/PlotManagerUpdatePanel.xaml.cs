@@ -14,6 +14,7 @@ using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Misc;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
@@ -164,7 +165,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // STEP 2: UPDATE FUNCTIONS
                 Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
-                bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) }, target.TargetPath, canUseBinaryCache: false);
+                bool initialized = fl.Initialize(new TargetPackageCache() { RootPath = M3Directories.GetBioGamePath(target) }, target.TargetPath, canUseBinaryCache: false);
                 if (!initialized)
                 {
                     M3Log.Error(@"Error initializing FileLib for plot manager sync:");

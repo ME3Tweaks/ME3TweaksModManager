@@ -377,7 +377,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (rcw != null)
             {
                 //Write RCW
-                var sanitizedName = M3Utilities.SanitizePath(ModName);
+                var sanitizedName = MUtilities.SanitizePath(ModName);
                 rcw.WriteToFile(Path.Combine(modpath, sanitizedName + @".me2mod"));
 
                 //Write moddesc.ini

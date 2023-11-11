@@ -60,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void ImportSelectedFolder()
         {
             //Check destination path
-            var destinationName = M3Utilities.SanitizePath(ModNameText);
+            var destinationName = MUtilities.SanitizePath(ModNameText);
             if (string.IsNullOrWhiteSpace(destinationName))
             {
                 //cannot use this name
@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 try
                 {
-                    M3Utilities.DeleteFilesAndFoldersRecursively(outDir);
+                    MUtilities.DeleteFilesAndFoldersRecursively(outDir);
                 }
                 catch (Exception e)
                 {
@@ -162,7 +162,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
 
             var library = M3LoadedMods.GetModDirectoryForGame(SelectedTarget.Game);
-            var destinationName = M3Utilities.SanitizePath(ModNameText);
+            var destinationName = MUtilities.SanitizePath(ModNameText);
             var modFolder = Path.Combine(library, destinationName);
             var copyDestination = Path.Combine(modFolder, SelectedDLCFolder.DLCFolderName);
             var outInfo = Directory.CreateDirectory(copyDestination);

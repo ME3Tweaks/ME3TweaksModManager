@@ -148,11 +148,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (ModsInDeployment.Count > 1)
             {
                 // Multipack
-                premadeName = M3Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}_multipack".Replace(@" ", ""), true);
+                premadeName = MUtilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}_multipack".Replace(@" ", ""), true);
             }
             else
             {
-                premadeName = M3Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}".Replace(@" ", ""), true);
+                premadeName = MUtilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}".Replace(@" ", ""), true);
             }
 
             SaveFileDialog d = new SaveFileDialog
@@ -265,7 +265,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 if (isMultiPack)
                 {
-                    modRefMap[modBeingDeployed] = references.ToDictionary(x => x, x => $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{x}");
+                    modRefMap[modBeingDeployed] = references.ToDictionary(x => x, x => $@"{MUtilities.SanitizePath(modBeingDeployed.ModName)}\{x}");
                 }
                 else
                 {
@@ -470,8 +470,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var inArchiveGame1TlkFolderPath = Mod.Game1EmbeddedTlkFolderName;
                     if (isMultiPack)
                     {
-                        inArchiveMergeFilePath = $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{inArchiveMergeFilePath}";
-                        inArchiveGame1TlkFolderPath = $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{inArchiveGame1TlkFolderPath}";
+                        inArchiveMergeFilePath = $@"{MUtilities.SanitizePath(modBeingDeployed.ModName)}\{inArchiveMergeFilePath}";
+                        inArchiveGame1TlkFolderPath = $@"{MUtilities.SanitizePath(modBeingDeployed.ModName)}\{inArchiveGame1TlkFolderPath}";
                     }
 
                     currentDeploymentStep = M3L.GetString(M3L.string_addingCombinedTLKMergeFile);

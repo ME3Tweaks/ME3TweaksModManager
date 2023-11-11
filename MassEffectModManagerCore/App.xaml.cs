@@ -332,7 +332,7 @@ namespace ME3TweaksModManager
                             });
 
                             M3Log.Information(@"Deleting old data directory: " + oldDir);
-                            M3Utilities.DeleteFilesAndFoldersRecursively(oldDir);
+                            MUtilities.DeleteFilesAndFoldersRecursively(oldDir);
                             M3Log.Information(@"Migration from pre 104 settings to 104+ settings completed");
                         }
                         catch (Exception e)
@@ -385,7 +385,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Deleting temp files (if any)");
                 try
                 {
-                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
+                    MUtilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
                 }
                 catch (Exception e)
                 {
@@ -702,7 +702,7 @@ namespace ME3TweaksModManager
                 {
                     try
                     {
-                        M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(), false);
+                        MUtilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(), false);
                         M3Log.Information(@"Deleted mod download cache");
                     }
                     catch (Exception ex)

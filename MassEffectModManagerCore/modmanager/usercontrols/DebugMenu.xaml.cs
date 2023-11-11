@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks;
+using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;

@@ -41,7 +41,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             SaveFileDialog d = new SaveFileDialog
             {
                 Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",
-                FileName = M3Utilities.SanitizePath($@"{ModForArchive.ModName}_{ModForArchive.ModVersionString}".Replace(@" ", ""), true)
+                FileName = MUtilities.SanitizePath($@"{ModForArchive.ModName}_{ModForArchive.ModVersionString}".Replace(@" ", ""), true)
             };
             var outputarchive = d.ShowDialog();
             if (outputarchive.HasValue && outputarchive.Value)

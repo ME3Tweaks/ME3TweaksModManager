@@ -281,7 +281,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ui.CanUpdate = !modUpdated;
                 updatedMods.Add(ui.mod);
                 ui.DownloadButtonText = ui.CanUpdate ? M3L.GetString(M3L.string_downloadUpdate) : M3L.GetString(M3L.string_updated);
-                M3Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
+                MUtilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {

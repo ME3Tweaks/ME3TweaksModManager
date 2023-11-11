@@ -22,6 +22,8 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Localization;
+using ME3TweaksCore.ME3Tweaks.StarterKit;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
@@ -278,7 +280,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_modNameCanOnlyContain));
                 }
-                var sanitized = M3Utilities.SanitizePath(ModName, true);
+                var sanitized = MUtilities.SanitizePath(ModName, true);
                 if (sanitized.Length == 0)
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_modNameWillNotResolveToAUsableFilesystemPath));
@@ -416,14 +418,14 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (result == MessageBoxResult.No) return;
             }
 
-            var outputDirectory = Path.Combine(M3LoadedMods.GetModDirectoryForGame(Game), M3Utilities.SanitizePath(ModName));
+            var outputDirectory = Path.Combine(M3LoadedMods.GetModDirectoryForGame(Game), MUtilities.SanitizePath(ModName));
             if (Directory.Exists(outputDirectory))
             {
                 var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogWillDeleteExistingMod, outputDirectory), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
                 try
                 {
-                    if (!M3Utilities.DeleteFilesAndFoldersRecursively(outputDirectory))
+                    if (!MUtilities.DeleteFilesAndFoldersRecursively(outputDirectory))
                     {
                         M3Log.Error(@"Could not delete existing output directory.");
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogErrorDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -446,7 +448,7 @@ namespace ME3TweaksModManager.modmanager.windows
         private void RunStarterKitGenerator(MountFlag mf)
         {
 
-            StarterKitOptions sko = new StarterKitOptions
+            var sko = new StarterKitOptions
             {
                 ModName = ModName,
                 ModDescription = ModDescription,
@@ -479,7 +481,7 @@ namespace ME3TweaksModManager.modmanager.windows
             M3Log.Information(sko.ToString());
 
             IsBusy = true;
-            BusyText = M3L.GetString(M3L.string_generatingMod);
+            BusyText = LC.GetString(LC.string_generatingMod);
             Task.Run(() =>
             {
                 FinishedCallback(CreateStarterKitMod(sko, s => { BusyText = s; }));
@@ -578,16 +580,56 @@ namespace ME3TweaksModManager.modmanager.windows
             }
         }
 
+        /// <summary>
+        /// Generates a DLC mod with starter kit. Can return null if generate moddesc is not specified
+        /// </summary>
+        /// <param name="skOption"></param>
+        /// <param name="UITextCallback"></param>
+        /// <returns></returns>
         public static Mod CreateStarterKitMod(StarterKitOptions skOption, Action<string> UITextCallback)
+        {
+            var modPath = DLCModGenerator.CreateStarterKitMod(skOption.OutputFolderOverride ?? Path.Combine(M3LoadedMods.GetModDirectoryForGame(skOption.ModGame), MUtilities.SanitizePath(skOption.ModName))
+                , skOption, UITextCallback, out var moddescAddinDelegates);
+            if (skOption.GenerateModdesc)
+            {
+                var dlcFolderName = $@"DLC_MOD_{skOption.ModDLCFolderNameSuffix}";
+                var ini = new DuplicatingIni();
+                ini[@"ModManager"][@"cmmver"].Value = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                ini[@"ModInfo"][@"game"].Value = skOption.ModGame.ToString();
+                ini[@"ModInfo"][@"modname"].Value = skOption.ModName;
+                ini[@"ModInfo"][@"moddev"].Value = skOption.ModDeveloper;
+                ini[@"ModInfo"][@"moddesc"].Value = M3Utilities.ConvertNewlineToBr(skOption.ModDescription);
+                ini[@"ModInfo"][@"modver"].Value = 1.0.ToString(CultureInfo.InvariantCulture);
+                ini[@"ModInfo"][@"modsite"].Value = skOption.ModURL;
+
+                ini[@"CUSTOMDLC"][@"sourcedirs"].Value = dlcFolderName;
+                ini[@"CUSTOMDLC"][@"destdirs"].Value = dlcFolderName;
+
+                foreach (var v in moddescAddinDelegates)
+                {
+                    v.Invoke(ini);
+                }
+
+                var modDescPath = Path.Combine(modPath, @"moddesc.ini");
+                ini.WriteToFile(modDescPath, new UTF8Encoding(false));
+                Mod m = new Mod(modDescPath, skOption.ModGame);
+                return m;
+            }
+
+            return null;
+        }
+
+#if OLD
+        public static Mod CreateStarterKitModOld(StarterKitOptions skOption, Action<string> UITextCallback)
         {
             //NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"StarterKitThread");
             //nbw.DoWork += (sender, args) =>
             //{
             var dlcFolderName = $@"DLC_MOD_{skOption.ModDLCFolderNameSuffix}";
-            var modPath = skOption.OutputFolderOverride ?? Path.Combine(M3LoadedMods.GetModDirectoryForGame(skOption.ModGame), M3Utilities.SanitizePath(skOption.ModName));
+            var modPath = skOption.OutputFolderOverride ?? Path.Combine(M3LoadedMods.GetModDirectoryForGame(skOption.ModGame), MUtilities.SanitizePath(skOption.ModName));
             if (skOption.OutputFolderOverride == null && Directory.Exists(modPath))
             {
-                M3Utilities.DeleteFilesAndFoldersRecursively(modPath);
+                MUtilities.DeleteFilesAndFoldersRecursively(modPath);
             }
 
             Directory.CreateDirectory(modPath);
@@ -599,7 +641,7 @@ namespace ME3TweaksModManager.modmanager.windows
             if (skOption.OutputFolderOverride != null && Directory.Exists(contentDirectory))
             {
                 // Wipe out DLC folder target
-                M3Utilities.DeleteFilesAndFoldersRecursively(contentDirectory);
+                MUtilities.DeleteFilesAndFoldersRecursively(contentDirectory);
             }
 
             Directory.CreateDirectory(contentDirectory);
@@ -844,67 +886,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
             return null;
         }
-
-        public class StarterKitOptions
-        {
-            public string ModDescription;
-            public string ModDeveloper;
-            public string ModName;
-            public string ModInternalName;
-            public string ModDLCFolderNameSuffix;
-            public int ModMountPriority;
-            public int ModInternalTLKID;
-            public string ModURL;
-            public MountFlag ModMountFlag;
-            public MEGame ModGame;
-
-            public int ModModuleNumber;
-
-            /// <summary>
-            /// If a Mod object should be generated via moddesc.ini. Defaults to true
-            /// </summary>
-            public bool GenerateModdesc { get; set; } = true;
-            /// <summary>
-            /// Directory to place the DLC folder at. Set to null to use the mod library
-            /// </summary>
-            public string OutputFolderOverride { get; set; }
-
-
-            #region FEATURE OPTIONS
-            /// <summary>
-            /// If a startup file should be added after the mod has been generated
-            /// </summary>
-            public bool AddStartupFile { get; set; }
-            public bool AddPlotManagerData { get; set; }
-            public bool AddModSettingsMenu { get; set; }
-            public List<Bio2DAOption> Blank2DAsToGenerate { get; set; } = new();
-            public bool AddAshleySQM { get; set; }
-            public bool AddGarrusSQM { get; set; }
-            public bool AddLiaraSQM { get; set; }
-            public bool AddJamesSQM { get; set; }
-            public bool AddEDISQM { get; set; }
-            public bool AddKaidanSQM { get; set; }
-            public bool AddJavikSQM { get; set; }
-            public bool AddTaliSQM { get; set; }
-            #endregion
-
-
-            public override string ToString()
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine(@"Game: " + ModGame);
-                sb.AppendLine(@"ModName: " + ModName);
-                sb.AppendLine(@"ModDescription: " + ModDescription);
-                sb.AppendLine(@"ModDeveloper: " + ModDLCFolderNameSuffix);
-                sb.AppendLine(@"ModDLCFolderName: " + ModDLCFolderNameSuffix);
-                sb.AppendLine(@"ModInternalTLKID: " + ModInternalTLKID);
-                sb.AppendLine(@"ModMountPriority: " + ModMountPriority);
-                sb.AppendLine(@"ModModuleNumber: " + ModModuleNumber);
-                sb.AppendLine(@"ModURL: " + ModURL);
-                sb.AppendLine(@"Mount flag: " + ModMountFlag);
-                return sb.ToString();
-            }
-        }
+#endif
 
         private void MountPriority_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {

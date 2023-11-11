@@ -217,7 +217,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var m = compiler.DownloadAndCompileMod(modDelta);
                     if (m != null && !LocalFileOption)
                     {
-                        var sanitizedname = M3Utilities.SanitizePath(m.ModName);
+                        var sanitizedname = MUtilities.SanitizePath(m.ModName);
                         File.WriteAllText(Path.Combine(M3Filesystem.GetModmakerDefinitionsCache(), $@"{code}-{sanitizedname}.xml"), modDelta);
                     }
                     b.Result = m;
