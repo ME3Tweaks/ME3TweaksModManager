@@ -23,7 +23,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.Backup;
-using ME3TweaksCore.Services.BasegameFileIdentification;
+using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;

@@ -1,24 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using ME3TweaksCore.ME3Tweaks.Online;
 using ME3TweaksCore.Misc;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
-using ME3TweaksCore.Services.BasegameFileIdentification;
-using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.usercontrols;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.online
 {

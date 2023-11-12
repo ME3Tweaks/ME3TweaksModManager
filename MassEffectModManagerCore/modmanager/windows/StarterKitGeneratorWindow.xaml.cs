@@ -34,7 +34,6 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
-using ME3TweaksModManager.modmanager.squadmates;
 using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;

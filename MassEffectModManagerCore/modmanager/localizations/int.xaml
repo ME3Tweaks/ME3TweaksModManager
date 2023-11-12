@@ -2840,17 +2840,10 @@
     <!-- LE1 Coalesced Merge -->
     <system:String xml:space="preserve" x:Key="string_dialog_firstCoalescedMerge">ME3Tweaks Mod Manager replaces the basegame Coalesced_INT.bin file for LE1 automatically so that mods can use the LE1 Coalesced Merge feature. Manually installed/edited Coalesced_INT.bin mods will be overwritten by this feature; you can turn it off in Mod Manager settings.\n\nDisabling the LE1 Coalesced Merge feature will break all mods that depend on it.</system:String>
     <system:String x:Key="string_information">Information</system:String>
-    <system:String x:Key="string_m3ConsoleKeybinds">M3 Console Keybinds</system:String>
-    <!-- This is the name assigned to the entry that is shown in Modified Basegame Files when you set the keybinds for LE1 and they persist across merges. It's a mod name essentially, but its OK to localize for the user-->
 
     <!-- M3 Protocol Handler -->
     <system:String x:Key="string_importingSaveFileFromME3Tweaks">Importing save file from ME3Tweaks</system:String>
     <system:String x:Key="string_importedSaveFileFromME3Tweaks">Imported save file from ME3Tweaks</system:String>
     <system:String x:Key="string_interp_errorImportingSaveFileX">Error importing save file: {0}</system:String>
     <!-- 0={Error message} -->
-
-    <!-- Game 2 Email Merge -->
-    <system:String x:Key="string_emailsNotMergedMessagesFileNotFound">Emails not merged: Messages file not found</system:String>
-    <system:String x:Key="string_game2EmailMergeWrongGame">Game 2 email merge manifest targets incorrect game</system:String>
-
 </ResourceDictionary>

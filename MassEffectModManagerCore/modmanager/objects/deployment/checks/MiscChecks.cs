@@ -2,7 +2,6 @@
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
-using ME3TweaksModManager.modmanager.squadmates;
 using Newtonsoft.Json;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.alternates;

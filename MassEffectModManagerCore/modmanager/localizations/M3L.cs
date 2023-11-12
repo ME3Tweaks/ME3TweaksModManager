@@ -2097,8 +2097,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_addingStartupFile = "string_interp_addingStartupFile";
 		public const string string_interp_addedStartupFile = "string_interp_addedStartupFile";
 		public const string string_interp_failedToAddStartupFileX = "string_interp_failedToAddStartupFileX";
-		public const string string_interp_sk_sqmNoBackup = "string_interp_sk_sqmNoBackup";
-		public const string string_interp_sk_sqmBackupMissingRequiredFile = "string_interp_sk_sqmBackupMissingRequiredFile";
 		public const string string_tooltip_loadAllSaves = "string_tooltip_loadAllSaves";
 		public const string string_loadAllSavesMayUseALotOfMemory = "string_loadAllSavesMayUseALotOfMemory";
 		public const string string_selectThisSave = "string_selectThisSave";
@@ -2156,11 +2154,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_unknownSaveTypeX = "string_interp_unknownSaveTypeX";
 		public const string string_dialog_firstCoalescedMerge = "string_dialog_firstCoalescedMerge";
 		public const string string_information = "string_information";
-		public const string string_m3ConsoleKeybinds = "string_m3ConsoleKeybinds";
 		public const string string_importingSaveFileFromME3Tweaks = "string_importingSaveFileFromME3Tweaks";
 		public const string string_importedSaveFileFromME3Tweaks = "string_importedSaveFileFromME3Tweaks";
 		public const string string_interp_errorImportingSaveFileX = "string_interp_errorImportingSaveFileX";
-		public const string string_emailsNotMergedMessagesFileNotFound = "string_emailsNotMergedMessagesFileNotFound";
-		public const string string_game2EmailMergeWrongGame = "string_game2EmailMergeWrongGame";
 	}
 }

@@ -15,7 +15,7 @@ using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
-using ME3TweaksCore.Services.BasegameFileIdentification;
+using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
@@ -243,6 +243,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    M3Log.Exception(b.Error, @"Error running plot sync:");
+                }
                 OnClosing(DataEventArgs.Empty);
             };
             nbw.RunWorkerAsync();

@@ -1,6 +1,6 @@
 ﻿using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.ME3Tweaks.Online;
-using ME3TweaksCore.Services.BasegameFileIdentification;
+using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks;
