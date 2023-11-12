@@ -496,6 +496,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
                 }
                 //Close.
+                Result.ModifiedModdescFiles.AddRange(modsToExtract.OfType<Mod>().Select(x => x.ModDescPath));
                 OnClosing(DataEventArgs.Empty);
             };
             TaskRunning = true;

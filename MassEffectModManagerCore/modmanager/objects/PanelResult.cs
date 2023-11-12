@@ -92,6 +92,11 @@ namespace ME3TweaksModManager.modmanager.objects
         public bool NeedsMergeDLC => TargetsToEmailMergeSync.Any() || TargetsToSquadmateMergeSync.Any();
 
         /// <summary>
+        /// What moddesc files have been modified by this panel
+        /// </summary>
+        public List<string> ModifiedModdescFiles { get; } = new List<string>(0);
+
+        /// <summary>
         /// Merges values from this panel into the specified one
         /// </summary>
         /// <param name="batchPanelResult"></param>
@@ -108,6 +113,16 @@ namespace ME3TweaksModManager.modmanager.objects
             if (PanelToOpen != null) batchPanelResult.PanelToOpen = PanelToOpen;
             if (ReloadTargets) batchPanelResult.ReloadTargets = ReloadTargets;
             if (ReloadMods) batchPanelResult.ReloadMods = ReloadMods;
+            if (ModifiedModdescFiles.Any())
+            {
+                foreach (var f in ModifiedModdescFiles)
+                {
+                    if (!batchPanelResult.ModifiedModdescFiles.Contains(f, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        batchPanelResult.ModifiedModdescFiles.Add(f);
+                    }
+                }
+            }
             if (ModToHighlightOnReload != null) batchPanelResult.ModToHighlightOnReload = ModToHighlightOnReload;
             if (ToolToLaunch != null) batchPanelResult.ToolToLaunch = ToolToLaunch;
         }

@@ -962,7 +962,7 @@ namespace ME3TweaksModManager
             starterKitSelector.ShowDialog();
             if (starterKitSelector.ReloadMod)
             {
-                M3LoadedMods.Instance.LoadMods(SelectedMod, gamesToLoad: new[] { SelectedMod.Game });
+                M3LoadedMods.Instance.LoadMods(SelectedMod, gamesToLoad: new[] { SelectedMod.Game }, scopedModsToReload: new List<string>(new[] { SelectedMod.ModDescPath }));
             }
         }
 
@@ -2000,7 +2000,7 @@ namespace ME3TweaksModManager
                 if (gamesToLoad.Length == 0)
                     gamesToLoad = null;
                 M3LoadedMods.Instance.LoadMods(result.ModToHighlightOnReload, result.ModsToCheckForUpdates.Any(),
-                    result.ModsToCheckForUpdates.ToList(), gamesToLoad);
+                    result.ModsToCheckForUpdates.ToList(), gamesToLoad, result.ModifiedModdescFiles);
             }
 
             Task.Run(() =>

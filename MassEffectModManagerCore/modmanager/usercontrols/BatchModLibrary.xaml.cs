@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             SaveFileDialog d = new SaveFileDialog
             {
-                Title= "Select deployment destination",
+                Title = "Select deployment destination",
                 Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",
                 FileName = $@"{SelectedBatchQueue.ModName}_installgroup.7z"
             };
@@ -274,24 +274,34 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             IsEnabled = false;
             M3LoadedMods.ModsReloaded += OnModLibraryReloaded;
-            MEGame[] gamesToReload = null;
+            List<string> scopedModsToReload = new List<string>();
+            var libraryRoot = M3LoadedMods.GetCurrentModLibraryDirectory(); // biq2 stores relative to library root. biq stores to library root FOR GAME
+
             if (SelectedBatchQueue != null)
             {
-                gamesToReload = new[] { SelectedBatchQueue.Game };
+                foreach (var bm in SelectedBatchQueue.ModsToInstall)
+                {
+                    var fullModdescPath = Path.Combine(libraryRoot, bm.ModDescPath);
+                    if (File.Exists(fullModdescPath))
+                    {
+                        scopedModsToReload.Add(fullModdescPath);
+                    }
+                }
             }
-            M3LoadedMods.Instance.LoadMods(gamesToLoad: gamesToReload);
+            M3LoadedMods.Instance.LoadMods(scopedModsToReload: scopedModsToReload);
         }
 
         private void OnModLibraryReloaded(object sender, EventArgs e)
         {
             M3LoadedMods.ModsReloaded -= OnModLibraryReloaded;
+            TriggerResize();
 
             var registeredTextureMods = M3LoadedMods.GetAllM3ManagedMEMs();
             foreach (var queue in AvailableBatchQueues)
             {
                 foreach (var mod in queue.ModsToInstall)
                 {
-                    mod.Init();
+                    mod.Init(false);
                 }
 
                 bool rebuildTextureList = false;

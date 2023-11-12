@@ -193,7 +193,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 modernQueue.QueueFormatVersion = QUEUE_VERSION_BIQ2;
                 foreach (var mod in modernQueue.ModsToInstall)
                 {
-                    mod.Init();
+                    mod.Init(true);
                 }
                 foreach (var mod in modernQueue.ASIModsToInstall)
                 {

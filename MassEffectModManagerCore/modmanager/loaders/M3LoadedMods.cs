@@ -247,16 +247,16 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// <param name="forceUpdateCheckOnCompletion">If an update check should be forced when mod loading has completed</param>
         /// <param name="scopedModsToCheckForUpdates">If an update check is forced, this list scopes which mods will be checked</param>
         /// <param name="gamesToLoad">If not null, only load moddescs for the specified games</param>
-        public void LoadMods(Mod modToHighlight = null, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null, MEGame[] gamesToLoad = null)
+        public void LoadMods(Mod modToHighlight = null, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null, MEGame[] gamesToLoad = null, List<string> scopedModsToReload = null)
         {
-            LoadMods(modToHighlight?.ModPath, forceUpdateCheckOnCompletion, scopedModsToCheckForUpdates, gamesToLoad);
+            LoadMods(modToHighlight?.ModPath, forceUpdateCheckOnCompletion, scopedModsToCheckForUpdates, gamesToLoad, scopedModsToReload);
         }
 
         /// <summary>
         /// Reload mods. Highlight the specified mod that matches the path if any
         /// </summary>
         /// <param name="modpathToHighlight"></param>
-        public void LoadMods(string modpathToHighlight, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null, MEGame[] gamesToLoad = null)
+        public void LoadMods(string modpathToHighlight, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null, MEGame[] gamesToLoad = null, List<string> scopedModsToReload = null)
         {
             if (IsLoadingMods && !IsFirstLoad)
                 return; // Do not accept another load in the middle of load
@@ -292,16 +292,25 @@ namespace ME3TweaksModManager.modmanager.loaders
             List<Mod> cachedLoadedMods = new List<Mod>();
             List<Mod> cachedFailedMods = new List<Mod>();
 
-            if (gamesToLoad != null)
+            if (gamesToLoad != null || (scopedModsToReload != null && scopedModsToReload.Any()))
             {
                 // Clear only specific games
-                // .ToList() because we are going to be modifying the collection during the operation so we have to collect
+                // .ToList() because we are going to be modifying the collection during the operation so we have to  collect
                 // the results first
 
                 // remove all mods that have games matching the list of games to load
-                cachedVisibleMods.ReplaceAll(VisibleFilteredMods.Where(x => !gamesToLoad.Contains(x.Game)));
-                cachedLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !gamesToLoad.Contains(x.Game)));
-                cachedFailedMods.ReplaceAll(FailedMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                if (scopedModsToReload != null && scopedModsToReload.Any())
+                {
+                    cachedVisibleMods.ReplaceAll(VisibleFilteredMods.Where(x => !scopedModsToReload.Contains(x.ModDescPath, StringComparer.InvariantCultureIgnoreCase)));
+                    cachedLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !scopedModsToReload.Contains(x.ModDescPath, StringComparer.InvariantCultureIgnoreCase)));
+                    cachedFailedMods.ReplaceAll(FailedMods.Where(x => !scopedModsToReload.Contains(x.ModDescPath, StringComparer.InvariantCultureIgnoreCase)));
+                }
+                else
+                {
+                    cachedVisibleMods.ReplaceAll(VisibleFilteredMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                    cachedLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                    cachedFailedMods.ReplaceAll(FailedMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                }
             }
 
             // Clear everything
@@ -320,38 +329,74 @@ namespace ME3TweaksModManager.modmanager.loaders
                 LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 M3Log.Information(@"Loading mods from mod library: " + GetCurrentModLibraryDirectory());
 
-                var le3modDescsToLoad = Directory.GetDirectories(GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var le2modDescsToLoad = Directory.GetDirectories(GetLE2ModsDirectory()).Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var le1modDescsToLoad = Directory.GetDirectories(GetLE1ModsDirectory()).Select(x => (game: MEGame.LE1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me3modDescsToLoad = Directory.GetDirectories(GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me2modDescsToLoad = Directory.GetDirectories(GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me1modDescsToLoad = Directory.GetDirectories(GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-
-                // LE Launcher
-                var leLaunchermodDescsToLoad = Directory.GetDirectories(GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
-
                 List<(MEGame game, string path)> modDescsToLoad = new();
-                if (Settings.GenerationSettingOT)
-                {
-                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME1))
-                        modDescsToLoad.AddRange(me1modDescsToLoad);
-                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME2))
-                        modDescsToLoad.AddRange(me2modDescsToLoad);
-                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME3))
-                        modDescsToLoad.AddRange(me3modDescsToLoad);
-                }
 
-                if (Settings.GenerationSettingLE)
+                if (scopedModsToReload != null && scopedModsToReload.Any())
                 {
-                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE1))
-                        modDescsToLoad.AddRange(le1modDescsToLoad);
-                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE2))
-                        modDescsToLoad.AddRange(le2modDescsToLoad);
-                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE3))
-                        modDescsToLoad.AddRange(le3modDescsToLoad);
-                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LELauncher))
-                        modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
+                    modDescsToLoad.ReplaceAll(scopedModsToReload.Select(x=>(MEGame.Unknown, x)));
+                }
+                else
+                {
+                    var le3modDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.LE3)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetLE3ModsDirectory())
+                            .Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path)).ToArray();
+                    var le2modDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.LE2)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetLE2ModsDirectory())
+                            .Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path)).ToArray();
+                    var le1modDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.LE1)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetLE1ModsDirectory())
+                            .Select(x => (game: MEGame.LE1, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path)).ToArray();
+                    var me3modDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.ME3)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetME3ModsDirectory())
+                            .Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path)).ToArray();
+                    var me2modDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.ME2)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetME2ModsDirectory())
+                            .Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path)).ToArray();
+                    var me1modDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.ME1)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetME1ModsDirectory())
+                            .Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path)).ToArray();
+
+                    // LE Launcher
+                    var leLaunchermodDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.LELauncher)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetLELauncherModsDirectory())
+                            .Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path));
+                    //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
+
+                    if (Settings.GenerationSettingOT)
+                    {
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME1))
+                            modDescsToLoad.AddRange(me1modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME2))
+                            modDescsToLoad.AddRange(me2modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME3))
+                            modDescsToLoad.AddRange(me3modDescsToLoad);
+                    }
+
+                    if (Settings.GenerationSettingLE)
+                    {
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE1))
+                            modDescsToLoad.AddRange(le1modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE2))
+                            modDescsToLoad.AddRange(le2modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE3))
+                            modDescsToLoad.AddRange(le3modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LELauncher))
+                            modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
+                    }
                 }
 
                 NumTotalMods = modDescsToLoad.Count;

@@ -114,7 +114,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <summary>
         /// Initializes and associates a mod with this object
         /// </summary>
-        public void Init()
+        public void Init(bool logMissing)
         {
             var libraryRoot = M3LoadedMods.GetCurrentModLibraryDirectory(); // biq2 stores relative to library root. biq stores to library root FOR GAME
 
@@ -139,7 +139,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             }
             else
             {
-                M3Log.Warning($@"Batch queue mod not available in library: {fullModdescPath}");
+                M3Log.Warning($@"Batch queue mod not available in library: {fullModdescPath}", logMissing);
             }
         }
 
