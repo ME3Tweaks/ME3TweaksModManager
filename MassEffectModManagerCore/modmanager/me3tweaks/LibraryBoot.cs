@@ -61,7 +61,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 GenerateKnownInstalledASIModDelegate = KnownInstalledASIModWPF.GenerateKnownInstalledASIModWPF,
                 GenerateUnknownInstalledASIModDelegate = UnknownInstalledASIModWPF.GenerateUnknownInstalledASIModWPF,
                 BetaMode = Settings.BetaMode,
-                InitialLanguage = App.InitialLanguage
+                InitialLanguage = App.InitialLanguage,
+                LoadBuildInfo = false // We already did this
             };
         }
 
