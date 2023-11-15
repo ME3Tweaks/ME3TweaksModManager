@@ -110,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             WebClient downloadClient = new WebClient();
 
             downloadClient.Headers[@"user-agent"] = @"ME3TweaksModManager";
-            string temppath = M3Filesystem.GetTempPath();
+            string temppath = MCoreFilesystem.GetTempDirectory();
             downloadClient.DownloadProgressChanged += (s, e) =>
             {
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);

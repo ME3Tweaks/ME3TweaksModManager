@@ -275,7 +275,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         );
                     }
                 }
-                var stagingDirectory = Directory.CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), Path.GetFileName(ui.mod.ModPath))).FullName;
+                var stagingDirectory = Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetTempDirectory(), Path.GetFileName(ui.mod.ModPath))).FullName;
                 var modUpdated = M3OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
                 ui.UpdateInProgress = false;
                 ui.CanUpdate = !modUpdated;

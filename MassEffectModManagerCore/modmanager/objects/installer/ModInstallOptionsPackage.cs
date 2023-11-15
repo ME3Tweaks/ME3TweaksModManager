@@ -39,5 +39,10 @@ namespace ME3TweaksModManager.modmanager.objects.installer
         /// The list of selected installation options mapped by each header
         /// </summary>
         public Dictionary<ModJob.JobHeader, List<AlternateOption>> SelectedOptions { get; init; } = new();
+
+        /// <summary>
+        /// If this is the first content mod that will be installed. Things such as bink bypass will be installed
+        /// </summary>
+        public bool IsFirstBatchMod { get; set; }
     }
 }

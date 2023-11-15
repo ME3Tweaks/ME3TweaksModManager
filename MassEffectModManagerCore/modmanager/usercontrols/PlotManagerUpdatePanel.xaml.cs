@@ -164,6 +164,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 // STEP 2: UPDATE FUNCTIONS
                 Stopwatch sw = Stopwatch.StartNew();
+                M3Log.Information($"Initializing plot manager path with relative package cache path {M3Directories.GetBioGamePath(target)}");
                 var fl = new FileLib(plotManager);
                 bool initialized = fl.Initialize(new TargetPackageCache() { RootPath = M3Directories.GetBioGamePath(target) }, target.TargetPath, canUseBinaryCache: false);
                 if (!initialized)

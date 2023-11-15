@@ -464,7 +464,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     currentDeploymentStep = M3L.GetString(M3L.string_creatingCombinedTLKMergeFile);
                     var inputFolder = Path.Combine(modBeingDeployed.ModPath, Mod.Game1EmbeddedTlkFolderName);
                     var compressedData = CompressedTLKMergeData.CreateCompressedTlkMergeFile(inputFolder, generatingCompressedFileProgress).GetBuffer();
-                    var mergeFileTemp = Path.Combine(M3Filesystem.GetTempPath(), Mod.Game1EmbeddedTlkCompressedFilename);
+                    var mergeFileTemp = Path.Combine(MCoreFilesystem.GetTempDirectory(), Mod.Game1EmbeddedTlkCompressedFilename);
                     File.WriteAllBytes(mergeFileTemp, compressedData);
                     var inArchiveMergeFilePath = $@"{Mod.Game1EmbeddedTlkFolderName}\{Mod.Game1EmbeddedTlkCompressedFilename}";
                     var inArchiveGame1TlkFolderPath = Mod.Game1EmbeddedTlkFolderName;

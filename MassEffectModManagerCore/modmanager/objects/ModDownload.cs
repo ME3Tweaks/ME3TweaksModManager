@@ -281,7 +281,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 }
                 catch (Exception e)
                 {
-                    M3Log.Error($@"Error downloading {ModFile?.FileName}: {e.Message}");
+                    M3Log.Exception(e, $@"Error downloading {ModFile?.FileName}:");
                     Initialized = true;
                     ProgressIndeterminate = false;
                     OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_interp_errorDownloadingModX, e.Message));

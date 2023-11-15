@@ -51,7 +51,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                         Crashes.TrackError(e, data);
                     }
                 },
-                CanFetchContentThrottleCheck =M3OnlineContent.CanFetchContentThrottleCheck,
+                CanFetchContentThrottleCheck = M3OnlineContent.CanFetchContentThrottleCheck,
                 LECPackageSaveFailedCallback = x => M3Log.Error($@"Error saving package: {x}"),
                 CreateLogger = M3Log.CreateLogger,
                 GenerateInstalledDlcModDelegate = M3InstalledDLCMod.GenerateInstalledDLCMod,
@@ -61,7 +61,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 GenerateKnownInstalledASIModDelegate = KnownInstalledASIModWPF.GenerateKnownInstalledASIModWPF,
                 GenerateUnknownInstalledASIModDelegate = UnknownInstalledASIModWPF.GenerateUnknownInstalledASIModWPF,
                 BetaMode = Settings.BetaMode,
-                InitialLanguage = App.InitialLanguage
+                InitialLanguage = App.InitialLanguage,
+                LoadBuildInfo = false // We already did this
             };
         }
 

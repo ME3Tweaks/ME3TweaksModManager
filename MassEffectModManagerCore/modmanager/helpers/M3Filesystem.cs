@@ -67,7 +67,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         internal static string GetVPatchRedirectsFolder()
         {
-            return Path.Combine(GetTempPath(), @"VPatchRedirects");
+            return Path.Combine(MCoreFilesystem.GetTempDirectory(), @"VPatchRedirects");
         }
 
         internal static string GetDllDirectory()
@@ -176,14 +176,6 @@ namespace ME3TweaksModManager.modmanager.helpers
         }
 
         /// <summary>
-        /// Gets scratch space directory for the application
-        /// </summary>
-        internal static string GetTempPath()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"Temp")).FullName;
-        }
-
-        /// <summary>
         /// Gets folder containing #.xml files (definition of modmaker mods)
         /// </summary>
         /// <returns></returns>
@@ -208,7 +200,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
         internal static string GetUpdaterServiceUploadStagingPath()
         {
-            return Directory.CreateDirectory(Path.Combine(GetTempPath(), @"UpdaterServiceStaging")).FullName;
+            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetTempDirectory(), @"UpdaterServiceStaging")).FullName;
         }
 
         public static string GetModDescUpdaterServiceFile()

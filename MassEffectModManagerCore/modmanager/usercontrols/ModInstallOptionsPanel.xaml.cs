@@ -103,9 +103,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             InstallCommand = new GenericCommand(BeginInstallingMod, CanInstall);
         }
 
-
-
-
         /// <summary>
         /// Weave-called when SelectedGameTarget changes
         /// </summary>
@@ -688,6 +685,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 InstallTarget = SelectedGameTarget,
                 ModBeingInstalled = ModBeingInstalled,
                 SelectedOptions = optionsMap,
+                BatchMode = BatchMod != null,
+                IsFirstBatchMod = BatchMod?.IsFirstBatchMod ?? false,
                 SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected) // ME1 Read only option
             };
 
@@ -712,8 +711,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
-
             GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
             InitializeComponent();
             InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game));

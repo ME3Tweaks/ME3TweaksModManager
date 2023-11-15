@@ -257,51 +257,65 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
-            var needsBinkInstalled = !InstallOptionsPackage.InstallTarget.IsBinkBypassInstalled();
-            if (!needsBinkInstalled && InstallOptionsPackage.ModBeingInstalled.RequiresEnhancedBink &&
-                !InstallOptionsPackage.InstallTarget.IsEnhancedBinkInstalled())
+            // Bink only needs installed once in a batch install
+            if (!InstallOptionsPackage.BatchMode || InstallOptionsPackage.IsFirstBatchMod)
             {
-                needsBinkInstalled = true;
-            }
-
-            if (needsBinkInstalled)
-            {
-                try
+                var needsBinkInstalled = !InstallOptionsPackage.InstallTarget.IsBinkBypassInstalled();
+                if (!needsBinkInstalled && InstallOptionsPackage.ModBeingInstalled.RequiresEnhancedBink &&
+                    !InstallOptionsPackage.InstallTarget.IsEnhancedBinkInstalled())
                 {
-                    InstallOptionsPackage.InstallTarget.InstallBinkBypass(true);
+                    needsBinkInstalled = true;
                 }
-                catch (Exception be)
+
+                if (needsBinkInstalled)
                 {
-                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
-                    if (Application.Current != null)
+                    try
                     {
-                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorInstallingBinkBypassX, be.Message), M3L.GetString(M3L.string_title_errorInstallingBinkBypass), MessageBoxButton.OK, MessageBoxImage.Error));
+                        InstallOptionsPackage.InstallTarget.InstallBinkBypass(true);
                     }
-                    M3Log.Information(@"<<<<<<< Exiting modinstaller");
-                    return;
+                    catch (Exception be)
+                    {
+                        e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
+                        if (Application.Current != null)
+                        {
+                            Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow,
+                                M3L.GetString(M3L.string_interp_errorInstallingBinkBypassX, be.Message),
+                                M3L.GetString(M3L.string_title_errorInstallingBinkBypass), MessageBoxButton.OK,
+                                MessageBoxImage.Error));
+                        }
+
+                        M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                        return;
+                    }
                 }
             }
 
             // 06/06/2022 - Change to only install for Launcher if autoboot is on since bink 2007 fixes launcher dir for every game.
-            if (Settings.SkipLELauncher && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+            if (!InstallOptionsPackage.BatchMode || InstallOptionsPackage.IsFirstBatchMod)
             {
-                GameTargetWPF gt = new GameTargetWPF(MEGame.LELauncher, Path.Combine(Directory.GetParent(InstallOptionsPackage.InstallTarget.TargetPath).FullName, @"Launcher"), false, skipInit: true);
-                if (gt.IsValid && !gt.IsBinkBypassInstalled())
+                if (Settings.SkipLELauncher && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
                 {
-                    // Bink isn't installed and it needs autoboot
-                    if (MUtilities.IsGameRunning(MEGame.LELauncher))
+                    GameTargetWPF gt = new GameTargetWPF(MEGame.LELauncher,
+                        Path.Combine(Directory.GetParent(InstallOptionsPackage.InstallTarget.TargetPath).FullName,
+                            @"Launcher"), false, skipInit: true);
+                    if (gt.IsValid && !gt.IsBinkBypassInstalled())
                     {
-                        M3Log.Warning(@"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
+                        // Bink isn't installed and it needs autoboot
+                        if (MUtilities.IsGameRunning(MEGame.LELauncher))
+                        {
+                            M3Log.Warning(
+                                @"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
+                        }
+                        else
+                        {
+                            // If it fails to install we don't really care
+                            gt.InstallBinkBypass(false);
+                        }
                     }
                     else
                     {
-                        // If it fails to install we don't really care
-                        gt.InstallBinkBypass(false);
+                        M3Log.Information(@"LE Launcher bink bypass is already installed - not installing for autoboot");
                     }
-                }
-                else
-                {
-                    M3Log.Information(@"LE Launcher bink bypass is already installed - not installing for autoboot");
                 }
             }
 
@@ -524,7 +538,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Substage: Add SFAR staging targets
-            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.SFARJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
+            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.SFARJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetTempDirectory(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
             if (sfarStagingDirectory != null)
             {
                 M3Log.Information(@"Building list of SFAR staging targets");
@@ -607,7 +621,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             //Delete existing custom DLC mods with same name
             // 05/08/2023: Restore ME3CMM feature that also removed DLCs that began with 'x' - disabled DLCs
-            foreach (var cdbi in customDLCsBeingInstalled.Concat(customDLCsBeingInstalled.Select(x => 'x' + x))) 
+            foreach (var cdbi in customDLCsBeingInstalled.Concat(customDLCsBeingInstalled.Select(x => 'x' + x)))
             {
                 var path = Path.Combine(gameDLCPath, cdbi);
                 if (Directory.Exists(path))
@@ -993,7 +1007,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // Stage: M3CD for LE2, LE3
-            if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame3()){
+            if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame3())
+            {
                 foreach (var dlcFolderInstalled in addedDLCFolders)
                 {
                     ConfigMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget), Path.GetFileName(dlcFolderInstalled));
@@ -1063,7 +1078,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (sfarStagingDirectory != null)
             {
-                MUtilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
+                MUtilities.DeleteFilesAndFoldersRecursively(MCoreFilesystem.GetTempDirectory());
             }
 
             if (numFilesToInstall == numdone)

@@ -44,7 +44,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// The path where the MEM MFL file is written
         /// </summary>
         /// <returns></returns>
-        private string GetMEMMFLPath() => Path.Combine(M3Filesystem.GetTempPath(), @"meminstalllist.mfl");
+        private string GetMEMMFLPath() => Path.Combine(MCoreFilesystem.GetTempDirectory(), @"meminstalllist.mfl");
 
 
         /// <summary>
