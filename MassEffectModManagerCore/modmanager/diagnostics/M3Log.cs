@@ -125,15 +125,18 @@ namespace ME3TweaksModManager.modmanager.diagnostics
                 .File(Path.Combine(MCoreFilesystem.GetLogDir(), @"modmanagerlog-.txt"),
                     rollingInterval: RollingInterval.Day,
                     fileSizeLimitBytes: FileSize.MebiByte * 10, // 10 MB
-                    // shared: true, // Allow us to read log without closing it // doesn't work in shared mode
+                                                                // shared: true, // Allow us to read log without closing it // doesn't work in shared mode
                     hooks: new CaptureFilePathHook()); // Allow us to capture current log path 
 #if DEBUG
             loggerConfig = loggerConfig.WriteTo.Debug();
 #endif
-            if (CLIOptions.)
+            // Enable Debug Logging if app booted with flag
+            if (DebugLogging)
+            {
                 loggerConfig = loggerConfig.MinimumLevel.Debug();
-                            
-                return loggerConfig.CreateLogger();
+            }
+
+            return loggerConfig.CreateLogger();
         }
     }
 }
