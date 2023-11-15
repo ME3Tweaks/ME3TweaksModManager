@@ -157,6 +157,10 @@ namespace ME3TweaksModManager
                     if (result is Parsed<CLIOptions> parsedCommandLineArgs)
                     {
                         //Parsing completed
+                        if (parsedCommandLineArgs.Value.DebugLogging)
+                        {
+                            M3Log.DebugLogging = true;
+                        }
                         if (parsedCommandLineArgs.Value.UpdateBoot)
                         {
                             //Update unpacked and process was run.
@@ -772,6 +776,8 @@ namespace ME3TweaksModManager
 
         [Option(@"m3link", HelpText = "Instructs Mod Manager to perform a task based on the contents of a me3tweaksmodmanager:// link")]
         public string M3Link { get; set; }
-
+        
+         [Option(@"debuglogging", HelpText = "Enables verbose debug logs")]
+        public bool DebugLogging { get; set; }
     }
 }

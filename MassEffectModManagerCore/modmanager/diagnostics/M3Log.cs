@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
 using Serilog;
@@ -31,6 +29,11 @@ namespace ME3TweaksModManager.modmanager.diagnostics
         /// The path of the current log file
         /// </summary>
         public static string CurrentLogFilePath { get; internal set; }
+        /// <summary>
+        /// If Debug level logs should be enabled
+        /// </summary>
+        public static bool DebugLogging { get; set; }
+
         public static void Exception(Exception exception, string preMessage, bool fatal = false, bool condition = true)
         {
             if (condition)
@@ -118,16 +121,19 @@ namespace ME3TweaksModManager.modmanager.diagnostics
         /// <returns></returns>
         public static ILogger CreateLogger()
         {
-            return new LoggerConfiguration().WriteTo
+            var loggerConfig = new LoggerConfiguration().WriteTo
                 .File(Path.Combine(MCoreFilesystem.GetLogDir(), @"modmanagerlog-.txt"),
-                                    rollingInterval: RollingInterval.Day,
-                                    fileSizeLimitBytes: FileSize.MebiByte * 10, // 10 MB
-                                    // shared: true, // Allow us to read log without closing it // doesn't work in shared mode
-                                    hooks: new CaptureFilePathHook()) // Allow us to capture current log path 
+                    rollingInterval: RollingInterval.Day,
+                    fileSizeLimitBytes: FileSize.MebiByte * 10, // 10 MB
+                    // shared: true, // Allow us to read log without closing it // doesn't work in shared mode
+                    hooks: new CaptureFilePathHook()); // Allow us to capture current log path 
 #if DEBUG
-                            .WriteTo.Debug()
+            loggerConfig = loggerConfig.WriteTo.Debug();
 #endif
-                            .CreateLogger();
+            if (CLIOptions.)
+                loggerConfig = loggerConfig.MinimumLevel.Debug();
+                            
+                return loggerConfig.CreateLogger();
         }
     }
 }
