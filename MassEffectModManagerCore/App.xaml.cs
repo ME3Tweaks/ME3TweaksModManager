@@ -364,11 +364,11 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Deleting temp files (if any)");
                 try
                 {
-                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
+                    M3Utilities.DeleteFilesAndFoldersRecursively(MCoreFilesystem.GetTempDirectory());
                 }
                 catch (Exception e)
                 {
-                    M3Log.Exception(e, $@"Unable to delete temporary files directory {M3Filesystem.GetTempPath()}:");
+                    M3Log.Exception(e, $@"Unable to delete temporary files directory {MCoreFilesystem.GetTempDirectory()}:");
                 }
 
 
@@ -679,15 +679,20 @@ namespace ME3TweaksModManager
             {
                 if (!SingleInstanceExit)
                 {
-                    try
+                    if (Settings.ModDownloadCacheFolder == null)
                     {
-                        M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(), false);
-                        M3Log.Information(@"Deleted mod download cache");
+                        try
+                        {
+                            M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(),
+                                false);
+                            M3Log.Information(@"Deleted mod download cache");
+                        }
+                        catch
+                        {
+                            // Don't care
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($@"EXCEPTION DELETING THE DOWNLOAD CACHE!: {ex.Message}");
-                    }
+
                     M3Log.Information(@"Application exiting normally");
                 }
                 else
