@@ -368,7 +368,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Deleting temp files (if any)");
                 try
                 {
-                    MUtilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
+                    MUtilities.DeleteFilesAndFoldersRecursively(MCoreFilesystem.GetTempDirectory());
                 }
                 catch (Exception e)
                 {
@@ -687,7 +687,7 @@ namespace ME3TweaksModManager
                     {
                         try
                         {
-                            M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(),
+                            MUtilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(),
                                 false);
                             M3Log.Information(@"Deleted mod download cache");
                         }

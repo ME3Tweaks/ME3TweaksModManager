@@ -678,7 +678,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private ModImportResult ExtractBiq(BatchLibraryInstallQueue biq)
         {
             // Either that or sanitize biq.ModName for filesystem use
-            var destPath = Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), M3Utilities.SanitizePath(biq.ModName) + BatchLibraryInstallQueue.QUEUE_VERSION_BIQ2_EXTENSION);
+            var destPath = Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), MUtilities.SanitizePath(biq.ModName) + BatchLibraryInstallQueue.QUEUE_VERSION_BIQ2_EXTENSION);
             if (File.Exists(destPath))
             {
                 bool abort = false;
