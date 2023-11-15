@@ -538,7 +538,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Substage: Add SFAR staging targets
-            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.SFARJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
+            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.SFARJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetTempDirectory(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
             if (sfarStagingDirectory != null)
             {
                 M3Log.Information(@"Building list of SFAR staging targets");
@@ -1078,7 +1078,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (sfarStagingDirectory != null)
             {
-                M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
+                M3Utilities.DeleteFilesAndFoldersRecursively(MCoreFilesystem.GetTempDirectory());
             }
 
             if (numFilesToInstall == numdone)

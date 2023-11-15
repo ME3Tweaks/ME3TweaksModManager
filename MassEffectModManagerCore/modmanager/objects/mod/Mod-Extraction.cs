@@ -151,7 +151,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
                 {
                     M3Log.Information(@"Extracting file to trash (not used): " + entryPath);
-                    return Path.Combine(M3Filesystem.GetTempPath(), @"Trash", @"trashfile");
+                    return Path.Combine(MCoreFilesystem.GetTempDirectory(), @"Trash", @"trashfile");
                 }
 
                 if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
