@@ -1,18 +1,13 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows;
-using BCnEncoder.Shared;
-using Dark.Net;
-using IniParser;
-using IniParser.Model;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.ME3Tweaks.StarterKit;
 using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.starterkit;
-using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
 
 namespace ME3TweaksModManager.modmanager.windows.dialog

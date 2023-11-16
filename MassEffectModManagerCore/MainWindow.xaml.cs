@@ -3392,7 +3392,6 @@ namespace ME3TweaksModManager
                         Settings.OneTimeMessage_ModListIsNotListOfInstalledMods, true);
                 }
 
-                // Todo: Move to ME3TweaksCore?
                 if (MOnlineContent.CanFetchContentThrottleCheck())
                 {
                     Settings.LastContentCheck = DateTime.Now;

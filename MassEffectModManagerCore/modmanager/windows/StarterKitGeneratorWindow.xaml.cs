@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,34 +7,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using IniParser;
-using IniParser.Model;
-using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
-using LegendaryExplorerCore.TLK;
-using LegendaryExplorerCore.TLK.ME1;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Localization;
 using ME3TweaksCore.ME3Tweaks.StarterKit;
-using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.modmanager.objects.starterkit;
-using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
-using static ME3TweaksModManager.modmanager.usercontrols.BackupFileFetcher;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
