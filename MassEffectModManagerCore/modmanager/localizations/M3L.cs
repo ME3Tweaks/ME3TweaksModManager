@@ -1965,9 +1965,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_verifyingDownload = "string_verifyingDownload";
 		public const string string_fileDidNotVerifyDownloadMayBeCorrupt = "string_fileDidNotVerifyDownloadMayBeCorrupt";
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
-		public const string string_interp_plotManagerSyncForX = "string_interp_plotManagerSyncForX";
-		public const string string_interp_errorCompilingFunctionReason = "string_interp_errorCompilingFunctionReason";
-		public const string string_interp_fileLibInitFailedPlotManager = "string_interp_fileLibInitFailedPlotManager";
 		public const string string_mergeModFileDoesNotHaveCorrectMagicHeader = "string_mergeModFileDoesNotHaveCorrectMagicHeader";
 		public const string string_interp_unsupportedMergeModVersionVersionX = "string_interp_unsupportedMergeModVersionVersionX";
 		public const string string_interp_invalidMergeModManifestReason = "string_interp_invalidMergeModManifestReason";

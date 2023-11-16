@@ -2533,12 +2533,6 @@
     <!-- Plot Manager Sync Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
     <!-- Message that comes up telling user what's happening. Plot Manager is something M3 keeps up to date (as mods override and/or add plot flags) and is used to track plot events -->
-    <system:String x:Key="string_interp_plotManagerSyncForX">PlotManager sync for {0}</system:String>
-    <!-- 0={comma separated list of mod names} -->
-    <system:String xml:space="preserve" x:Key="string_interp_errorCompilingFunctionReason">Error compiling function {0}: {1}</system:String>
-    <!-- 0={export name} 1={list of log messages} -->
-    <system:String x:Key="string_interp_fileLibInitFailedPlotManager">FileLib for PlotManagerSync could not initialize: {0}</system:String>
-    <!-- 0={Newline separated list of errors} -->
 
     <!-- Merge Mods (V1) -->
     <system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Merge mod file does not have correct magic header</system:String>

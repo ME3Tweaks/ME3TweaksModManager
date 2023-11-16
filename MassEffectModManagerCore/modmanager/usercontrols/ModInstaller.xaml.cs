@@ -20,6 +20,7 @@ using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.M3Merge.PlotManager;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.Backup;
@@ -186,7 +187,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var custDlcJob = InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.CUSTOMDLC);
                 if (custDlcJob != null)
                 {
-                    hasAnyGameModificationJobs |= InstallOptionsPackage.ModBeingInstalled.GetAllInstallableFiles().Any(x => Path.GetFileName(x).Equals(PlotManagerUpdatePanel.PLOT_MANAGER_UPDATE_FILENAME, StringComparison.CurrentCultureIgnoreCase));
+                    hasAnyGameModificationJobs |= InstallOptionsPackage.ModBeingInstalled.GetAllInstallableFiles().Any(x => Path.GetFileName(x).Equals(PlotManagerMerge.PLOT_MANAGER_UPDATE_FILENAME, StringComparison.CurrentCultureIgnoreCase));
                 }
             }
 
