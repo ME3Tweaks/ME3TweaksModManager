@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.Online;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Targets;
@@ -40,7 +41,7 @@ namespace ME3TweaksModManager.Tests
                 if (Directory.Exists(asiDir))
                 {
                     // Clean slate
-                    M3Utilities.DeleteFilesAndFoldersRecursively(asiDir);
+                    MUtilities.DeleteFilesAndFoldersRecursively(asiDir);
                 }
 
                 var asisForGame = ASIManager.GetASIModsByGame(game);

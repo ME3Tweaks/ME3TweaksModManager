@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
@@ -102,7 +103,7 @@ namespace ME3TweaksModManager.Tests
         {
             if (Directory.Exists(GetScratchDir()))
             {
-                M3Utilities.DeleteFilesAndFoldersRecursively(GetScratchDir());
+                MUtilities.DeleteFilesAndFoldersRecursively(GetScratchDir());
             }
         }
 

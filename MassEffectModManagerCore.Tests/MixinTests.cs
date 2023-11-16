@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks;
@@ -37,7 +38,7 @@ namespace ME3TweaksModManager.Tests
 
                 //Mixins are ready to be applied
                 var outdir = Path.Combine(Path.Combine(GlobalTest.GetScratchDir(), "MixinTest"));
-                M3Utilities.DeleteFilesAndFoldersRecursively(outdir);
+                MUtilities.DeleteFilesAndFoldersRecursively(outdir);
                 Directory.CreateDirectory(outdir);
                 foreach (var mapping in compilingListsPerModule)
                 {
