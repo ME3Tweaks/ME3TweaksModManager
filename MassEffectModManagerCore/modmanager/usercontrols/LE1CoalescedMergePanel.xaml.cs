@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.ME3Tweaks.M3Merge.LE1CfgMerge;
+using ME3TweaksCore.ME3Tweaks.M3Merge.LE1Config;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
 
