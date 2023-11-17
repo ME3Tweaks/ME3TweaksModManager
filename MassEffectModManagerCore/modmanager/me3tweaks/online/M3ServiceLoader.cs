@@ -99,7 +99,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             { TUTORIAL_SERVICE_KEY, TutorialService.LoadService },
             { TIPS_SERVICE_KEY, TipsService.LoadService },
             { NEXUS_UPDATER_SERVICE_KEY, NexusUpdaterService.LoadService },
-            { MCoreServiceLoader.ASI_MANIFEST_KEY, ASIManager.LoadService }, // Mod Manager controls loading this service so we use it here.
+            // { MCoreServiceLoader.ASI_MANIFEST_KEY, ASIManager.LoadService }, // Mod Manager controls loading this service so we use it here. // Moved to M3C. Not sure why this was here. Old time's sake?
             { DYNAMIC_HELP_SERVICE_KEY, DynamicHelpService.LoadService }, // This just loads the xml document. The UI must update after init
             { MODDESC_UPDATER_SERVICE_KEY, ModDescUpdaterService.LoadService } 
             // Live Localization? (This is done by startup manifest right?)
