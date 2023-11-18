@@ -116,6 +116,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         [JsonIgnore]
         public bool UseSavedOptions { get; set; }
 
+        /// <summary>
+        /// Name to show when mod is not available. For serialization.
+        /// </summary>
+        [JsonProperty("modname")]
+        public string ModName { get; set; }
+
 
         /// <summary>
         /// Initializes and associates a mod with this object

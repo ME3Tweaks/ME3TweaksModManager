@@ -49,7 +49,7 @@
                 Margin="0,5,0,0">
                 <Button
                     DockPanel.Dock="Right"
-                    Content="{DynamicResource string_importMods}"
+                    Content="{Binding ImportModsText}"
                     Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                     Padding="8,3"
                     Command="{Binding ImportModsCommand}"
@@ -237,12 +237,14 @@
                        Source="{Binding SelectedMod.BannerBitmap}"  
                        Visibility="{Binding SelectedMod.BannerBitmap, Converter={StaticResource NullVisibilityConverter}}"
                        RenderOptions.BitmapScalingMode="HighQuality"
+                       MaxWidth="700"
                        DockPanel.Dock="Top"/>
                 <TextBox
                     TextWrapping="Wrap"
                     VerticalScrollBarVisibility="Auto"
                     VerticalContentAlignment="Top"
                     IsReadOnly="True"
+                    MaxWidth="700"
                     IsReadOnlyCaretVisible="False"
                     HorizontalContentAlignment="Left">
                     <TextBox.Text>

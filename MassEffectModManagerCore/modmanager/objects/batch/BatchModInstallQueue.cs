@@ -479,7 +479,18 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     else if (v is BatchASIMod a)
                     {
                         str += M3L.GetString(M3L.string_interp_xASIMod, a.AssociatedMod.Name);
-
+                    }
+                    else if (v is BatchMod bm)
+                    {
+                        str += @" - ";
+                        if (!string.IsNullOrWhiteSpace(bm.ModName))
+                        {
+                            str += bm.ModName + Environment.NewLine;
+                        }
+                        else
+                        {
+                            str += bm.ModDescPath + Environment.NewLine;
+                        }
                     }
                 }
 

@@ -151,6 +151,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         FileSourceService.AddFileSourceEntries(dictionary, Settings.EnableTelemetry ? ServerManifest.GetInt(ServerManifest.SERVER_ALIGNMENT) : null);
                     }
 
+                    if (CompressedMods.Count == 1 && CompressedMods[0] is BatchLibraryInstallQueue queue)
+                    {
+                        ImportModsText = "Import install group";
+                    }
 
                     ArchiveScanned = true;
                     TriggerPropertyChangedFor(nameof(CanCompressPackages));
@@ -814,6 +818,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// If this UI imported a batch queue file
         /// </summary>
         public bool ImportedBatchQueue { get; set; }
+
+        /// <summary>
+        /// The text for the import mods button
+        /// </summary>
+        public string ImportModsText { get; set; } = M3L.GetString(M3L.string_importMods);
 
 
         private void LoadCommands()
