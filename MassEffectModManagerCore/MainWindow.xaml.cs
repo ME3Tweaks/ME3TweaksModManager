@@ -1440,6 +1440,12 @@ namespace ME3TweaksModManager
 
         private void FinishBatchInstall(BatchLibraryInstallQueue queue)
         {
+            // 11/18/2023 - batch installer with ASI mods was not clearing out queue
+            // This should force merges to occur.
+            if (!queuedUserControls.Any() && BatchPanelResult != null && !IsBusy && HandleBatchPanelResult)
+            {
+                HandlePanelResult(BatchPanelResult);
+            }
             if (!queue.UseSavedOptions && queue.HasAnyRecordedOptions())
             {
                 var shouldSave = M3L.ShowDialog(this, M3L.GetString(M3L.string_saveChosenOptionsToThisBatchGroup),
