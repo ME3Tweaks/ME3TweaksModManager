@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Flurl.Http;
+using LegendaryExplorerCore.Coalesced.Config;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
@@ -1012,7 +1013,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 foreach (var dlcFolderInstalled in addedDLCFolders)
                 {
-                    ConfigMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget), Path.GetFileName(dlcFolderInstalled));
+                    M3CConfigMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget), Path.GetFileName(dlcFolderInstalled));
                 }
             }
 

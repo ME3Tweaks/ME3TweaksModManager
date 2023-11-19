@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Dark.Net;
+using LegendaryExplorerCore.Coalesced.Config;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
@@ -620,7 +621,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
                 }
                 else if (game.IsGame2() || game.IsGame3())
                 {
-                    var gameConfig = ConfigTools.GetMergedBundle(Target);
+                    var gameConfig = M3CConfigTools.GetMergedBundle(Target);
 
                     // Build save game image map
                     BuildUIAssetMap(gameConfig);
