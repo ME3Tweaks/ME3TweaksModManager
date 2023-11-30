@@ -34,7 +34,7 @@
 	<system:String x:Key="string_tooltip_runningOnX">In esecuzione su {0}</system:String>
 	<system:String x:Key="string_enablesSingleinstancingOfAnApplication">Abilita la singola istanza di una applicazione</system:String>
 	<system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper per il comando robocopy in C#</system:String>
-	<system:String x:Key="string_textureModded">Texture moddata</system:String>
+	<system:String x:Key="string_textureModded">Texture moddate</system:String>
 	<system:String x:Key="string_interp_modNameByAuthorName">{0} di {1}</system:String>
 	<system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">Almeno un DLC alternato indicato non specifica un FriendlyName, il quale è richiesto per le mod che richiedono cmmver >= 6.0.</system:String>
 	<system:String x:Key="string_validation_altdlc_unknownCondition">Il DLC alternato specifica condizioni sconosciute/non supportate:</system:String>
