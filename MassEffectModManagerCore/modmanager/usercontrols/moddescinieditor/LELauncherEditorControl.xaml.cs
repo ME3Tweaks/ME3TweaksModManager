@@ -2,6 +2,7 @@
 using System.Windows;
 using IniParser.Model;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
@@ -37,7 +38,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             if (!string.IsNullOrWhiteSpace(FileDir))
             {
-                ini[ModJob.JobHeader.LELAUNCHER.ToString()][@"moddir"] = FileDir;
+                ini[ModJob.JobHeader.LELAUNCHER.ToString()][Mod.MODDESC_DESCRIPTOR_JOB_DIR] = FileDir;
             }
         }
     }

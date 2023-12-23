@@ -19,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public static Version GetModVersionFromIni(string modDescPath)
         {
             DuplicatingIni ini = DuplicatingIni.LoadIni(modDescPath);
-            var version = ini[@"ModInfo"][@"modver"];
+            var version = ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_VERSION];
             if (version != null && version.HasValue)
             {
                 if (ProperVersion.TryParse(version.Value, out var result))

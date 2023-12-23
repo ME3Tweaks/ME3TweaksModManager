@@ -279,7 +279,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (IsVirtualized)
             {
                 var parser = new IniDataParser().Parse(VirtualizedIniText);
-                parser[@"ModInfo"][@"modver"] = ModVersionString; //In event relay service resolved this
+                parser[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_VERSION] = ModVersionString; //In event relay service resolved this
                 if (!testRun)
                 {
                     File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), parser.ToString());
@@ -382,12 +382,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 //Write moddesc.ini
                 IniData ini = new IniData();
-                ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
-                ini[@"ModInfo"][@"game"] = @"ME2";
-                ini[@"ModInfo"][@"modname"] = ModName;
-                ini[@"ModInfo"][@"moddev"] = ModDeveloper;
-                ini[@"ModInfo"][@"moddesc"] = M3Utilities.ConvertNewlineToBr(ModDescription);
-                ini[@"ModInfo"][@"modver"] = @"1.0"; //Not going to bother looking this up to match the source
+                ini[@"ModManager"][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME] = @"ME2";
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME] = ModName;
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER] = ModDeveloper;
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION] = M3Utilities.ConvertNewlineToBr(ModDescription);
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_VERSION] = @"1.0"; //Not going to bother looking this up to match the source
 
                 ini[@"ME2_RCWMOD"][@"modfile"] = sanitizedName + @".me2mod";
                 var modDescPath = Path.Combine(modpath, @"moddesc.ini");

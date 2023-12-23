@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
                 Value = value.ToString().ToLower();
             }
 
-            AllowedValues.ReplaceAll(new[] { @"", @"true", @"false" }); // do not localize (some detection bug in localizer)
+            AllowedValues.ReplaceAll(new[] { @"", Mod.MODDESC_VALUE_TRUE, Mod.MODDESC_VALUE_FALSE }); // do not localize (some detection bug in localizer)
             UsesSetValuesList = true;
             UnsetValueItem = "";
         }
@@ -141,12 +141,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
                 // Generate one
                 param = new MDParameter(GetMDType(p), p.Key, GetValue(p));
                 param.Header = header;
-                if (header == @"ModInfo" && p.Key == @"moddesc")
+                if (header == Mod.MODDESC_HEADERKEY_MODINFO && p.Key == Mod.MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION)
                 {
                     param.AcceptsNewLines = true;
                 }
 
-                if (header == @"ModManager" && p.Key == @"cmmver")
+                if (header == Mod.MODDESC_HEADERKEY_MODMANAGER && p.Key == Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER)
                 {
                     param.ReadOnly = true;
                 }

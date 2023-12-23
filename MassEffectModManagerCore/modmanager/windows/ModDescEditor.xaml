@@ -88,6 +88,13 @@
                 <alternates:AlternateDLCBuilder
                     x:Name="customdlc_alternateDlcEditor_control" />
             </TabItem>
+            <!-- LE only -->
+            <TabItem
+                Header="{DynamicResource string_aSIMods}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                <moddescinieditor:ASIEditorControl
+                    x:Name="asi_editor_control" />
+            </TabItem>
             <!-- ME1 only -->
             <TabItem
                 Header="{DynamicResource string_mE1ConfigFiles}"

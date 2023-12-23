@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates
@@ -77,7 +78,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
                 }
 
                 outStr += @")";
-                ini[TaskHeader.ToString()][@"altfiles"] = outStr;
+                ini[TaskHeader.ToString()][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_ALTDLC] = outStr;
             }
         }
 

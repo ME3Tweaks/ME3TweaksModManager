@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
+﻿using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,21 +7,18 @@ using IniParser.Model;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
-using ME3TweaksCore.Services.Backup;
-using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 
@@ -208,12 +201,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 //Generate moddesc
                 IniData ini = new IniData();
-                ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
-                ini[@"ModInfo"][@"game"] = @"ME3";
-                ini[@"ModInfo"][@"modname"] = modname;
-                ini[@"ModInfo"][@"moddev"] = App.AppVersionHR;
-                ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_compiledFromTheFollowingMixins);
-                ini[@"ModInfo"][@"modver"] = @"1.0";
+                ini[@"ModManager"][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME] = @"ME3";
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME] = modname;
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER] = App.AppVersionHR;
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION] = M3L.GetString(M3L.string_compiledFromTheFollowingMixins);
+                ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_VERSION] = @"1.0";
 
                 generateRepaceFilesMapping(ini, modpath);
                 File.WriteAllText(Path.Combine(modpath, @"moddesc.ini"), ini.ToString());
@@ -500,12 +493,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 //Generate moddesc
                 //IniData ini = new IniData();
-                //ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
-                //ini[@"ModInfo"][@"game"] = @"ME3";
-                //ini[@"ModInfo"][@"modname"] = modname;
-                //ini[@"ModInfo"][@"moddev"] = App.AppVersionHR;
-                //ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_compiledFromTheFollowingMixins);
-                //ini[@"ModInfo"][@"modver"] = @"1.0";
+                //ini[@"ModManager"][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME] = @"ME3";
+                //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME] = modname;
+                //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER] = App.AppVersionHR;
+                //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION] = M3L.GetString(M3L.string_compiledFromTheFollowingMixins);
+                //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_VERSION] = @"1.0";
 
                 //generateRepaceFilesMapping(ini, modpath);
                 //File.WriteAllText(Path.Combine(modpath, @"moddesc.ini"), ini.ToString());
@@ -542,10 +535,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 //automap
                 var dirname = Path.GetFileName(dir);
                 var headername = ModMakerCompiler.DefaultFoldernameToHeader(dirname).ToString();
-                ini[headername][@"moddir"] = dirname;
+                ini[headername][Mod.MODDESC_DESCRIPTOR_JOB_DIR] = dirname;
                 if (dirname != @"BALANCE_CHANGES")
                 {
-                    ini[headername][@"newfiles"] = @"CookedPCConsole";
+                    ini[headername][Mod.MODDESC_DESCRIPTOR_JOB_NEWFILES] = @"CookedPCConsole";
 
                     string inGameDestdir;
                     if (dirname == @"BASEGAME")
@@ -563,7 +556,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
-                    ini[headername][@"newfiles"] = @"ServerCoalesced.bin"; //BALANCE_CHANGES
+                    ini[headername][Mod.MODDESC_DESCRIPTOR_JOB_NEWFILES] = @"ServerCoalesced.bin"; //BALANCE_CHANGES
                 }
             }
         }

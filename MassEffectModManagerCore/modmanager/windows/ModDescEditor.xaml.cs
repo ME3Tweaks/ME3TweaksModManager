@@ -48,6 +48,7 @@ namespace ME3TweaksModManager.modmanager.windows
             editorControls.Add(customdlc_alternateFileEditor_control);
             editorControls.Add(customdlc_alternateDlcEditor_control);
 
+            editorControls.Add(asi_editor_control);
             editorControls.Add(me1config_editor_control);
             editorControls.Add(balancechanges_editor_control);
             editorControls.Add(localization_editor_control);
@@ -147,6 +148,11 @@ namespace ME3TweaksModManager.modmanager.windows
                         continue;
                     }
                     else if (control is TexturesEditorControl)
+                    {
+                        control.Serialize(ini);
+                        continue;
+                    }
+                    else if (control is ASIEditorControl)
                     {
                         control.Serialize(ini);
                         continue;

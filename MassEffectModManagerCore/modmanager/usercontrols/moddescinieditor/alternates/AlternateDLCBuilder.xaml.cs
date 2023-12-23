@@ -1,14 +1,11 @@
 ﻿using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using IniParser.Model;
-using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
-using ME3TweaksModManager.ui;
+using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates
 {
@@ -57,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
                 }
 
                 outStr += ")";
-                ini[@"CUSTOMDLC"][@"altdlc"] = outStr;
+                ini[Mod.MODDESC_HEADERKEY_CUSTOMDLC][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_ALTDLC] = outStr;
             }
         }
 

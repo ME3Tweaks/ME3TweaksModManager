@@ -183,7 +183,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                 }
 
                 outStr += @")";
-                ini[ModJob.JobHeader.TEXTUREMODS.ToString()][@"files"] = outStr;
+                ini[ModJob.JobHeader.TEXTUREMODS.ToString()][Mod.MODDESC_DESCRIPTOR_LOCALIZATION_FILES] = outStr;
             }
         }
 

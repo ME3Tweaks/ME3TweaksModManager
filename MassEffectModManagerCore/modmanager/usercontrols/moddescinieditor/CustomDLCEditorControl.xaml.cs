@@ -8,6 +8,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.exceptions;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
@@ -113,12 +114,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 
                 if (srcDirs.Any())
                 {
-                    ini[@"CUSTOMDLC"][@"sourcedirs"] = string.Join(';', srcDirs.Keys);
-                    ini[@"CUSTOMDLC"][@"destdirs"] = string.Join(';', srcDirs.Values);
+                    ini[Mod.MODDESC_HEADERKEY_CUSTOMDLC][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_SOURCEDIRS] = string.Join(';', srcDirs.Keys);
+                    ini[Mod.MODDESC_HEADERKEY_CUSTOMDLC][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_DESTDIRS] = string.Join(';', srcDirs.Values);
 
                     foreach (var v in CustomDLCParameters.Where(x => !string.IsNullOrWhiteSpace(x.HumanReadableName)))
                     {
-                        ini[@"CUSTOMDLC"][v.DestDLCName] = v.HumanReadableName;
+                        ini[Mod.MODDESC_HEADERKEY_CUSTOMDLC][v.DestDLCName] = v.HumanReadableName;
                     }
                 }
 
@@ -128,9 +129,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                 {
                     // sourcedirs and destdirs was serialized above
                     // Add any extra keys here that are not sourcedirs or destdirs that need serialized
-                    if (!string.IsNullOrWhiteSpace(p.Value) && (p.Key == @"incompatiblecustomdlc" || p.Key == @"requiredcustomdlc" || p.Key == @"outdatedcustomdlc"))
+                    if (!string.IsNullOrWhiteSpace(p.Value) && (p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_INCOMPATIBLEDLC || p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_REQUIREDDLC || p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_OUTDATEDDLC))
                     {
-                        ini[@"CUSTOMDLC"][p.Key] = p.Value;
+                        ini[Mod.MODDESC_HEADERKEY_CUSTOMDLC][p.Key] = p.Value;
                     }
                 }
             }

@@ -29,61 +29,61 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 // ModManager
                 // The editor only supports saving to the current moddesc spec. So don't show the wrong version that will be edited.
-                {@"cmmver", App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture)}, // Is set read only in mapper
-                {@"minbuild", MinimumSupportedBuild > 102 ? MinimumSupportedBuild.ToString() : null},
+                {MODDESC_DESCRIPTOR_MODMANAGER_CMMVER, App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture)}, // Is set read only in mapper
+                {MODDESC_DESCRIPTOR_MODMANAGER_MINBUILD, MinimumSupportedBuild > 102 ? MinimumSupportedBuild.ToString() : null}, // MinimumSupportBuild was only supported starting in build 102.
             };
 
-            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModManager"));
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, MODDESC_HEADERKEY_MODMANAGER));
 
             // ModInfo
             parameterDictionary = new Dictionary<string, object>()
             {
-                {@"game", Game.ToString().ToUpper()}, // Upper for LELAUNCHER
-                {@"modname", ModName},
-                {@"moddesc", ModDescription},
-                {@"modver", ParsedModVersion},
-                {@"moddev", ModDeveloper},
-                {@"modsite", ModWebsite == Mod.DefaultWebsite ? "" : ModWebsite},
-                {@"updatecode", ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
-                {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
-                {@"requireddlc", string.Join(';',RequiredDLC.Select(x=>x.Serialize(false)).Concat(OptionalSingleRequiredDLC.Select(x=>x.Serialize(true))))},
-                {@"bannerimagename", new MDParameter(@"string", @"bannerimagename", BannerImageName, new [] {@""}, @"") {Header = @"ModInfo", AllowedValuesPopulationFunc = PopulateImageFileOptions}}, // Uses image population function // do not localize
-                {@"sortalternates", new MDParameter(@"string", @"sortalternates", SortAlternateOptions ? @"" : @"False", new [] {@"", @"True", @"False"}, @"") {Header = @"ModInfo"}}, //don't put checkedbydefault in if it is not set to true. // do not localize
-                {@"requiresenhancedbink", new MDParameter(@"string", @"requiresenhancedbink", !RequiresEnhancedBink ? @"" : @"True", new [] {@"", @"True", @"False"}, @"") {Header = @"ModInfo"}}, // don't populate if not used // do not localize
+                {MODDESC_DESCRIPTOR_MODINFO_GAME, Game.ToString().ToUpper()}, // Upper for LELAUNCHER
+                {MODDESC_DESCRIPTOR_MODINFO_NAME, ModName},
+                {MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION, ModDescription},
+                {MODDESC_DESCRIPTOR_MODINFO_VERSION, ParsedModVersion},
+                {MODDESC_DESCRIPTOR_MODINFO_DEVELOPER, ModDeveloper},
+                {MODDESC_DESCRIPTOR_MODINFO_SITE, ModWebsite == Mod.DefaultWebsite ? "" : ModWebsite},
+                {MODDESC_DESCRIPTOR_MODINFO_UPDATECODE, ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
+                {MODDESC_DESCRIPTOR_MODINFO_NEXUSMODSDOMAINID, NexusModID > 0 ? NexusModID.ToString() : null},
+                {MODDESC_DESCRIPTOR_MODINFO_REQUIREDDLC, string.Join(';',RequiredDLC.Select(x=>x.Serialize(false)).Concat(OptionalSingleRequiredDLC.Select(x=>x.Serialize(true))))},
+                {MODDESC_DESCRIPTOR_MODINFO_BANNERIMAGENAME, new MDParameter(@"string", BannerImageName, BannerImageName, new [] {@""}, @"") {Header = MODDESC_HEADERKEY_MODINFO, AllowedValuesPopulationFunc = PopulateImageFileOptions}}, // Uses image population function // do not localize
+                {MODDESC_DESCRIPTOR_MODINFO_SORTALTERNATES, new MDParameter(@"string", MODDESC_DESCRIPTOR_MODINFO_SORTALTERNATES, SortAlternateOptions ? @"" : MODDESC_VALUE_FALSE, new [] {@"", MODDESC_VALUE_TRUE, MODDESC_VALUE_FALSE}, @"") {Header = MODDESC_HEADERKEY_MODINFO}}, //don't put checkedbydefault in if it is not set to true. // do not localize
+                {MODDESC_DESCRIPTOR_MODINFO_REQUIRESENHANCEDBINK, new MDParameter(@"string", MODDESC_DESCRIPTOR_MODINFO_REQUIRESENHANCEDBINK, !RequiresEnhancedBink ? @"" : MODDESC_VALUE_TRUE, new [] {@"", MODDESC_VALUE_TRUE, MODDESC_VALUE_FALSE}, @"") {Header = MODDESC_HEADERKEY_MODINFO}}, // don't populate if not used // do not localize
             };
 
 
             // NON PUBLIC OPTIONS
             if (RequiresAMD)
             {
-                parameterDictionary[@"amdprocessoronly"] = RequiresAMD;
+                parameterDictionary[Mod.MODDESC_DESCRIPTOR_MODINFO_REQUIRESAMD] = RequiresAMD;
             }
 
             if (!string.IsNullOrWhiteSpace(PostInstallToolLaunch))
             {
                 // This is a non-public property but is used by one mod
-                parameterDictionary[@"postinstalltool"] = PostInstallToolLaunch;
+                parameterDictionary[MODDESC_DESCRIPTOR_MODINFO_POSTINSTALLTOOL] = PostInstallToolLaunch;
             }
             // END NON PUBLIC OPTIONS
 
             if (Game is MEGame.ME2 or MEGame.ME3)
             {
                 // This flag only makes a difference for ME2/3
-                parameterDictionary[@"prefercompressed"] = PreferCompressed ? @"True" : null;
+                parameterDictionary[Mod.MODDESC_DESCRIPTOR_MODINFO_COMPRESSPACKAGESBYDEFAULT] = PreferCompressed ? MODDESC_VALUE_TRUE : null;
             }
 
-            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModInfo"));
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, MODDESC_HEADERKEY_MODINFO));
 
             // UPDATES
             parameterDictionary = new Dictionary<string, object>()
-                {
-                {@"serverfolder", UpdaterServiceServerFolder},
-                {@"blacklistedfiles", UpdaterServiceBlacklistedFiles},
-                {@"additionaldeploymentfolders", AdditionalDeploymentFolders},
-                {@"additionaldeploymentfiles", AdditionalDeploymentFiles},
+            {
+                {MODDESC_DESCRIPTOR_UPDATES_SERVERFOLDER, UpdaterServiceServerFolder},
+                {MODDESC_DESCRIPTOR_UPDATES_BLACKLISTEDFILES, UpdaterServiceBlacklistedFiles},
+                {MODDESC_DESCRIPTOR_UPDATES_ADDITIONAL_FOLDERS, AdditionalDeploymentFolders},
+                {MODDESC_DESCRIPTOR_UPDATES_ADDITIONAL_FILES, AdditionalDeploymentFiles},
             };
 
-            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"UPDATES"));
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, MODDESC_HEADERKEY_UPDATES));
         }
 
         public bool Equals(Mod other)

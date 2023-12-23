@@ -18,6 +18,7 @@ using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
+using ME3TweaksModManager.modmanager.objects.mod.moddesc;
 using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
@@ -386,6 +387,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         private List<string> AdditionalDeploymentFiles = new List<string>();
 
         /// <summary>
+        /// List of ASI mods to install based on their group id in the ASI manifest
+        /// </summary>
+        public List<ASIVersion> ASIModsToInstall = new List<ASIVersion>();
+
+        /// <summary>
         /// The path on disk to the root of the mod folder
         /// </summary>
         public string ModPath { get; private set; }
@@ -587,7 +593,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             var parser = new IniDataParser();
             var iniData = parser.Parse(iniText);
 
-            if (int.TryParse(iniData[@"ModManager"][@"minbuild"], out int minBuild))
+            if (int.TryParse(iniData[MODDESC_HEADERKEY_MODMANAGER][MODDESC_DESCRIPTOR_MODMANAGER_MINBUILD], out int minBuild))
             {
                 MinimumSupportedBuild = minBuild;
                 if (App.BuildNumber < minBuild)
@@ -603,10 +609,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
             }
 
-            int.TryParse(iniData[@"ModManager"][@"importedby"], out int importedByBuild);
+            int.TryParse(iniData[MODDESC_HEADERKEY_MODMANAGER][MODDESC_DESCRIPTOR_MODMANAGER_IMPORTEDBY], out int importedByBuild);
             ImportedByBuild = importedByBuild;
 
-            if (double.TryParse(iniData[@"ModManager"][@"cmmver"], out double parsedModCmmVer))
+            if (double.TryParse(iniData[MODDESC_HEADERKEY_MODMANAGER][MODDESC_DESCRIPTOR_MODMANAGER_CMMVER], out double parsedModCmmVer))
             {
                 ModDescTargetVersion = parsedModCmmVer;
             }
@@ -623,7 +629,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 DeployedWithM3 = false;
             }
 
-            ModName = iniData[@"ModInfo"][@"modname"];
+            ModName = iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME];
             if (string.IsNullOrEmpty(ModName))
             {
                 ModName = (ModPath == "" && IsInArchive)
@@ -636,7 +642,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // This is loaded early so the website value can be parsed if something else fails. 
             // This is used in failedmodspanel
-            ModWebsite = iniData[@"ModInfo"][@"modsite"] ?? DefaultWebsite;
+            ModWebsite = iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_SITE] ?? DefaultWebsite;
             if (string.IsNullOrWhiteSpace(ModWebsite)) ModWebsite = DefaultWebsite;
 
             //test url scheme
@@ -659,7 +665,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 return;
             }
 
-            ModDescription = M3Utilities.ConvertBrToNewline(iniData[@"ModInfo"][@"moddesc"]);
+            ModDescription = M3Utilities.ConvertBrToNewline(iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION]);
             if (string.IsNullOrWhiteSpace(ModDescription))
             {
                 M3Log.Error($@"moddesc.ini in {ModPath} does not set the moddesc descriptor.");
@@ -667,7 +673,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 return; //Won't set valid
             }
 
-            ModDeveloper = iniData[@"ModInfo"][@"moddev"];
+            ModDeveloper = iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER];
             if (string.IsNullOrWhiteSpace(ModDeveloper))
             {
                 M3Log.Error($@"moddesc.ini in {ModPath} does not set the moddev descriptor.");
@@ -675,7 +681,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 return; //Won't set valid
             }
 
-            ModVersionString = iniData[@"ModInfo"][@"modver"];
+            ModVersionString = iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_VERSION];
             //Check for integer value only
             if (int.TryParse(ModVersionString, out var intVersion))
             {
@@ -686,13 +692,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             ParsedModVersion = parsedValue;
 
             //updates
-            int.TryParse(iniData[@"ModInfo"][@"modid"], out int modmakerId);
+            int.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_MODMAKERID], out int modmakerId);
             ModModMakerID = modmakerId;
 
-            int.TryParse(iniData[@"UPDATES"][@"updatecode"], out int modupdatecode);
+            int.TryParse(iniData[MODDESC_HEADERKEY_UPDATES][MODDESC_DESCRIPTOR_MODINFO_UPDATECODE], out int modupdatecode);
             ModClassicUpdateCode = modupdatecode;
 
-            if (bool.TryParse(iniData[@"UPDATES"][@"nexusupdatecheck"], out var nexusupdatecheck))
+            if (bool.TryParse(iniData[MODDESC_HEADERKEY_UPDATES][MODDESC_DESCRIPTOR_UPDATES_NEXUSUPDATECHECK], out var nexusupdatecheck))
             {
                 // Enables/disables the mod from being able to check in with Nexus
                 NexusUpdateCheck = nexusupdatecheck;
@@ -701,13 +707,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (ModClassicUpdateCode == 0)
             {
                 //try in old location
-                int.TryParse(iniData[@"ModInfo"][@"updatecode"], out int modupdatecode2);
+                int.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_UPDATECODE], out int modupdatecode2);
                 ModClassicUpdateCode = modupdatecode2;
             }
 
-            int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode);
+            int.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NEXUSMODSDOMAINID], out int nexuscode);
             NexusModID = nexuscode;
-            NexusCodeRaw = iniData[@"ModInfo"][@"nexuscode"];
+            NexusCodeRaw = iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NEXUSMODSDOMAINID];
 
             // NexusMods code from URL is parsed after Game is read since it changes how domain parser works
 
@@ -722,7 +728,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 return; //Won't set valid
             }
 
-            var unofficialStr = iniData[@"ModInfo"][@"unofficial"];
+            var unofficialStr = iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_UNOFFICIAL];
             if (!string.IsNullOrWhiteSpace(unofficialStr))
             {
                 IsUnofficial = true;
@@ -731,26 +737,26 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             }
 
-            if (bool.TryParse(iniData[@"ModInfo"][@"prefercompressed"], out var pCompressed))
+            if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_COMPRESSPACKAGESBYDEFAULT], out var pCompressed))
             {
                 M3Log.Information($@"Found prefercompressed descriptor. The mod will default the compress packages flag to {pCompressed} in the mod import panel.",
                     Settings.LogModStartup);
                 PreferCompressed = pCompressed;
             }
 
-            if (bool.TryParse(iniData[@"ModInfo"][@"amdprocessoronly"], out var bRequiresAMD))
+            if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_REQUIRESAMD], out var bRequiresAMD))
             {
                 // Only used for ME1 AMD Lighting Fix
                 RequiresAMD = bRequiresAMD;
             }
 
             // ModDesc 8.0: Allow disable alternate sorting
-            if (ModDescTargetVersion >= 8.0 && bool.TryParse(iniData[@"ModInfo"][@"sortalternates"], out var bSortAlternates))
+            if (ModDescTargetVersion >= 8.0 && bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_SORTALTERNATES], out var bSortAlternates))
             {
                 SortAlternateOptions = bSortAlternates;
             }
 
-            string game = iniData[@"ModInfo"][@"game"];
+            string game = iniData[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME];
             if (parsedModCmmVer >= 6 && game == null && importedByBuild > 0)
             {
                 //Not allowed. You MUST specify game on cmmver 6 or higher
@@ -872,7 +878,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 // Requires 6.2. Mods not deployed using M3 will NOT support this as it has special
                 // archive requirements.
-                BannerImageName = iniData[@"ModInfo"][@"bannerimagename"];
+                BannerImageName = iniData[Mod.MODDESC_HEADERKEY_MODINFO][@"bannerimagename"];
 
                 if (!string.IsNullOrWhiteSpace(BannerImageName))
                 {
@@ -909,7 +915,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 //if (Game != MEGame.ME3 && header != ModJob.JobHeader.BASEGAME) continue; //Skip any non-basegame offical headers for ME1/ME2
                 var headerAsString = header.ToString();
-                var jobSubdirectory = iniData[headerAsString][@"moddir"];
+                var jobSubdirectory = iniData[headerAsString][Mod.MODDESC_DESCRIPTOR_JOB_DIR];
                 if (jobSubdirectory != null)
                 {
                     jobSubdirectory = jobSubdirectory.Replace('/', '\\').TrimStart('\\');
@@ -928,7 +934,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     if (ModDescTargetVersion >= 6.0) bool.TryParse(iniData[headerAsString][@"gamedirectorystructure"], out directoryMatchesGameStructure);
 
                     //Replace files (ModDesc 2.0)
-                    string replaceFilesSourceList = iniData[headerAsString][@"newfiles"]; //Present in MM2. So this will always be read
+                    string replaceFilesSourceList = iniData[headerAsString][Mod.MODDESC_DESCRIPTOR_JOB_NEWFILES]; //Present in MM2. So this will always be read
                     string replaceFilesTargetList = iniData[headerAsString][@"replacefiles"]; //Present in MM2. So this will always be read
 
                     //Add files (ModDesc 4.1)
@@ -945,7 +951,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     string mergeModsList = (ModDescTargetVersion >= 7.0 && header == ModJob.JobHeader.BASEGAME) ? iniData[headerAsString][@"mergemods"] : null;
 
                     // AltFiles: Mod Manager 4.2
-                    string altfilesStr = (ModDescTargetVersion >= 4.2 && header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString][@"altfiles"] : null;
+                    string altfilesStr = (ModDescTargetVersion >= 4.2 && header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_ALTFILES] : null;
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
                     bool taskDoesSomething = (replaceFilesSourceList != null && replaceFilesTargetList != null) || (addFilesSourceList != null && addFilesTargetList != null) || !string.IsNullOrWhiteSpace(mergeModsList) || !string.IsNullOrWhiteSpace(altfilesStr);
@@ -1218,11 +1224,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             if (ModDescTargetVersion >= 3.1)
             {
-                var customDLCSourceDirsStr = iniData[@"CUSTOMDLC"][@"sourcedirs"];
-                var customDLCDestDirsStr = iniData[@"CUSTOMDLC"][@"destdirs"];
+                var customDLCSourceDirsStr = iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_SOURCEDIRS];
+                var customDLCDestDirsStr = iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_DESTDIRS];
                 //ALT DLC: Mod Manager 4.4
                 //This behavior changed in Mod Manager 6 to allow no sourcedirs/destdirs if a custom dlc will only be added on a condition
-                string altdlcstr = (ModDescTargetVersion >= 4.4) ? iniData[@"CUSTOMDLC"][@"altdlc"] : null;
+                string altdlcstr = (ModDescTargetVersion >= 4.4) ? iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_ALTDLC] : null;
 
 
                 if ((customDLCSourceDirsStr != null && customDLCDestDirsStr != null) || !string.IsNullOrEmpty(altdlcstr))
@@ -1292,6 +1298,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         }
                         for (int i = 0; i < customDLCSourceSplit.Count; i++)
                         {
+                            // COMMIT REVIEW: Make sure this didn't change in string replacement of ]] 12/23/2023
                             customDLCjob.CustomDLCFolderMapping[customDLCSourceSplit[i]] = customDLCDestSplit[i];
                         }
                     }
@@ -1303,7 +1310,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         int i = 1;
                         while (true)
                         {
-                            var multilist = iniData[@"CUSTOMDLC"][@"multilist" + i];
+                            var multilist = iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][@"multilist" + i];
                             if (multilist == null) break; //no more to parse
                             customDLCjob.MultiLists[i] = multilist.Split(';');
                             i++;
@@ -1311,7 +1318,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
 
                     //Altfiles: Mod Manager 4.2
-                    string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData[@"CUSTOMDLC"][@"altfiles"] : null;
+                    string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_ALTFILES] : null;
                     if (!string.IsNullOrEmpty(altfilesStr))
                     {
                         var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
@@ -1359,7 +1366,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
 
                     //Custom DLC names: Mod Manager 6 (but can be part of any spec as it's only cosmetic)
-                    HumanReadableCustomDLCNames = iniData[@"CUSTOMDLC"].Where(x => x.KeyName.StartsWith(@"DLC_")).ToDictionary(mc => mc.KeyName, mc => mc.Value);
+                    HumanReadableCustomDLCNames = iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC].Where(x => x.KeyName.StartsWith(@"DLC_")).ToDictionary(mc => mc.KeyName, mc => mc.Value);
 
                     if (!customDLCjob.ValidateAlternates(this, out string failureReason))
                     {
@@ -1382,7 +1389,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             #region BALANCE_CHANGES (ME3 ONLY)
 
-            var balanceChangesDirectory = (Game == MEGame.ME3 && ModDescTargetVersion >= 4.3) ? iniData[ModJob.JobHeader.BALANCE_CHANGES.ToString()][@"moddir"] : null;
+            var balanceChangesDirectory = (Game == MEGame.ME3 && ModDescTargetVersion >= 4.3) ? iniData[ModJob.JobHeader.BALANCE_CHANGES.ToString()][Mod.MODDESC_DESCRIPTOR_JOB_DIR] : null;
             if (balanceChangesDirectory != null)
             {
                 M3Log.Information(@"Found BALANCE_CHANGES header", Settings.LogModStartup);
@@ -1390,7 +1397,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
 
                 //In MM5.1 or lower you would have to specify the target. In MM6 you can only specify a single source and it must be a .bin file.
-                string replaceFilesSourceList = iniData[ModJob.JobHeader.BALANCE_CHANGES.ToString()][@"newfiles"];
+                string replaceFilesSourceList = iniData[ModJob.JobHeader.BALANCE_CHANGES.ToString()][Mod.MODDESC_DESCRIPTOR_JOB_NEWFILES];
                 if (replaceFilesSourceList != null)
                 {
                     //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
@@ -1440,7 +1447,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 if (Game == MEGame.ME1)
                 {
-                    var jobSubdirectory = iniData[ModJob.JobHeader.ME1_CONFIG.ToString()][@"moddir"];
+                    var jobSubdirectory = iniData[ModJob.JobHeader.ME1_CONFIG.ToString()][Mod.MODDESC_DESCRIPTOR_JOB_DIR];
                     if (!string.IsNullOrWhiteSpace(jobSubdirectory))
                     {
                         var configfilesStr = iniData[@"ME1_CONFIG"][@"configfiles"];
@@ -1519,18 +1526,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             #region LOCALIZATION MODS (6.1+) (ME2/3 ONLY)
 
             // 06/11/2022 - Change from >= ME2 to IsGame2() and IsGame3()
-            var localizationFilesStr = ((Game.IsGame2() || Game.IsGame3()) && ModDescTargetVersion >= 6.1) ? iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"files"] : null;
+            var localizationFilesStr = ((Game.IsGame2() || Game.IsGame3()) && ModDescTargetVersion >= 6.1) ? iniData[ModJob.JobHeader.LOCALIZATION.ToString()][Mod.MODDESC_DESCRIPTOR_LOCALIZATION_FILES] : null;
             if (localizationFilesStr != null)
             {
                 if (InstallationJobs.Any())
                 {
-                    M3Log.Error(
-                        @"Cannot have LOCALIZATION task with other tasks. LOCALIZATION jobs must be on their own.");
-                    LoadFailedReason =
-                        M3L.GetString(M3L.string_interp_validation_modparsing_cannotCombineLocalizationTask);
+                    M3Log.Error(@"Cannot have LOCALIZATION task with other tasks. LOCALIZATION jobs must be on their own.");
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_cannotCombineLocalizationTask);
                     return;
                 }
-                var destDlc = iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"dlcname"];
+                var destDlc = iniData[ModJob.JobHeader.LOCALIZATION.ToString()][Mod.MODDESC_DESCRIPTOR_LOCALIZATION_TARGETDLC];
                 if (string.IsNullOrWhiteSpace(destDlc))
                 {
                     M3Log.Error(@"LOCALIZATION header requires 'dlcname' descriptor that the localization file will target.");
@@ -1540,10 +1545,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 if (!destDlc.StartsWith(@"DLC_") || MEDirectories.OfficialDLC(Game).Any(x => x.Equals(destDlc, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    M3Log.Error(
-                        $@"The destdlc descriptor under LOCALIZATION must start with DLC_ and not be an official DLC for the game. Invalid value: {destDlc}");
-                    LoadFailedReason =
-                        M3L.GetString(M3L.string_interp_validation_modparsing_invalidDlcNameLocalization, destDlc);
+                    M3Log.Error($@"The destdlc descriptor under LOCALIZATION must start with DLC_ and not be an official DLC for the game. Invalid value: {destDlc}");
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidDlcNameLocalization, destDlc);
                     return;
                 }
 
@@ -1552,6 +1555,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 ModJob localizationJob = new ModJob(ModJob.JobHeader.LOCALIZATION);
                 foreach (var f in locFiles)
                 {
+                    // Review on 12/23/2023 - is this right? Does LOCALIZATION folder not have a jobdir?
                     var filePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, f);
                     if (!FilesystemInterposer.FileExists(filePath, Archive))
                     {
@@ -1601,8 +1605,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             #endregion
 
             #region GAME1_TLK_UPDATES
-            //if (Game is MEGame.ME1 or MEGame.LE1)
-            if (Game is MEGame.LE1 && ModDescTargetVersion >= 7.0 && bool.TryParse(iniData[ModJob.JobHeader.GAME1_EMBEDDED_TLK.ToString()][@"usesfeature"], out var usesGame1TlkFeature))
+            // 12/23/2023 - actually check value of the bool being true
+            if (Game is MEGame.LE1 && ModDescTargetVersion >= 7.0 && bool.TryParse(iniData[ModJob.JobHeader.GAME1_EMBEDDED_TLK.ToString()][MODDESC_DESCRIPTOR_GAME1TLK_USESFEATURE], out var usesGame1TlkFeature) && usesGame1TlkFeature)
             {
                 if (!ParseGame1TLKMerges())
                 {
@@ -1675,7 +1679,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
             {
-                var textureModsStruct = iniData[@"TEXTUREMODS"][@"files"];
+                // 12/23/2023 - Change from hardcoded 'TEXTUREMODS' string to job header enum
+                var textureModsStruct = iniData[ModJob.JobHeader.TEXTUREMODS.ToString()][MODDESC_DESCRIPTOR_TEXTURESMODS_FILES];
                 if (!string.IsNullOrWhiteSpace(textureModsStruct))
                 {
                     M3Log.Information(@"Found [TEXTUREMODS] job header", Settings.LogModStartup);
@@ -1705,7 +1710,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             // This is LE only cause save files are a pain in the arse for OT
             if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
             {
-                var headmorphReferenceStruct = iniData[ModJob.JobHeader.HEADMORPHS.ToString()][@"files"];
+                var headmorphReferenceStruct = iniData[ModJob.JobHeader.HEADMORPHS.ToString()][MODDESC_DESCRIPTOR_HEADMORPH_FILES];
                 if (!string.IsNullOrWhiteSpace(headmorphReferenceStruct))
                 {
                     ModJob headmorphJob = new ModJob(ModJob.JobHeader.HEADMORPHS, this);
@@ -1734,8 +1739,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             #region Additional Mod Items
 
-            //Required DLC (Mod Manager 5.0)
-            var requiredDLCText = ModDescTargetVersion >= 5.0 ? iniData[@"ModInfo"][@"requireddlc"] : null;
+            // Required DLC (Mod Manager 5.0)
+            var requiredDLCText = ModDescTargetVersion >= 5.0 ? iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_REQUIREDDLC] : null;
             if (!string.IsNullOrWhiteSpace(requiredDLCText))
             {
                 var requiredDlcsSplit = requiredDLCText.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -1806,8 +1811,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
             }
 
-            //Outdated DLC (Mod Manager 4.4)
-            var outdatedDLCText = ModDescTargetVersion >= 4.4 ? iniData[@"CUSTOMDLC"][@"outdatedcustomdlc"] : null;
+            // Outdated DLC (Mod Manager 4.4)
+            var outdatedDLCText = ModDescTargetVersion >= 4.4 ? iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][MODDESC_DESCRIPTOR_CUSTOMDLC_OUTDATEDDLC] : null;
             if (!string.IsNullOrEmpty(outdatedDLCText))
             {
                 var outdatedCustomDLCDLCSplits = outdatedDLCText.Split(';').Select(x => x.Trim()).ToList();
@@ -1824,9 +1829,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             }
 
-            //Incompatible DLC (Mod Manager 6)
-            //Todo: Update documentation
-            var incompatibleDLCText = ModDescTargetVersion >= 6.0 ? iniData[@"CUSTOMDLC"][@"incompatiblecustomdlc"] : null;
+            // Incompatible DLC (Mod Manager 6)
+            var incompatibleDLCText = ModDescTargetVersion >= 6.0 ? iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][MODDESC_DESCRIPTOR_CUSTOMDLC_INCOMPATIBLEDLC] : null;
             if (!string.IsNullOrEmpty(incompatibleDLCText))
             {
                 var incompatibleDLCSplits = incompatibleDLCText.Split(';').Select(x => x.Trim()).ToList();
@@ -1844,7 +1848,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
 
             //Additional Deployment Folders (Mod Manager 5.1)
-            var additonaldeploymentfoldersStr = ModDescTargetVersion >= 5.1 ? iniData[@"UPDATES"][@"additionaldeploymentfolders"] : null;
+            var additonaldeploymentfoldersStr = ModDescTargetVersion >= 5.1 ? iniData[MODDESC_HEADERKEY_UPDATES][MODDESC_DESCRIPTOR_UPDATES_ADDITIONAL_FOLDERS] : null;
             if (!string.IsNullOrEmpty(additonaldeploymentfoldersStr))
             {
                 var addlFolderSplit = additonaldeploymentfoldersStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -1873,7 +1877,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             //Additional Root Deployment Files (Mod Manager 6.0)
             //Todo: Update documentation
-            var additonaldeploymentfilesStr = ModDescTargetVersion >= 6.0 ? iniData[@"UPDATES"][@"additionaldeploymentfiles"] : null;
+            var additonaldeploymentfilesStr = ModDescTargetVersion >= 6.0 ? iniData[MODDESC_HEADERKEY_UPDATES][MODDESC_DESCRIPTOR_UPDATES_ADDITIONAL_FILES] : null;
             if (!string.IsNullOrEmpty(additonaldeploymentfilesStr))
             {
                 var addlFileSplit = additonaldeploymentfilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -1903,10 +1907,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             #region Backwards Compatibilty
 
-            //Mod Manager 2.0 supported "modcoal" flag that would replicate Mod Manager 1.0 functionality of coalesced swap since basegame jobs at the time
-            //were not yet supportedd
+            // Mod Manager 2.0 supported "modcoal" flag that would replicate Mod Manager 1.0 functionality of coalesced swap since basegame jobs at the time
+            // were not yet supported
+            // When basegame jobs were introduced in 3.0 this flag would just convert to those instead.
 
-            string modCoalFlag = ModDescTargetVersion == 2 ? iniData[@"ModInfo"][@"modcoal"] : null;
+            string modCoalFlag = ModDescTargetVersion == 2 ? iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_LEGACY_COALESCED] : null;
             //This check could be rewritten to simply check for non zero string. However, for backwards compatibility sake, we will keep the original
             //method of checking in place.
             if (modCoalFlag != null && Int32.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
@@ -1921,8 +1926,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             #endregion
 
             #region Updater Service (Devs only)
-            UpdaterServiceServerFolder = iniData[@"UPDATES"][@"serverfolder"];
-            var blacklistedFilesStr = iniData[@"UPDATES"][@"blacklistedfiles"];
+            UpdaterServiceServerFolder = iniData[MODDESC_HEADERKEY_UPDATES][MODDESC_DESCRIPTOR_UPDATES_SERVERFOLDER];
+            var blacklistedFilesStr = iniData[MODDESC_HEADERKEY_UPDATES][MODDESC_DESCRIPTOR_UPDATES_BLACKLISTEDFILES];
             if (blacklistedFilesStr != null)
             {
                 var blacklistedFiles = blacklistedFilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -1941,13 +1946,35 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
             #endregion
 
+            #region ASI features
+            // ModDesc 9: Allow requesting ASI installation based on key/var mappings.
+            if (ModDescTargetVersion >= 9.0 && Game.IsLEGame())
+            {
+                var asiModsList = iniData[MODDESC_HEADERKEY_ASIMODS][MODDESC_DESCRIPTOR_ASI_ASIMODSTOINSTALL];
+                if (asiModsList != null)
+                {
+                    var asiList = StringStructParser.GetParenthesisSplitValues(asiModsList);
+                    foreach (var asiStruct in asiList)
+                    {
+                        ASIVersion.Parse(this, asiStruct);
+                        if (LoadFailedReason != null)
+                        {
+                            // ASI struct failed to parse
+                            return;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
             //What tool to launch post-install
-            PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
+            PostInstallToolLaunch = iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_POSTINSTALLTOOL];
 
             // Enhanced bink support
             if (ModDescTargetVersion >= 8.1 && (Game.IsLEGame() || Game == MEGame.LELauncher))
             {
-                if (bool.TryParse(iniData[@"ModInfo"][@"requiresenhancedbink"], out var usesEnhancedBink))
+                if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_REQUIRESENHANCEDBINK], out var usesEnhancedBink))
                 {
                     // Marks mod are requiring the enhanced bink
                     RequiresEnhancedBink = usesEnhancedBink;

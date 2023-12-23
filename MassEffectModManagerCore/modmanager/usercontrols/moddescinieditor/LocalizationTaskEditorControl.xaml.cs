@@ -9,6 +9,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
@@ -106,12 +107,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             {
                 if (Files.Any())
                 {
-                    ini[LocalizationJob.Header.ToString()][@"files"] = string.Join(';', Files.Select(x => x.Value));
+                    ini[LocalizationJob.Header.ToString()][Mod.MODDESC_DESCRIPTOR_LOCALIZATION_FILES] = string.Join(';', Files.Select(x => x.Value));
                 }
 
                 if (!string.IsNullOrWhiteSpace(TargetMod))
                 {
-                    ini[LocalizationJob.Header.ToString()][@"dlcname"] = TargetMod;
+                    ini[LocalizationJob.Header.ToString()][Mod.MODDESC_DESCRIPTOR_LOCALIZATION_TARGETDLC] = TargetMod;
                 }
             }
         }
