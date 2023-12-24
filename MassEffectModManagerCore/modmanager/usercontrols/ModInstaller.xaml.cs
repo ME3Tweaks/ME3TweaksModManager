@@ -1055,28 +1055,44 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME3_BALANCE_CHANGES_REPLACER, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
+                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_BalanceChangesReplacer, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
                 }
 
                 if (InstallOptionsPackage.InstallTarget.Supported)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME3_AUTOTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
-                    ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME3_LOGGER, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
+                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_AutoTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_ME3Logger, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
                 }
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE1)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE1_AUTOTOC, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
-                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE1_AUTOLOAD_ENABLER, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoTOCLE, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoloadEnabler, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE2)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE2_AUTOTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE2_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE3)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE3_AUTOTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             }
+
+            // ModDesc 9: Install mod-requested ASI mods
+            foreach (var asiMod in InstallOptionsPackage.ModBeingInstalled.ASIModsToInstall)
+            {
+                var asiToInstall = ASIManager.GetASIModVersion(InstallOptionsPackage.ModBeingInstalled.Game, asiMod.ASIGroupID, asiMod.Version);
+                if (asiToInstall != null)
+                {
+                    ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
+                }
+                else
+                {
+                    M3Log.Error($@"Unable to install ASI mod {asiMod.ToString()}: not found in ASI manifest.");
+                }
+            }
+
+
 
             if (sfarStagingDirectory != null)
             {

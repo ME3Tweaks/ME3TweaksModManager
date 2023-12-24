@@ -389,7 +389,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// List of ASI mods to install based on their group id in the ASI manifest
         /// </summary>
-        public List<ASIVersion> ASIModsToInstall = new List<ASIVersion>();
+        public List<M3ASIVersion> ASIModsToInstall = new List<M3ASIVersion>();
 
         /// <summary>
         /// The path on disk to the root of the mod folder
@@ -1957,7 +1957,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     var asiList = StringStructParser.GetParenthesisSplitValues(asiModsList);
                     foreach (var asiStruct in asiList)
                     {
-                        ASIVersion.Parse(this, asiStruct);
+                        M3ASIVersion.Parse(this, asiStruct);
                         if (LoadFailedReason != null)
                         {
                             // ASI struct failed to parse

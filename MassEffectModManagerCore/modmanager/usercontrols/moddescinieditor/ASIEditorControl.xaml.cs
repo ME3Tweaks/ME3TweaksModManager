@@ -60,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 
         public class ASIModVersionEditor : ASIModVersion
         {
-            // public ASIVersion M3Base { get; set; }
+            // public M3ASIVersion M3Base { get; set; }
             public ASIModVersion ManifestMod { get; set; }
 
             /// <summary>
@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             /// </summary>
             public int? Version { get; set; }
 
-            public static ASIModVersionEditor Create(MEGame game, ASIVersion baseObj)
+            public static ASIModVersionEditor Create(MEGame game, M3ASIVersion baseObj)
             {
                 ASIModVersionEditor v = new ASIModVersionEditor();
 
@@ -101,10 +101,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             public string GenerateStruct()
             {
                 var data = new Dictionary<string, string>();
-                data[ASIVersion.GROUP_KEY_NAME] = ManifestMod.OwningMod.UpdateGroupId.ToString();
+                data[M3ASIVersion.GROUP_KEY_NAME] = ManifestMod.OwningMod.UpdateGroupId.ToString();
                 if (Version != null)
                 {
-                    data[ASIVersion.VERSION_KEY_NAME] = ManifestMod.Version.ToString();
+                    data[M3ASIVersion.VERSION_KEY_NAME] = ManifestMod.Version.ToString();
                 }
                 return $@"({StringStructParser.BuildCommaSeparatedSplitValueList(data)})";
             }

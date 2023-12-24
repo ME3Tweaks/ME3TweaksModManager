@@ -90,7 +90,7 @@
 
         // [ASIMODS]
         public static readonly string MODDESC_HEADERKEY_ASIMODS = @"ASIMODS";
-        public static readonly string MODDESC_DESCRIPTOR_ASI_ASIMODSTOINSTALL = @"asimodstoinstall";   // List of ASIVersion structs that define what ASI mods to install
+        public static readonly string MODDESC_DESCRIPTOR_ASI_ASIMODSTOINSTALL = @"asimodstoinstall";   // List of M3ASIVersion structs that define what ASI mods to install
 
         // [UPDATES]
         public static readonly string MODDESC_HEADERKEY_UPDATES = @"UPDATES";

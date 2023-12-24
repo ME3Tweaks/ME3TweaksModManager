@@ -10,7 +10,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.moddesc
     /// <summary>
     /// Moddesc struct for a mod requesting an ASI version to be installed when the mod is installed
     /// </summary>
-    public class ASIVersion
+    public class M3ASIVersion
     {
         public const string GROUP_KEY_NAME = @"GroupID";
         public const string VERSION_KEY_NAME = @"Version";
@@ -19,27 +19,27 @@ namespace ME3TweaksModManager.modmanager.objects.mod.moddesc
         public int? Version { get; set; }
         public static void Parse(Mod mod, string groupData)
         {
-            ASIVersion v = new ASIVersion();
+            M3ASIVersion v = new M3ASIVersion();
             var data = StringStructParser.GetCommaSplitValues(groupData);
             if (data.Count == 0 || data.Count > 2)
             {
-                M3Log.Error($@"ASIVersion data in moddesc is not valid. At most an ASIVersion struct can contain 1 or 2 values: GroupID and optionally Version. This has {data.Count} entries. Data: {data}");
-                mod.LoadFailedReason = $"ASIVersion data in moddesc is not valid. At most an ASIVersion struct can contain 1 or 2 values: GroupID and optionally Version. This has {data.Count} entries. Data: {data}";
+                M3Log.Error($@"M3ASIVersion data in moddesc is not valid. At most an M3ASIVersion struct can contain 1 or 2 values: GroupID and optionally Version. This has {data.Count} entries. Data: {data}");
+                mod.LoadFailedReason = $"M3ASIVersion data in moddesc is not valid. At most an M3ASIVersion struct can contain 1 or 2 values: GroupID and optionally Version. This has {data.Count} entries. Data: {data}";
                 return;
             }
 
             // Mandatory: GroupId
             if (!data.TryGetValue(GROUP_KEY_NAME, out var groupIdStr))
             {
-                M3Log.Error(@$"ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' is missing. Data: {data}");
-                mod.LoadFailedReason = $"ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' is missing. Data: {data}";
+                M3Log.Error(@$"M3ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' is missing. Data: {data}");
+                mod.LoadFailedReason = $"M3ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' is missing. Data: {data}";
                 return;
             }
 
             if (!int.TryParse(groupIdStr, out var groupId))
             {
-                M3Log.Error(@$"ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' did not resolve to an integer. Data: {data}");
-                mod.LoadFailedReason = $"ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' did not resolve to an integer. Data: {data}";
+                M3Log.Error(@$"M3ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' did not resolve to an integer. Data: {data}");
+                mod.LoadFailedReason = $"M3ASIVersion data in moddesc is not valid. Key '{GROUP_KEY_NAME}' did not resolve to an integer. Data: {data}";
                 return;
             }
 
@@ -49,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.moddesc
             // Optional: Version
             if (!data.TryGetValue(VERSION_KEY_NAME, out var versionStr))
             {
-                M3Log.Information(@"Version key was not detected for ASIVersion. The latest version of this ASI will be installed.", Settings.LogModStartup);
+                M3Log.Information(@"Version key was not detected for M3ASIVersion. The latest version of this ASI will be installed.", Settings.LogModStartup);
             }
             else
             {
@@ -59,8 +59,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.moddesc
                 {
                     if (versionNum <= 0)
                     {
-                        M3Log.Error($@"{VERSION_KEY_NAME} value cannot be less than or equal to 0 in ASIVersion structs. Invalid value: {versionStr}");
-                        mod.LoadFailedReason = $"{VERSION_KEY_NAME} value cannot be less than or equal to 0 in ASIVersion structs. Invalid value: {versionStr}";
+                        M3Log.Error($@"{VERSION_KEY_NAME} value cannot be less than or equal to 0 in M3ASIVersion structs. Invalid value: {versionStr}");
+                        mod.LoadFailedReason = $"{VERSION_KEY_NAME} value cannot be less than or equal to 0 in M3ASIVersion structs. Invalid value: {versionStr}";
                         return;
                     }
 
@@ -69,8 +69,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.moddesc
                 }
                 else
                 {
-                    M3Log.Error($@"{VERSION_KEY_NAME} key value must resolve to an integer in ASIVersion structs. Invalid value: {versionStr}");
-                    mod.LoadFailedReason = $"{VERSION_KEY_NAME} key value must resolve to an integer in ASIVersion structs. Invalid value: {versionStr}";
+                    M3Log.Error($@"{VERSION_KEY_NAME} key value must resolve to an integer in M3ASIVersion structs. Invalid value: {versionStr}");
+                    mod.LoadFailedReason = $"{VERSION_KEY_NAME} key value must resolve to an integer in M3ASIVersion structs. Invalid value: {versionStr}";
                     return;
                 }
             }
