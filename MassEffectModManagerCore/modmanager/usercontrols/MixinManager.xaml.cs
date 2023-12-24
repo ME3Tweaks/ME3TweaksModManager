@@ -201,7 +201,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 //Generate moddesc
                 IniData ini = new IniData();
-                ini[@"ModManager"][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                ini[Mod.MODDESC_HEADERKEY_MODMANAGER][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME] = @"ME3";
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME] = modname;
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER] = App.AppVersionHR;
@@ -493,7 +493,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 //Generate moddesc
                 //IniData ini = new IniData();
-                //ini[@"ModManager"][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                //ini[Mod.MODDESC_HEADERKEY_MODMANAGER][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
                 //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME] = @"ME3";
                 //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME] = modname;
                 //ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER] = App.AppVersionHR;
@@ -551,8 +551,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         inGameDestdir = $@"BIOGame/DLC/{ModMakerCompiler.ModmakerChunkNameToDLCFoldername(dirname)}/CookedPCConsole";
                     }
 
-                    ini[headername][@"replacefiles"] = inGameDestdir;
-                    ini[headername][@"gamedirectorystructure"] = @"true";
+                    ini[headername][Mod.MODDESC_DESCRIPTOR_JOB_REPLACEFILES] = inGameDestdir;
+                    ini[headername][Mod.MODDESC_DESCRIPTOR_JOB_GAMEDIRECTORYSTRUCTURE] = Mod.MODDESC_VALUE_TRUE;
                 }
                 else
                 {

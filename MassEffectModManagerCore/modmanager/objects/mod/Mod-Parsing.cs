@@ -878,7 +878,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 // Requires 6.2. Mods not deployed using M3 will NOT support this as it has special
                 // archive requirements.
-                BannerImageName = iniData[Mod.MODDESC_HEADERKEY_MODINFO][@"bannerimagename"];
+                BannerImageName = iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_BANNERIMAGENAME];
 
                 if (!string.IsNullOrWhiteSpace(BannerImageName))
                 {
@@ -931,15 +931,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
 
                     bool directoryMatchesGameStructure = false;
-                    if (ModDescTargetVersion >= 6.0) bool.TryParse(iniData[headerAsString][@"gamedirectorystructure"], out directoryMatchesGameStructure);
+                    if (ModDescTargetVersion >= 6.0) bool.TryParse(iniData[headerAsString][MODDESC_DESCRIPTOR_JOB_GAMEDIRECTORYSTRUCTURE], out directoryMatchesGameStructure);
 
                     //Replace files (ModDesc 2.0)
                     string replaceFilesSourceList = iniData[headerAsString][Mod.MODDESC_DESCRIPTOR_JOB_NEWFILES]; //Present in MM2. So this will always be read
-                    string replaceFilesTargetList = iniData[headerAsString][@"replacefiles"]; //Present in MM2. So this will always be read
+                    string replaceFilesTargetList = iniData[headerAsString][MODDESC_DESCRIPTOR_JOB_REPLACEFILES]; //Present in MM2. So this will always be read
 
                     //Add files (ModDesc 4.1)
-                    string addFilesSourceList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString][@"addfiles"] : null;
-                    string addFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString][@"addfilestargets"] : null;
+                    string addFilesSourceList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString][MODDESC_DESCRIPTOR_JOB_ADDFILES] : null;
+                    string addFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString][MODDESC_DESCRIPTOR_JOB_ADDFILESTARGETS] : null;
 
                     //Add files Read-Only (ModDesc 4.3)
                     // Never did anything since Mod Manager 6, removed commented out code in Mod Manager 8
@@ -948,7 +948,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     //Remove files (ModDesc 4.1) - REMOVED IN MOD MANAGER 6
 
                     //MergeMods: Mod Manager 7.0 (parsed below so it passes the task does something check)
-                    string mergeModsList = (ModDescTargetVersion >= 7.0 && header == ModJob.JobHeader.BASEGAME) ? iniData[headerAsString][@"mergemods"] : null;
+                    string mergeModsList = (ModDescTargetVersion >= 7.0 && header == ModJob.JobHeader.BASEGAME) ? iniData[headerAsString][MODDESC_DESCRIPTOR_BASEGAME_MERGEMODS] : null;
 
                     // AltFiles: Mod Manager 4.2
                     string altfilesStr = (ModDescTargetVersion >= 4.2 && header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString][Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_ALTFILES] : null;
@@ -1020,7 +1020,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                     //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
                     //In Java Mod Manager, this required 4.1 moddesc
-                    string jobRequirement = iniData[headerAsString][@"jobdescription"];
+                    string jobRequirement = iniData[headerAsString][MODDESC_DESCRIPTOR_JOB_JOBDESCRIPTION];
                     M3Log.Information($@"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
 
                     ModJob headerJob = new ModJob(header, this);
@@ -1130,7 +1130,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         int i = 1;
                         while (true)
                         {
-                            var multilist = iniData[headerAsString][@"multilist" + i];
+                            var multilist = iniData[headerAsString][MODDESC_DESCRIPTOR_ALTERNATE_MULTILIST + i];
                             if (multilist == null) break; //no more to parse
                             headerJob.MultiLists[i] = multilist.Split(';');
                             i++;
@@ -1210,7 +1210,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 // jobdir is not specified, as a way to cue user into needing a value for it
                 // This is
                 if (ModDescTargetVersion >= 8.1 && header == ModJob.JobHeader.BASEGAME && jobSubdirectory == null &&
-                    !string.IsNullOrWhiteSpace(iniData[headerAsString][@"mergemods"]))
+                    !string.IsNullOrWhiteSpace(iniData[headerAsString][MODDESC_DESCRIPTOR_BASEGAME_MERGEMODS]))
                 {
                     M3Log.Error(@"Mod specifies basegame mergemods descriptor but does not set basegame moddir, setting mod as invalid to prevent misleading behavior");
                     LoadFailedReason = M3L.GetString(M3L.string_mod_validation_basegameMergeModsWithoutModDir);
@@ -1310,7 +1310,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         int i = 1;
                         while (true)
                         {
-                            var multilist = iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][@"multilist" + i];
+                            var multilist = iniData[Mod.MODDESC_HEADERKEY_CUSTOMDLC][MODDESC_DESCRIPTOR_ALTERNATE_MULTILIST + i];
                             if (multilist == null) break; //no more to parse
                             customDLCjob.MultiLists[i] = multilist.Split(';');
                             i++;
@@ -1450,7 +1450,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     var jobSubdirectory = iniData[ModJob.JobHeader.ME1_CONFIG.ToString()][Mod.MODDESC_DESCRIPTOR_JOB_DIR];
                     if (!string.IsNullOrWhiteSpace(jobSubdirectory))
                     {
-                        var configfilesStr = iniData[@"ME1_CONFIG"][@"configfiles"];
+                        // 12/23/2023 - Change from hardcoded string to jobheader tostring
+                        var configfilesStr = iniData[ModJob.JobHeader.ME1_CONFIG.ToString()][MODDESC_DESCRIPTOR_ME1CONFIG_CONFIGFILES];
                         if (string.IsNullOrWhiteSpace(configfilesStr))
                         {
                             M3Log.Error(@"ME1_CONFIG job was specified but configfiles descriptor is empty or missing. Remove this header if you are not using this task.");
@@ -1487,7 +1488,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 if (Game == MEGame.ME2)
                 {
-                    var rcwfile = iniData[ModJob.JobHeader.ME2_RCWMOD.ToString()][@"modfile"];
+                    var rcwfile = iniData[ModJob.JobHeader.ME2_RCWMOD.ToString()][MODDESC_DESCRIPTOR_ME2RCW_MODFILE];
                     if (!string.IsNullOrWhiteSpace(rcwfile))
                     {
                         var path = FilesystemInterposer.PathCombine(IsInArchive, ModPath, rcwfile);

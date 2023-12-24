@@ -79,7 +79,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             {
                 if (Files.Any())
                 {
-                    ini[ConfigJob.Header.ToString()][@"configfiles"] = string.Join(';', Files.Where(x => !string.IsNullOrWhiteSpace(x.Value)).Select(x => x.Value));
+                    ini[ConfigJob.Header.ToString()][Mod.MODDESC_DESCRIPTOR_ME1CONFIG_CONFIGFILES] = string.Join(';', Files.Where(x => !string.IsNullOrWhiteSpace(x.Value)).Select(x => x.Value));
                 }
 
                 if (!string.IsNullOrWhiteSpace(ModDir))

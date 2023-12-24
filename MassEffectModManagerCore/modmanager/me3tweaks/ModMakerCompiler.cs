@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -13,18 +9,14 @@ using IniParser.Model;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
-using ME3TweaksCore.Services.Backup;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
-using Microsoft.AppCenter.Analytics;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
@@ -942,8 +934,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                         inGameDestdir = $@"BIOGame/DLC/{ModmakerChunkNameToDLCFoldername(dirname)}/CookedPCConsole";
                     }
 
-                    ini[headername][@"replacefiles"] = inGameDestdir;
-                    ini[headername][@"gamedirectorystructure"] = Mod.MODDESC_VALUE_TRUE;
+                    ini[headername][Mod.MODDESC_DESCRIPTOR_JOB_REPLACEFILES] =inGameDestdir;
+                    ini[headername][Mod.MODDESC_DESCRIPTOR_JOB_GAMEDIRECTORYSTRUCTURE] = Mod.MODDESC_VALUE_TRUE;
                 }
                 else
                 {
@@ -1086,7 +1078,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
             //Write mod ini
             IniData ini = new IniData();
-            ini[@"ModManager"][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+            ini[Mod.MODDESC_HEADERKEY_MODMANAGER][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
             ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME] = @"ME3";
             ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME] = modName;
             ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER] = modDev;

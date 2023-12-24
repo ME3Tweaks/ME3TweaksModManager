@@ -5,6 +5,7 @@ using System.Windows;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
@@ -29,9 +30,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             if (!HasLoaded)
             {
                 EditingMod.BuildParameterMap(EditingMod);
-                ModManagerParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModManager"));
-                ModInfoParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModInfo"));
-                UPDATESParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"UPDATES"));
+                ModManagerParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == Mod.MODDESC_HEADERKEY_MODMANAGER));
+                ModInfoParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == Mod.MODDESC_HEADERKEY_MODINFO));
+                UPDATESParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == Mod.MODDESC_HEADERKEY_UPDATES));
                 ModdescVersionChanging = App.HighestSupportedModDesc != EditingMod.ModDescTargetVersion;
                 HasLoaded = true;
             }
@@ -41,13 +42,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             foreach (var v in EditingMod.ParameterMap) //references will still be same
             {
-                if (v.Header == @"ModInfo" && v.Key == @"requireddlc" && EditingMod.GetJob(ModJob.JobHeader.LOCALIZATION) != null)
+                if (v.Header == Mod.MODDESC_HEADERKEY_MODINFO && v.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_REQUIREDDLC && EditingMod.GetJob(ModJob.JobHeader.LOCALIZATION) != null)
                 {
                     // Do not store RequiredDLC in localization mod.
                     continue;
                 }
 
-                if (v.Key == @"cmmver" && v.Header == @"ModManager")
+                if (v.Key == Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER && v.Header == Mod.MODDESC_HEADERKEY_MODMANAGER)
                 {
                     // Editor only can write latest version format
                     v.Value = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
@@ -56,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 
                 if (!string.IsNullOrWhiteSpace(v.Value))
                 {
-                    if (v.Key == @"moddesc" && v.Header == @"ModInfo")
+                    if (v.Key == Mod.MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION && v.Header == Mod.MODDESC_HEADERKEY_MODINFO)
                     {
                         // Convert what's written into moddesc
                         ini[v.Header][v.Key] = M3Utilities.ConvertNewlineToBr(v.Value);

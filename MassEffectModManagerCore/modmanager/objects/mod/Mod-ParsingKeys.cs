@@ -45,8 +45,21 @@
         public static readonly string MODDESC_DESCRIPTOR_MODINFO_REQUIRESENHANCEDBINK = @"requiresenhancedbink";    // LE - If this mod MUST have the enhanced bink dll to work
 
         // [BASEGAME] and Official DLC task headers (ME3)
-        public static readonly string MODDESC_DESCRIPTOR_JOB_DIR = @"moddir";                            // Directory in the mod manager folder that this job is operating on. A dot '.' is a valid value if you do not actually use files but a directory is required.
-        public static readonly string MODDESC_DESCRIPTOR_JOB_NEWFILES = @"newfiles";                     // List of semicolon separated filenames in moddir folder that will be mapped
+        public static readonly string MODDESC_DESCRIPTOR_JOB_DIR = @"moddir";                                    // Directory in the mod manager folder that this job is operating on. A dot '.' is a valid value if you do not actually use files but a directory is required.
+        public static readonly string MODDESC_DESCRIPTOR_JOB_NEWFILES = @"newfiles";                             // List of semicolon separated filenames in moddir folder that will be mapped
+        public static readonly string MODDESC_DESCRIPTOR_JOB_REPLACEFILES = @"replacefiles";                     // List of semicolon separated file paths to copy matching newfiles to in the game
+        public static readonly string MODDESC_DESCRIPTOR_JOB_GAMEDIRECTORYSTRUCTURE = @"gamedirectorystructure"; // If files in newfiles folder should use their relative paths to map directly into the game via replacefiles
+        public static readonly string MODDESC_DESCRIPTOR_JOB_ADDFILES = @"addfiles";                             // Deprecated: List of semicolon files to add to ME3/Basegame (use newfiles instead)
+        public static readonly string MODDESC_DESCRIPTOR_JOB_ADDFILESTARGETS = @"addfilestargets";               // Deprecated: List of file targets for addfiles
+        public static readonly string MODDESC_DESCRIPTOR_BASEGAME_MERGEMODS = @"mergemods";                      // List of semicolon separated mergemod filenames to install from MergeMods folder
+        public static readonly string MODDESC_DESCRIPTOR_JOB_JOBDESCRIPTION = @"jobdescription";                 // OT - String that is shown if official DLC is not installed and mod targets official DLC
+
+        // [ME2_RCW]
+        public static readonly string MODDESC_HEADERKEY_ME2RCW = @"ME2_RCWMOD";
+        public static readonly string MODDESC_DESCRIPTOR_ME2RCW_MODFILE = @"modfile"; // Filename of the RCW .me2mod file
+
+        // [ME1CONFIG]
+        public static readonly string MODDESC_DESCRIPTOR_ME1CONFIG_CONFIGFILES = @"configfiles"; // Semicolon separated list of config files to install
 
         // [CUSTOMDLC]
         public static readonly string MODDESC_HEADERKEY_CUSTOMDLC = @"CUSTOMDLC";                               // Note: source and dest dirs values should always be the same due to bugs in the parser over the years. 
@@ -58,6 +71,9 @@
         public static readonly string MODDESC_DESCRIPTOR_CUSTOMDLC_OUTDATEDDLC = @"outdatedcustomdlc";          // Old DLC foldernames. On install these will be prompted to the user for deletion. Used for DLC folder name changes.
         public static readonly string MODDESC_DESCRIPTOR_CUSTOMDLC_ALTFILES = @"altfiles";                      // List of AlternateFile structs that define alternate installation options for this mod (use altdlc if you are alternating on CustomDLC!)
         public static readonly string MODDESC_DESCRIPTOR_CUSTOMDLC_ALTDLC = @"altdlc";                      // List of AlternateDLC structs that define alternate installation options for CustomDLC in this mod
+
+        // Alternates (shared)
+        public static readonly string MODDESC_DESCRIPTOR_ALTERNATE_MULTILIST = @"multilist"; // Base non-indexed string that identifies a multilist struct
 
         // [LOCALIZATION]
         public static readonly string MODDESC_DESCRIPTOR_LOCALIZATION_FILES = @"files";          //  

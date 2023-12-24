@@ -382,14 +382,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 //Write moddesc.ini
                 IniData ini = new IniData();
-                ini[@"ModManager"][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
+                ini[Mod.MODDESC_HEADERKEY_MODMANAGER][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_GAME] = @"ME2";
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_NAME] = ModName;
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DEVELOPER] = ModDeveloper;
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_DESCRIPTION] = M3Utilities.ConvertNewlineToBr(ModDescription);
                 ini[Mod.MODDESC_HEADERKEY_MODINFO][Mod.MODDESC_DESCRIPTOR_MODINFO_VERSION] = @"1.0"; //Not going to bother looking this up to match the source
 
-                ini[@"ME2_RCWMOD"][@"modfile"] = sanitizedName + @".me2mod";
+                ini[Mod.MODDESC_HEADERKEY_ME2RCW][Mod.MODDESC_DESCRIPTOR_ME2RCW_MODFILE] = sanitizedName + @".me2mod";
                 var modDescPath = Path.Combine(modpath, @"moddesc.ini");
                 new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
             }
