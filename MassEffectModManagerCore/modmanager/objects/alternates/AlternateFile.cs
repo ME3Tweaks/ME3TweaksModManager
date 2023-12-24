@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
-using ME3TweaksModManager.modmanager.diagnostics;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
-using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
 {
@@ -111,7 +104,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
-            if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
+            if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_FRIENDLYNAME, out string friendlyName))
             {
                 FriendlyName = friendlyName;
             }
@@ -124,7 +117,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 return;
             }
 
-            if (properties.TryGetValue(@"Condition", out string altCond))
+            if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_CONDITION, out string altCond))
             {
                 if (!Enum.TryParse<AltFileCondition>(altCond, out var cond) || cond == AltFileCondition.INVALID_CONDITION)
                 {
@@ -137,7 +130,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 Condition = cond;
             }
 
-            if (properties.TryGetValue(@"ConditionalDLC", out string conditionalDlc))
+            if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_CONDITIONALDLC, out string conditionalDlc))
             {
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 foreach (var dlc in conditionalList)
@@ -160,7 +153,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 }
             }
 
-            if (properties.TryGetValue(@"ModOperation", out var modOp))
+            if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MODOPERATION, out var modOp))
             {
                 if (!Enum.TryParse<AltFileOperation>(modOp, out var op) || op == AltFileOperation.INVALID_OPERATION)
                 {
@@ -211,7 +204,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     }
                     // ModDesc 8.0 change: Require MultiListRootPath not be an empty string.
                     // This checks because EGM LE did not set it so this would break loading that mod on future builds
-                    if (properties.TryGetValue(@"MultiListRootPath", out var rootpath) && (modForValidating.ModDescTargetVersion < 8.0 || !string.IsNullOrWhiteSpace(rootpath)))
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_ROOTPATH, out var rootpath) && (modForValidating.ModDescTargetVersion < 8.0 || !string.IsNullOrWhiteSpace(rootpath)))
                     {
                         MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
                     }
@@ -223,7 +216,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         return;
                     }
 
-                    if (properties.TryGetValue(@"MultiListTargetPath", out var targetpath))
+                    if (properties.TryGetValue(AlternateKeys.ALTFILE_KEY_MULTILIST_TARGETPATH, out var targetpath))
                     {
                         MultiListTargetPath = targetpath.TrimStart('\\', '/').Replace('/', '\\');
                     }
@@ -235,7 +228,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         return;
                     }
 
-                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out var multilistid))
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_ID, out string multilistidstr) && int.TryParse(multilistidstr, out var multilistid))
                     {
                         if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
                         {
@@ -246,7 +239,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         {
                             M3Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
-                            var id = @"multilist" + multilistid;
                             LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName, associatedJob.Header) + $@" multilist{multilistid}";
                             return;
                         }
@@ -264,7 +256,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
                         || modForValidating.ModDescTargetVersion >= 8.0)
                     {
-                        if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
+                        if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_FLATTENOUTPUT, out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
                         {
                             if (bool.TryParse(multiListFlattentStr, out var multiListFlatten))
                             {
@@ -293,24 +285,28 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         return;
                     }
 
-                    if (properties.TryGetValue(@"MultiListTargetPath", out var rootpath))
+                    // 12/23/2023 - Code review shows this is likely a copy paste with bad variable names. It's correct
+                    // but variable names were updated to be more accurate - it _should_ be doing multi list target
+                    // as noinstall removes them from install.
+                    if (properties.TryGetValue(AlternateKeys.ALTFILE_KEY_MULTILIST_TARGETPATH, out var targetPath))
                     {
-                        MultiListTargetPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
+                        MultiListTargetPath = targetPath.TrimStart('\\', '/').Replace('/', '\\');
                     }
                     else
                     {
-                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListTargetPath.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistNIMissingMultiListTargetPath, FriendlyName);
                         return;
                     }
 
-                    if (properties.TryGetValue(@"MultiListTargetPath", out var targetpath))
-                    {
-                        MultiListTargetPath = targetpath.TrimStart('\\', '/').Replace('/', '\\');
-                    }
+                    // 12/23/2023 - Code review shows this is duplicate code and thus was commented out at the time of review.
+                    //if (properties.TryGetValue(AlternateKeys.ALTFILE_KEY_MULTILIST_TARGETPATH, out var targetpath))
+                    //{
+                    //    MultiListTargetPath = targetpath.TrimStart('\\', '/').Replace('/', '\\');
+                    //}
 
-                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out var multilistid))
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_ID, out string multilistidstr) && int.TryParse(multilistidstr, out var multilistid))
                     {
                         if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
                         {
@@ -353,7 +349,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         LoadFailedReason = $@"Alternate File {FriendlyName} attempts to use OP_APPLY_MERGEMODS operation on a non-BASEGAME header, which currently is not allowed";
                         return;
                     }
-                    if (properties.TryGetValue(@"MergeFiles", out string mf))
+                    if (properties.TryGetValue(AlternateKeys.ALTFILE_KEY_MERGEFILES, out string mf))
                     {
                         var mergeFiles = StringStructParser.GetSemicolonSplitList(mf).Select(x => x.TrimStart('\\', '/')).ToArray();
 
@@ -406,7 +402,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 else
                 {
                     #region SUBSTITUTE, INSTALL, NOINSTALL
-                    if (properties.TryGetValue(@"ModFile", out string modfile))
+                    if (properties.TryGetValue(AlternateKeys.ALTFILE_KEY_MODFILE, out string modfile))
                     {
                         ModFile = modfile.TrimStart('\\', '/').Replace('/', '\\');
                     }
@@ -421,7 +417,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
                     {
                         //Verify target folder is reachable by the mod
-                        var modFilePath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
+                        // var modFilePath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
                         var pathSplit = ModFile.Split('\\');
                         if (pathSplit.Length > 0)
                         {
@@ -453,11 +449,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     }
 
                     //these both are the same these days i guess, I honestly can't remember which one I wanted to use
-                    if (properties.TryGetValue(@"AltFile", out string altfile))
+                    if (properties.TryGetValue(AlternateKeys.ALTFILE_KEY_ALTFILE, out string altfile))
                     {
                         AltFile = altfile.TrimStart('\\', '/');
                     }
-                    else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
+                    else if (AltFile == null && properties.TryGetValue(AlternateKeys.ALTFILE_KEY_ALTFILE2, out string maltfile))
                     {
                         AltFile = maltfile.TrimStart('\\', '/'); ;
                     }
@@ -468,7 +464,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     {
                         // BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
                         // In 5.0 and above this became AltFile.
-                        properties.TryGetValue(@"SubstituteFile", out var substituteFile);
+                        properties.TryGetValue(AlternateKeys.ALTFILE_KEY_SUBSTITUTEFILE, out var substituteFile);
 
                         if (Operation == AltFileOperation.OP_SUBSTITUTE && substituteFile != null)
                         {
@@ -509,7 +505,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 return; // Failed in super call
             }
 
-            if (Condition == AltFileCondition.COND_MANUAL && properties.TryGetValue(@"CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
+            if (Condition == AltFileCondition.COND_MANUAL && properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_CHECKEDBYDEFAULT, out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
             {
                 CheckedByDefault = cbd;
             }
@@ -564,16 +560,16 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             var parameterDictionary = new Dictionary<string, object>()
             {
-                { @"Condition", new MDParameter(@"string", @"Condition", Condition.ToString(), conditions, AltFileCondition.COND_MANUAL.ToString())},
-                { @"ConditionalDLC", ConditionalDLC},
-                { @"ModOperation", new MDParameter(@"string", @"ModOperation", Operation.ToString(), operations, AltFileOperation.OP_NOTHING.ToString())},
-                { @"AltFile", AltFile},
-                { @"ModFile", ModFile},
-                { @"MergeFiles", MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
-                { @"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
-                { @"MultiListRootPath", MultiListRootPath},
-                { @"MultiListTargetPath", MultiListTargetPath},
-                { @"FlattenMultiListOutput", new MDParameter(@"FlattenMultiListOutput", FlattenMultilistOutput, false)},
+                { AlternateKeys.ALTSHARED_KEY_CONDITION, new MDParameter(@"string", AlternateKeys.ALTSHARED_KEY_CONDITION, Condition.ToString(), conditions, AltFileCondition.COND_MANUAL.ToString())},
+                { AlternateKeys.ALTSHARED_KEY_CONDITIONALDLC, ConditionalDLC},
+                { AlternateKeys.ALTSHARED_KEY_MODOPERATION, new MDParameter(@"string", AlternateKeys.ALTSHARED_KEY_MODOPERATION, Operation.ToString(), operations, AltFileOperation.OP_NOTHING.ToString())},
+                { AlternateKeys.ALTFILE_KEY_ALTFILE, AltFile},
+                { AlternateKeys.ALTFILE_KEY_MODFILE, ModFile},
+                { AlternateKeys.ALTFILE_KEY_MERGEFILES, MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
+                { AlternateKeys.ALTSHARED_KEY_MULTILIST_ID, MultiListId > 0 ? MultiListId.ToString() : null},
+                { AlternateKeys.ALTSHARED_KEY_MULTILIST_ROOTPATH, MultiListRootPath},
+                { AlternateKeys.ALTFILE_KEY_MULTILIST_TARGETPATH, MultiListTargetPath},
+                { AlternateKeys.ALTSHARED_KEY_MULTILIST_FLATTENOUTPUT, new MDParameter(AlternateKeys.ALTSHARED_KEY_MULTILIST_FLATTENOUTPUT, FlattenMultilistOutput, false)},
             };
 
             BuildSharedParameterMap(mod, parameterDictionary);

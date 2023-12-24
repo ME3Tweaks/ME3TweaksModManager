@@ -399,11 +399,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <param name="properties"></param>
         private void ReadAutoApplicableText(Dictionary<string, string> properties)
         {
-            properties.TryGetValue(@"ApplicableAutoText", out string applicableText);
+            properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_APPLICABLE_TEXT, out string applicableText);
             ApplicableAutoText = applicableText ?? M3L.GetString(M3L.string_autoApplied);
             ApplicableAutoTextRaw = applicableText;
 
-            properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText);
+            properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_NOTAPPLICABLE_TEXT, out string notApplicableText);
             NotApplicableAutoText = notApplicableText ?? M3L.GetString(M3L.string_notApplicable);
             NotApplicableAutoTextRaw = notApplicableText;
         }
@@ -418,7 +418,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         {
             if (modForValidating.ModDescTargetVersion >= 6.2)
             {
-                if (properties.TryGetValue(@"ImageAssetName", out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
+                if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_IMAGENAME, out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
                 {
                     // We need to validate the file exists
                     var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
@@ -452,7 +452,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 if (!string.IsNullOrWhiteSpace(ImageAssetName))
                 {
                     // We need to ensure height is also set
-                    if (properties.TryGetValue(@"ImageHeight", out string imageHeightStr) && int.TryParse(imageHeightStr, out var imageHeight))
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_IMAGEHEIGHT, out string imageHeightStr) && int.TryParse(imageHeightStr, out var imageHeight))
                     {
                         if (imageHeight < 0 || imageHeight > 1040)
                         {
@@ -495,13 +495,13 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             // ModDesc 6.0: Mutually exclusive options
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {
-                GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
+                GroupName = properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_OPTIONGROUP, out string groupName) ? groupName : null;
             }
 
             // ModDesc 8.0: Read dev-defined OptionKey, SortOrder, Hidden
             if (modForValidating.ModDescTargetVersion >= 8.0)
             {
-                if (properties.TryGetValue(@"Hidden", out string hiddenValue))
+                if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_HIDDEN, out string hiddenValue))
                 {
                     if (bool.TryParse(hiddenValue, out var hidden))
                     {
@@ -521,12 +521,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     }
                 }
 
-                if (properties.TryGetValue(@"OptionKey", out string optionKey) && !string.IsNullOrWhiteSpace(optionKey))
+                if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_OPTIONKEY, out string optionKey) && !string.IsNullOrWhiteSpace(optionKey))
                 {
                     OptionKey = optionKey; // Later validation is done at the job level to ensure there are no collisions
                 }
 
-                if (properties.TryGetValue(@"DependsOnKeys", out string dependsOnKeys) && !string.IsNullOrWhiteSpace(dependsOnKeys))
+                if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_DEPENDSON_KEYS, out string dependsOnKeys) && !string.IsNullOrWhiteSpace(dependsOnKeys))
                 {
                     var keyList = dependsOnKeys.Split(';');
                     foreach (var key in keyList)
@@ -557,7 +557,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     // BUT THEY DO DIFFERENT THINGS!
                     // ==========================================================
                     // We have to read criteria met and not met.
-                    if (properties.TryGetValue(@"DependsOnMetAction", out string dependsOnMetStr) && Enum.TryParse<EDependsOnAction>(dependsOnMetStr, out var dependsOnMet) && dependsOnMet != EDependsOnAction.ACTION_INVALID)
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_DEPENDSONACTION_MET, out string dependsOnMetStr) && Enum.TryParse<EDependsOnAction>(dependsOnMetStr, out var dependsOnMet) && dependsOnMet != EDependsOnAction.ACTION_INVALID)
                     {
                         DependsOnMetAction = dependsOnMet;
                     }
@@ -568,7 +568,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         return false;
                     }
 
-                    if (properties.TryGetValue(@"DependsOnNotMetAction", out string dependsOnNotMetStr) && Enum.TryParse<EDependsOnAction>(dependsOnNotMetStr, out var dependsOnNotMet) && dependsOnNotMet != EDependsOnAction.ACTION_INVALID)
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_DEPENDSONACTION_NOTMET, out string dependsOnNotMetStr) && Enum.TryParse<EDependsOnAction>(dependsOnNotMetStr, out var dependsOnNotMet) && dependsOnNotMet != EDependsOnAction.ACTION_INVALID)
                     {
                         DependsOnNotMetAction = dependsOnNotMet;
                     }
@@ -582,7 +582,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 }
 
                 // Read the sorting index
-                if (properties.TryGetValue(@"SortIndex", out string sortIndexStr))
+                if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_SORTINDEX, out string sortIndexStr))
                 {
                     if (int.TryParse(sortIndexStr, out var sortIndex) && sortIndex > 0)
                     {
@@ -644,35 +644,34 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 // ConditionalDLC is not added here since it needs to appear next to Condition, which is class specific.
 
                 // Basic metadata
-                {@"FriendlyName", FriendlyName},
-                {@"Description", Description},
+                { AlternateKeys.ALTSHARED_KEY_FRIENDLYNAME, FriendlyName},
+                { AlternateKeys.ALTSHARED_KEY_DESCRIPTION, Description},
 
                 // Initially selected
-                {@"CheckedByDefault", new MDParameter( @"CheckedByDefault", CheckedByDefault, false)},
+                { AlternateKeys.ALTSHARED_KEY_CHECKEDBYDEFAULT, new MDParameter( AlternateKeys.ALTSHARED_KEY_CHECKEDBYDEFAULT, CheckedByDefault, false)},
 
                 // Mutually exclusive groups
-                {@"OptionGroup", GroupName},
+                { AlternateKeys.ALTSHARED_KEY_OPTIONGROUP, GroupName},
 
                 // Auto Apply text
-                { @"ApplicableAutoText", ApplicableAutoTextRaw},
-                { @"NotApplicableAutoText", NotApplicableAutoTextRaw},
+                { AlternateKeys.ALTSHARED_KEY_APPLICABLE_TEXT, ApplicableAutoTextRaw},
+                { AlternateKeys.ALTSHARED_KEY_NOTAPPLICABLE_TEXT, NotApplicableAutoTextRaw},
 
                 // Images
-                // { @"ImageAssetName", ImageAssetName },
-                {@"ImageAssetName", new MDParameter(@"string", @"ImageAssetName", ImageAssetName, mod.PopulateImageFileOptions(), "") { AllowedValuesPopulationFunc = mod.PopulateImageFileOptions}}, // Uses image population function
-                { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null },
+                { AlternateKeys.ALTSHARED_KEY_IMAGENAME, new MDParameter(@"string", AlternateKeys.ALTSHARED_KEY_IMAGENAME, ImageAssetName, mod.PopulateImageFileOptions(), "") { AllowedValuesPopulationFunc = mod.PopulateImageFileOptions}}, // Uses image population function
+                { AlternateKeys.ALTSHARED_KEY_IMAGEHEIGHT, ImageHeight > 0 ? ImageHeight.ToString() : null },
 
                 // DependsOn
-                { @"OptionKey", HasDefinedOptionKey ? OptionKey : null },
-                { @"DependsOnKeys", string.Join(';', DependsOnKeys.Select(x => x.ToString())) },
-                { @"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "") }, // do not localize
-                { @"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "") }, // do not localize
+                { AlternateKeys.ALTSHARED_KEY_OPTIONKEY, HasDefinedOptionKey ? OptionKey : null },
+                { AlternateKeys.ALTSHARED_KEY_DEPENDSON_KEYS, string.Join(';', DependsOnKeys.Select(x => x.ToString())) },
+                { AlternateKeys.ALTSHARED_KEY_DEPENDSONACTION_MET, new MDParameter(@"string", AlternateKeys.ALTSHARED_KEY_DEPENDSONACTION_MET, DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "") }, // do not localize
+                { AlternateKeys.ALTSHARED_KEY_DEPENDSONACTION_NOTMET, new MDParameter(@"string", AlternateKeys.ALTSHARED_KEY_DEPENDSONACTION_NOTMET, DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "") }, // do not localize
 
                 // Sorting
-                { @"SortIndex", SortIndex > 0 ? SortIndex.ToString() : "" }, // If not defined don't put into map
+                { AlternateKeys.ALTSHARED_KEY_SORTINDEX, SortIndex > 0 ? SortIndex.ToString() : "" }, // If not defined don't put into map
 
                 // DependsOn hidden - used for pivoting
-                { @"Hidden", new MDParameter(@"Hidden", IsHidden, false) }, // do not localize
+                { AlternateKeys.ALTSHARED_KEY_HIDDEN, new MDParameter(AlternateKeys.ALTSHARED_KEY_HIDDEN, IsHidden, false) }, // do not localize
 
             };
 
