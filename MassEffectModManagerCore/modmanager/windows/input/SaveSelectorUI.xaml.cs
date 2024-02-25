@@ -28,6 +28,7 @@ using ME3TweaksModManager.modmanager.converters;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save;
 using ME3TweaksModManager.modmanager.save.shared;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.windows.input
 {
@@ -723,11 +724,20 @@ namespace ME3TweaksModManager.modmanager.windows.input
                 return charNameCareers;
             }).ContinueWithOnUIThread(result =>
             {
-                SaveCareers.ReplaceAll(result.Result.Select(x => new Career(x.Value, x.Key)));
-                if (SelectedSaveFile != null)
+                if (result.Exception != null)
                 {
-                    SelectedCareer = SaveCareers.FirstOrDefault(x => x.SaveFiles.Contains(SelectedSaveFile));
+                    M3Log.Exception(result.Exception, @"Error parsing save files and game data for save selector UI:");
+                    SelectedLevelText = M3L.GetString(M3L.string_error) + @": " + result.Exception.Message;
                 }
+                else
+                {
+                    SaveCareers.ReplaceAll(result.Result.Select(x => new Career(x.Value, x.Key)));
+                    if (SelectedSaveFile != null)
+                    {
+                        SelectedCareer = SaveCareers.FirstOrDefault(x => x.SaveFiles.Contains(SelectedSaveFile));
+                    }
+                }
+
                 LoadingSaves = false;
             });
         }
@@ -903,7 +913,18 @@ namespace ME3TweaksModManager.modmanager.windows.input
                     foreach (var dlm in dynamicLoadMapping)
                     {
                         var parms = StringStructParser.GetCommaSplitValues(dlm.Value, canBeCaseInsensitive: true);
-                        assetNameToSourcePackageMap[parms[@"ObjectName"]] = parms[@"SeekFreePackageName"];
+                        try
+                        {
+                            assetNameToSourcePackageMap[parms[@"ObjectName"]] = parms[@"SeekFreePackageName"];
+                        }
+                        catch (Exception e)
+                        {
+                            TelemetryInterposer.TrackEvent(@"Found malformed DLM", new Dictionary<string, string>()
+                            {
+                                {@"Game", Target.Game.ToString()},
+                                {@"Entry", dlm.Value},
+                            }); M3Log.Error($@"Error parsing dynamic load mapping string in {dlm.Value}: {dlm}. Number of parsed parameters: {parms.Count}. Error: {e.Message}");
+                        }
                     }
                 }
 
