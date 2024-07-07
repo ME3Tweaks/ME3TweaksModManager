@@ -42,6 +42,7 @@ using ME3TweaksCore.ME3Tweaks.M3Merge.GlobalShader;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksCore.TextureOverride;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
@@ -136,13 +137,16 @@ namespace ME3TweaksModManager
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
 
+        public const string EXTENSION_TEXTURE_OVERRIDE_MANIFEST = @".tojson";
+
         private readonly string[] SupportedDroppableExtensions =
         {
             @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk",
 #if LEGACY
             @".par",
 #endif
-            @".m3m", @".json", @".extractedbin", @".m3za", @".hlsl"
+            @".m3m", @".json", @".extractedbin", @".m3za", @".hlsl", EXTENSION_TEXTURE_OVERRIDE_MANIFEST
+
         };
 
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
@@ -4864,7 +4868,15 @@ namespace ME3TweaksModManager
                                             fname);
                                     }
                                 };
-                                nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
+                                nbw.RunWorkerCompleted += (a, b) =>
+                                {
+                                    if (b.Error != null)
+                                    {
+                                        M3Log.Exception(b.Error, $@"Error decompressing {file}:");
+                                        task.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDecompressFname, fname);
+                                    }
+                                    BackgroundTaskEngine.SubmitJobCompletion(task);
+                                };
                                 nbw.RunWorkerAsync();
 
                             }
@@ -4961,6 +4973,34 @@ namespace ME3TweaksModManager
                                 M3Log.Exception(ex, $@"Error compiling shaders:");
                             }
 
+                            break;
+                        case EXTENSION_TEXTURE_OVERRIDE_MANIFEST:
+                            try
+                            {
+                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"LETEXM compiler");
+                                var fname = Path.GetFileName(file);
+                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"LETEXMCompile", "Compiling texture override binary", "Compiled texture override binary");
+                                nbw.DoWork += (a, b) =>
+                                {
+                                    TextureOverrideCompiler.CompileLETEXM(file);
+                                };
+                                nbw.RunWorkerCompleted += (a, b) =>
+                                {
+                                    if (b.Error != null)
+                                    {
+                                        M3Log.Exception(b.Error, $@"Error compiling texture override binary {file}:");
+                                        task.FinishedUIText = "Texture override binary compile failed";
+                                        M3L.ShowDialog(this, $"Errror compiling texture override binary: {b.Error.Message}");
+                                    }
+                                    BackgroundTaskEngine.SubmitJobCompletion(task);
+                                };
+                                nbw.RunWorkerAsync();
+                            }
+                            catch (Exception ex3)
+                            {
+                                M3Log.Exception(ex3, $@"Error compiling texture override binary {file}:");
+                                M3L.ShowDialog(this, $"Errror compiling texture override binary: {ex3.Message}");
+                            }
                             break;
                     }
                 }
