@@ -20,6 +20,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     public partial class TextureInstallerPanel : MMBusyPanelBase
     {
         /// <summary>
+        /// If installation should be aborted before it should begin.
+        /// </summary>
+        private bool AbortInstall;
+
+        /// <summary>
         /// Background task for this installation
         /// </summary>
         private BackgroundTask BGTask;
@@ -57,15 +62,33 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public TextureInstallerPanel(GameTarget target, List<string> memFilesToInstall)
         {
+            // 01/01/2025 - Check if MEM is running as MFL file may be locked
+            if (MEMProcessHandler.IsMEMRunning())
+            {
+                M3Log.Warning(@"MEM appears to be running... It shouldn't be though - as we are about to write the MFL");
+                MEMProcessHandler.TerminateAll(); // Might be better to ask user what to do
+            }
+
             if (File.Exists(GetMEMMFLPath()))
-                File.Delete(GetMEMMFLPath());
+            {
+                try
+                {
+                    File.Delete(GetMEMMFLPath()); // Dies here
+                }
+                catch (Exception e)
+                {
+                    M3Log.Exception(e, @"Error deleting MFL file for MEM: ");
+                    AbortInstall = true;
+                    M3L.ShowDialog(Window.GetWindow(this), $"Unable to set the list of files for MEM to install: {e.Message}. Aborting installation of textures.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
 
             // Write out the MFL file
             Target = target;
             ActionText = M3L.GetString(M3L.string_preparingToInstallTextures);
 
             MEMFilesToInstall = memFilesToInstall;
-
         }
 
 
@@ -82,7 +105,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InitializeComponent();
 
-            if (!Target.Game.IsMEGame())
+            if (AbortInstall)
+            {
+                OnClosing(DataEventArgs.Empty);
+                return;
+            }
+
+            if (Target == null || !Target.Game.IsMEGame())
             {
                 M3Log.Information(@"TextureInstallerPanel: Could not determine the game for any mem mods, skipping install.");
                 OnClosing(DataEventArgs.Empty);
