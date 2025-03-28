@@ -4,25 +4,25 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic for NexusModDownloader.xaml
+    /// Interaction logic for NexusModDownloadPanel.xaml
     /// </summary>
-    public partial class NexusModDownloader : MMBusyPanelBase
+    public partial class NexusModDownloadPanel : MMBusyPanelBase
     {
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly string pendingLink;
         public ObservableCollectionExtended<ModDownload> Downloads { get; } = new ObservableCollectionExtended<ModDownload>();
-        public NexusModDownloader(string initialNxmLink)
+        public NexusModDownloadPanel(string initialNxmLink)
         {
             pendingLink = initialNxmLink;
             LoadCommands();
         }
-
 
         private void LoadCommands()
         {
@@ -105,6 +105,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 M3Log.Information($@"ModDownload has initialized: {initializedItem.ModFile.Name}");
                 var nextDownload = Downloads.FirstOrDefault(x => x.DownloadState == EModDownloadState.QUEUED);
                 nextDownload?.StartDownload(cancellationTokenSource.Token);
+
+                DownloadManager.StartNextDownload();
             }
         }
 

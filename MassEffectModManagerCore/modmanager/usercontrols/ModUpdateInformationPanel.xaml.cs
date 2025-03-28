@@ -102,46 +102,35 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (ui is M3OnlineContent.NexusModUpdateInfo nmui)
                 {
-
-
-
-                    var domain = @"masseffectlegendaryedition";
-                    switch (nmui.GameId)
+                    var usedInAppDownloader = await AttemptQueueNexusModDownload(nmui);
+                    if (!usedInAppDownloader)
                     {
-                        case 1:
-                            domain = @"masseffect";
-                            break;
-                        case 2:
-                            domain = @"masseffect2";
-                            break;
-                        case 3:
-                            domain = @"masseffect3";
-                            break;
+                        var url = $@"https://nexusmods.com/{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}?tab=files";
+                        M3Utilities.OpenWebpage(url);
                     }
-
-#if DEBUG
-                    if (NexusModsUtilities.UserInfo?.IsPremium == true)
-                    {
-                        nmui.UpdateInProgress = true;
-                        var fileId = await NexusModsUtilities.GetMainFileForMod(domain, nmui.NexusModsId);
-                        if (fileId != null)
-                        {
-                            // Fire as nxm link
-                            string nxmlink = $@"nxm://{domain}/mods/{nmui.NexusModsId}/files/{fileId}";
-                            DownloadManager.QueueNXMDownload(nxmlink);
-                            return;
-                        }
-
-                        // Could not find file. We are not in progress.
-                        nmui.UpdateInProgress = false;
-                    }
-
-#endif
-
-                    var url = $@"https://nexusmods.com/{domain}/mods/{nmui.NexusModsId}?tab=files";
-                    M3Utilities.OpenWebpage(url);
                 }
             }
+        }
+
+        private async Task<bool> AttemptQueueNexusModDownload(M3OnlineContent.NexusModUpdateInfo nmui)
+        {
+            if (NexusModsUtilities.UserInfo?.IsPremium == true)
+            {
+                nmui.UpdateInProgress = true;
+                var fileId = await NexusModsUtilities.GetMainFileForMod(nmui.GetNexusDomain(), nmui.NexusModsId);
+                if (fileId != null)
+                {
+                    // Fire as nxm link
+                    string nxmlink = $@"nxm://{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}/files/{fileId}";
+                    DownloadManager.QueueNXMDownload(nxmlink);
+                    return true;
+                }
+
+                // Could not find file. We are not in progress.
+                nmui.UpdateInProgress = false;
+            }
+
+            return false;
         }
 
         private void UpdateModMakerMod(M3OnlineContent.ModMakerModUpdateInfo mui, Action downloadCompleted)
@@ -365,15 +354,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <summary>
         /// If the download all button should be shown at all to the user
         /// </summary>
-        public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0));
+
+        // 03/21/2025 - Show all download button if we are in beta mode.
+        public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || NexusModsUtilities.UserInfo?.IsPremium == true));
 
         private void DownloadAll()
         {
-            var updates = UpdatableMods.Where(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0)).ToList();
+            var updates = UpdatableMods.Where(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || x.mod.NexusModID != 0)).ToList();
             OperationInProgress = true;
             CommandManager.InvalidateRequerySuggested();
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 object syncObj = new object();
 
@@ -387,7 +378,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 foreach (var update in updates)
                 {
-                    if (update is M3OnlineContent.ModMakerModUpdateInfo mui)
+                    if (update is M3OnlineContent.NexusModUpdateInfo nmui)
+                    {
+                        if (NexusModsUtilities.UserInfo?.IsPremium == true)
+                        {
+                            var result = await AttemptQueueNexusModDownload(nmui);
+                            //lock (syncObj)
+                            //{
+                            //    Monitor.Wait(syncObj);
+                            //}
+                        }
+                    }
+                    else if (update is M3OnlineContent.ModMakerModUpdateInfo mui)
                     {
                         UpdateModMakerMod(mui, updateDone);
                         lock (syncObj)

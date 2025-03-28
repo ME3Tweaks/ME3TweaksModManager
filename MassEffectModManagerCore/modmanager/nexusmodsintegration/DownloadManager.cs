@@ -5,7 +5,6 @@ using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
-using SevenZip.EventArguments;
 
 namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 {
@@ -39,6 +38,11 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
     public static class DownloadManager
     {
         /// <summary>
+        /// Todo: Move to settings
+        /// </summary>
+        private static int MaxConcurrentTasks = 2;
+
+        /// <summary>
         /// The list of downloads. They may not all be actively downloading, but in a queued state.
         /// </summary>
         public static ConcurrentDictionary<string, ModDownload> Downloads = new();
@@ -49,11 +53,21 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// </summary>
         public static event EventHandler<EventArgs> OnModInitialized;
 
-        public static void QueueNXMDownload(string nxmLink)
+        /// <summary>
+        /// Queues a NXM download
+        /// </summary>
+        /// <param name="nxmLink"></param>
+        /// <param name="customStateChanged"></param>
+        public static void QueueNXMDownload(string nxmLink, EventHandler<EventArgs> customStateChanged = null)
         {
             M3Log.Information($@"Queueing nxmlink {nxmLink}");
             var dl = new NexusModDownload(nxmLink);
             dl.DownloadStateChanged += DownloadStateChanged;
+
+            if (customStateChanged != null)
+            {
+                dl.DownloadStateChanged += customStateChanged;
+            }
             //dl.OnInitialized += ModInitialized;
             //dl.OnModDownloaded += ModDownloaded;
             //dl.OnModDownloadError += DownloadError;
@@ -112,6 +126,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     {
                         mai.SourceNXMLink = nmd.ProtocolLink;
                         mai.ArchiveFilePath = nmd.ModFile.FileName;
+                        mai.UpdateModObject = nmd;
                     }
                     mai.ImportStateChanged += OnImportStateChange;
 
@@ -217,6 +232,15 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             //    M3L.ShowDialog(window, e, M3L.GetString(M3L.string_downloadError), MessageBoxButton.OK, MessageBoxImage.Error);
             //    OnClosing(DataEventArgs.Empty);
             //});
+        }
+
+        public static void StartNextDownload()
+        {
+            if (Downloads.Count(x => x.IsActive) < MaxConcurrentTasks)
+            {
+                var nextDownload = Downloads.FirstOrDefault(x => x.DownloadState == EModDownloadState.QUEUED);
+                nextDownload?.StartDownload(cancellationTokenSource.Token);
+            }
         }
     }
 }

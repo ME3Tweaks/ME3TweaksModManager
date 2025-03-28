@@ -222,6 +222,10 @@ namespace ME3TweaksModManager.modmanager.importer
         /// </summary>
         public EModImportResult ImportResult { get; private set; }
 
+        /// <summary>
+        /// Nexus Mod download object. Not sure we should keep this reference.
+        /// </summary>
+        public NexusModDownload UpdateModObject { get; set; }
 
         #endregion
 

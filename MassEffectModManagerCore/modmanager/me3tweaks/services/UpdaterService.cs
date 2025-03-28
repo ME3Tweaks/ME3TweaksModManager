@@ -667,6 +667,29 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
+
+            /// <summary>
+            /// Returns the domain for nexus for this mod
+            /// </summary>
+            /// <returns></returns>
+            public string GetNexusDomain()
+            {
+                var domain = @"masseffectlegendaryedition";
+                switch (GameId)
+                {
+                    case 1:
+                        domain = @"masseffect";
+                        break;
+                    case 2:
+                        domain = @"masseffect2";
+                        break;
+                    case 3:
+                        domain = @"masseffect3";
+                        break;
+                }
+
+                return domain;
+            }
         }
 
         [Localizable(true)]

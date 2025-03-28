@@ -238,7 +238,7 @@ namespace ME3TweaksModManager
                 return;
             }
 
-            var mDownloader = new NexusModDownloader(nxmLink);
+            var mDownloader = new NexusModDownloadPanel(nxmLink);
             mDownloader.Close += (a, b) =>
             {
                 ReleaseBusyControl();

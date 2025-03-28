@@ -5,10 +5,28 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace TestArchiveGenerator
 {
+    public class IndexedInformation
+    {
+        /// <summary>
+        /// Games this mod file is for
+        /// </summary>
+        [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
+        public List<MEGame> ModGames = new List<MEGame>();
+
+        /// <summary>
+        /// Target exports for this mod's mergemods
+        /// </summary>
+        public CaseInsensitiveDictionary<List<string>> MergeModTargetExports = new();
+    }
+
     public class TestArchiveGeneratorProgram
     {
         private static string SourceArchive;
@@ -73,6 +91,8 @@ namespace TestArchiveGenerator
         /// <param name="tempPath">Directory to extract files to for staging before recompress</param>
         public static void CreateBlankArchive(string inputArchivePath, string outputPath, string tempPath = null)
         {
+            IndexedInformation ii = new IndexedInformation();
+
             var size = new FileInfo(inputArchivePath).Length;
             var md5 = CalculateMD5(inputArchivePath);
 
@@ -100,6 +120,7 @@ namespace TestArchiveGenerator
                         if (extension == ".m3m")
                         {
                             // Wipe out asset files, since we test cases don't actually use these and they consume disk space.
+                            GetMergeModTargets(file, ii);
                             zeroMergeModAssets(file);
                         }
                         else
@@ -111,11 +132,20 @@ namespace TestArchiveGenerator
                     else
                     {
                         expectedModCount++;
+                        DuplicatingIni ini = DuplicatingIni.LoadIni(file);
+                        var game = ini["ModInfo"]["game"];
+                        if (game.HasValue && Enum.TryParse<MEGame>(game.Value, out var res))
+                        {
+                            ii.ModGames.Add(res);
+                        }
                     }
                 }
 
                 if (expectedModCount == 0) expectedModCount = 1;
                 fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedModCount}-{size}-{md5}{ext}";
+
+                var metaDataPath = Path.Combine(outputPath, md5 + ".json");
+                File.WriteAllText(metaDataPath, JsonConvert.SerializeObject(ii, Formatting.Indented));
 
                 // Name can't be too long.
                 Console.WriteLine("Creating blank archive " + inputArchivePath + " -> " + fullname);
@@ -131,6 +161,13 @@ namespace TestArchiveGenerator
             {
                 Console.WriteLine("Filename is too long - skipping");
             }
+        }
+
+        private static void GetMergeModTargets(string file, IndexedInformation ii)
+        {
+            using var f = File.OpenRead(file);
+            var mm = MergeModLoader.LoadMergeMod(f, file, false, false);
+            ii.MergeModTargetExports = mm.GetMergeModTargetExports();
         }
 
         private static void zeroMergeModAssets(string file)
