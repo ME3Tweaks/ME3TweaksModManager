@@ -406,7 +406,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     catch (Exception e)
                     {
                         M3Log.Exception(e, @"Error occurred parsing batch queue file:");
-                        Crashes.TrackError(new Exception(@"Error parsing batch queue file", e), new Dictionary<string, string>()
+                        TelemetryInterposer.TrackError(new Exception(@"Error parsing batch queue file", e), new Dictionary<string, string>()
                         {
                             {@"Filename", file}
                         });

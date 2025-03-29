@@ -396,7 +396,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             else
             {
                 M3Log.Error(@"Tried to extract RCW mod to M3 mod but the job was empty.");
-                Crashes.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
+                TelemetryInterposer.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
             }
         }
     }

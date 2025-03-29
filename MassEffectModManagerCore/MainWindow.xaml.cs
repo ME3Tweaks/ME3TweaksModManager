@@ -2757,7 +2757,7 @@ namespace ME3TweaksModManager
             {
                 if (forcedTarget == null && SelectedGameTarget == null)
                 {
-                    Crashes.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
+                    TelemetryInterposer.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
                 }
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
                 var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod);
@@ -2896,7 +2896,7 @@ namespace ME3TweaksModManager
             }
             else
             {
-                // Only show if OS is supported
+                // Unimplemented last crash dialog code removed 03/28/2025
                 var lastCrash = Crashes.GetLastSessionCrashReportAsync().Result;
                 if (Settings.DeveloperMode && lastCrash?.StackTrace != null)
                 {

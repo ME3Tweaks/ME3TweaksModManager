@@ -9,7 +9,10 @@ using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.gametarget;
+
+#if WITH_APPCENTER
 using Microsoft.AppCenter.Crashes;
+#endif
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
@@ -29,11 +32,19 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 // This uses just EnableTelemetry as it uses the queue system which will check if the telemetry witholding gate has been witheld.
                 TrackEventCallback = (eventName, properties) => { if (Settings.EnableTelemetry) { App.SubmitAnalyticTelemetryEvent(eventName, properties); } },
                 // This uses CanSendTelemetry to ensure gating any bootup telemetry
-                TrackErrorCallback = (eventName, properties) => { if (Settings.CanSendTelemetry) { Crashes.TrackError(eventName, properties); } },
+                TrackErrorCallback = (eventName, properties) =>
+                {
+                    if (Settings.CanSendTelemetry)
+                    {
+                        // Microsoft shut down AppCenter March 2025
+                        // TelemetryInterposer.TrackError(eventName, properties);
+                    }
+                },
                 UploadErrorLogCallback = (e, data) =>
                 {
                     if (Settings.CanSendTelemetry)
                     {
+#if WITH_APPCENTER
                         var attachments = new List<ErrorAttachmentLog>();
                         string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
                         if (log != null && log.Length < FileSize.MebiByte * 7)
@@ -41,7 +52,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                             attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                         }
 
+                        // We directly send to Crashes
                         Crashes.TrackError(e, data);
+#endif
                     }
                 },
                 CanFetchContentThrottleCheck = M3OnlineContent.CanFetchContentThrottleCheck,

@@ -2,6 +2,7 @@
 using System.Windows;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.Restore;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCoreWPF.Targets;
@@ -177,7 +178,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 if (x.Exception != null)
                 {
                     M3Log.Exception(x.Exception, @"Error restoring game:");
-                    Crashes.TrackError(x.Exception, new Dictionary<string, string>()
+                    TelemetryInterposer.TrackError(x.Exception, new Dictionary<string, string>()
                     {
                         {@"CustomOption", RestoreTarget.IsCustomOption.ToString()},
                         {@"TargetPath", RestoreTarget.TargetPath},

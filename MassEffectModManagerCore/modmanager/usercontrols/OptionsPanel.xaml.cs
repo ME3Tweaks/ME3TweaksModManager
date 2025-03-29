@@ -5,8 +5,10 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.usercontrols.options;
 using ME3TweaksModManager.ui;
+#if WITH_APPCENTER
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+#endif
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -95,6 +97,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool ChangingTelemetrySetting()
         {
+#if WITH_APPCENTER
             if (!Settings.EnableTelemetry)
             {
                 //user trying to turn it off 
@@ -120,7 +123,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Analytics.SetEnabledAsync(true);
                 Crashes.SetEnabledAsync(true);
             }
-
+#endif
             return true;
         }
 

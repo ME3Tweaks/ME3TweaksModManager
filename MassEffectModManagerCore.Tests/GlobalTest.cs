@@ -52,8 +52,11 @@ namespace ME3TweaksModManager.Tests
                 ME3TweaksCoreLib.Initialize(package);
                 // LegendaryExplorerCoreLib.InitLib(TaskScheduler.Default, null);
 
+                // Will need adjusted manually when WITH_APPCENTER is set to false in ME3TweaksModManager - maybe have a callback into it?
                 Analytics.SetEnabledAsync(false);
                 Crashes.SetEnabledAsync(false);
+
+
                 Settings.LogModStartup = true;
                 App.BuildNumber = 134; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE. Not really a convenient way to update it constantly though...
 #if !AZURE || DEBUG

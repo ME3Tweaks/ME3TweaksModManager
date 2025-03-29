@@ -34,12 +34,13 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<DefineConstants>DEBUG;TRACE;WITH_APPCENTER</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DebugType>embedded</DebugType>
 		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>WITH_APPCENTER</DefineConstants>
 	</PropertyGroup>
 
 	<!-- Azure pipelines build and test -->
@@ -47,13 +48,14 @@
 		<DebugType>embedded</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<DefineConstants>AZURE</DefineConstants>
+		<DefineConstants>WITH_APPCENTER</DefineConstants>
 	</PropertyGroup>
 
 	<!-- Azure pipelines debugging locally -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureTest|x64'">
 		<DebugType>embedded</DebugType>
 		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;AZURE</DefineConstants>
+		<DefineConstants>DEBUG;AZURE;WITH_APPCENTER</DefineConstants>
 	</PropertyGroup>
 
 	<!--Fody code generator to allow us to access OnPropertyChanged-->

@@ -727,7 +727,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 catch (Exception ex)
                 {
                     M3Log.Error(@"Error extracting files: " + ex.Message);
-                    Crashes.TrackError(ex, new Dictionary<string, string>()
+                    TelemetryInterposer.TrackError(ex, new Dictionary<string, string>()
                     {
                         {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName },
                         {@"Version", InstallOptionsPackage.ModBeingInstalled.ModVersionString}
@@ -791,7 +791,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     catch (Exception ex)
                     {
                         M3Log.Error(@"Error extracting files: " + ex.Message);
-                        Crashes.TrackError(ex, new Dictionary<string, string>()
+                        TelemetryInterposer.TrackError(ex, new Dictionary<string, string>()
                         {
                             {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName},
                             {@"Filename", InstallOptionsPackage.ModBeingInstalled.Archive.FileName},
@@ -1215,7 +1215,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Crashes.TrackError(e);
+                TelemetryInterposer.TrackError(e);
                 M3Log.Error(@"Error parsing ME2Coalesced: " + e.Message + @". We will abort this installation");
                 return ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED;
             }
@@ -1231,7 +1231,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (me2cF.Key == null)
                 {
                     M3Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF.FileName);
-                    Crashes.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
+                    TelemetryInterposer.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
                     {
                         { @"me2mod mod name", rcw.ModName },
                         { @"Missing file", rcwF.FileName }
@@ -1245,7 +1245,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (section == null)
                     {
                         M3Log.Error($@"RCW mod specifies a section in {rcwF.FileName} that does not exist in the local coalesced: {rcwS.SectionName}");
-                        Crashes.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
+                        TelemetryInterposer.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
                         {
                             { @"me2mod mod name", rcw.ModName },
                             { @"File", rcwF.FileName },
@@ -1288,7 +1288,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
                         catch (Exception e)
                         {
-                            Crashes.TrackError(e, new Dictionary<string, string>()
+                            TelemetryInterposer.TrackError(e, new Dictionary<string, string>()
                             {
                                 {@"FailingEntry", key.RawText},
                                 {@"Failing mod", InstallOptionsPackage.ModBeingInstalled.ModName}
@@ -1414,7 +1414,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         Debugger.Break();
                         M3Log.Fatal(@"Installing a NEW file into TESTPATCH! This will break the game. This should be immediately reported to Mgamerz on Discord.");
-                        Crashes.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
+                        TelemetryInterposer.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
                         {
                             {@"Mod name", mod.ModName}
                         });

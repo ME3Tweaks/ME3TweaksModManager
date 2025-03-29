@@ -12,7 +12,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
-using Microsoft.AppCenter.Crashes;
+using ME3TweaksCore.Helpers;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -170,7 +170,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 catch (Exception e)
                 {
                     M3Log.Exception(e, @"Error occurred serializing moddesc");
-                    Crashes.TrackError(e);
+                    TelemetryInterposer.TrackError(e);
                     error = e.FlattenException();
                     break;
                 }

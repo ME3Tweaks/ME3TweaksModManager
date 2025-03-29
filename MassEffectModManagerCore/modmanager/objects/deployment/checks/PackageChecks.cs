@@ -1,10 +1,10 @@
 ﻿using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using ME3TweaksModManager.modmanager.localizations;
-using Microsoft.AppCenter.Crashes;
 using System.Threading;
 using System.Threading.Tasks;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksCore.Helpers;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -151,7 +151,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
             catch (Exception e)
             {
-                Crashes.TrackError(new Exception(M3L.GetString(M3L.string_errorOccurredCheckingReferences), e));
+                TelemetryInterposer.TrackError(new Exception(@"Error occurred checking references during deployment: ", e));
                 M3Log.Error($@"An error occurred checking references for deployment: {e.Message}.");
                 item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExceptionOccurredDuringRefChecks, e.Message));
             }

@@ -311,7 +311,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             catch (Exception e)
             {
                 M3Log.Error(@"Unable to ensure mod directories: " + e.Message);
-                Crashes.TrackError(e);
+                TelemetryInterposer.TrackError(e);
                 M3L.ShowDialog(window,
                     M3L.GetString(M3L.string_interp_dialogUnableToCreateModLibraryNoPermissions, e.Message),
                     M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -323,7 +323,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 else
                 {
                     M3Log.Error(@"Unable to create mod library. Mod Manager will now exit.");
-                    Crashes.TrackError(new Exception(@"Unable to create mod library", e),
+                    TelemetryInterposer.TrackError(new Exception(@"Unable to create mod library", e),
                         new Dictionary<string, string>() { { @"Executable location", App.ExecutableLocation } });
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_unableToCreateModLibrary),
                         M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -517,7 +517,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                     {
                         //moddesc.ini exists but it did not load
                         M3Log.Error(@"Mod to highlight failed to load! Path: " + modpathToHighlight);
-                        Crashes.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"),
+                        TelemetryInterposer.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"),
                             new Dictionary<string, string>()
                             {
                                 { @"Moddesc path", modpathToHighlight }

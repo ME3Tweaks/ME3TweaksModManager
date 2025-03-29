@@ -1,41 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using AuthenticodeExaminer;
 using CommandLine;
 using Dark.Net;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
-using ME3TweaksModManager.modmanager.objects.tutorial;
-using ME3TweaksModManager.modmanager.windows;
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
 using SingleInstanceCore;
+
+#if WITH_APPCENTER
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+#endif
 
 namespace ME3TweaksModManager
 {
@@ -500,7 +492,9 @@ namespace ME3TweaksModManager
             else
             {
                 // if telemetry is not enabled this will not do anything.
+#if WITH_APPCENTER
                 Analytics.TrackEvent(name, data);
+#endif
             }
         }
 
@@ -523,6 +517,7 @@ namespace ME3TweaksModManager
 
         internal static void InitAppCenter()
         {
+#if WITH_APPCENTER
             if (!new NickStrupat.ComputerInfo().ActuallyPlatform)
             {
                 M3Log.Warning(@"This does not appear to be an actually supported platform, disabling telemetry");
@@ -567,6 +562,7 @@ namespace ME3TweaksModManager
             {
                 Debug.WriteLine(@"This build has an API key for AppCenter");
             }
+#endif
 #endif
         }
 
@@ -636,10 +632,11 @@ namespace ME3TweaksModManager
         /// <summary>
         /// The executable location for this application
         /// </summary>
-        public static string ExecutableLocation { 
+        public static string ExecutableLocation
+        {
             get;
 #if !AZURE
-            private 
+            private
 #endif
             set;
         }
@@ -743,7 +740,9 @@ namespace ME3TweaksModManager
             // This method makes references to some imports that are only actually used by !DEBUG
             // This method is purposely never called. It is so when unnecessary imports are removed,
             // the ones needed by the items in the !DEBUG block remain
+#if WITH_APPCENTER
             Crashes.TrackError(new Exception("TEST DUMMY"));
+#endif
             LZMA.Compress(new byte[0], 0);
             var nothing = LogCollector.SessionStartString;
             var nothing2 = FileSize.GibiByte;
@@ -798,7 +797,7 @@ namespace ME3TweaksModManager
 
         [Option(@"m3link", HelpText = "Instructs Mod Manager to perform a task based on the contents of a me3tweaksmodmanager:// link")]
         public string M3Link { get; set; }
-        
+
         [Option(@"debuglogging", HelpText = "Enables verbose debug logs")]
         public bool DebugLogging { get; set; }
 

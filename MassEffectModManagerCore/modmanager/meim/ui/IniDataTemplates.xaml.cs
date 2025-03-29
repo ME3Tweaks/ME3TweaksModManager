@@ -18,6 +18,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ME3TweaksCore.Helpers;
 using Microsoft.AppCenter.Crashes;
 
 namespace ME3TweaksModManager.modmanager.meim.ui
@@ -48,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.meim.ui
             }
             else
             {
-                Crashes.TrackError(new Exception(@"MEIM: LVI was null on ResetToDefault. Sender name: " + (sender as Button)?.Name));
+                TelemetryInterposer.TrackError(new Exception(@"MEIM: LVI was null on ResetToDefault. Sender name: " + (sender as Button)?.Name));
             }
         }
 

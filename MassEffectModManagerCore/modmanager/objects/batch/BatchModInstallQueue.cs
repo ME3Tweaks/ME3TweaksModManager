@@ -273,7 +273,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             catch (Exception e)
             {
                 M3Log.Exception(e, @"Failure reading modern batch queue:");
-                Crashes.TrackError(new Exception(@"Failed to read modern batch queue", e), new Dictionary<string, string>()
+                TelemetryInterposer.TrackError(new Exception(@"Failed to read modern batch queue", e), new Dictionary<string, string>()
                 {
                     {@"Filename", queueFilename},
                     {@"Queue Text", queueJson}

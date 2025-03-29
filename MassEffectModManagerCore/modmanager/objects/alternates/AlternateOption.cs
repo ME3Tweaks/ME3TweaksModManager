@@ -6,13 +6,13 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Crashes;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
 {
@@ -281,7 +281,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {
                     // This shouldn't happen!
                     Debug.WriteLine($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen.");
-                    Crashes.TrackError(new Exception($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen."));
+                    TelemetryInterposer.TrackError(new Exception($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen."));
                     continue;
                 }
 
