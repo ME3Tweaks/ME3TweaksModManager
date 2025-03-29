@@ -37,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ModUpdateInformationPanel(List<M3OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
 #if DEBUG
-            DownloadManager.OnModInitialized += AssociateModDownload;
+            DownloadManager.OnDownloadMetadataLoaded += AssociateModDownload;
 #endif
             modsWithUpdates.ForEach(x =>
             {
@@ -122,7 +122,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     // Fire as nxm link
                     string nxmlink = $@"nxm://{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}/files/{fileId}";
-                    DownloadManager.QueueNXMDownload(nxmlink);
+                    DownloadManager.AddNXMDownload(nxmlink);
                     return true;
                 }
 
@@ -473,7 +473,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         protected override void OnClosing(DataEventArgs e)
         {
 #if DEBUG
-            DownloadManager.OnModInitialized -= AssociateModDownload;
+            DownloadManager.OnDownloadMetadataLoaded -= AssociateModDownload;
 #endif
             base.OnClosing(e);
         }

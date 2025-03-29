@@ -18,6 +18,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using Serilog;
 using SevenZip;
@@ -695,6 +696,9 @@ namespace ME3TweaksModManager
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            // Shut down all downloads.
+            DownloadManager.TerminateManager();
+
             if (e.ApplicationExitCode == 0)
             {
                 if (!SingleInstanceExit)

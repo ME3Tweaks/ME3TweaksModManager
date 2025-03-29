@@ -218,58 +218,64 @@ namespace ME3TweaksModManager
             return false;
         }
 
-        private void showNXMDownloader(string nxmLink)
+        private void ShowDownloadManager()
         {
-            var npl = NexusProtocolLink.Parse(nxmLink);
-            if (npl == null) return;
-
-            if (NexusDomainHandler.HandleExternalLink(npl))
-            {
-                return; // Handled by external handler.
-            }
+            // Todo: Figure this out. 03/28/2025
+            // npl = protocol link for when this was to queue a download
+            //if (NexusDomainHandler.HandleExternalLink(npl))
+            //{
+            //    return; // Handled by external handler.
+            //}
 
             if (NexusModsUtilities.UserInfo == null)
             {
                 // Not logged in
                 Activate(); //bring to front
-                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_nexusLoginRequiredForDownload),
-                    M3L.GetString(M3L.string_notSignedIn), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_nexusLoginRequiredForDownload), M3L.GetString(M3L.string_notSignedIn), MessageBoxButton.OK, MessageBoxImage.Error);
                 ShowNexusPanel();
                 return;
             }
 
-            var mDownloader = new NexusModDownloadPanel(nxmLink);
-            mDownloader.Close += (a, b) =>
+            if (BusyContentM3 is SingleItemPanel2 sip2 && sip2.Content is DownloadManagerPanel dp)
             {
-                ReleaseBusyControl();
-                if (b.Data is List<ModDownload> items)
+                // Do nothing, it's already visible.
+            }
+            else
+            {
+                // Show download panel
+                var mDownloader = new DownloadManagerPanel();
+                mDownloader.Close += (a, b) =>
                 {
-                    foreach (var ii in items)
+                    ReleaseBusyControl();
+                    if (b.Data is NexusModDownload downloadedMod)
                     {
-                        ii.DownloadedStream.Position = 0;
-                        App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import", new Dictionary<string, string>
-                        {
-                            { @"Method", @"nxm:// link" },
-                            { @"Filename", ii.FileName }
-                        });
-                        if (ii.DownloadedStream is FileStream fs)
+                        downloadedMod.DownloadedStream.Position = 0;
+                        App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import",
+                            new Dictionary<string, string>
+                            {
+                                { @"Filename", downloadedMod.FileName }
+                            });
+                        if (downloadedMod.DownloadedStream is FileStream fs)
                         {
                             // Open the file instead
                             fs.Dispose(); // Ensure it's closed
-                            openModImportUI(fs.Name, priority: true, sourceLink: npl); // Open the archive itself
+                            openModImportUI(fs.Name, priority: true,
+                                sourceLink: downloadedMod.ProtocolLink); // Open the archive itself
                         }
                         else
                         {
-                            openModImportUI(ii.FileName, ii.DownloadedStream, true, sourceLink: npl);
+                            openModImportUI(downloadedMod.FileName, downloadedMod.DownloadedStream, true,
+                                sourceLink: downloadedMod.ProtocolLink);
                         }
                     }
-                }
-            };
-            ShowBusyControl(mDownloader, ShouldShowNXMDownloadImmediately());
+                    // If there are ever other types of download support we should handle them here.
+                };
+                ShowBusyControl(mDownloader, ShouldShowNXMDownloadImmediately());
+            }
         }
 
         /// <summary>
-        /// When an NXM link is fetched, should the nxm panel take priority?
+        /// When an NXM link is fetched, should the download panel take priority?
         /// </summary>
         /// <returns></returns>
         private bool ShouldShowNXMDownloadImmediately()
@@ -1276,7 +1282,8 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is string nxmlink && nxmlink.StartsWith(@"nxm://"))
                 {
-                    showNXMDownloader(nxmlink);
+                    DownloadManager.AddNXMDownload(nxmlink);
+                    ShowDownloadManager();
                 }
             };
             ShowBusyControl(nexusSearchPanel);
@@ -3816,14 +3823,10 @@ namespace ME3TweaksModManager
                 if (CommandLinePending.PendingNXMLink != null)
                 {
                     shouldBringToFG = true;
-#if DEBUG
                     Activate();
-                    var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_useExperimentalDownloadManagerForThisLinkQuestion), M3L.GetString(M3L.string_useExperiment), MessageBoxButton.YesNo);
-                    if (result == MessageBoxResult.Yes)
-                        DownloadManager.QueueNXMDownload(CommandLinePending.PendingNXMLink);
-                    else
-#endif
-                        showNXMDownloader(CommandLinePending.PendingNXMLink);
+                    DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink);
+
+                    ShowDownloadManager();
                 }
 
                 if (CommandLinePending.PendingInstallBink && CommandLinePending.PendingGame != null)
@@ -4782,9 +4785,9 @@ namespace ME3TweaksModManager
                                         progress(done, total);
                                     }
                                 };
-                                    nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
-                                    nbw.RunWorkerAsync();
-                                }
+                                nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
+                                nbw.RunWorkerAsync();
+                            }
                             catch (Exception ex)
                             {
                                 // Show dialog or something.

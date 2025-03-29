@@ -1,6 +1,7 @@
 ﻿#if DEBUG
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
@@ -45,33 +46,70 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// <summary>
         /// The list of downloads. They may not all be actively downloading, but in a queued state.
         /// </summary>
-        public static ConcurrentDictionary<string, ModDownload> Downloads = new();
-
+        private static ConcurrentDictionary<string, ModDownload> Downloads = new();
 
         /// <summary>
-        /// Invoked when a mod has initialized
+        /// Get the downloads list
         /// </summary>
-        public static event EventHandler<EventArgs> OnModInitialized;
+        /// <returns></returns>
+        public static IReadOnlyDictionary<string, ModDownload> GetDownloads() => Downloads;
 
         /// <summary>
-        /// Queues a NXM download
+        /// Invoked when a mod's metadata has been downloaded for display
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadMetadataLoaded;
+
+        /// <summary>
+        /// Invoked when a download has been added to the manager.
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadAdded;
+
+        /// <summary>
+        /// Invoked when a download has been removed from the manager. The sender may be null if this is just a notification.
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadRemoved;
+
+        /// <summary>
+        /// Invoked when a download has been completed by the manager (not import!)
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadCompleted;
+
+        /// <summary>
+        /// Adds a new download via nxm link
         /// </summary>
         /// <param name="nxmLink"></param>
         /// <param name="customStateChanged"></param>
-        public static void QueueNXMDownload(string nxmLink, EventHandler<EventArgs> customStateChanged = null)
+        public static void AddNXMDownload(string nxmLink)
         {
-            M3Log.Information($@"Queueing nxmlink {nxmLink}");
+            M3Log.Information($@"Queueing nxmlink for download: {nxmLink}");
             var dl = new NexusModDownload(nxmLink);
+
+            if (Downloads.ContainsKey(dl.CreateDownloadKey()))
+            {
+                M3Log.Information($@"Rejecting nxm download: Already being handled by the download manager.");
+                return;
+            }
+
+            // Attach listeners for when object changes states so the manager can handle it
             dl.DownloadStateChanged += DownloadStateChanged;
 
-            if (customStateChanged != null)
-            {
-                dl.DownloadStateChanged += customStateChanged;
-            }
-            //dl.OnInitialized += ModInitialized;
-            //dl.OnModDownloaded += ModDownloaded;
-            //dl.OnModDownloadError += DownloadError;
+            AddDownload(dl);
+
+            // Initialize the metadata for the NexusMod object. 
             dl.Initialize();
+        }
+
+        /// <summary>
+        /// Adds a download object to the manager and notifies listeners.
+        /// </summary>
+        /// <param name="dl">Download to add to the manager</param>
+        private static void AddDownload(ModDownload dl)
+        {
+            if (Downloads.TryAdd(dl.CreateDownloadKey(), dl))
+            {
+                // Download was added.
+                OnDownloadAdded?.Invoke(dl, EventArgs.Empty);
+            }
         }
 
         private static void ModDownloaded(object sender, DataEventArgs e)
@@ -94,17 +132,22 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             }
         }
 
+        /// <summary>
+        /// Invoked when the state of a mod download has changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void DownloadStateChanged(object sender, EventArgs e)
         {
             if (sender is ModDownload item)
             {
-                M3Log.Information($@"ModDownload {item} state changed: {item.DownloadState}");
+                M3Log.Information($@"ModDownload '{item.FileName}' state changed to {item.DownloadState}");
                 if (item.DownloadState == EModDownloadState.QUEUED)
                 {
-                    // Download has initialized and is queued for download.
-                    // Add to list of downloads
-                    Downloads.TryAdd(item.CreateDownloadKey(), item);
-                    OnModInitialized?.Invoke(item, EventArgs.Empty);
+                    // Download has initialized and is now queued for download.
+                    // Notify listeners that we have metadata available about the download now available in the event they
+                    // need to use it before we move on
+                    OnDownloadMetadataLoaded?.Invoke(item, EventArgs.Empty);
                 }
 
                 // Attempt to start download, as states have changed.
@@ -153,6 +196,11 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             }
         }
 
+        /// <summary>
+        /// Invoked when the importing state has changed for a download
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void OnImportStateChange(object sender, EventArgs e)
         {
             if (sender is ModArchiveImport mai)
@@ -202,26 +250,19 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             if (Downloads.Count == 0 || Downloads.All(x => x.Value.DownloadState != EModDownloadState.QUEUED))
                 return; // Nothing to do
 
-            if (!NexusModsUtilities.UserInfo.IsPremium)
+            // Enforce cap on number of downloads we can concurrently run.
+            var currentDownloadCount = Downloads.Count(x => x.Value.DownloadState == EModDownloadState.DOWNLOADING);
+            
+            foreach (var dl in Downloads.Where(x => x.Value.DownloadState == EModDownloadState.QUEUED))
             {
-                // Ensure only one download a time - nexus doesn't support concurrent downloads... I think?
-                var currentDownloadCount = Downloads.Any(x => x.Value.DownloadState == EModDownloadState.DOWNLOADING);
-                if (currentDownloadCount)
+                if (currentDownloadCount > MaxConcurrentTasks)
                 {
-                    // Cannot download until previous one is complete
+                    // Cannot exceed download count.
                     return;
                 }
 
-                Downloads.First(x => x.Value.DownloadState == EModDownloadState.QUEUED).Value.StartDownload(default, true);
-            }
-            else
-            {
-                foreach (var download in Downloads.Where(x => x.Value.DownloadState == EModDownloadState.QUEUED))
-                {
-                    // Todo improve this
-                    download.Value.StartDownload(default, true);
-                }
-
+                dl.Value.StartDownload(); // force download to disk is not defined here, may need to put that onto download object itself...
+                currentDownloadCount++;
             }
         }
 
@@ -234,12 +275,41 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             //});
         }
 
-        public static void StartNextDownload()
+        /// <summary>
+        /// Terminates all downloads.
+        /// </summary>
+        public static void TerminateManager()
         {
-            if (Downloads.Count(x => x.IsActive) < MaxConcurrentTasks)
+            foreach (var dl in Downloads.Values)
             {
-                var nextDownload = Downloads.FirstOrDefault(x => x.DownloadState == EModDownloadState.QUEUED);
-                nextDownload?.StartDownload(cancellationTokenSource.Token);
+                // This will allow M3 to clean up on exit
+                dl.CancelDownload();
+                DisassociateDownload(dl);
+            }
+
+            Downloads.Clear();
+        }
+
+        /// <summary>
+        /// Removes all listeners that link manager and the download object
+        /// </summary>
+        /// <param name="md"></param>
+        private static void DisassociateDownload(ModDownload md)
+        {
+            md.DownloadStateChanged -= DownloadStateChanged;
+            md.OnModDownloaded -= ModDownloaded;
+            md.OnModDownloadError -= DownloadError;
+        }
+
+        /// <summary>
+        /// Removes downloads that will not complete.
+        /// </summary>
+        public static void ClearAbortedDownloads()
+        {
+            var numRemoved = Downloads.RemoveAll(x => x.Value.DownloadState is EModDownloadState.DOWNLOADCANCELED or EModDownloadState.FAILED);
+            if (numRemoved > 0)
+            {
+                OnDownloadRemoved?.Invoke(null, EventArgs.Empty);
             }
         }
     }

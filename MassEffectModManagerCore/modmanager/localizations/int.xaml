@@ -512,7 +512,6 @@
     <system:String xml:space="preserve" x:Key="string_modManagerIsPerformingCleanupOptionsAndWillAutomaticallyCloseWhenCompletennYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose">Mod Manager is performing cleanup options and will automatically close when complete.\n\nYou can forcibly close Mod Manager if necessary by holding left shift when clicking the X button if it gets into a state where it doesn't want to close.</system:String>
     <system:String x:Key="string_operationInProgress">Operation in progress</system:String>
     <system:String xml:space="preserve" x:Key="string_modManagerWillCompleteItsCurrentTaskAndThenCloseAutomaticallynnYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose">Mod Manager will complete its current task and then close automatically.\n\nYou can forcibly close Mod Manager if necessary by holding left shift when clicking the X button if it gets into a state where it doesn't want to close.</system:String>
-    <system:String x:Key="string_useExperimentalDownloadManagerForThisLinkQuestion">Use experimental download manager for this link?</system:String>
     <system:String x:Key="string_useExperiment">Use experiment</system:String>
     <system:String x:Key="string_importOrInstallTheseMemFilesQuestion">Import or install these .mem files?</system:String>
     <system:String x:Key="string_importOrInstall">Import or install</system:String>
@@ -2688,7 +2687,7 @@
     <system:String x:Key="string_downloadComplete">Download complete</system:String>
 
     <!-- Mod Downloader -->
-    <system:String x:Key="string_modDownloader">Mod Downloader</system:String>
+    <system:String x:Key="string_modDownloader">Download Manager</system:String>
     <system:String x:Key="string_initializing">Initializing</system:String>
     <system:String x:Key="string_cancelDownload">Cancel download</system:String>
     <system:String x:Key="string_downloadError">Download error</system:String>

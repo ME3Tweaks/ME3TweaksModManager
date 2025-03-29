@@ -14,6 +14,9 @@ using ME3TweaksModManager.modmanager.memoryanalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
+    /// <summary>
+    /// Describes the current state of a download. INIT -> QUEUED -> DOWNLOADING -> DOWNLOADCOMPLETE -> [(Optionally) WAITINGFORIMPORT -> IMPORTING -> FINISHED]
+    /// </summary>
     public enum EModDownloadState
     {
         UNKNOWN,
@@ -21,6 +24,10 @@ namespace ME3TweaksModManager.modmanager.objects
         /// Download failed
         /// </summary>
         FAILED,
+        /// <summary>
+        /// User aborted download in progress
+        /// </summary>
+        DOWNLOADCANCELED,
         /// <summary>
         /// Download is gathering necessary information before it is ready to download
         /// </summary>
@@ -48,7 +55,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <summary>
         /// Everything has completed
         /// </summary>
-        FINISHED
+        FINISHED,
     }
 
     /// <summary>
@@ -62,8 +69,6 @@ namespace ME3TweaksModManager.modmanager.objects
         /// </summary>
         private protected static readonly long DOWNLOAD_TO_MEMORY_SIZE_CAP = 100 * FileSize.MebiByte;
 
-
-
         #region Useful UI stuff
         /// <summary>
         /// The current state of the download
@@ -72,6 +77,34 @@ namespace ME3TweaksModManager.modmanager.objects
         private void OnDownloadStateChanged()
         {
             DownloadStateChanged?.Invoke(this, null);
+
+            switch (DownloadState)
+            {
+                // Download has stopped.
+                case EModDownloadState.FAILED:
+                case EModDownloadState.DOWNLOADCANCELED:
+                case EModDownloadState.DOWNLOADCOMPLETE:
+                case EModDownloadState.FINISHED:
+                    IsDownloadActive = false;
+                    break;
+
+                // Download is actively doing something
+                case EModDownloadState.UNKNOWN:
+
+                case EModDownloadState.INITIALIZING:
+                case EModDownloadState.QUEUED:
+                case EModDownloadState.DOWNLOADING:
+                case EModDownloadState.WAITINGFORIMPORT:
+                case EModDownloadState.IMPORTING:
+                    IsDownloadActive = true;
+                    break;
+                default:
+                    // All cases should be covered!
+                    IsDownloadActive = false;
+                    break;
+            }
+
+
         }
         public event EventHandler<EventArgs> DownloadStateChanged;
 
@@ -79,6 +112,8 @@ namespace ME3TweaksModManager.modmanager.objects
         public long ProgressValue { get; protected internal set; }
         public long ProgressMaximum { get; protected internal set; }
         public bool ProgressIndeterminate { get; protected internal set; } = true;
+
+        public bool IsDownloadActive { get; private set; }
 
         /// <summary>
         /// UI string to display. Should be short.
@@ -98,20 +133,29 @@ namespace ME3TweaksModManager.modmanager.objects
         public Stream DownloadedStream { get; private protected set; }
 
         /// <summary>
+        /// When the source is canceled, the download will be interrupted, if any.
+        /// </summary>
+        protected CancellationTokenSource CancellationController { get; }
+
+        #region AutoImport
+        /// <summary>
         /// If import should be automatically attempted
         /// </summary>
         public bool AutoImport { get; set; }
 
         /// <summary>
-        /// Associated mod importing flow for this download
+        /// Associated mod importing flow for this download - if there is no import flow this will be null.
         /// </summary>
         public ModArchiveImport ImportFlow { get; set; }
 
+        #endregion
+
         /// <summary>
-        /// The downloaded filename (may not exist on disk)
+        /// The download filename (may not exist on disk)
         /// </summary>
         public string FileName { get; set; }
 
+        #region Event handlers
         /// <summary>
         /// Invoked when the mod has initialized
         /// </summary>
@@ -125,11 +169,19 @@ namespace ME3TweaksModManager.modmanager.objects
         /// </summary>
         public event EventHandler<string> OnModDownloadError;
 
-        protected ModDownload(string downloadLink) { }
+        /// <summary>
+        /// When the UIStatus string has changed.
+        /// </summary>
+        public event EventHandler StatusChanged;
+        #endregion
 
+        /// <summary>
+        /// Constructor - sets state to Initializing
+        /// </summary>
         protected ModDownload()
         {
             DownloadState = EModDownloadState.INITIALIZING;
+            CancellationController = new CancellationTokenSource();
         }
 
         private protected void OnDownloadProgress(long done, long total)
@@ -140,12 +192,7 @@ namespace ME3TweaksModManager.modmanager.objects
             Status = $@"{FileSize.FormatSize(ProgressValue)}/{FileSize.FormatSize(ProgressMaximum)}";
         }
 
-        /// <summary>
-        /// When the UIStatus string has changed.
-        /// </summary>
-        public event EventHandler StatusChanged;
-
-        public abstract void StartDownload(CancellationToken cancellationToken, bool forceDownloadToDisk = false);
+        public abstract void StartDownload(bool forceDownloadToDisk = false);
 
         protected void InternalOnModDownloadError(string str)
         {
@@ -163,6 +210,11 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         public abstract string CreateDownloadKey();
+
+        public void CancelDownload()
+        {
+            CancellationController.Cancel();
+        }
     }
 
     /// <summary>
@@ -170,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.objects
     /// </summary>
     public class NexusModDownload : ModDownload
     {
-
+        // These files are whitelisted as they will not see a moddesc.ini file but get one from serverside ----------
         private static readonly int[] WhitelistedME1FileIDs = new[]
         {
             116, // skip intro movies
@@ -197,15 +249,32 @@ namespace ME3TweaksModManager.modmanager.objects
             0,
         };
 
+        // End whitelisting-------------------------------------------------------------------------------------------------
 
+        /// <summary>
+        /// Linked used to construct this nexus download
+        /// </summary>
         public string NXMLink { get; set; }
+
+        /// <summary>
+        /// Associated nexus ModFile object.
+        /// </summary>
         public ModFile ModFile { get; private set; }
+
+        /// <summary>
+        /// Parsed NexusProtocolLink from NXMLink
+        /// </summary>
         public NexusProtocolLink ProtocolLink { get; private set; }
+
+        /// <summary>
+        /// List of available download URLs for this file
+        /// </summary>
         public List<ModFileDownloadLink> DownloadLinks { get; } = new List<ModFileDownloadLink>();
 
         public NexusModDownload(string nxmLink) : base()
         {
             NXMLink = nxmLink;
+            ProtocolLink = NexusProtocolLink.Parse(NXMLink);
         }
 
 
@@ -236,8 +305,6 @@ namespace ME3TweaksModManager.modmanager.objects
                 try
                 {
                     DownloadLinks.Clear();
-
-                    ProtocolLink = NexusProtocolLink.Parse(NXMLink);
                     if (ProtocolLink == null) return; // Parse failed.
 
                     if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(ProtocolLink?.Domain))
@@ -283,8 +350,6 @@ namespace ME3TweaksModManager.modmanager.objects
                             if (ProtocolLink.Key != null)
                             {
                                 // Website click
-
-
                                 if (ProtocolLink.Domain is @"masseffect" or @"masseffect2" && !IsDownloadWhitelisted(ProtocolLink.Domain, ModFile))
                                 {
                                     // Check to see file has moddesc.ini the listing
@@ -312,8 +377,7 @@ namespace ME3TweaksModManager.modmanager.objects
                                 // premium? no parameters were supplied...
                                 if (!NexusModsUtilities.UserInfo.IsPremium)
                                 {
-                                    M3Log.Error(
-                                        $@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
+                                    M3Log.Error($@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
                                     DownloadState = EModDownloadState.FAILED;
                                     ProgressIndeterminate = false;
                                     InternalOnModDownloadError(M3L.GetString(M3L.string_dialog_mustBePremiumUserToDownload));
@@ -327,7 +391,7 @@ namespace ME3TweaksModManager.modmanager.objects
                             FileName = ModFile.FileName;
                             ProgressMaximum = ModFile.SizeInBytes ?? ModFile.SizeInKilobytes * 1024L; // SizeKb is the original version. They added SizeInBytes at my request
                             DownloadState = EModDownloadState.QUEUED;
-                            M3Log.Information($@"ModDownload has initialized: {ModFile.FileName}");
+                            M3Log.Information($@"ModDownload '{ModFile.FileName}' metadata is now available");
                             InternalOnInitialized();
                         }
                         else
@@ -353,7 +417,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// Begins downloading of the mod to disk or memory.
         /// </summary>
         /// <param name="cancellationToken">Token to indicate the download has been canceled.</param>
-        public override void StartDownload(CancellationToken cancellationToken, bool forceDownloadToDisk = false)
+        public override void StartDownload(bool forceDownloadToDisk = false)
         {
             Task.Run(() =>
             {
@@ -386,7 +450,7 @@ namespace ME3TweaksModManager.modmanager.objects
 
                     DownloadState = EModDownloadState.DOWNLOADING;
                     var downloadResult = M3OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress,
-                        null, true, DownloadedStream, cancellationToken);
+                        null, true, DownloadedStream, CancellationController.Token);
                     if (downloadResult.errorMessage != null)
                     {
                         // Reset the stream
@@ -402,7 +466,7 @@ namespace ME3TweaksModManager.modmanager.objects
                             DownloadedStream?.Dispose();
                         }
 
-                        if (cancellationToken.IsCancellationRequested)
+                        if (CancellationController.Token.IsCancellationRequested)
                         {
                             // Aborted download.
                             isLastAttempt = true;
@@ -420,7 +484,7 @@ namespace ME3TweaksModManager.modmanager.objects
                             }
                         }
 
-                        if (isLastAttempt)
+                        if (isLastAttempt && !CancellationController.Token.IsCancellationRequested)
                         {
                             // Download didn't work!
                             TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
@@ -480,9 +544,18 @@ namespace ME3TweaksModManager.modmanager.objects
                 ProgressIndeterminate = false;
                 ProgressValue = 1;
                 ProgressMaximum = 1;
-                Status = M3L.GetString(M3L.string_downloadComplete);
-                DownloadState = EModDownloadState.DOWNLOADCOMPLETE;
-                InternalOnModDownloaded(new DataEventArgs(DownloadedStream));
+
+                if (CancellationController.Token.IsCancellationRequested)
+                {
+                    Status = "Canceled";
+                    DownloadState = EModDownloadState.DOWNLOADCANCELED;
+                }
+                else
+                {
+                    Status = M3L.GetString(M3L.string_downloadComplete);
+                    DownloadState = EModDownloadState.DOWNLOADCOMPLETE;
+                    InternalOnModDownloaded(new DataEventArgs(DownloadedStream));
+                }
             });
         }
 

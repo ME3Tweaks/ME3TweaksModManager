@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.NexusModDownloadPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.DownloadManagerPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
+    xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignHeight="450"
@@ -16,17 +17,22 @@
             FontWeight="Bold"
             TextAlignment="Center"
             DockPanel.Dock="Top" />
+
         <Button
-            Content="{Binding CancelButtonText}"
+            Content="{DynamicResource string_close}"
             DockPanel.Dock="Bottom"
             HorizontalAlignment="Right"
-            Command="{Binding CancelDownloadCommand}"
+            Command="{Binding CloseCommand}"
             Margin="0,5,0,0" />
+        <TextBlock
+            Text="{Binding DownloadLocationText}"
+            TextWrapping="Wrap"
+            DockPanel.Dock="Bottom" />
         <ItemsControl
             ItemsSource="{Binding Downloads}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type objects:NexusModDownload}">
-                    <DockPanel>
+                    <DockPanel Margin="0,5,0,3">
                         <StackPanel
                             Visibility="{Binding DownloadState, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter='MIN_QUEUED', Mode=OneWay}"
                             DockPanel.Dock="Top">
@@ -53,7 +59,8 @@
                             Height="7"
                             IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}"
                             Value="{Binding ProgressValue, Mode=OneWay}"
-                            Maximum="{Binding ProgressMaximum, Mode=OneWay}" />
+                            Maximum="{Binding ProgressMaximum, Mode=OneWay}"
+                            extensions:ProgressBarExtension.IsProgressAnimationEnabled="{Binding IsDownloadActive}"/>
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
