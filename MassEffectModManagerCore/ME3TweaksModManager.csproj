@@ -27,7 +27,7 @@
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<PublishTrimmed>False</PublishTrimmed>
 		<Nullable>disable</Nullable>
-		<Configurations>Debug;Release;WinAzureTest;WinAzureRelease</Configurations>
+		<Configurations>Debug;DebugNoAC;Release;WinAzureTest;WinAzureRelease</Configurations>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 
@@ -35,6 +35,11 @@
 		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<DefineConstants>DEBUG;TRACE;WITH_APPCENTER</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoAC|x64'">
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

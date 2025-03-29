@@ -742,11 +742,11 @@ namespace ME3TweaksModManager
             // the ones needed by the items in the !DEBUG block remain
 #if WITH_APPCENTER
             Crashes.TrackError(new Exception("TEST DUMMY"));
+            var nothing3 = AppCenter.Configured;
 #endif
             LZMA.Compress(new byte[0], 0);
             var nothing = LogCollector.SessionStartString;
             var nothing2 = FileSize.GibiByte;
-            var nothing3 = AppCenter.Configured;
         }
 #endif
     }

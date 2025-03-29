@@ -2897,11 +2897,6 @@ namespace ME3TweaksModManager
             else
             {
                 // Unimplemented last crash dialog code removed 03/28/2025
-                var lastCrash = Crashes.GetLastSessionCrashReportAsync().Result;
-                if (Settings.DeveloperMode && lastCrash?.StackTrace != null)
-                {
-                    // Show messagebox?
-                }
             }
 
             // Run on background thread as we don't need the result of this
