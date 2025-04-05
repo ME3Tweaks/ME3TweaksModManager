@@ -1322,7 +1322,12 @@ namespace ME3TweaksModManager
 
         private void OpenModDesc()
         {
-            M3Utilities.ShellOpenFile(SelectedMod.ModDescPath);
+            var result = M3Utilities.ShellOpenFile(SelectedMod.ModDescPath);
+            if (result != null)
+            {
+                // Issue opening the file.
+                M3L.ShowDialog(this, $"Error opening moddesc.ini file: {result}", M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>

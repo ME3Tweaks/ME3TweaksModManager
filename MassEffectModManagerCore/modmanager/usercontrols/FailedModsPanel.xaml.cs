@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
 
@@ -125,7 +126,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void EditModdesc(object sender, RoutedEventArgs e)
         {
             if (SelectedMod != null)
-                M3Utilities.ShellOpenFile(SelectedMod.ModDescPath);
+            {
+                var result = M3Utilities.ShellOpenFile(SelectedMod.ModDescPath);
+                if (result != null)
+                {
+                    // Issue opening the file.
+                    M3L.ShowDialog(window, $"Error opening moddesc.ini file: {result}", M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void OpenModFolder(object sender, RoutedEventArgs e)

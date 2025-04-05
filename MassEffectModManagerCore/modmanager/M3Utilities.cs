@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Management;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using Microsoft.Win32;
@@ -1557,16 +1549,28 @@ namespace ME3TweaksModManager.modmanager
         /// <summary>
         /// Opens the specified file with the default shell file handler. The file must exist on the filesystem.
         /// </summary>
-        /// <param name="file"></param>
-        public static void ShellOpenFile(string file)
+        /// <param name="file">File to open</param>
+        /// <returns>Error message if the operation failed, null if success.</returns>
+        public static string ShellOpenFile(string file)
         {
             if (file != null && File.Exists(file))
             {
                 using Process shellOpener = new Process();
                 shellOpener.StartInfo.FileName = file;
                 shellOpener.StartInfo.UseShellExecute = true;
-                shellOpener.Start();
+                try
+                {
+                    shellOpener.Start();
+                }
+                catch (Exception e)
+                {
+                    M3Log.Error($@"Shell open failed for {file}: {e.Message}");
+                    return e.Message;
+                }
+
             }
+
+            return null;
         }
     }
 }
