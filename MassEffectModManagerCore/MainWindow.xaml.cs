@@ -66,7 +66,6 @@ using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
 using LaunchOptionSelectorDialog = ME3TweaksModManager.modmanager.windows.dialog.LaunchOptionSelectorDialog;
@@ -128,6 +127,11 @@ namespace ME3TweaksModManager
             }
         }
 #endif
+
+        /// <summary>
+        /// Task used when downloads are in progress. Set to null once background downloads have finished 
+        /// </summary>
+        public BackgroundTask DownloadingTask { get; set; }
 
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
@@ -249,28 +253,41 @@ namespace ME3TweaksModManager
                     ReleaseBusyControl();
                     if (b.Data is NexusModDownload downloadedMod)
                     {
-                        downloadedMod.DownloadedStream.Position = 0;
-                        App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import",
-                            new Dictionary<string, string>
-                            {
-                                { @"Filename", downloadedMod.FileName }
-                            });
-                        if (downloadedMod.DownloadedStream is FileStream fs)
-                        {
-                            // Open the file instead
-                            fs.Dispose(); // Ensure it's closed
-                            openModImportUI(fs.Name, priority: true,
-                                sourceLink: downloadedMod.ProtocolLink); // Open the archive itself
-                        }
-                        else
-                        {
-                            openModImportUI(downloadedMod.FileName, downloadedMod.DownloadedStream, true,
-                                sourceLink: downloadedMod.ProtocolLink);
-                        }
+                        ShowModArchiveImportForDownload(downloadedMod);
                     }
                     // If there are ever other types of download support we should handle them here.
                 };
                 ShowBusyControl(mDownloader, ShouldShowNXMDownloadImmediately());
+            }
+        }
+
+        /// <summary>
+        /// Shows the archive import UI for a downloaded mod.
+        /// </summary>
+        /// <param name="downloadedMod"></param>
+        public void ShowModArchiveImportForDownload(ModDownload downloadedMod, bool priority = true)
+        {
+            downloadedMod.DownloadedStream.Position = 0;
+            App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import",
+                new Dictionary<string, string>
+                {
+                    { @"Filename", downloadedMod.FileName }
+                });
+
+            // Remove this download, we are now handling it.
+            DownloadManager.RemoveDownload(downloadedMod);
+
+            // Handle the UI
+            var nexusInfo = downloadedMod as NexusModDownload;
+            if (downloadedMod.DownloadedStream is FileStream fs)
+            {
+                // Open the file instead
+                fs.Dispose(); // Ensure it's closed
+                openModImportUI(fs.Name, priority: priority, sourceLink: nexusInfo?.ProtocolLink); // Open the archive itself
+            }
+            else
+            {
+                openModImportUI(downloadedMod.FileName, downloadedMod.DownloadedStream, priority, sourceLink: nexusInfo?.ProtocolLink);
             }
         }
 
@@ -428,8 +445,6 @@ namespace ME3TweaksModManager
             // Setup settings listeners
             Settings.StaticPropertyChanged += SettingsChangeListener.OnSettingChanged;
 
-
-            // Loa
 
             CheckProgramDataWritable();
             AttachListeners();
@@ -671,6 +686,95 @@ namespace ME3TweaksModManager
 
             // Setting changed listener.
             Settings.StaticPropertyChanged += SettingChanged;
+
+            // Subscribe to download manager's add/remove so we can control the background task notification. 
+            DownloadManager.OnDownloadCompleted += DM_OnDownloadCompleted;
+            DownloadManager.OnDownloadRemoved += DM_OnDownloadRemoved;
+            DownloadManager.OnDownloadAdded += DM_OnDownloadAdded;
+
+            // Also subscribe to all importing events because the UI should be locked when importing is occurring
+            // for consistency, or panel results may go unhandled or UI state changes when filesystem data is
+            // being changed.
+            //DownloadManager.OnDownloadScanning += DM_OnModScanning; // This technically isn't required because background stuff isn't changing...
+            DownloadManager.OnDownloadImporting += DM_OnModImporting;
+            DownloadManager.OnDownloadImported += DM_OnImportProcessComplete;
+            DownloadManager.OnDownloadImportFailed += DM_OnImportProcessComplete;
+
+        }
+
+        /// <summary>
+        /// Invoked when a mod import has finished - it may be in a failed state!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DM_OnImportProcessComplete(object sender, EventArgs e)
+        {
+            if (sender is ModDownload md && GetCurrentPanel() is UILockoutPanel lockout)
+            {
+                // Unlock the UI if there is nothing currently ongoing.
+                var somethingImporting = DownloadManager.GetDownloads().Any(x => x.Value.DownloadState is EModDownloadState.IMPORTING);
+                if (!somethingImporting)
+                {
+                    lockout.UnlockUI();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Invoked when an automatic mod import has begun.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DM_OnModImporting(object sender, EventArgs e)
+        {
+            LockUIIfNecessary();
+        }
+
+        /// <summary>
+        /// Puts a lockout panel into the busy queue if nothing is showing.
+        /// </summary>
+        private void LockUIIfNecessary()
+        {
+            if (GetCurrentPanel() == null)
+            {
+                // Lock up the interface for consistency.
+                UILockoutPanel uiLockout = new UILockoutPanel();
+                uiLockout.Close += (a, b) => { ReleaseBusyControl(); };
+                ShowBusyControl(uiLockout);
+            }
+        }
+
+
+        private void DM_OnDownloadAdded(object sender, EventArgs e)
+        {
+            DownloadingTask ??= DownloadManager.GenerateBackgroundTask();
+        }
+
+        private void DM_OnDownloadCompleted(object sender, EventArgs e)
+        {
+            // Download has completed
+            if (DownloadingTask != null)
+            {
+                var downloads = DownloadManager.GetDownloads();
+                if (downloads.Count == 1)
+                {
+
+                }
+            }
+        }
+
+        private void DM_OnDownloadRemoved(object sender, EventArgs e)
+        {
+            if (DownloadingTask != null)
+            {
+                var downloads = DownloadManager.GetDownloads();
+                if (downloads.Count == 0)
+                {
+                    // No more downloads - complete the task.
+                    BackgroundTaskEngine.SubmitJobCompletion(DownloadingTask);
+                    DownloadingTask = null;
+                }
+            }
         }
 
         private void SettingChanged(object sender, PropertyChangedEventArgs e)
@@ -700,6 +804,7 @@ namespace ME3TweaksModManager
         public ICommand LaunchFVBCCUCommand { get; set; }
         public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
+        public ICommand OpenDownloadManagerCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
         public ICommand ModManagerOptionsCommand { get; set; }
         public ICommand ConflictDetectorCommand { get; set; }
@@ -768,6 +873,7 @@ namespace ME3TweaksModManager
             RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, IsModSelectedInDevMode);
             DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibraryWrapper, CanDeleteModFromLibrary);
+            OpenDownloadManagerCommand = new GenericCommand(OpenDownloadManager, CanShowDownloadManager);
             ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
             SubmitTelemetryForModCommand = new GenericCommand(SubmitTelemetryForMod, CanSubmitTelemetryForMod);
             SelectedModCheckForUpdatesCommand = new GenericCommand(CheckSelectedModForUpdate, SelectedModIsUpdatable);
@@ -815,6 +921,18 @@ namespace ME3TweaksModManager
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
             DiagToolOpenAllPackagesCommand = new GenericCommand(DiagAllOpenPackages, CanRunGameDiagTool);
 
+        }
+
+        private void OpenDownloadManager()
+        {
+            var mDownloader = new DownloadManagerPanel();
+            mDownloader.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(mDownloader);
+        }
+
+        private bool CanShowDownloadManager()
+        {
+            return DownloadManager.GetDownloads().Any();
         }
 
         private void GenerateStarterKit(object obj)
@@ -2096,6 +2214,10 @@ namespace ME3TweaksModManager
                     });
                     // No more panels, we can show message updates now.
                     BackgroundTaskEngine.AllowMessageUpdates();
+
+                    // 04/05/2025 - Re-lock UI when queue becomes empty to prevent user from doing things when 
+                    // the UI should not allow the user to do stuff.
+                    LockUIIfNecessary();
                 }
                 else
                 {
@@ -5430,6 +5552,30 @@ namespace ME3TweaksModManager
         {
             // Populate the list of available games, for menus
             MenuAvailableGames.ReplaceAll(InstallationTargets.Where(x => x.Game.IsMEGame()).Select(x => x.Game).Distinct().OrderBy(x => x));
+        }
+
+        /// <summary>
+        /// Gets the current active panel, if any.
+        /// </summary>
+        /// <returns></returns>
+        public MMBusyPanelBase GetCurrentPanel()
+        {
+            MMBusyPanelBase result = null;
+
+            // This must be run on the UI thread. Hopefully it doesn't
+            // need more synchronization...
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (BusyContentM3 is SingleItemPanel2 sip)
+                {
+                    if (sip.Content is MMBusyPanelBase mmBusyPanel)
+                    {
+                        result = mmBusyPanel;
+                    }
+                }
+            });
+
+            return result;
         }
     }
 }

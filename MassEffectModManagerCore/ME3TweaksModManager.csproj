@@ -255,6 +255,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="modmanager\usercontrols\UILockoutPanel.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!-- Lcoalizations that have fallen out of date or were never implemented to begin with. -->
 		<Page Remove="modmanager\localizations\bra.xaml" />
 		<Page Remove="modmanager\localizations\esn.xaml" />

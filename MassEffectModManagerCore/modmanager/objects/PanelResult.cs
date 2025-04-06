@@ -87,6 +87,9 @@ namespace ME3TweaksModManager.modmanager.objects
         /// </summary>
         public Exception Error { get; set; }
 
+
+        public bool SpawnedFromUnattached { get; set; }
+
         /// <summary>
         /// If this result needs any merges performed
         /// </summary>

@@ -125,10 +125,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         return;
                     }
 
-                    Application.Current.Dispatcher.Invoke(() =>
+                    // Is there only one active download? If so, we will immediately kick to import
+                    if (Downloads.Count == 1)
                     {
-                        OnClosing(new DataEventArgs(new List<ModDownload>(new[] { md })));
-                    });
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            CloseWrapper();
+                            mainwindow.ShowModArchiveImportForDownload(md);
+                        });
+                    }
                 }
             }
         }

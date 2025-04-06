@@ -1,14 +1,17 @@
-﻿#if DEBUG
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 {
+    /// <summary>
+    /// Used to fetch a specific download out of the downloads list.
+    /// </summary>
     public class DownloadManagerKey
     {
         protected bool Equals(DownloadManagerKey other)
@@ -34,10 +37,11 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
     }
 
     /// <summary>
-    /// Manager class for NexusMod downloads
+    /// Manager class for mod downloads
     /// </summary>
     public static class DownloadManager
     {
+
         /// <summary>
         /// Todo: Move to settings
         /// </summary>
@@ -73,6 +77,31 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// Invoked when a download has been completed by the manager (not import!)
         /// </summary>
         public static event EventHandler<EventArgs> OnDownloadCompleted;
+
+        /// <summary>
+        /// Invoked when a download has begun being scanned for mods.
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadScanning;
+
+        /// <summary>
+        /// Invoked when a download has been scanned for mods.
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadScanCompleted;
+
+        /// <summary>
+        /// Invoked when a download is being imported into the library
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadImporting;
+
+        /// <summary>
+        /// Invoked when a download has been imported into the library and the download process is fully complete.
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadImported;
+
+        /// <summary>
+        /// Invoked when a download was attempted to be imported into the library, but failed.
+        /// </summary>
+        public static event EventHandler<EventArgs> OnDownloadImportFailed;
 
         /// <summary>
         /// Adds a new download via nxm link
@@ -112,25 +141,6 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             }
         }
 
-        private static void ModDownloaded(object sender, DataEventArgs e)
-        {
-            if (sender is ModDownload md)
-            {
-                md.OnModDownloaded -= ModDownloaded;
-                //Application.Current.Dispatcher.Invoke(() =>
-                //{
-                //    if (cancellationTokenSource.IsCancellationRequested)
-                //    {
-                //        // Canceled
-                //        OnClosing(DataEventArgs.Empty);
-                //    }
-                //    else
-                //    {
-                //        OnClosing(new DataEventArgs(new List<ModDownload>(new[] { md }))); //maybe someday i'll support download queue or something.
-                //    }
-                //});
-            }
-        }
 
         /// <summary>
         /// Invoked when the state of a mod download has changed.
@@ -153,24 +163,55 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 // Attempt to start download, as states have changed.
                 TryStartDownload();
 
+                if (item.DownloadState == EModDownloadState.DOWNLOADCOMPLETE)
+                {
+                    // Signal download has completed.
+                    OnDownloadCompleted(item, EventArgs.Empty);
+                }
+
                 if (item.DownloadState == EModDownloadState.DOWNLOADCOMPLETE && item.AutoImport)
                 {
+                    // We must obtain a reference to the current active panel, if any.
+                    // This is because we must handle the result of import - e.g. reloading mods
+                    // when the panel closes. Since auto import doesn't show a UI we must pass the current panel's
+                    // result into the archive importer so it can set proper values on it.
+
+                    var filename = item.FileName ?? @"Autoimport.7z"; // 7z is a guess here, it might be wrong. But we should always have a filename...
+
+                    // Mod is set to auto-import
                     ModArchiveImport mai = new ModArchiveImport()
                     {
                         AutomatedMode = true,
                         ArchiveStream = item.DownloadedStream,
-#if !DEBUG
-            YOU DIDN'T FIX THIS!!
-#endif
-                        GetPanelResult = () => new PanelResult(), // TEMPORARY, DO NOT RELY ON THIS
-                        ArchiveFilePath = @"Placeholder.7z",
+
+                        // We need to figure out how to handle a panelresult from here...
+                        GetPanelResult = () =>
+                        {
+                            if (MainWindow.Instance.GetCurrentPanel() is MMBusyPanelBase mmBusyPanel)
+                            {
+                                return mmBusyPanel.Result;
+                            }
+
+                            // Hopefully we will not get in a state like this - M3 should block the UI
+                            // if a download is importing, always, for UI consistency.
+
+                            // How to handle a panel result when there are no panels showing?
+                            return new PanelResult();
+                        }, 
+                        ArchiveFilePath = filename,
                     };
+
+                    // Associate NexusMod information
                     if (item is NexusModDownload nmd)
                     {
                         mai.SourceNXMLink = nmd.ProtocolLink;
                         mai.ArchiveFilePath = nmd.ModFile.FileName;
                         mai.UpdateModObject = nmd;
                     }
+
+                    // Subscribe to changes in import status so we can be
+                    // notified things are happening. This is what triggers state changes
+                    // this object.
                     mai.ImportStateChanged += OnImportStateChange;
 
                     item.ImportFlow = mai;
@@ -213,30 +254,35 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 {
                     case EModArchiveImportState.FAILED:
                         {
+                            OnDownloadImportFailed?.Invoke(matchingObj, EventArgs.Empty);
                             matchingObj.DownloadState = EModDownloadState.FAILED;
                             matchingObj.Status = M3L.GetString(M3L.string_importFailed);
                         }
                         break;
                     case EModArchiveImportState.SCANNING:
                         {
+                            OnDownloadScanning?.Invoke(matchingObj, EventArgs.Empty);
                             matchingObj.DownloadState = EModDownloadState.IMPORTING;
                             matchingObj.Status = M3L.GetString(M3L.string_scanning);
                         }
                         break;
                     case EModArchiveImportState.SCANCOMPLETED:
                         {
+                            OnDownloadScanCompleted?.Invoke(matchingObj, EventArgs.Empty);
                             matchingObj.DownloadState = EModDownloadState.IMPORTING;
                             matchingObj.Status = M3L.GetString(M3L.string_importQueued);
                         }
                         break;
                     case EModArchiveImportState.IMPORTING:
                         {
+                            OnDownloadImporting?.Invoke(matchingObj, EventArgs.Empty);
                             matchingObj.DownloadState = EModDownloadState.IMPORTING;
                             matchingObj.Status = M3L.GetString(M3L.string_importingMods);
                         }
                         break;
                     case EModArchiveImportState.COMPLETE:
                         {
+                            OnDownloadImported?.Invoke(matchingObj, EventArgs.Empty);
                             matchingObj.DownloadState = EModDownloadState.FINISHED;
                             matchingObj.Status = M3L.GetString(M3L.string_importComplete);
                         }
@@ -252,7 +298,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
             // Enforce cap on number of downloads we can concurrently run.
             var currentDownloadCount = Downloads.Count(x => x.Value.DownloadState == EModDownloadState.DOWNLOADING);
-            
+
             foreach (var dl in Downloads.Where(x => x.Value.DownloadState == EModDownloadState.QUEUED))
             {
                 if (currentDownloadCount > MaxConcurrentTasks)
@@ -297,7 +343,6 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         private static void DisassociateDownload(ModDownload md)
         {
             md.DownloadStateChanged -= DownloadStateChanged;
-            md.OnModDownloaded -= ModDownloaded;
             md.OnModDownloadError -= DownloadError;
         }
 
@@ -312,6 +357,26 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 OnDownloadRemoved?.Invoke(null, EventArgs.Empty);
             }
         }
+
+        /// <summary>
+        /// Removes a download from the manager and notifies listeners
+        /// </summary>
+        /// <param name="downloadedMod"></param>
+        public static void RemoveDownload(ModDownload downloadedMod)
+        {
+            if (Downloads.TryRemove(downloadedMod.CreateDownloadKey(), out _))
+            {
+                OnDownloadRemoved?.Invoke(downloadedMod, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Constructor for the background task for downloads - not handled by manager though, to separate UI logic from the manager.
+        /// </summary>
+        /// <returns></returns>
+        public static BackgroundTask GenerateBackgroundTask()
+        {
+            return BackgroundTaskEngine.SubmitBackgroundJob(@"DownloadManager", "Mods are downloading", "Mod downloads complete");
+        }
     }
 }
-#endif

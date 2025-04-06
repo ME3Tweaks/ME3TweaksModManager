@@ -8,9 +8,7 @@ using ME3TweaksModManager.modmanager.objects.mod.texture;
 using SevenZip;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
@@ -72,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.importer
         /// <summary>
         /// Current activity state
         /// </summary>
-        public EModArchiveImportState CurrentState { get; private set; }
+         public EModArchiveImportState CurrentState { get; private set; }
 
         private void OnCurrentStateChanged()
         {
