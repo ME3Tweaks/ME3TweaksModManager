@@ -113,6 +113,9 @@ namespace ME3TweaksModManager.modmanager.objects
         public long ProgressMaximum { get; protected internal set; }
         public bool ProgressIndeterminate { get; protected internal set; } = true;
 
+        /// <summary>
+        /// Set to true if this download is currently doing something (downloading, importing)
+        /// </summary>
         public bool IsDownloadActive { get; private set; }
 
         /// <summary>
@@ -154,6 +157,9 @@ namespace ME3TweaksModManager.modmanager.objects
         /// The download filename (may not exist on disk)
         /// </summary>
         public string FileName { get; set; }
+
+        public bool IsDownloading => DownloadState is EModDownloadState.DOWNLOADING;
+        public bool IsImporting => DownloadState is EModDownloadState.IMPORTING;
 
         #region Event handlers
         /// <summary>

@@ -1,11 +1,4 @@
-﻿using Pathoschild.FluentNexus.Models;
-using System;
-using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Web;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 
 namespace ME3TweaksModManager.modmanager.objects

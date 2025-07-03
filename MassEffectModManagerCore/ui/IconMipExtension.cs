@@ -38,7 +38,7 @@ namespace ME3TweaksModManager.ui
         }
 
         public static BitmapFrame StaticConvert(string source, float size, bool prefixPack = true)
-        {
+        { 
             if (prefixPack) source = @"pack://application:,,,/ME3TweaksModManager;component" + source;
             if (DecodedCache.TryGetValue($@"{source}_{size}", out var predecoded))
             {

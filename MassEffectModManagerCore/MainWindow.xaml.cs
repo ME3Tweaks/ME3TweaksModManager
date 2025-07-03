@@ -2217,7 +2217,9 @@ namespace ME3TweaksModManager
 
                     // 04/05/2025 - Re-lock UI when queue becomes empty to prevent user from doing things when 
                     // the UI should not allow the user to do stuff.
-                    LockUIIfNecessary();
+                    // 06/14/2025 - I am sure this was put here for a good reason,
+                    // but I cannot remember it
+                    // LockUIIfNecessary();
                 }
                 else
                 {
@@ -3728,7 +3730,7 @@ namespace ME3TweaksModManager
                         Title += @" - "
                         + M3L.GetString(M3L.string_cleaningUpPleaseWait);
 
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerIsPerformingCleanupOptionsAndWillAutomaticallyCloseWhenCompletennYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose),
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerIsPerformingCleanupOperations) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3),
                             M3L.GetString(M3L.string_operationInProgress), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
@@ -3738,12 +3740,49 @@ namespace ME3TweaksModManager
 
                         Title += @" - "
                         + M3L.GetString(M3L.string_cleaningUpPleaseWait);
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerWillCompleteItsCurrentTaskAndThenCloseAutomaticallynnYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose),
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerWillAutocloseBackgroundTasks) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3),
                             M3L.GetString(M3L.string_operationInProgress), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     return;
                 }
             }
+
+            // Check download manager
+            var downloads = DownloadManager.GetDownloads().Values;
+
+            // Do downloads before imports because the dialog for downloads may stall long enough for an import to begin.
+            var downloadInProgress = downloads.Any(x => x.IsDownloading);
+            if (downloadInProgress)
+            {
+                M3Log.Information(@"Mods are currently downloading - prompting user if they really want to close");
+
+                var abortResult = M3L.ShowDialog(this,
+                    "There are currently mods downloading. Are you sure you want to quit?", "Downloads in progress",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (abortResult == MessageBoxResult.No)
+                {
+                    M3Log.Information(@"Mods are currently downloading - prompting user if they really want to close");
+                    return;
+                }
+                else
+                {
+                    M3Log.Information(@"Continuing application close request");
+                }
+            }
+
+            var importInProgress = downloads.Any(x => x.IsImporting);
+            if (importInProgress)
+            {
+                M3Log.Warning(@"Cannot safely close app while mods are importing, aborting application exit request");
+                M3L.ShowDialog(this,
+                    "There are currently mods importing into the library. Please wait until they are finished as aborting import may leave a library mods in a broken state."
+                    + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3), "Mods currently importing",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ;
+                return;
+            }
+
+
 
             // Nothing pending.
             M3Log.Information(@"No pending tasks. The application will now close.");

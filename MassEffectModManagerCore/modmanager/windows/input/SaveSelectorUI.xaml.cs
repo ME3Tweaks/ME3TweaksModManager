@@ -24,7 +24,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
-using ME3TweaksModManager.legendaryexplorercoreextended;
+using ME3TweaksModManager.lecextended;
 using ME3TweaksModManager.modmanager.converters;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save;
@@ -437,7 +437,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
                     }
                     Texture2D t2d = new Texture2D(tex);
                     // NOTE: Set 'ClearAlpha' to false to make image support transparency!
-                    var bitmap = ImageExtended.ConvertRawToBitmapARGB(
+                    var bitmap = ImageExtended.convertRawToBitmapARGB(
                         t2d.GetImageBytesForMip(t2d.GetTopMip(), t2d.Export.Game, true, out _),
                         t2d.GetTopMip().width, t2d.GetTopMip().height, Image.getPixelFormatType(t2d.TextureFormat),
                         true);
