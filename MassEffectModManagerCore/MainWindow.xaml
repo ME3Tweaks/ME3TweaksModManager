@@ -1489,6 +1489,10 @@
                         Header="{DynamicResource string_test7z}"
                         Name="Test7z_MenuItem"
                         Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="Build Base Milan"
+                        Name="BuildBaseMilan_MenuItem"
+                        Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"

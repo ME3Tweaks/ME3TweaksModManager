@@ -15,6 +15,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public static void RouteDebugCall(string sender, MainWindow window)
         {
 #if DEBUG
+            if (sender == nameof(MainWindow.BuildBaseMilan_MenuItem)) BuildBaseMilan(window);
             if (sender == nameof(MainWindow.Test7z_MenuItem)) Test7z(window);
             if (sender == nameof(MainWindow.RebuildMD5DB_MenuItem)) RebuildMD5Map(window);
             if (sender == nameof(MainWindow.TestMMV1_MenuItem)) BuildMMV1MergeMod(window);
@@ -150,6 +151,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 MemoryStream ms = new MemoryStream();
                 decompressor.ExtractFile(f.Index, ms);
             }
+        }
+
+        private static void BuildBaseMilan(MainWindow mw)
+        {
+#if DEBUG
+            // This is a placeholder for the actual implementation of building the base Milan installer
+            // The implementation would typically involve copying files, setting up directories, etc.
+            // For now, we just log that this method was called.
+            Debug.WriteLine("Building base Milan installer...");
+            var mbip = new MilanBaseInstallerPanel();
+            mbip.Close += (a, b) => { mw.ReleaseBusyControl(); };
+            mw.ShowBusyControl(mbip);
+#endif
         }
 
         private static void ReloadSelectedMod_Click(MainWindow mw)

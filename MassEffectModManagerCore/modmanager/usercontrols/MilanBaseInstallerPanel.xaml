@@ -1,0 +1,56 @@
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.MilanBaseInstallerPanel" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    mc:Ignorable="d"
+    MaxWidth="640"
+    MinWidth="500"
+    MinHeight="200"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
+            <Image
+                DockPanel.Dock="Left"
+                Source="/images/milan.png"
+                Height="128"
+                Width="128"
+                RenderOptions.BitmapScalingMode="HighQuality"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center" 
+                Margin="0,0,5,0"/>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Project Milan" FontWeight="Bold" FontSize="24" VerticalAlignment="Center"/>
+                <TextBlock Text="Base Installer" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="3,20,0,0">
+            <Button Content="Generate installation" Command="{Binding InstallCommand}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" DockPanel.Dock="Right"/>
+            <Button Content="Cancel" Margin="0,0,5,0" Command="{Binding CancelCommand}" DockPanel.Dock="Right"/>
+            <TextBlock HorizontalAlignment="Left" Text="{Binding StatusText}" Margin="0,0,5,0"/>
+
+        </DockPanel>
+        <StackPanel>
+            <TextBlock Text="Project Milan's initial installation must be created from a copy of Mass Effect 3 Legendary Edition." TextWrapping="Wrap" MaxWidth="400"/>
+            <DockPanel>
+                <TextBlock Text="Source installation" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120" FontWeight="Bold"/>
+                <usercontrols:TargetSelector
+                        AvailableTargets="{Binding LE3Targets}"
+                        SelectedGameTarget="{Binding SelectedTarget}"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        HorizontalContentAlignment="Stretch"
+                        ToolTip="Target to source files from" />
+            </DockPanel>
+            <DockPanel Margin="0,5,0,0">
+                <TextBlock Text="Install location" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120"  FontWeight="Bold"/>
+                <Button Content="Browse" DockPanel.Dock="Right"/>
+                <xctk:WatermarkTextBox Text="{Binding InstallLocation, UpdateSourceTrigger=PropertyChanged}"/>
+            </DockPanel>
+        
+        </StackPanel>
+
+    </DockPanel>
+</usercontrols:MMBusyPanelBase>
