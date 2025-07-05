@@ -11,8 +11,8 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>9.0.1.135</Version>
-		<Copyright>ME3Tweaks 2012-2024</Copyright>
+		<Version>9.1.0.135</Version>
+		<Copyright>ME3Tweaks 2012-2025</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>ME3TweaksModManager</PackageId>
 		<Product>ME3Tweaks Mod Manager</Product>
@@ -185,34 +185,34 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="CliWrap" Version="3.6.6" />
+		<PackageReference Include="CliWrap" Version="3.9.0" />
 		<PackageReference Include="DarkNet" Version="2.3.0" />
 		<PackageReference Include="Flurl" Version="4.0.0" />
 		<PackageReference Include="Flurl.Http" Version="4.0.2" />
-		<PackageReference Include="Fody" Version="6.8.1">
+		<PackageReference Include="Fody" Version="6.9.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="FontAwesome5" Version="2.1.11" />
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api" Version="1.4.6" />
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.SelfApi" Version="2.5.8" />
-		<PackageReference Include="Microsoft.AppCenter" Version="5.0.5" />
-		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.5" />
-		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.5" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api" Version="1.4.9" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.SelfApi" Version="2.5.13" />
+		<PackageReference Include="Microsoft.AppCenter" Version="5.0.7" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.7" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.7" />
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
-		<PackageReference Include="Octokit" Version="12.0.0" />
+		<PackageReference Include="Octokit" Version="14.0.0" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
-		<PackageReference Include="Serilog" Version="4.0.0" />
+		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
-		<PackageReference Include="SSH.NET" Version="2024.0.0" />
-		<PackageReference Include="WatsonWebsocket" Version="4.1.2" />
+		<PackageReference Include="SSH.NET" Version="2025.0.0" />
+		<PackageReference Include="WatsonWebsocket" Version="4.1.4" />
 		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
 	</ItemGroup>
 	<ItemGroup>
