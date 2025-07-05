@@ -87,6 +87,9 @@ namespace ME3TweaksModManager
         /// </summary>
         public const double HighestSupportedModDesc = 9.1;
 
+        // Hi. If you're reading this, and going to try and argue that this lowest version is arbitrary,
+        // you should try supporting software for free, and see how well supporting every single
+        // version of Windows works out for you.
         public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.19045"); // Windows 10 22H2
 
         internal static readonly string[] SupportedOperatingSystemVersions =
