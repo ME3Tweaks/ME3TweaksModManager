@@ -85,18 +85,14 @@ namespace ME3TweaksModManager
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support. The maximum precision allowed is tenths, the rest will be truncated.
         /// </summary>
-#if DEBUG
         public const double HighestSupportedModDesc = 9.1;
-#else
-        public const double HighestSupportedModDesc = 9.0;
-#endif
 
         public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.19045"); // Windows 10 22H2
 
         internal static readonly string[] SupportedOperatingSystemVersions =
         {
-            @"Windows 10 (not EOL versions)",
-            @"Windows 11 (not EOL versions)"
+            @"Windows 10 (not EOL versions, not LTSC)",
+            @"Windows 11 (not EOL versions, not LTSC)"
         };
 
         /// <summary>
