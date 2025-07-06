@@ -639,6 +639,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
+            if (SelectedTarget?.Game == MEGame.LELauncher)
+            {
+                // Select modified basegame files so we don't have no tab selected
+                SelectedTarget_TabControl.SelectedItem = ModifiedBasegameFiles_Tab;
+            }
         }
 
         private void OpenASIManager_Click(object sender, RequestNavigateEventArgs e)
