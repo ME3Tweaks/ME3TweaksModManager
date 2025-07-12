@@ -142,6 +142,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void BeginInstallingMod()
         {
+            if (InstallOptionsPackage.InstallTarget == null)
+            {
+                M3Log.Error(@"The installation target is null! We're probably going to crash. How did the code get to this point?");
+            }
+
             SystemSleepManager.PreventSleep(@"ModInstaller");
             ModIsInstalling = true;
             if (!CheckForGameBackup())
