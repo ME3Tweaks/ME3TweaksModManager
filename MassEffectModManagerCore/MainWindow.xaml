@@ -16,7 +16,7 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
     xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
-    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -2292,14 +2292,14 @@
                         Margin="0,1"
                         RenderOptions.BitmapScalingMode="HighQuality"
                         DockPanel.Dock="Top" />
-                    <TextBox
+                    <xctk:RichTextBox
                         Name="ModDescription_TextBox"
                         IsReadOnly="True"
                         IsReadOnlyCaretVisible="False"
                         HorizontalContentAlignment="Left"
                         HorizontalAlignment="Stretch"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                        TextWrapping="Wrap"
                         VerticalScrollBarVisibility="Auto"
                         AllowDrop="True"
                         PreviewDragOver="Window_DragOver"
@@ -2307,17 +2307,20 @@
                         adonisExtensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
                         adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
                         adonisExtensions:CursorSpotlightExtension.MaxBlurRadius="0">
-                        <TextBox.Text>
+                        <xctk:RichTextBox.Text>
                             <PriorityBinding>
                                 <Binding
-                                    Path="SelectedMod.DisplayedModDescription"
+                                    Path="SelectedMod.RichDisplayedModDescription"
                                     Mode="OneWay" />
                                 <Binding
                                     Path="NoModSelectedText"
                                     Mode="OneWay" />
                             </PriorityBinding>
-                        </TextBox.Text>
-                    </TextBox>
+                        </xctk:RichTextBox.Text>
+                        <xctk:RichTextBox.TextFormatter>
+                            <xctk:RtfFormatter />
+                        </xctk:RichTextBox.TextFormatter>
+                    </xctk:RichTextBox>
                 </DockPanel>
             </Grid>
         </DockPanel>
