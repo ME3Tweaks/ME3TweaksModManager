@@ -36,13 +36,35 @@ Similar to ME2/LE2 DLC ini files, m3cd files also use _typings_ to control how t
 All entries can have a prefix with the following values.
 | Prefix | Game 3 Type Number | Description                                                                  |
 |--------|--------------------|------------------------------------------------------------------------------|
-| +      | 3                  | Adds the value to the property if it is unique                               |
+| +      | 3                  | Adds the value to the property if it is unique (case & whitespace sensitive)                             |
 | !      | 1                  | Removes the property entirely (also known as clear). Set the value to `null` when using this.                          |
-| -      | 4                  | Removes the value from the property if it is an exact match (case sensitive) |
+| -      | 4                  | Removes the value from the property if it is an exact match (case & whitespace sensitive) |
 | .      | 2                  | Ads the value to the property, regardless if an exactly copy already exists  |
 | >      | 0                  | M3-specific: Clears a property, and then adds the value to it.               |
 
 If no value is specified, the default `. add` is implied.
+
+> [!CAUTION]
+> When using prefix + (type 3) or - (type 4), [matching](https://github.com/ME3Tweaks/LegendaryExplorer/blob/b67d2e103f81ffdac38b50725d6b1360f7472bd5/LegendaryExplorer/LegendaryExplorerCore/Coalesced/Config/ConfigMerge.cs#L79) is performed against the property values, not the property names. Property names are **case-insensitive**, but values are **case-sensitive** and **whitespace-sensitive**.
+>
+> Example:
+> 
+> In Game 3, an entry might look like:
+> ```xml
+> <Property name="aliasmap">
+> 	<Value type="3">(Name = 687216, Alias = "PC_ExitAtlas", GameMode = GameMode_Atlas)</Value>
+> </Property>
+> ```
+> and an entry in your m3cd like:
+> ```ini
+> +aliasmap=(Name=687216,Alias="PC_ExitAtlas",GameMode=GameMode_Atlas)
+> ```
+> These will not match due to whitespace differences, so it will be appended.
+>
+> Instead, the m3cd entry should be:
+> ```ini
+> +aliasmap=(Name = 687216, Alias = "PC_ExitAtlas", GameMode = GameMode_Atlas)
+> ```
 
 ### Double typing
 M3CD supports double typing, which can be used with LE2/LE3 config merge. This allows you to insert values to your mod's config files without actually 'merging' them. A use case for this is inserting a type `!/1` clear entry into your config file, rather than running a clear operation on your config file itself.
