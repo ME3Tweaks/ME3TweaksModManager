@@ -81,11 +81,11 @@
 	<system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Il file alternato ({0}) specifica l'operazione OP_NOINSTALL_MULTILISTFILES ma non specifica l'attributo MultiListId, o non può essere convertito in intero.</system:String>
 	<system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Il file alternato ({0}) in-mod target (ModFile) non sembra avere come obiettivo un DLC che questa mod installa sempre: {1}</system:String>
 	<system:String x:Key="string_interp_validation_altfile_flattentNotTrueOrFalse">Il file alternato ({0}) specifica il descrittore 'FlattenMultiListOutput', ma il valore non è né 'true' né 'false': {1}</system:String>
-	<system:String x:Key="string_interp_altfile_missingOperation">Il File Alternato non specifica ModOperation, che é richiesto per tutti i File Alternati: {0}</system:String>
-	<system:String x:Key="string_interp_altfile_disallowedPattern">Il nome file di merge del FIle Alternato {0} contiene un .., il che non è consentito: {1}</system:String>
-	<system:String x:Key="string_interp_altfile_nonExistentMergeFile">Il file di merge del File Alternato (oggetto interno a MergeFiles) non esiste: {0}</system:String>
-	<system:String x:Key="string_interp_altfile_mergeFileFailedToLoad">Impossibile caricare il file di merge del File Alternato {0}: {1}</system:String>
-	<system:String x:Key="string_interp_altfile_noMergeFilesSpecified">I nomi file del file di merge del File Alternato (MergeFiles) sono richiesti, ma non sono stati specificati. Questo valore è rchiesto per i File Alternati che usano l'operazione OP_APPLY_MERGEMODS.</system:String>
+	<system:String x:Key="string_interp_altfile_missingOperation">Il file alternato non specifica ModOperation, che è richiesto per tutti i file alternati: {0}</system:String>
+	<system:String x:Key="string_interp_altfile_disallowedPattern">Il nome del file di merge del file alternato {0} contiene un .., il che non è consentito: {1}</system:String>
+	<system:String x:Key="string_interp_altfile_nonExistentMergeFile">Il file di merge del file alternato (oggetto interno a MergeFiles) non esiste: {0}</system:String>
+	<system:String x:Key="string_interp_altfile_mergeFileFailedToLoad">Impossibile caricare il file di merge del file alternato {0}: {1}</system:String>
+	<system:String x:Key="string_interp_altfile_noMergeFilesSpecified">I nomi dei file di merge del file alternato (MergeFiles) sono richiesti ma non sono stati specificati. Questo valore è richiesto per i file alternati che usano l'operazione OP_APPLY_MERGEMODS.</system:String>
 	<system:String x:Key="string_interp_groupNameAlternateOptionsHeader">{0} - {1} opzione/i</system:String>
 	<system:String x:Key="string_validation_alt_imageAssetArchiveError">L'alternato {0} lista l'asset dell'immagine {1}, ma l'asset non può essere letto dall'archivio. Il log conterrà informazioni aggiuntive.</system:String>
 	<system:String x:Key="string_validation_alt_imageAssetNotFound">Il file alternato {0} lista l'asset dell'immagine {1}, ma l'asset non esiste nella cartella {2} della mod.</system:String>
@@ -564,7 +564,7 @@
 	<system:String x:Key="string_aSIMods">Mod ASI</system:String>
 	<system:String x:Key="string_textureMods">Mod texture</system:String>
 	<system:String x:Key="string_locateCustomFile">Trova file personalizzato</system:String>
-	<system:String x:Key="string_interp_dialog_memForDifferentGame">Il file .mem selezionato non é adatto a {0} - esso é per {1}. Questo file .mem non può essere utilizzato in questo gruppo di installazione.</system:String>
+	<system:String x:Key="string_interp_dialog_memForDifferentGame">Il file .mem selezionato non è adatto a {0} - esso è per {1}. Questo file .mem non può essere utilizzato in questo gruppo di installazione.</system:String>
 	<system:String x:Key="string_wrongGame">Gioco sbagliato</system:String>
 	<system:String x:Key="string_selectATextureMod">Seleziona una mod texture</system:String>
 	<system:String x:Key="string_checkForIssues">Verifica la presenza di problemi</system:String>
@@ -1724,7 +1724,7 @@
 	<system:String x:Key="string_metadata">Metadati</system:String>
 	<system:String x:Key="string_officialDLC">DLC Ufficiale</system:String>
 	<system:String x:Key="string_customDLC">DLC Custom</system:String>
-	<system:String x:Key="string_alternateFilesCustomDLC">FIle ALternati (DLC Custom)</system:String>
+	<system:String x:Key="string_alternateFilesCustomDLC">File alternati (DLC Custom)</system:String>
 	<system:String x:Key="string_alternateDLCCustomDLC">DLC ALternato (DLC Custom)</system:String>
 	<system:String x:Key="string_mE1ConfigFiles">File di configurazione di ME1</system:String>
 	<system:String x:Key="string_balanceChanges">Cambiamenti del bilanciamento</system:String>
@@ -1735,8 +1735,8 @@
 	<system:String x:Key="string_copyText">Copia testo</system:String>
 	<system:String x:Key="string_mde_alternatedlc">I DLC Alternati ti consentono di definire opzioni di installazione alternate per il task header CUSTOMDLC.</system:String>
 	<system:String x:Key="string_addNewAlternateDLC">Aggiungi nuovo DLC Alternato</system:String>
-	<system:String x:Key="string_addNewAlternateFile">Aggiungi nuovo File Alternato</system:String>
-	<system:String x:Key="string_interp_alternateFileX">FIle Alternato {0}</system:String>
+	<system:String x:Key="string_addNewAlternateFile">Aggiungi nuovo file alternato</system:String>
+	<system:String x:Key="string_interp_alternateFileX">File alternato {0}</system:String>
 	<system:String x:Key="string_mde_balancechanges">Il task header BALANCE_CHANGES ti permette di installare un sovrascrittore dei cambiamenti di bilanciamento, che rimpiazzerà la versione che viene normalmente scaricata all'avvio di Mass Effect 3. I cambiamenti di bilanciamento modificano solo il multiplayer. Assicurati che il file sia basato sul coalesced del server, altrimenti corromperai permanentmente il tuo profilo online senza possibilità di correggerlo, a meno di comprare nuovamente il gioco.</system:String>
 	<system:String x:Key="string_mde_addBalanceChangesTask">Aggiungi task BALANCE_CHANGES</system:String>
 	<system:String x:Key="string_mde_addFileToThisMultilist">Aggiungi file a questa Multilista</system:String>
@@ -1745,7 +1745,7 @@
 	<system:String x:Key="string_chooser_selectOfficialDLCHeader">Seleziona un DLC ufficiale per cui aggiungere un task header. Solo gli header che non sono ancora stati aggiunti sono elencati qui.</system:String>
 	<system:String x:Key="string_mde_addOfficialDLCTask">I task per DLC ufficlai ti permettono di installare file dentro i DLC ufficiali del gioco. Moddare un DLC ufficiale è utile per il multiplayer, per il quale non si possono aggiungere DLC senza creare problemi addizionali.</system:String>
 	<system:String x:Key="string_addOfficialDLCTask">Aggiungi task per DLC Ufficiale</system:String>
-	<system:String x:Key="string_alternateFiles">File Alternati</system:String>
+	<system:String x:Key="string_alternateFiles">File alternati</system:String>
 	<system:String x:Key="string_mde_basegametask">I task per il gioco base ti permettono di installare file dentro il gioco base, tra cui BIOGAME, i file Binari (non Win32), e le cartelle di Engine. Questo task è utile per mod che modificano file che vengono caricati prima dei DLC.</system:String>
 	<system:String x:Key="string_addBasegameTask">Aggiungi task per il gioco base</system:String>
 	<system:String x:Key="string_mde_multilists">Le multiliste sono utilizzate dagli alternati per specificare una lista di file specifici, come l'aggiunta di file da cartelle multiple ad una mod. Non fanno nulla da sole a meno che non vengano referenziate dal numero multilistid definito in un alternato.</system:String>
@@ -1797,7 +1797,7 @@
 	<system:String x:Key="string_removeHeadmorphReferencesTaskHeader">Rimuovi l'header di task dai riferimenti headmorph</system:String>
 	<system:String x:Key="string_autopopulate">Autopopola</system:String>
 	<system:String x:Key="string_addHeadmorphFile">Aggiungi file headmorph</system:String>
-	<system:String x:Key="string_mde_description_textures" xml:space="preserve">Il ME3Tweaks Mod Manager può installare mod texture, ma per permettere agli utenti di trovarle più facilmente, é meglio dichiararle come parte della tua mod. Al momento, le texture devono essere installate tramite l'Installer di Gruppo.&#10;I file delle texture mod (.mem) deovno trovarsi nella cartella 'Textures' alla radice del percorso dove si trovano le tue mod.</system:String>
+	<system:String x:Key="string_mde_description_textures" xml:space="preserve">Il ME3Tweaks Mod Manager può installare mod texture, ma per permettere agli utenti di trovarle più facilmente, è meglio dichiararle come parte della tua mod. Al momento, le texture devono essere installate tramite l'Installer di Gruppo.&#10;I file delle texture mod (.mem) deovno trovarsi nella cartella 'Textures' alla radice del percorso dove si trovano le tue mod.</system:String>
 	<system:String x:Key="string_addTextureModReferencesTaskHeader">Aggiungi l'header di task ai riferimenti alla mod texture</system:String>
 	<system:String x:Key="string_removeAllTextureModReferencesTaskHeader">Rimuovi l'header di task da tutti i riferimenti alle mod texture</system:String>
 	<system:String x:Key="string_addTextureMod">Aggiungi mod texture</system:String>
@@ -2266,4 +2266,3 @@
 	<system:String x:Key="string_developerMode">Abilita la modalità per Sviluppatori</system:String>
 	<system:String x:Key="string_wp_description_developermod">La modalità per sviluppatori sblocca aspetti orientati agli sviluppatori, come distribuzione di mod, toggler per i DLC ufficiali e altro. Se non sei uno sviluppatore di mod, non attivarla.</system:String>
 </ResourceDictionary>
-
