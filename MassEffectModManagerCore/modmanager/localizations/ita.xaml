@@ -886,7 +886,7 @@
 	<system:String x:Key="string_CreateTestingArchive">Crea archivio di testing per la mod</system:String>
 	<system:String x:Key="string_CreateTestingArchiveTooltip">Crea un archivio che ha versioni vuote di tutti i file per questa mod. Utile per il debbuging del Mod Manager</system:String>
 	<system:String x:Key="string_startingUp">Avvio in corso</system:String>
-	<system:String x:Key="string_selectModOnLeftToGetStarted">Seleziona una mod a sinstra per cominciare.</system:String>
+	<system:String x:Key="string_selectModOnLeftToGetStarted">Seleziona una mod a sinistra per cominciare.</system:String>
 	<system:String x:Key="string_applyMod">Applica mod</system:String>
 	<system:String x:Key="string_addTarget">Aggiungi Installazione</system:String>
 	<system:String x:Key="string_startGame">Avvia gioco</system:String>
@@ -2266,3 +2266,4 @@
 	<system:String x:Key="string_developerMode">Abilita la modalità per Sviluppatori</system:String>
 	<system:String x:Key="string_wp_description_developermod">La modalità per sviluppatori sblocca aspetti orientati agli sviluppatori, come distribuzione di mod, toggler per i DLC ufficiali e altro. Se non sei uno sviluppatore di mod, non attivarla.</system:String>
 </ResourceDictionary>
+
