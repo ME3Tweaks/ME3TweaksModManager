@@ -145,7 +145,6 @@
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat Server für schnelle Unterstützung zu ME3Tweaks-Produkten und Diensten" />
     <helpitem title="N7 Squad Multiplayer Discord" url="https://discord.gg/n7squad" tooltip="Chat Server, um andere Mass Effect 3 MP- und Mass Effect Andromeda MP-Spieler zu finden" />
     <helpitem title="Public Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Server für allgemeines Mass Effect Modding" />
-    <helpitem title="Mgamerz' Twitter" url="https://twitter.com/Mgamerz" tooltip="Mgamerz' Twitter, lustige und interessante Modding-Einblicke (Englisch)" />
     <list title="Mods beziehen">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="Liste der von ME3Tweaks vorgeschlagenen Mods" url="https://me3tweaks.com/mods" tooltip="Stöbere durch von ME3Tweaks vorgeschlagene Mods" />
@@ -173,7 +172,6 @@
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Чат-сервер для оперативной помощи по продуктам и сервисам ME3Tweaks" />
     <helpitem title="N7 Squad Multiplayer Discord" url="https://discord.gg/n7squad" tooltip="Чат-сервер для поиска других игроков Mass Effect 3 MP и Mass Effect Andromeda MP" />
     <helpitem title="Public Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Сервер для общих вопросов по моддингу Mass Effect" />
-    <helpitem title="Твиттер Mgamerz" url="https://twitter.com/Mgamerz" tooltip="Твиттер MGamerZ, веселье и интересные новости моддинга" />
     <list title="Поиск Модов">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="ME3Tweaks-курируемые Моды" url="https://me3tweaks.com/mods" tooltip="Просмотреть моды, курируемые ME3Tweaks" />
@@ -201,7 +199,6 @@
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Serwer czatu zapewniający szybką obsługę produktów i usług związanych z ME3Tweaks" />
     <helpitem title="N7 Squad Multiplayer Discord" url="https://discord.gg/n7squad" tooltip="Serwer czatu do wyszukiwania innych graczy Mass Effect 3 MP i Mass Effect Andromeda MP" />
     <helpitem title="Public Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Server for general Mass Effect modding" />
-    <helpitem title="Mgamerz' Twitter" url="https://twitter.com/Mgamerz" tooltip="Mgamerz's twitter, fun and interesting modding tidbits" />
     <list title="Pobierz mody">
       <!--<helpitem title="Galeria ME3Tweaks ModMaker" url="https://me3tweaks.com/modmaker/gallery" tooltip="Przeglądaj mody stworzone przy pomocy ME3Tweaks ModMaker"/>-->
       <helpitem title="Mody wybrane przez ME3Tweaks" url="https://me3tweaks.com/mods" tooltip="Przeglądaj mody wybrane przez ME3Tweaks" />
@@ -229,7 +226,6 @@
     <helpitem title="Discord de ME3Tweaks (em inglês)" url="https://discord.gg/s8HA6dc" tooltip="Servidor de Chat para suporte rápido com produtos serviços" />
     <helpitem title="Discord do Multiplayer Esquadrão N7 (em inglês)" url="https://discord.gg/n7squad" tooltip="Servidor de Chat para encontrar outros jogadores de Mass Effect 3 Multiplayer" />
     <helpitem title="Public Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Server for general Mass Effect modding" />
-    <helpitem title="Mgamerz' Twitter" url="https://twitter.com/Mgamerz" tooltip="Mgamerz's twitter, fun and interesting modding tidbits" />
     <list title="Adquirir Mods">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Explore Mods desenvolvidos no ModMaker ME3Tweaks"/>-->
       <helpitem title="Lista de Mods curados por ME3Tweaks" url="https://me3tweaks.com/mods" tooltip="Explore Mods curados por ME3Tweaks" />
@@ -257,7 +253,6 @@
     <helpitem icon="Brands_Discord" title="Server Discord di ME3Tweaks" url="https://discord.gg/s8HA6dc" tooltip="Server di chatting per un supporto veloce sui prodotti e servizi di ME3Tweaks" />
     <helpitem icon="Brands_Discord" title="Server Discord Pubblico del Modding" url="https://discord.gg/su8XjdUQPw" tooltip="Server per discussioni generali sul modding di Mass Effect" />
     <helpitem icon="Brands_Discord" title="Server Discord di N7 Squad Multiplayer" url="https://discord.gg/n7squad" tooltip="Server di chatting per trovare altri giocatori per il multiplayer di Mass Effect 3" />
-    <helpitem icon="Brands_Twitter" title="Twitter di Mgamerz" url="https://twitter.com/Mgamerz" tooltip="Twitter di Mgamerz, con curiosità sul modding divertenti e interessanti" />
     <list title="Ottieni mod">
       <helpitem title="Lista di Mod Curate da ME3Tweaks" url="https://me3tweaks.com/mods" tooltip="Esplora le mod curate da ME3Tweaks" />
       <helpitem title="NexusMods (Legendary Edition)" url="http://www.nexusmods.com/masseffectlegendaryedition/" tooltip="Esplora le mod sviluppate per Mass Effect Legendary Edition su NexusMods" />
