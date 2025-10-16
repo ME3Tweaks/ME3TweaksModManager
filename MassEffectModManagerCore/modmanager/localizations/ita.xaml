@@ -321,7 +321,7 @@
 	<system:String x:Key="string_validationFailed">Validazione fallita</system:String>
 	<system:String x:Key="string_interp_modURLOK">URL della mod OK: {0}</system:String>
 	<system:String x:Key="string_interp_nexusModsPageX">Pagina NexusMods: {0}</system:String>
-	<system:String x:Key="string_dialog_thisIsPrereleaseBuildDeployement">Questa è una build di prerelease di Mod Manager. Se state rilasciando una mod per la distribuzione, ASSICURATEVI CHE FUNZIONI CON LA VERSIONE DI MOD MANAGER CHE LA BASE DI UTENZA STA UTILIZZANDO.</system:String>
+	<system:String x:Key="string_dialog_thisIsPrereleaseBuildDeployement">Questa è una build di pre-release del Mod Manager. Se stai rilasciando una mod per la distribuzione, ASSICURATI CHE FUNZIONI SULLA VERSIONE DEL MOD MANAGER UTILIZZATA DALLA USERBASE.</system:String>
 	<system:String x:Key="string_prereleaseBuild">Versione di anteprima</system:String>
 	<system:String x:Key="string_validationOK">Validazione OK</system:String>
 	<system:String x:Key="string_languageCheckInProgress">Controllo della lingua in corso</system:String>
@@ -489,7 +489,7 @@
 	<system:String x:Key="string_autobootSave">Avvia automaticamente un salvataggio</system:String>
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Obiettivo non valido: {0} non è stato trovato nella cartella di gioco.</system:String>
 	<system:String x:Key="string_dialog_cannotRemoveActiveTarget" xml:space="preserve">Impossibile rimuovere un obiettivo che è al momento l'obiettivo di avvio.\nCambia l'obiettivo corrente nel dropdown della finestra principale per permettere la rimozione di questo obiettivo</system:String>
-	<system:String x:Key="string_tooltip_removeTargetFromM3">Rimuove questo obiettivo dalla lista degli obiettivi disponibili per il modding di Mod Manager</system:String>
+	<system:String x:Key="string_tooltip_removeTargetFromM3">Rimuove questo obiettivo dalla lista degli obiettivi disponibili per il modding del Mod Manager</system:String>
 	<system:String x:Key="string_unpacked">Decompresso</system:String>
 	<system:String x:Key="string_cleaningUp">Pulizia in corso</system:String>
 	<system:String x:Key="string_restored">Ripristinato</system:String>
@@ -524,7 +524,7 @@
 	<system:String x:Key="string_thisInstallationHasBeenTextureModded">Questa installazione ha texture moddate</system:String>
 	<system:String x:Key="string_cannotImportModsFromTextureModdedTarget">Non puoi importare mod dall'installazione di un gioco che ha delle Texture Mod installate.</system:String>
 	<system:String x:Key="string_thisModHasNotBeenCatalogedByME3TweaksYet">Questa mod non è ancora stata catalogata da ME3Tweaks</system:String>
-	<system:String x:Key="string_pleaseEnterModInfoForTPMI">Questa mod non sembra essere parte del Servizio Identificazione Mod di Terze Parti di Mod Manager (TPMI in inglese). Questo servizio aiuta utenti e sviluppatori ad identificare le mod nel Mod Manager e in altri strumenti. Per favore inserisci le informazioni seguenti. Questa informazione verrà inviata a ME3Tweaks per recensione prima che sia aggiunta al servizio TPMI.</system:String>
+	<system:String x:Key="string_pleaseEnterModInfoForTPMI">Questa mod non sembra essere parte del Servizio Identificazione Mod di Terze Parti del Mod Manager (TPMI in inglese). Questo servizio aiuta utenti e sviluppatori a identificare le mod nel Mod Manager e in altri strumenti. Per favore inserisci le informazioni seguenti, verranno inviate a ME3Tweaks per la revisione prima che la mod venga aggiunta al servizio TPMI.</system:String>
 	<system:String x:Key="string_nameOfThisModRequired">Nome di questa mod (richiesto)</system:String>
 	<system:String x:Key="string_modURL">URL della mod</system:String>
 	<system:String x:Key="string_dialog_invalidModNameWillResolveToNothing">Il nome della mod specificata non può essere usato in quanto risulterà in un nome di cartella invalido sul filesystem. Per favore scegli un nome differente</system:String>
@@ -675,7 +675,7 @@
 	<system:String x:Key="string_tooltip_texturesTab">Elenco di tutte le Texture Mod installate con gli strumenti di modding delle texture</system:String>
 	<system:String x:Key="string_tooltip_otherTab">Informazioni extra riguardo l'installazione del gioco</system:String>
 	<system:String x:Key="string_mustUseExternalTool">È necessario utilizzare uno strumento esterno</system:String>
-	<system:String x:Key="string_dialog_otTexturesImported">Le texture per la trilogia originale vengono installate con ALOT Installer o Mass Effect Modder, disponibili nel menu Strumenti. Le Texture Mod sono state importate nella rispettiva cartella del gioco della libreria delle mod di Mod Manager, nella cartella Textures.</system:String>
+	<system:String x:Key="string_dialog_otTexturesImported">Le texture per la trilogia originale vengono installate con ALOT Installer o Mass Effect Modder, disponibili nel menu Strumenti. Le Texture Mod sono state importate nella rispettiva cartella del gioco della libreria delle mod del Mod Manager, nella cartella Textures.</system:String>
 	<system:String x:Key="string_next">Successivo</system:String>
 	<system:String x:Key="string_previous">Precedente</system:String>
 	<system:String x:Key="string_skipTutorial">Salta il tutorial</system:String>
@@ -1023,7 +1023,7 @@
 	<system:String x:Key="string_debugging">Debugging</system:String>
 	<system:String x:Key="string_tooltip_removesThisModFromYourLibrary" xml:space="preserve">Rimuove questa mod dalla tua libreria delle mod.&#10;NON la rimuove dalla installazione di nessun gioco</system:String>
 	<system:String x:Key="string_developerTools">Strumenti per sviluppatori</system:String>
-	<system:String x:Key="string_backupFileFetcher">Recuperatore dei File di Backup</system:String>
+	<system:String x:Key="string_backupFileFetcher">Recuperatore di File di Backup</system:String>
 	<system:String x:Key="string_tooltip_backupFileFetcher">Cerca e recupera file dal gioco base e dai DLC, inclusi gli SFAR</system:String>
 	<system:String x:Key="string_debug">Debug</system:String>
 	<system:String x:Key="string_requiresSelectedMod">Richiede la mod selezioanta</system:String>
@@ -1128,7 +1128,7 @@
 	<system:String x:Key="string_runAutoTOCOnMassEffect2LegendaryEdition">Avvia l'AutoTOC su Mass Effect 2 (Legendary Edition)</system:String>
 	<system:String x:Key="string_runAutoTOCOnMassEffect3LegendaryEdition">Avvia l'AutoTOC su Mass Effect 3 (Legendary Edition)</system:String>
 	<system:String x:Key="string_massEffectModderForLegendaryEdition">Mass Effect Modder (per la Legendary Edition)</system:String>
-	<system:String x:Key="string_prereleaseNotice">Questa è una build pre-release del ME3Tweaks Mod Manager. Non distribuire mod da questa build. Potrebbero esserci cambiamenti danneggianti che causerebbero alle mod di questa build il non funzionamento su build future.</system:String>
+	<system:String x:Key="string_prereleaseNotice">Questa è una build di pre-release di ME3Tweaks Mod Manager. Non distribuire mod con questa build. Potrebbero esserci modifiche incompatibili che impedirebbero alle mod fatte per questa build di funzionare su build future.</system:String>
 	<system:String x:Key="string_failedToCompileCoalescedFile">Compilazione del file coalesced fallita</system:String>
 	<system:String x:Key="string_interp_errorCompilingm3mX">Errore durante la compilazione del file mod m3m: {0}</system:String>
 	<system:String x:Key="string_errorCompilingm3m">Errore durante la compilazione di m3m</system:String>
@@ -1193,7 +1193,7 @@
 	<system:String x:Key="string_tooltip_addStarterKitContent">Permette di aggiungere a una Mod DLC dei contenuti che sono normalmente aggiunti con l'utilizzo di uno Starter Kit, come un file di avvio</system:String>
 	<system:String x:Key="string_installStandaloneFiles">Installa file a sé stanti</system:String>
 	<system:String x:Key="string_trilogySaveEditor">Editor dei Salvataggi della Trilogia</system:String>
-	<system:String x:Key="string_tooltip_trilogySaveEditor">Editor dei salvataggi della Trilogia di Mass Effect e della Legendary Edition</system:String>
+	<system:String x:Key="string_tooltip_trilogySaveEditor">Editor dei Salvataggi della Trilogia di Mass Effect e della Legendary Edition</system:String>
 	<system:String x:Key="string_blankItemToAvoidBreakingTheInterface">Elemento vuoto per evitare di rompere l'interfaccia</system:String>
 	<system:String x:Key="string_tooltip_installHeadmorph">Installa un headmorph da questa mod ad un salvataggio esistente</system:String>
 	<system:String x:Key="string_bootIntoSpecificSaveFile">Avvia il gioco all'interno di un salvataggio specifico</system:String>
@@ -1233,33 +1233,33 @@
 	<system:String x:Key="string_dialog_modUsesTheseOptionKeys">{0} utilizza le seguenti chiavi di opzione nel suo job CUSTOMDLC. È possibile usare queste chiavi per rilevare se queste opzioni sono state scelte quando la mod è stata installata.</system:String>
 	<system:String x:Key="string_interp_checkingPackagesXY">Controllo dei pacchetti {0}/{1}</system:String>
 	<system:String x:Key="string_interp_finishedPackageCheckIssuesCountIssuesFound">Controllo dei pacchetti terminato: {0} problemi trovati</system:String>
-	<system:String x:Key="string_checkingPackages">Controllo dei pacchetti</system:String>
-	<system:String x:Key="string_finishedCheckingPackages">Controllo dei pacchetti finito</system:String>
+	<system:String x:Key="string_checkingPackages">Controllo dei pacchetti in corso</system:String>
+	<system:String x:Key="string_finishedCheckingPackages">Controllo dei pacchetti terminato</system:String>
 	<system:String x:Key="string_packageCheckFoundIssues">Il controllo dei pacchetti ha riscontrato problemi</system:String>
 	<system:String x:Key="string_theFollowingPackagesFailedToOpen">L'apertura dei seguenti pacchetti non è riuscita:</system:String>
-	<system:String x:Key="string_dialog_restoreRequestedButUnavailable" xml:space="preserve">{0} è stato progettato per ripristinare il gioco prima dell'installazione, ma un backup non è disponibile. Questo potrebbe portare a comportamenti indesiderati dovuti a stati di gioco diversi al momento dell'installazione.\n\nContinuare l'installazione senza ripristinare un backup?</system:String>
-	<system:String x:Key="string_dialog_restoreRequestedConfirmation" xml:space="preserve">{0} è stato progettato per ripristinare il gioco prima dell'installazione, ma un backup non è disponibile. Questo potrebbe portare a comportamenti indesiderati dovuti a stati di gioco diversi al momento dell'installazione.\n\nContinuare l'installazione senza ripristinare un backup?</system:String>
+	<system:String x:Key="string_dialog_restoreRequestedButUnavailable" xml:space="preserve">{0} serve per ripristinare il gioco prima dell'installazione, ma non ci sono backup disponibili. Ciò potrebbe portare a comportamenti indesiderati dovuti a stati diversi del gioco al momento dell'installazione.\n\nVuoi continuare con l'installazione senza ripristinare un backup?</system:String>
+	<system:String x:Key="string_dialog_restoreRequestedConfirmation" xml:space="preserve">{0} serve per ripristinare il gioco prima dell'installazione. Ripristinare il gioco dal backup annullerà tutte le modifiche applicate ad esso (senza toccare i salvataggi).\n\nVuoi ripristinare il gioco prima dell'installazione?</system:String>
 	<system:String x:Key="string_gameRestoreRequested">Richiesta di ripristino del gioco</system:String>
-	<system:String x:Key="string_continueClosingTheApplicationQuestion">Continuare a chiudere l'applicazione?</system:String>
+	<system:String x:Key="string_continueClosingTheApplicationQuestion">Vuoi procedere con la chiusura dell'applicazione?</system:String>
 	<system:String x:Key="string_backgroundProcessRunning">Processo in background in esecuzione</system:String>
 	<system:String x:Key="string_cleaningUpPleaseWait">Pulizia, attendere prego</system:String>
-	<system:String x:Key="string_modManagerIsPerformingCleanupOptionsAndWillAutomaticallyCloseWhenCompletennYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose" xml:space="preserve">Il Mod Manager sta eseguendo le operazioni di pulizia e si chiuderà automaticamente al termine.\n\nSe necessario, è possibile chiudere forzatamente Mod Manager tenendo premuto il tasto Shift sinistro mentre si fa clic sul tasto X, nel caso in cui si trovi in uno stato in cui non vuole chiudersi.</system:String>
+	<system:String x:Key="string_modManagerIsPerformingCleanupOptionsAndWillAutomaticallyCloseWhenCompletennYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose" xml:space="preserve">Il Mod Manager sta eseguendo le operazioni di pulizia e si chiuderà automaticamente al termine.\n\nSe necessario, è possibile chiudere forzatamente il Mod Manager tenendo premuto il tasto Shift sinistro mentre si fa clic sul tasto X, nel caso in cui si trovi in uno stato in cui non vuole chiudersi.</system:String>
 	<system:String x:Key="string_operationInProgress">Operazione in corso</system:String>
-	<system:String x:Key="string_modManagerWillCompleteItsCurrentTaskAndThenCloseAutomaticallynnYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose" xml:space="preserve">Il Mod Manager completerà l'attività corrente e si chiuderà automaticamente.\n\nSe necessario, è possibile chiudere forzatamente Mod Manager tenendo premuto il tasto Shift sinistro mentre si fa clic sul tasto X, nel caso in cui si trovi in uno stato in cui non vuole chiudersi.</system:String>
+	<system:String x:Key="string_modManagerWillCompleteItsCurrentTaskAndThenCloseAutomaticallynnYouCanForciblyCloseModManagerIfNecessaryByHoldingLeftShiftWhenClickingTheXButtonIfItGetsIntoAStateWhereItDoesntWantToClose" xml:space="preserve">Il Mod Manager completerà l'attività corrente e si chiuderà automaticamente.\n\nSe necessario, è possibile chiudere forzatamente il Mod Manager tenendo premuto il tasto Shift sinistro mentre si fa clic sul tasto X, nel caso in cui si trovi in uno stato in cui non vuole chiudersi.</system:String>
 	<system:String x:Key="string_useExperimentalDownloadManagerForThisLinkQuestion">Utilizzare un gestore di download sperimentale per questo link?</system:String>
-	<system:String x:Key="string_useExperiment">Utilizzare l'esperimento</system:String>
+	<system:String x:Key="string_useExperiment">Usa l'esperimento</system:String>
 	<system:String x:Key="string_importOrInstallTheseMemFilesQuestion">Importare o installare questi file .mem?</system:String>
 	<system:String x:Key="string_importOrInstall">Importare o installare</system:String>
 	<system:String x:Key="string_import">Importare</system:String>
-	<system:String x:Key="string_importingTextureModsToLibrary">Importazione di mod di texture nella libreria</system:String>
-	<system:String x:Key="string_importedTextureMods">Importazione di mod di texture</system:String>
+	<system:String x:Key="string_importingTextureModsToLibrary">Importazione di Texture Mod nella libreria in corso</system:String>
+	<system:String x:Key="string_importedTextureMods">Texture Mod importate</system:String>
 	<system:String x:Key="string_interp_errorDecompilingM3MMessage">Errore nella decompilazione del file m3m: {0}</system:String>
 	<system:String x:Key="string_errorDecompilingM3m">Errore nella decompilazione di m3m</system:String>
-	<system:String x:Key="string_merging2DATables">Unione delle tabelle 2DA</system:String>
-	<system:String x:Key="string_merged2DATables">Tabelle 2DA fuse tra loro</system:String>
+	<system:String x:Key="string_merging2DATables">Unione delle tabelle 2DA in corso</system:String>
+	<system:String x:Key="string_merged2DATables">Tabelle 2DA unite</system:String>
 	<system:String x:Key="string_allMemFilesMustBeForTheSameGame">Tutti i file .mem devono riguardare lo stesso gioco.</system:String>
 	<system:String x:Key="string_error">Errore</system:String>
-	<system:String x:Key="string_tooltip_moddescEditor">Editor di Mod Manager per i file moddesc.ini</system:String>
+	<system:String x:Key="string_tooltip_moddescEditor">Editor del Mod Manager per i file moddesc.ini</system:String>
 	<system:String x:Key="string_listOptionKeys">Elenca le chiavi di opzione degli Alternativi del DLC</system:String>
 	<system:String x:Key="string_tooltip_listOptionKeys" xml:space="preserve">Elenca le chiavi di opzione (OptionKey) per ogni Alternativo che questa mod può installare (solo per le Mod DLC).&#10;Si possono usare in altre mod per cambiare il comportamento della loro installazione quando questa mod è stata installata in precedenza con quelle opzioni selezionate.</system:String>
 	<system:String x:Key="string_tooltip_configureSettingsForModManager">Configura le impostazioni del Mod Manager</system:String>
@@ -1322,7 +1322,7 @@
 	<system:String x:Key="string_textureModsMustBeImportedBeforeUse">Le Texture Mod devono essere importate prima di poter essere utilizzate</system:String>
 	<system:String x:Key="string_dialog_mergeModFeatureLevel1">La mergemod che stai compilando sarà usata in una mod che punta a ModDesc 8.2 o inferiore?</system:String>
 	<system:String x:Key="string_useEnhancedFeaturesQuestion">Utilizzare funzioni avanzate?</system:String>
-	<system:String x:Key="string_dialog_unsupportedMergemodVersionMayBeTooNew">Versione di mergemod non supportata: potrebbe essere troppo nuova per questa versione di Mod Manager.</system:String>
+	<system:String x:Key="string_dialog_unsupportedMergemodVersionMayBeTooNew">Versione di mergemod non supportata: potrebbe essere troppo nuova per questa versione del Mod Manager.</system:String>
 	<system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Il file della merge mod non ha il magic header corretto</system:String>
 	<system:String x:Key="string_interp_unsupportedMergeModVersionVersionX">Versione della Merge Mod non supportata: {0}</system:String>
 	<system:String x:Key="string_interp_invalidMergeModManifestReason" xml:space="preserve">Manifest della merge mod non valido:\n{0}</system:String>
@@ -1716,7 +1716,7 @@
 	<system:String x:Key="string_interp_failedToCopyModdescini">Impossibile copiare il testo di moddesc.ini negli appunti: {0}</system:String>
 	<system:String x:Key="string_moddescIniNotChanged">Il file moddesc.ini esistente è uguale a quello generato</system:String>
 	<system:String x:Key="string_interp_savedModdsecini">Il file moddesc.ini è stato aggiornato per {0}. Ricarica la libreria per vedere i cambiamenti.</system:String>
-	<system:String x:Key="string_interp_couldNotSaveModdescini">Impossibile salvare i file moddesc.ini: {0}</system:String>
+	<system:String x:Key="string_interp_couldNotSaveModdescini">Impossibile salvare il file moddesc.ini: {0}</system:String>
 	<system:String x:Key="string_modLoadedSuccessfully">Mod caricata con successo</system:String>
 	<system:String x:Key="string_moddesciniEditor">Editor di moddesc.ini</system:String>
 	<system:String x:Key="string_openModdesciniDocumentation">Apri la documentazione di moddesc.ini</system:String>
@@ -1817,7 +1817,7 @@
 	<system:String x:Key="string_tooltip_deleteMultilist">Elimina la lista multipla</system:String>
 	<system:String x:Key="string_tooltip_deleteFileFromMultilist">Elimina il file dall'elenco multiplo</system:String>
 	<system:String x:Key="string_tooltip_mde_serialize">Converte i dati presenti in questo editor in un file moddesc.ini</system:String>
-	<system:String x:Key="string_tooltip_mde_saveToMod">Salva il testo moddesc.ini nella tua mod. Viene creata una copia di backup di quello esistente, nel caso in cui sia necessario tornare indietro</system:String>
+	<system:String x:Key="string_tooltip_mde_saveToMod">Salva il testo di moddesc.ini nella tua mod. Viene creata una copia di backup di quello esistente, nel caso in cui sia necessario tornare indietro</system:String>
 	<system:String x:Key="string_closeTheEditorForThisMod">Chiudere l'editor per questa mod?</system:String>
 	<system:String x:Key="string_haveYouSavedChanges">Hai salvato le modifiche?</system:String>
 	<system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Impossibile aggiungere il file di rimpiazzo al mod job: {0} non esiste ma è specificato dal job.</system:String>
@@ -2003,7 +2003,7 @@
 	<system:String x:Key="string_interp_copyingX">Copia di {0}</system:String>
 	<system:String x:Key="string_interp_failedToRestoreGameDueToErrorX">Impossibile ripristinare il gioco a causa del seguente errore: {0}</system:String>
 	<system:String x:Key="string_errorRestoringGame">Errore durante il ripristino del gioco</system:String>
-	<system:String x:Key="string_tooltip_loadAllSaves" xml:space="preserve">Ottieni tutti i salvataggi da tutte le carriere; questa operazione potrebbe utilizzare molta memoria se hai molti salvataggi.&#10;Lo stato predefinito non è selezionato, saranno pertanto caricati i primi 50 salvataggi da ogni carriera</system:String>
+	<system:String x:Key="string_tooltip_loadAllSaves" xml:space="preserve">Ottieni tutti i salvataggi da tutte le carriere; questa operazione potrebbe utilizzare molta memoria se hai molti salvataggi.&#10;Lo stato predefinito è non selezionato, che carica i primi 50 salvataggi da ogni carriera</system:String>
 	<system:String x:Key="string_loadAllSavesMayUseALotOfMemory">Carica tutti i salvataggi (potrebbe utilizzare molta memoria)</system:String>
 	<system:String x:Key="string_selectThisSave">Seleziona questo salvataggio</system:String>
 	<system:String x:Key="string_careers">Carriere</system:String>
@@ -2011,7 +2011,7 @@
 	<system:String x:Key="string_lastPlayed">Giocato l'ultima volta:</system:String>
 	<system:String x:Key="string_timePlayed">Tempo di gioco:</system:String>
 	<system:String x:Key="string_difficulty">Difficoltà:</system:String>
-	<system:String x:Key="string_gender">Sesso:</system:String>
+	<system:String x:Key="string_gender">Genere:</system:String>
 	<system:String x:Key="string_readingSavedGames">Lettura dei salvataggi in corso</system:String>
 	<system:String x:Key="string_selectASaveFile">Seleziona un salvataggio</system:String>
 	<system:String x:Key="string_interp_unknownMapX">Mappa sconosciuta: {0}</system:String>
@@ -2022,7 +2022,7 @@
 	<system:String x:Key="string_restartMission">Ricomincia Missione</system:String>
 	<system:String x:Key="string_interp_saveX">Salvataggio {0}</system:String>
 	<system:String x:Key="string_exportSave">Esporta salvataggio</system:String>
-	<system:String x:Key="string_legendSave">Legenda salvataggio</system:String>
+	<system:String x:Key="string_legendSave">Salvataggio leggendario</system:String>
 	<system:String x:Key="string_interp_unknownSaveTypeX">Tipo di salvataggio sconosciuto: {0}</system:String>
 	<system:String x:Key="string_interp_noBackupMessage">Non ci sono backup disponibili per {0}. Se continui non potrai crearne più, dato che il gioco verrà modificato. Sei sicuro di voler continuare?</system:String>
 	<system:String x:Key="string_backupWarning">Avviso per il backup</system:String>
@@ -2083,7 +2083,7 @@
 	<system:String x:Key="string_conflictingDLCModuleNumbers">Numeri di modulo dei DLC in conflitto</system:String>
 	<system:String x:Key="string_interp_dialogMountPrioirtyConflicts" xml:space="preserve">La priorità di montaggio del DLC per questa mod va in conflitto con un DLC esistente:{0}\n\nI numeri della priorità di montaggio sono usati per determinare quali file usare in caso di nomi dei package ambigui (file con lo stesso nome esistono i percorsi differenti). Valori in conflitto causeranno comportamenti indefiniti e dovrebbero essere evitati. Rilasciare mod in conflitto tra loro che non fanno parte dello stesso gruppo (come varianti delle mod) porterà probabilmente la tua mod a finire nella blacklist dei modding tools.\n\nVuoi continuare comunque?</system:String>
 	<system:String x:Key="string_conflictingDLCMountPriorityNumbers">Numeri di priorità del montaggio dei DLC in conflitto</system:String>
-	<system:String x:Key="string_dialog_discourageUseOfSPSaveRequired" xml:space="preserve">Hai scelto di rendere questa mod richiesta dal file di salvataggio. Quando un utente rimuove la tua mod (per scelta o riparazione), i salvataggi creati con questo DLC installato non saranno più utilizzabili dall'utente. In quasi ogni circostanza questo non è piacevole per l'utente. Dovresti scegliere questa opione solo se sai davvero quello che stai facendo.\n\nUsare questa flag di montaggio comunque?</system:String>
+	<system:String x:Key="string_dialog_discourageUseOfSPSaveRequired" xml:space="preserve">Hai scelto di rendere i file di salvataggio dipendenti da questa mod. Quando un utente rimuove la tua mod (per scelta o riparazione), i salvataggi creati con questo DLC installato non saranno più utilizzabili dall'utente. In quasi ogni circostanza non è piacevole per l'utente. Dovresti scegliere questa opzione solo se sai davvero quello che stai facendo.\n\nVuoi comunque usare questa flag di montaggio?</system:String>
 	<system:String x:Key="string_undesirableMountFlag">Flag di montaggio non desiderabile</system:String>
 	<system:String x:Key="string_interp_dialogWillDeleteExistingMod" xml:space="preserve">Creare questa mod eliminerà una cartella esistente nella libreria delle mod:\n{0}\n\nContinuare?</system:String>
 	<system:String x:Key="string_dialogErrorDeletingExistingMod">C'è stato un errore durante l'eliminazione della cartella della mod esistente. Probabilmente un programma aperto sta gestendo un file o una cartella al suo intern. Guarda i log del Mod Manager per maggiori informazioni</system:String>
@@ -2165,7 +2165,7 @@
 	<system:String x:Key="string_dialog_textureInstallErrorsOccurred" xml:space="preserve">I seguenti errori sono stati segnalati durante l'installazione telle texture di Mass Effect Modder. Ulteriori informazioni sono disponibili nel log dell'applicazione del Mod Manager.\nIl tuo gioco potrebbe trovarsi in uno stato rotto a causa di questi errori.</system:String>
 	<system:String x:Key="string_dialog_textureModPrecheckIssues" xml:space="preserve">I seguenti problemi sono stati rilevati nella tua installazione del gioco prima dell'installazione delle texture. Ulteriori informazioni sono disponibili nel log dell'applicazione del Mod Manager.\nIl tuo gioco non è stato modificato.</system:String>
 	<system:String x:Key="string_dialog_bigScaryTextureInstallWarning" xml:space="preserve">Una volta installate le texture, non potrai più installare o aggiornare altre mod di contenuto senza ripristinare l'intero gioco da backup. Il Mod Manager ti avvisera' se dovessi cercare di installare una mod che violi queste procedure per prevenire instabilita' del gioco.\n\nASSICURATI DI AVER GIÀ INSTALLATO TUTTE LE MOD NON TEXTURE A QUESTO PUNTO.\n\nSei sicuro di voler continuare?</system:String>
-	<system:String x:Key="string_dialog_bigScaryTextureInstallWarningBatch" xml:space="preserve">Questo Gruppo di Installazione contiene mod di texture. Una volta installate le Texture Mod, NON SARÀ POSSIBILE installare altre mod di contenuto senza ripristinare l'intero gioco dal backup. Ciò include l'installazione degli aggiornamenti delle mod, così come la reinstallazione di questo Gruppo di Installazione. Mod Manager ti avvertirà se tenterai di installare una mod che viola queste procedure, per evitare l'instabilità del gioco e degli strumenti.\n\nSei assolutamente sicuro di voler continuare?</system:String>
+	<system:String x:Key="string_dialog_bigScaryTextureInstallWarningBatch" xml:space="preserve">Questo Gruppo di Installazione contiene Texture Mod. Una volta installate le Texture Mod, NON SARÀ POSSIBILE installare altre mod di contenuto senza ripristinare l'intero gioco dal backup. Ciò include l'installazione degli aggiornamenti delle mod, così come la reinstallazione di questo Gruppo di Installazione. Mod Manager ti avvertirà se tenterai di installare una mod che viola queste procedure, per evitare l'instabilità del gioco e degli strumenti.\n\nSei assolutamente sicuro di voler continuare?</system:String>
 	<system:String x:Key="string_noExitCodeBrackets">[nessun codice di uscita]</system:String>
 	<system:String x:Key="string_dialog_memNonZeroExitCode">MassEffectModder è terminato con un codice di uscita non nullo: {0}. Questo indica che qualcosa è andato storto.</system:String>
 	<system:String x:Key="string_massEffectModderFiles">File di Mass Effect Modder</system:String>
