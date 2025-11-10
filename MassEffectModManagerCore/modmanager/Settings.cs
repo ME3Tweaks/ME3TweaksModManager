@@ -438,11 +438,18 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _skipDarkNet, value);
         }
 
-        public static bool _showInstalledModsInLibrary;
+        private static bool _showInstalledModsInLibrary;
         public static bool ShowInstalledModsInLibrary
         {
             get => _showInstalledModsInLibrary;
             set => SetProperty(ref _showInstalledModsInLibrary, value);
+        }
+
+        private static int _maxConcurrentImportOperations;
+        public static int MaxConcurrentImportOperations
+        {
+            get => _maxConcurrentImportOperations;
+            set => SetProperty(ref _maxConcurrentImportOperations, value);
         }
 
         #region SESSION ONLY SETTINGS - DO NOT SAVE OR LOAD THESE
@@ -561,6 +568,9 @@ namespace ME3TweaksModManager.modmanager
                 // Only read if value is set so we don't have a blank
                 LE1MiniConsoleKey = LoadSettingString(settingsIni, "ConfigMerge", "LE1MiniConsoleKey", null);
             }
+
+            // Downloads Manager
+            MaxConcurrentImportOperations = LoadSettingInt(settingsIni, "ModManager", "MaxConcurrentImportOperations", 3);
 
             // BETA OPTIONS
             ShowInstalledModsInLibrary = LoadSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", false);
@@ -799,6 +809,9 @@ namespace ME3TweaksModManager.modmanager
                     SaveSettingString(settingsIni, "ConfigMerge", "LE1MiniConsoleKey", LE1MiniConsoleKey);
                 }
                 #endregion
+
+                // Download Manager
+                SaveSettingInt(settingsIni, "ModManager", "MaxConcurrentImportOperations", MaxConcurrentImportOperations);
 
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
                 return SettingsSaveResult.SAVED;
