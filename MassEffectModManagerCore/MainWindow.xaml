@@ -552,7 +552,7 @@
                     </MenuItem>
                     <MenuItem
                         Header="{DynamicResource string_seeWhatsInstalled}"
-                        Command="{Binding ShowinstallationInformationCommand}"
+                        Command="{Binding ShowInstallationInformationCommand}"
                         ToolTip="{DynamicResource string_tooltip_targetInfo}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
@@ -1849,7 +1849,7 @@
                         ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}" />
                     <Button
                         Content="{DynamicResource string_targetInfo}"
-                        Command="{Binding ShowinstallationInformationCommand}"
+                        Command="{Binding ShowInstallationInformationCommand}"
                         Grid.Row="0"
                         Grid.Column="3"
                         Padding="5,0"

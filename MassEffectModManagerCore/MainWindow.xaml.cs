@@ -815,7 +815,7 @@ namespace ME3TweaksModManager
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
         public ICommand StartGameCommand { get; set; }
-        public ICommand ShowinstallationInformationCommand { get; set; }
+        public ICommand ShowInstallationInformationCommand { get; set; }
         public ICommand BackupCommand { get; set; }
         public ICommand DeployModCommand { get; set; }
         public ICommand DeleteModFromLibraryCommand { get; set; }
@@ -868,7 +868,7 @@ namespace ME3TweaksModManager
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
-            ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
+            ShowInstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
             BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
             RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, IsModSelectedInDevMode);
