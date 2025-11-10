@@ -632,10 +632,10 @@ namespace ME3TweaksModManager.modmanager.importer
                     }
                     continue;
                 }
+
                 //Ensure directory
                 var modDirectory = M3LoadedMods.GetExtractionDirectoryForMod(mod);
                 var sanitizedPath = Path.Combine(modDirectory, MUtilities.SanitizePath(mod.ModName));
-
 
                 if (mod is Mod && Directory.Exists(sanitizedPath))
                 {
