@@ -422,6 +422,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void OnSelectedBatchQueueChanged()
         {
+            if (mainwindow == null)
+            {
+                // Window has closed
+                return;
+            }
+
             GameTargetWPF currentTarget = SelectedGameTarget;
             SelectedGameTarget = null;
             InstallationTargetsForGroup.ClearEx();
