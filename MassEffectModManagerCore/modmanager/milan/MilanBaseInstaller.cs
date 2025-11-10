@@ -47,12 +47,63 @@ namespace ME3TweaksModManager.modmanager.milan
             // Game executable directory is already included by default
 
 
+
             // Required for main menu to load
             "EntryMenu.pcc",
 
-            // Texture assets
+            // Beleive it or not this file is required for MP map transitions
+            // gonna guess it's the transition map. Without it, game dies transitioning MP maps
+            "entry.pcc",
 
-            // Shader cache
+            // Required for MP to not crash and die
+            "SFXGUI_WeaponUIDataSF.pcc",
+
+            // Basegame MP
+            "SFXPawn_Atlas.pcc",
+            "SFXPawn_Banshee.pcc",
+            "SFXPawn_Brute.pcc",
+            "SFXPawn_Cannibal.pcc",
+            "SFXPawn_Centurion.pcc",
+            "SFXPawn_GethHunter.pcc",
+            "SFXPawn_GethPrime.pcc",
+            "SFXPawn_GethPyro.pcc",
+            "SFXPawn_GethRocketTrooper.pcc",
+            "SFXPawn_GethTrooper.pcc",
+            "SFXPawn_Guardian.pcc",
+            "SFXPawn_Gunner.pcc",
+            "SFXPawn_Harvester.pcc",
+            "SFXPawn_Husk.pcc",
+            "SFXPawn_Marauder.pcc",
+            "SFXPawn_Nemesis.pcc",
+            "SFXPawn_Phantom.pcc",
+            "SFXPawn_Ravager.pcc",
+            "SFXPawn_Trooper.pcc",
+
+            // Audio - Enemies
+            "ss_cerberus_trooper_S_DEU.afc",
+            "ss_cerberus_trooper_S_FRA.afc",
+            "ss_cerberus_trooper_S_Int.afc",
+            "ss_cerberus_trooper_S_ITA.afc",
+            "ss_exertion_palette_D_DEU.afc",
+            "ss_exertion_palette_D_FRA.afc",
+            "ss_exertion_palette_D_Int.afc",
+            "ss_exertion_palette_D_ITA.afc",
+            "Wwise_Crt_Cerb_Nem_SFX.afc",
+            "Wwise_Crt_Cerb_Phtm_SFX.afc",
+            "Wwise_Crt_Geth_Hunter_SFX.afc",
+            "Wwise_Crt_Geth_Prime_SFX.afc",
+            "Wwise_Crt_Geth_Pyro_SFX.afc",
+            "Wwise_Crt_Geth_Trooper_SFX.afc",
+            "Wwise_Crt_Reap_Banshee_SFX.afc",
+            "Wwise_Crt_Reap_Brute_SFX.afc",
+            "Wwise_Crt_Reap_Cann_SFX.afc",
+            "Wwise_Crt_Reap_Harvester_SFX.afc",
+            "Wwise_Crt_Reap_Husk_SFX.afc",
+            "Wwise_Crt_Reap_Marauder_SFX.afc",
+            "wwise_crt_reap_ravenger_sfx.afc",
+            "Wwise_Crt_Reap_Swarmer_SFX.afc",
+
+
 
             "AreaMap_NumIcon.pcc",
             "BIOGame_DEU.tlk",
@@ -101,13 +152,18 @@ namespace ME3TweaksModManager.modmanager.milan
             // Initialize the base installation for Milan
         }
 
-        private void CopySourceFiles(string sourceDirectory, string[] files, string destGamePath, string subFolder, MBIInterop interop)
+        private void CopySourceFiles(string sourceDirectory, string[] files, string destGamePath, string subFolder, MBIInterop interop, params string[] extraPatterns)
         {
             var sourceBasePath = Path.Combine(sourceDirectory, subFolder);
             var destFolder = Path.Combine(destGamePath, subFolder);
             Directory.CreateDirectory(destFolder);
             var sourceFiles = Directory.GetFiles(sourceBasePath, "*.*", SearchOption.AllDirectories)
                 .Where(f => files.Contains(Path.GetFileName(f))).ToList();
+
+            foreach (var pattern in extraPatterns)
+            {
+                sourceFiles.AddRange(Directory.GetFiles(sourceBasePath, pattern, SearchOption.AllDirectories));
+            }
 
             foreach (var file in sourceFiles)
             {
@@ -127,6 +183,44 @@ namespace ME3TweaksModManager.modmanager.milan
 
                 M3Log.Information($"Copying {file} to {destFile}");
                 File.Copy(file, destFile, true);
+
+                // Copy localizations
+                CopyLocalizationsOfFile(file, destFolder);
+            }
+        }
+
+        public static readonly MELocalization[] SupportedVOLanguages = new[]
+        {
+            MELocalization.INT,
+            MELocalization.FRA,
+            MELocalization.DEU,
+            MELocalization.ITA,
+            // Any other languages that had VO?
+        };
+
+
+        private void CopyLocalizationsOfFile(string file, string destFolder)
+        {
+            var dir = Directory.GetParent(file).FullName;
+            foreach (var loc in SupportedVOLanguages)
+            {
+                // LOC_
+                var name = file.SetUnrealLocalization(MEGame.LMP, loc, true);
+                var testPath = Path.Combine(dir, name + @".pcc");
+                if (File.Exists(testPath))
+                {
+                    var outPath = Path.Combine(destFolder, name);
+                    File.Copy(testPath, outPath);
+                }
+
+                // Straight loc
+                name = file.SetUnrealLocalization(MEGame.LMP, loc, false);
+                testPath = Path.Combine(dir, name + @".pcc");
+                if (File.Exists(testPath))
+                {
+                    var outPath = Path.Combine(destFolder, name);
+                    File.Copy(testPath, outPath);
+                }
             }
         }
 
@@ -144,12 +238,12 @@ namespace ME3TweaksModManager.modmanager.milan
             try
             {
                 CopySourceFiles(sourceGameTarget.TargetPath, BinaryFiles, destinationFolderPath, "Binaries", interop);
-                CopySourceFiles(sourceGameTarget.TargetPath, CookedFiles, destinationFolderPath, "BioGame\\CookedPCConsole", interop);
+                CopySourceFiles(sourceGameTarget.TargetPath, CookedFiles, destinationFolderPath, "BioGame\\CookedPCConsole", interop, "*.tfc");
                 CopySourceFiles(sourceGameTarget.TargetPath, MovieFiles, destinationFolderPath, "BioGame\\Movies", interop);
 
                 // Create stub directories, some of our tooling requires them to exist, even if they're empty.
                 // Required by AutoTOC. I don't want to have to add a folder check to this, so we make it exist
-                Directory.CreateDirectory(Path.Combine(destinationFolderPath, @"Engine", @"Shaders")); 
+                Directory.CreateDirectory(Path.Combine(destinationFolderPath, @"Engine", @"Shaders"));
 
 
                 // Patch to shrink them?
