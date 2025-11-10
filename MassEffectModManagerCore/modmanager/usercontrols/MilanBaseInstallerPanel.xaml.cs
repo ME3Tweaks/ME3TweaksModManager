@@ -1,9 +1,12 @@
 ﻿using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.milan;
 using ME3TweaksModManager.ui;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -84,17 +87,43 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return false;
             }
 
+            bool nukeContents = false;
             var filesInDir = Directory.GetFiles(InstallLocation);
             if (filesInDir.Length > 0)
             {
-                M3Log.Error($"Installation path '{InstallLocation}' is not empty. It contains {filesInDir.Length} files. This location cannot be used.");
-                return false;
+                var userResult = M3L.ShowDialog(window, $"The install location is not empty. If you proceed, all contents will be deleted and a new installation will be placed at the specified location:\n\n{InstallLocation}", "Warning: Directory not empty", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (userResult == MessageBoxResult.OK)
+                {
+                    M3Log.Information($"Installation path '{InstallLocation}' is not empty. The user indicated they want to use it anyways!");
+                }
+                else
+                {
+                    M3Log.Error($"Installation path '{InstallLocation}' is not empty. It contains {filesInDir.Length} files. This location cannot be used.");
+                    return false;
+                }
             }
-            var foldersInDir = Directory.GetDirectories(InstallLocation);
-            if (foldersInDir.Length > 0)
+
+            if (!nukeContents)
             {
-                M3Log.Error($"Installation path '{InstallLocation}' is not empty. It contains {foldersInDir.Length} subfolders. This location cannot be used.");
-                return false;
+                var foldersInDir = Directory.GetDirectories(InstallLocation);
+                if (foldersInDir.Length > 0)
+                {
+                    var userResult = M3L.ShowDialog(window, $"The install location is not empty. If you proceed, all contents will be deleted and a new installation will be placed at the specified location:\n\n{InstallLocation}", "Warning: Directory not empty", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                    if (userResult == MessageBoxResult.OK)
+                    {
+                        M3Log.Information($"Installation path '{InstallLocation}' is not empty. The user indicated they want to use it anyways!");
+                    }
+                    else
+                    {
+                        M3Log.Error($"Installation path '{InstallLocation}' is not empty. It contains {foldersInDir.Length} subfolders. This location cannot be used.");
+                        return false;
+                    }
+                }
+            }
+
+            if (nukeContents)
+            {
+                MUtilities.DeleteFilesAndFoldersRecursively(InstallLocation, deleteDirectoryItself: false);
             }
 
             // Todo: Hash check files.
