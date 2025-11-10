@@ -30,6 +30,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\AdonisUI\AdonisUI.csproj" />
   </ItemGroup>
 </Project>
