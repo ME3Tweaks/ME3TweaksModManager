@@ -194,7 +194,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="CliWrap" Version="3.8.2" />
+		<PackageReference Include="CliWrap" Version="3.9.0" />
 		<PackageReference Include="DarkNet" Version="2.3.0" />
 		<PackageReference Include="Flurl" Version="4.0.0" />
 		<PackageReference Include="Flurl.Http" Version="4.0.2" />
@@ -216,7 +216,7 @@
 		<PackageReference Include="Octokit" Version="14.0.0" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
-		<PackageReference Include="Serilog" Version="4.2.0" />
+		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
