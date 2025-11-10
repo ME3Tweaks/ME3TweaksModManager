@@ -752,13 +752,15 @@ namespace ME3TweaksModManager
 
         private void DM_OnDownloadCompleted(object sender, EventArgs e)
         {
-            // Download has completed
+            // A download has completed
+            // Mod may be importing still
             if (DownloadingTask != null)
             {
                 var downloads = DownloadManager.GetDownloads();
-                if (downloads.Count == 1)
+                if (downloads.Count(x=>x.Value.IsDownloading) == 0)
                 {
-
+                    BackgroundTaskEngine.SubmitJobCompletion(DownloadingTask);
+                    DownloadingTask = null;
                 }
             }
         }
@@ -3991,7 +3993,6 @@ namespace ME3TweaksModManager
                     shouldBringToFG = true;
                     Activate();
                     DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink);
-
                     ShowDownloadManager();
                 }
 
