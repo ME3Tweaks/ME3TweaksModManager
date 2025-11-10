@@ -451,6 +451,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 case MEGame.LE1:
                 case MEGame.LE2:
                 case MEGame.LE3:
+                case MEGame.LMP:
                 case MEGame.LELauncher:
                     return LEHeadersToDLCNamesMap;
                 default:
@@ -503,6 +504,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 case MEGame.LE1:
                 case MEGame.LE2:
                 case MEGame.LE3:
+                case MEGame.LMP:
                     return LESupportedNonCustomDLCJobHeaders;
                 case MEGame.LELauncher:
                     return LELauncherSupportedNonCustomDLCJobHeaders;
@@ -529,6 +531,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 case MEGame.LE1:
                 case MEGame.LE2:
                 case MEGame.LE3:
+                case MEGame.LMP:
                 case MEGame.LELauncher:
                     return new JobHeader[] { }; // LE does not support any DLC headers
                 default:

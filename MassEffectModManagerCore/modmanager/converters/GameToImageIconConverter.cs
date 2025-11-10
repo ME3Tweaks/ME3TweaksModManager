@@ -20,6 +20,7 @@ namespace ME3TweaksModManager.modmanager.converters
         private static string le2IconPath;
         private static string le3IconPath;
         private static string leLauncherIconPath;
+        private static string lmpIconPath;
         private static string unknownIconPath;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -68,6 +69,8 @@ namespace ME3TweaksModManager.modmanager.converters
                     return MippedIconExtension.StaticConvert(le3IconPath, size);
                 case MEGame.LELauncher:
                     return MippedIconExtension.StaticConvert(leLauncherIconPath, size);
+                case MEGame.LMP:
+                    return MippedIconExtension.StaticConvert(lmpIconPath, size);
                 case MEGame.Unknown:
                     return MippedIconExtension.StaticConvert(unknownIconPath, size);
                 default:
@@ -86,6 +89,7 @@ namespace ME3TweaksModManager.modmanager.converters
             le2IconPath = (string)Application.Current.Resources[@"le2gameiconpath"];
             le3IconPath = (string)Application.Current.Resources[@"le3gameiconpath"];
             leLauncherIconPath = (string)Application.Current.Resources[@"lelaunchergameiconpath"];
+            lmpIconPath = (string)Application.Current.Resources[@"lmpgameiconpath"];
             unknownIconPath = (string)Application.Current.Resources[@"unknowngameiconpath"];
             initialized = true;
         }

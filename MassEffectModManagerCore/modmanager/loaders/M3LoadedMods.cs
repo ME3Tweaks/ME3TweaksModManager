@@ -72,6 +72,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (game == MEGame.LE2) return GetLE2ModsDirectory();
             if (game == MEGame.LE3) return GetLE3ModsDirectory();
             if (game == MEGame.LELauncher) return GetLELauncherModsDirectory();
+            if (game == MEGame.LMP) return GetLMPModsDirectory();
             return null;
         }
 
@@ -85,6 +86,9 @@ namespace ME3TweaksModManager.modmanager.loaders
             Directory.CreateDirectory(GetLE2ModsDirectory());
             Directory.CreateDirectory(GetLE3ModsDirectory());
             Directory.CreateDirectory(GetLELauncherModsDirectory());
+
+            // Mod Manager 10: LMP
+            Directory.CreateDirectory(GetLMPModsDirectory());
 
             // Mod Manager 8.0.1: Begin moving data that is portable across M3 installs to the library
             Directory.CreateDirectory(GetBatchInstallGroupsDirectory());
@@ -112,9 +116,10 @@ namespace ME3TweaksModManager.modmanager.loaders
         public static string GetLE3ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE3");
         public static string GetLE2ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE2");
         public static string GetLE1ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE1");
+        public static string GetLELauncherModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LELAUNCHER");
+        public static string GetLMPModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LMP");
 
-        public static string GetLELauncherModsDirectory() =>
-            Path.Combine(GetCurrentModLibraryDirectory(), @"LELAUNCHER");
+
 
         public static string GetTextureLibraryDirectory(MEGame? game = null)
         {
@@ -271,7 +276,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 if (Settings.GenerationSettingLE && !LoadedLE)
                 {
                     LoadedLE = true;
-                    LoadMods(gamesToLoad: new[] { MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LELauncher });
+                    LoadMods(gamesToLoad: new[] { MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LMP, MEGame.LELauncher });
                 }
             }
         }
@@ -388,6 +393,11 @@ namespace ME3TweaksModManager.modmanager.loaders
                 }
                 else
                 {
+                    var lmpmodDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.LMP)
+                        ? Array.Empty<(MEGame, string)>()
+                        : Directory.GetDirectories(GetLMPModsDirectory())
+                            .Select(x => (game: MEGame.LMP, path: Path.Combine(x, @"moddesc.ini")))
+                            .Where(x => File.Exists(x.path)).ToArray();
                     var le3modDescsToLoad = gamesToLoad != null && !gamesToLoad.Contains(MEGame.LE3)
                         ? Array.Empty<(MEGame, string)>()
                         : Directory.GetDirectories(GetLE3ModsDirectory())
@@ -447,12 +457,14 @@ namespace ME3TweaksModManager.modmanager.loaders
                     {
                         if (gamesToLoad == null)
                             LoadedLE = true;
-                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE1))
-                            modDescsToLoad.AddRange(le1modDescsToLoad);
-                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE2))
-                            modDescsToLoad.AddRange(le2modDescsToLoad);
-                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE3))
+                        //if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE1))
+                        //    modDescsToLoad.AddRange(le1modDescsToLoad);
+                        //if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE2))
+                        //    modDescsToLoad.AddRange(le2modDescsToLoad);
+                        //if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE3))
                             modDescsToLoad.AddRange(le3modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LMP))
+                            modDescsToLoad.AddRange(lmpmodDescsToLoad);
                         if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LELauncher))
                             modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
                     }

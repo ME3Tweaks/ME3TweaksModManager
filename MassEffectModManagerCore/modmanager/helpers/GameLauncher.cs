@@ -100,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 if (!LaunchPackage.IsCustomOption)
                 {
                     args += $@" -Subtitles {LaunchPackage.SubtitleSize} ";
-                    if (LaunchPackage.Game == MEGame.LE3)
+                    if (LaunchPackage.Game is MEGame.LE3 or MEGame.LMP)
                     {
                         args += $@"-language={LaunchPackage.ChosenLanguage} ";
                     }

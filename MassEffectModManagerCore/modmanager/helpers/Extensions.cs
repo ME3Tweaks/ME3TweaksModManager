@@ -92,6 +92,7 @@ namespace ME3TweaksModManager.modmanager.helpers
             if (game == MEGame.LE1) return 1;
             if (game == MEGame.LE2) return 2;
             if (game == MEGame.LE3) return 3;
+            if (game == MEGame.LMP) return 4;
             return 0;
         }
 

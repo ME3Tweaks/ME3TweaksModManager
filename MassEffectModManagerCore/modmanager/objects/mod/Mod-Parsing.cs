@@ -826,6 +826,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     Game = MEGame.LELauncher;
                     TargetsLELauncher = true;
                     break;
+                case @"LMP":
+                    Game = MEGame.LMP;
+                    break;
                 default:
                     //Check if this is in ME3 game directory. If it's null, it might be a legacy mod
                     if (game == null)
@@ -838,7 +841,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
                     else
                     {
-                        M3Log.Error($@"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2, ME3, LE1, LE2, LE3, and LELAUNCHER. Value provided: {game}");
+                        M3Log.Error($@"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2, ME3, LE1, LE2, LE3, LMP, and LELAUNCHER. Value provided: {game}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_unknownGameId, game);
                         return;
                     }
