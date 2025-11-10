@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using Microsoft.AppCenter.Crashes;
 using SevenZip;
 using SevenZip.EventArguments;
@@ -93,7 +94,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 throw new Exception(M3L.GetString(M3L.string_interp_theArchiveFileArchivePathIsNoLongerAvailable, archivePath));
             }
 
-            compressPackages &= Game >= MEGame.ME2;
+            compressPackages &= Game is MEGame.ME2 or MEGame.ME3;
 
             SevenZipExtractor archive;
             var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
@@ -101,12 +102,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             bool closeStreamOnFinish = true;
             if (archiveStream != null)
             {
+                M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Stream (EX) - {ModName}", archiveStream);
                 archive = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
                 closeStreamOnFinish = false;
             }
             else
             {
                 archive = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+                M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive SZE (EX) - {ModName}", archive);
             }
 
             var fileIndicesToExtract = new List<int>();
@@ -230,7 +233,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 if (compressPackages)
                 {
-
                     var fToCompress = outputFilePathMapping(args.FileInfo);
                     if (fToCompress.RepresentsPackageFilePath())
                     {

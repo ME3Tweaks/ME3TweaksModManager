@@ -688,6 +688,18 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
                 return domain;
             }
+
+            /// <summary>
+            /// Marks this update as failed and prevents retry
+            /// </summary>
+            /// <param name="reason"></param>
+            internal void MarkUpdateFailed(string reason)
+            {
+                UpdateInProgress = false;
+                CanUpdate = false; // We cannot update this file.
+                UIStatusString = "Update failed";
+                DownloadButtonText = reason;
+            }
         }
 
         [Localizable(true)]

@@ -47,6 +47,16 @@
                 Padding="7,4"
                 HorizontalAlignment="Left"
                 Margin="0,5,0,5" />
+
+            <Button 
+                DockPanel.Dock="Left"
+                Content="Clear completed"
+                ToolTip="Clears completed updates from the list"
+                Command="{Binding ClearCompletedCommand}"
+                Visibility="{Binding ShowClearCompletedButton, Converter={StaticResource BoolToVisibilityConverter}}"
+                Padding="7,4"
+                HorizontalAlignment="Left"
+                Margin="5,5,0,5" />
             <Button
                 DockPanel.Dock="Bottom"
                 Content="{DynamicResource string_close}"

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
+using Windows.Storage.Provider;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -73,10 +74,12 @@ namespace ME3TweaksModManager.modmanager.objects
         /// The current state of the download
         /// </summary>
         public EModDownloadState DownloadState { get; set; }
+
+        /// <summary>
+        /// Invoked when DownloadState has changed
+        /// </summary>
         private void OnDownloadStateChanged()
         {
-            DownloadStateChanged?.Invoke(this, null);
-
             switch (DownloadState)
             {
                 // Download has stopped.
@@ -84,14 +87,13 @@ namespace ME3TweaksModManager.modmanager.objects
                 case EModDownloadState.DOWNLOADCANCELED:
                 case EModDownloadState.DOWNLOADCOMPLETE:
                 case EModDownloadState.FINISHED:
+                case EModDownloadState.QUEUED:
                     IsDownloadActive = false;
                     break;
 
                 // Download is actively doing something
                 case EModDownloadState.UNKNOWN:
-
                 case EModDownloadState.INITIALIZING:
-                case EModDownloadState.QUEUED:
                 case EModDownloadState.DOWNLOADING:
                 case EModDownloadState.WAITINGFORIMPORT:
                 case EModDownloadState.IMPORTING:
@@ -103,7 +105,8 @@ namespace ME3TweaksModManager.modmanager.objects
                     break;
             }
 
-
+            // Fire state changed after we update the active variable
+            DownloadStateChanged?.Invoke(this, null);
         }
         public event EventHandler<EventArgs> DownloadStateChanged;
 
@@ -159,6 +162,11 @@ namespace ME3TweaksModManager.modmanager.objects
 
         public bool IsDownloading => DownloadState is EModDownloadState.DOWNLOADING;
         public bool IsImporting => DownloadState is EModDownloadState.IMPORTING;
+
+        /// <summary>
+        /// If this has been marked as duplicate and removal shouldn't use the download key
+        /// </summary>
+        public bool IsDuplicate { get; internal set; }
 
         #region Event handlers
         /// <summary>
@@ -389,15 +397,14 @@ namespace ME3TweaksModManager.modmanager.objects
                                     return;
                                 }
 
-                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(ProtocolLink)
-                                    ?.Result);
+                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(ProtocolLink)?.Result);
                             }
 
                             FileName = ModFile.FileName;
                             ProgressMaximum = ModFile.SizeInBytes ?? ModFile.SizeInKilobytes * 1024L; // SizeKb is the original version. They added SizeInBytes at my request
-                            DownloadState = EModDownloadState.QUEUED;
                             M3Log.Information($@"ModDownload '{ModFile.FileName}' metadata is now available");
                             InternalOnInitialized();
+                            DownloadState = EModDownloadState.QUEUED;
                         }
                         else
                         {
@@ -424,6 +431,8 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <param name="cancellationToken">Token to indicate the download has been canceled.</param>
         public override void StartDownload(bool forceDownloadToDisk = false)
         {
+            DownloadState = EModDownloadState.DOWNLOADING;
+            var stack = Environment.StackTrace;
             Task.Run(() =>
             {
                 if (!forceDownloadToDisk && ProgressMaximum < DOWNLOAD_TO_MEMORY_SIZE_CAP && Settings.ModDownloadCacheFolder == null) // Mod Manager 8.0.1: If cache is set, always download to disk    
@@ -453,7 +462,6 @@ namespace ME3TweaksModManager.modmanager.objects
                         Status = M3L.GetString(M3L.string_startingDownload);
                     }
 
-                    DownloadState = EModDownloadState.DOWNLOADING;
                     var downloadResult = M3OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress,
                         null, true, DownloadedStream, CancellationController.Token);
                     if (downloadResult.errorMessage != null)

@@ -16,6 +16,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.ui;
+using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.memoryanalyzer
 {
@@ -176,6 +177,10 @@ namespace ME3TweaksModManager.modmanager.memoryanalyzer
                         else if (Reference.Target is Stream s)
                         {
                             return s.CanRead ? @"In Memory, Open" : @"In Memory, Disposed";
+                        }
+                        else if (Reference.Target is SevenZipExtractor sve)
+                        {
+                            return !sve.IsDisposed() ? @"In Memory, Open" : @"In Memory, Disposed";
                         }
                         return @"In Memory";
                     }
