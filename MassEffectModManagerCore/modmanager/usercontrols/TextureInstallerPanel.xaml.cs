@@ -368,8 +368,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             base.OnClosing(e);
 
             // Allow sleep when panel closes
+            // 08/19/2025 - Also dispose of the timer in case it's doing something
+            // dumb...
             _keepAwakeTimer.Stop();
             _keepAwakeTimer.Elapsed -= keepSystemAwake;
+            _keepAwakeTimer.Dispose();
+            _keepAwakeTimer = null;
             SystemSleepManager.AllowSleep();
         }
 
