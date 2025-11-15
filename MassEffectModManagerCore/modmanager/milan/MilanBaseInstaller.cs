@@ -2,13 +2,10 @@
 using ME3TweaksCore.Localization;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCoreWPF.Targets;
+using ME3TweaksModManager.modmanager.installer;
+using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static ME3TweaksModManager.modmanager.usercontrols.OIGODisabler;
 
 namespace ME3TweaksModManager.modmanager.milan
 {
@@ -146,13 +143,37 @@ namespace ME3TweaksModManager.modmanager.milan
             "StartupLoop_a.bik",
         ];
 
+        /// <summary>
+        /// Names of mods that are considered 'Project Milan' and are used to install the MP component to LMP
+        /// </summary>
+        public static readonly string[] MilanModNames = [
+            // In shipping version there should be only one item
+            // In development there can be multiple
+            @"Project Milan",
+            // @"Multiplayer component" // Set to name of final mod as shown in M3
+        ];
+
+        /// <summary>
+        /// Returns if there is a Project Milan mod in the library. Returns the highest version number if multiple are found, if the highest have the same, then the first alphabetical will be used.
+        /// </summary>
+        /// <returns></returns>
+        public static Mod GetMilanMod()
+        {
+            var lmpMods = M3LoadedMods.GetModsForGame(MEGame.LMP);
+            var milanMods = lmpMods.Where(x => MilanBaseInstaller.MilanModNames.Contains(x.ModName)).OrderByDescending(x => x.ParsedModVersion).ToList();
+            return milanMods.FirstOrDefault();
+        }
+
+
+        /** The interop used to communicate back to a UI about the install */
+        private MBIInterop interop;
 
         public MilanBaseInstaller()
         {
             // Initialize the base installation for Milan
         }
 
-        private void CopySourceFiles(string sourceDirectory, string[] files, string destGamePath, string subFolder, MBIInterop interop, params string[] extraPatterns)
+        private void CopySourceFiles(string sourceDirectory, string[] files, string destGamePath, string subFolder, params string[] extraPatterns)
         {
             var sourceBasePath = Path.Combine(sourceDirectory, subFolder);
             var destFolder = Path.Combine(destGamePath, subFolder);
@@ -224,6 +245,12 @@ namespace ME3TweaksModManager.modmanager.milan
             }
         }
 
+        // UI STRING UPDATES FOR INSTALLER ========
+        
+
+
+        // END UI STRING UPDATES FOR INSTALLER=====
+
 
         /// <summary>
         /// Copies the require files from LE3 to the destination folder. The source folder should be a backup to help ensure mods are not installed, as base install should be "vanilla".
@@ -232,38 +259,59 @@ namespace ME3TweaksModManager.modmanager.milan
         /// <param name="destinationFolderPath"></param>
         public void CreateInstallation(GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop)
         {
+            this.interop = interop;
+
             bool successful = true;
             string errorMessage = null;
             // Copy the source files over.
             try
             {
-                CopySourceFiles(sourceGameTarget.TargetPath, BinaryFiles, destinationFolderPath, "Binaries", interop);
-                CopySourceFiles(sourceGameTarget.TargetPath, CookedFiles, destinationFolderPath, "BioGame\\CookedPCConsole", interop, "*.tfc");
-                CopySourceFiles(sourceGameTarget.TargetPath, MovieFiles, destinationFolderPath, "BioGame\\Movies", interop);
+                CopySourceFiles(sourceGameTarget.TargetPath, BinaryFiles, destinationFolderPath, "Binaries");
+                CopySourceFiles(sourceGameTarget.TargetPath, CookedFiles, destinationFolderPath, "BioGame\\CookedPCConsole", "*.tfc");
+                CopySourceFiles(sourceGameTarget.TargetPath, MovieFiles, destinationFolderPath, "BioGame\\Movies");
 
                 // Create stub directories, some of our tooling requires them to exist, even if they're empty.
                 // Required by AutoTOC. I don't want to have to add a folder check to this, so we make it exist
                 Directory.CreateDirectory(Path.Combine(destinationFolderPath, @"Engine", @"Shaders"));
 
 
+                // Install Project Milan
+                var lmpTarget = new GameTargetWPF(MEGame.LMP, destinationFolderPath, true);
+                var milanmod = GetMilanMod();
+                var optionsPackage = new ModInstallOptionsPackage()
+                {
+                    InstallTarget = lmpTarget,
+                    ModBeingInstalled = milanmod,
+                    SkipPrerequesitesCheck = true
+                };
+
+                // We have no options, set it as having none chosen
+                optionsPackage.SetNoOptions();
+
+                interop.SetStatus?.Invoke("Installing Project Milan...");
+                ModInstaller mi = new ModInstaller(optionsPackage);
+                mi.SetPercent = setPercent;
+                mi.SetAction = setAction;
+                mi.SetPercentVisibility = setPercentVisibility;
+                mi.InstallMod();
+
                 // Patch to shrink them?
 
                 // Unapply bink. This will be a common problem, so we can just handle it here.
-
-                // Change to LMP someday.
-                var lmpTarget = new GameTargetWPF(MEGame.LE3, destinationFolderPath, false, skipInit: true);
-                lmpTarget.UninstallBinkBypass();
+                // EARLY DEV - Make LE3 target so we can use LE3 ASIs
+                var le3Target = new GameTargetWPF(MEGame.LE3, destinationFolderPath, false, skipInit: true);
+                le3Target.UninstallBinkBypass();
 
                 // TOC game so game can find files.
-                AutoTOC.RunTOCOnGameTarget(lmpTarget);
+                AutoTOC.RunTOCOnGameTarget(le3Target);
 
 #if DEBUG
                 // Debug only for now!
-                interop?.AddTarget(lmpTarget);
+                interop?.AddTarget(le3Target);
 
                 // This makes it easier to debug 
-                lmpTarget.InstallBinkBypass(false);
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_DebugLogger, @"DebugLogger", lmpTarget);
+                le3Target.InstallBinkBypass(false);
+                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_DebugLogger, @"DebugLogger", le3Target);
 #endif
             }
             catch (Exception e)
@@ -277,5 +325,41 @@ namespace ME3TweaksModManager.modmanager.milan
                 interop?.InstallationFinished(successful, errorMessage);
             }
         }
+
+        #region ModInstaller UI interface
+        private bool percentVisible;
+        private string action;
+        private int percent;
+        
+
+        private void setPercentVisibility(bool visible)
+        {
+            percentVisible = visible;
+            updateInstallText();
+        }
+
+        private void setAction(string action)
+        {
+            this.action = action;
+        }
+
+        private void setPercent(int percent)
+        {
+            this.percent = percent;
+            updateInstallText();
+        }
+
+        private void updateInstallText()
+        {
+            string message = action;
+            if (percentVisible)
+            {
+                message += $@" {percent}%";
+            }
+
+            // Set the message
+            interop.SetStatus?.Invoke(message);
+        }
     }
+#endregion
 }
