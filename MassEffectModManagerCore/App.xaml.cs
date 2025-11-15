@@ -84,12 +84,11 @@ namespace ME3TweaksModManager
         public const double HighestSupportedModDesc = 9.0;
 #endif
 
-        public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.19045"); // Windows 10 22H2
+        public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.26100"); // Windows 11 24H2
 
         internal static readonly string[] SupportedOperatingSystemVersions =
         {
-            @"Windows 10 (not EOL versions)",
-            @"Windows 11 (not EOL versions)"
+            @"Windows 11 24H2 or higher"
         };
 
         /// <summary>
@@ -609,7 +608,7 @@ namespace ME3TweaksModManager
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 version += " PRERELEASE";
+                 version += " PRERELEASE | DO NOT SHARE PICTURES, MODS, OR LOGS FROM THIS BUILD";
 #endif
                 // TODO CHANGE THIS
                 return $"{version}, Build {BuildNumber}";
@@ -624,7 +623,7 @@ namespace ME3TweaksModManager
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 version += " PRERELEASE";
+                 version += " PRERELEASE | DO NOT SHARE PICTURES, MODS, OR LOGS FROM THIS BUILD";
 #endif
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
