@@ -2909,7 +2909,7 @@ namespace ME3TweaksModManager
                         // Release the mod install options panel
                         ReleaseBusyControl();
 
-                        ModInstaller mi = new ModInstaller(miop);
+                        ModInstallerPanel mi = new ModInstallerPanel(miop);
                         mi.Close += (c, d) =>
                         {
                             if (mi.InstallationCancelled || !mi.InstallationSucceeded)
