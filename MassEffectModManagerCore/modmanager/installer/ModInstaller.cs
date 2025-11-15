@@ -12,6 +12,7 @@ using ME3TweaksCore.ME3Tweaks.M3Merge.PlotManager;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
@@ -1094,6 +1095,16 @@ namespace ME3TweaksModManager.modmanager.installer
                     M3CConfigMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, InstallOptionsPackage.InstallTarget.GetDLCPath(), Path.GetFileName(dlcFolderInstalled));
                 }
             }
+
+            if (InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+            {
+                foreach (var dlcFolderInstalled in addedDLCFolders)
+                {
+                    M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, InstallOptionsPackage.InstallTarget.GetDLCPath(), Path.GetFileName(dlcFolderInstalled));
+                }
+            }
+
+            // Stage: 
 
             // Main installation step has completed
             M3Log.Information(@"Main stage of mod installation has completed");
