@@ -137,16 +137,40 @@ namespace ME3TweaksModManager
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
 
-        public const string EXTENSION_TEXTURE_OVERRIDE_MANIFEST = @".tojson";
-
         private readonly string[] SupportedDroppableExtensions =
         {
-            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk",
+            // File archives for mods. .7z is the only officially supported format.
+            @".rar", 
+            @".zip", 
+            @".7z",
+            // Extractable .exe format (ME3)
+            @".exe", 
+            // Legacy OT mod formats (for notify only)
+            @".tpf", 
+            @".mod", 
+            // Mass Effect Modder texture archive
+            @".mem",
+            // ME2 OT mod format
+            @".me2mod",
+            // Coalesced manifest
+            @".xml",
+            // TOC, Coalesced.bin formats
+            @".bin", 
+            // TLK file for compile/decompile
+            @".tlk",
 #if LEGACY
+            // DRM file... thing?
             @".par",
 #endif
-            @".m3m", @".json", @".extractedbin", @".m3za", @".hlsl", EXTENSION_TEXTURE_OVERRIDE_MANIFEST
-
+            // Merge mod
+            @".m3m", 
+            @".json",
+            // LE1/LE2 config file manifest
+            @".extractedbin",
+            // Compressed Merge TLK Archive
+            @".m3za", 
+            // Global Shader Cache Override
+            @".hlsl"
         };
 
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
@@ -4974,34 +4998,6 @@ namespace ME3TweaksModManager
                             }
 
                             break;
-                        case EXTENSION_TEXTURE_OVERRIDE_MANIFEST:
-                            try
-                            {
-                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"LETEXM compiler");
-                                var fname = Path.GetFileName(file);
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"LETEXMCompile", "Compiling texture override binary", "Compiled texture override binary");
-                                nbw.DoWork += (a, b) =>
-                                {
-                                    TextureOverrideCompiler.CompileLETEXM(file);
-                                };
-                                nbw.RunWorkerCompleted += (a, b) =>
-                                {
-                                    if (b.Error != null)
-                                    {
-                                        M3Log.Exception(b.Error, $@"Error compiling texture override binary {file}:");
-                                        task.FinishedUIText = "Texture override binary compile failed";
-                                        M3L.ShowDialog(this, $"Errror compiling texture override binary: {b.Error.Message}");
-                                    }
-                                    BackgroundTaskEngine.SubmitJobCompletion(task);
-                                };
-                                nbw.RunWorkerAsync();
-                            }
-                            catch (Exception ex3)
-                            {
-                                M3Log.Exception(ex3, $@"Error compiling texture override binary {file}:");
-                                M3L.ShowDialog(this, $"Errror compiling texture override binary: {ex3.Message}");
-                            }
-                            break;
                     }
                 }
             }
@@ -5013,8 +5009,7 @@ namespace ME3TweaksModManager
             if (version == null)
                 return; // User canceled.
 
-            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod),
-                M3L.GetString(M3L.string_compiledMergemod));
+            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod), M3L.GetString(M3L.string_compiledMergemod));
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MergeModCompiler");
             nbw.DoWork += (o, args) =>
             {
@@ -5028,8 +5023,7 @@ namespace ME3TweaksModManager
                     BackgroundTaskEngine.SubmitJobCompletion(task);
                     M3Log.Error($@"Error compiling m3m mod file: {args.Error.Message}");
                     M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, args.Error.Message),
-                        M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                        M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -5118,7 +5112,10 @@ namespace ME3TweaksModManager
             e.Handled = true;
         }
 
-
+        /// <summary>
+        /// Runs target merge on the given game
+        /// </summary>
+        /// <param name="obj">Contains MEGame enum value that converts to a target</param>
         private void RunTargetMerge(object obj)
         {
             if (obj is MEGame game)
