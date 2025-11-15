@@ -296,7 +296,7 @@
     <system:String x:Key="string_programDataAccessDenied">ProgramData access denied</system:String>
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Auto-add controller Mixins to ModMaker mods</system:String>
     <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods. Do not select this if you play with a keyboard/mouse.</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_dialog_unsupportedOS">This operating system is not supported. This application's minimum supported operating system is {0}. This application may not function correctly on this operating system.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_unsupportedOS">This operating system is not supported. This application's minimum supported operating system is {0}. The application may work fine, or it may have issues.</system:String>
     <!-- 0= bulleted list of supported operating system names -->
     <system:String x:Key="string_unsupportedOperatingSystem">Unsupported operating system</system:String>
     <system:String x:Key="string_errorCompilingCoalesced">Error compiling Coalesced</system:String>
