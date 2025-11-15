@@ -88,14 +88,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
         {
-#if !DEBUG
-            var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
-#else
             // 08/01/2024 - ModDesc 9.1 (Mod Manager 9.0.1's parser) uses the new method that better handles value splitting
             var properties = modForValidating.ModDescTargetVersion >= 9.1 ?
                 StringStructParser.GetSplitMapValues(alternateDLCText, false, '(', ')', '[', ']')
                 : StringStructParser.GetCommaSplitValues(alternateDLCText);
-#endif
+     
             //todo: if statements to check these.
             if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_FRIENDLYNAME, out string friendlyName))
             {

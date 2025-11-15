@@ -217,7 +217,7 @@
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
 		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
 		<PackageReference Include="SSH.NET" Version="2024.2.0" />
 		<PackageReference Include="WatsonWebsocket" Version="4.1.4" />

@@ -78,12 +78,11 @@ namespace ME3TweaksModManager
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support. The maximum precision allowed is tenths, the rest will be truncated.
         /// </summary>
-#if DEBUG
         public const double HighestSupportedModDesc = 9.1;
-#else
-        public const double HighestSupportedModDesc = 9.0;
-#endif
 
+        // Hi. If you're reading this, and going to try and argue that this lowest version is arbitrary,
+        // you should try supporting software for free, and see how well supporting every single
+        // version of Windows works out for you.
         public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.26100"); // Windows 11 24H2
 
         internal static readonly string[] SupportedOperatingSystemVersions =
