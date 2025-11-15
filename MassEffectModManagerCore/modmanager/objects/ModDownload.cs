@@ -8,10 +8,8 @@ using ME3TweaksModManager.ui;
 using Pathoschild.FluentNexus.Models;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Media.Playback;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
-using Windows.Storage.Provider;
 
 namespace ME3TweaksModManager.modmanager.objects
 {

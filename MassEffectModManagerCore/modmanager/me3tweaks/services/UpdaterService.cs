@@ -4,10 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Xml.Linq;
-using ABI.Windows.Devices.Geolocation;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
@@ -16,11 +14,8 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
-using Microsoft.AppCenter.Crashes;
-using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {

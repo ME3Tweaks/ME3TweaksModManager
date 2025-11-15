@@ -377,12 +377,9 @@ namespace ME3TweaksModManager.modmanager.loaders
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
-                bool canAutoCheckForModUpdates =
-                    MOnlineContent
-                        .CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
+                bool canAutoCheckForModUpdates = MOnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
-                LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader",
-                    M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
+                LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 M3Log.Information(@"Loading mods from mod library: " + GetCurrentModLibraryDirectory());
 
                 List<(MEGame game, string path)> modDescsToLoad = new();
@@ -457,11 +454,11 @@ namespace ME3TweaksModManager.modmanager.loaders
                     {
                         if (gamesToLoad == null)
                             LoadedLE = true;
-                        //if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE1))
-                        //    modDescsToLoad.AddRange(le1modDescsToLoad);
-                        //if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE2))
-                        //    modDescsToLoad.AddRange(le2modDescsToLoad);
-                        //if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE3))
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE1))
+                            modDescsToLoad.AddRange(le1modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE2))
+                            modDescsToLoad.AddRange(le2modDescsToLoad);
+                        if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE3))
                             modDescsToLoad.AddRange(le3modDescsToLoad);
                         if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LMP))
                             modDescsToLoad.AddRange(lmpmodDescsToLoad);

@@ -7,6 +7,9 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.gametarget;
 using SevenZip;
 using ME3TweaksModManager.modmanager.helpers;
+using System.Windows;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.milan;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -156,10 +159,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private static void BuildBaseMilan(MainWindow mw)
         {
 #if DEBUG
-            // This is a placeholder for the actual implementation of building the base Milan installer
-            // The implementation would typically involve copying files, setting up directories, etc.
-            // For now, we just log that this method was called.
-            Debug.WriteLine("Building base Milan installer...");
+            var milanMod = MilanBaseInstaller.GetMilanMod();
+            if (milanMod == null)
+            {
+                M3L.ShowDialog(MainWindow.Instance, "You must download and import the Project Milan mod into your mod library in order to make a game target for Project Milan.", "Project Milan not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             var mbip = new MilanBaseInstallerPanel();
             mbip.Close += (a, b) => { mw.ReleaseBusyControl(); };
             mw.ShowBusyControl(mbip);

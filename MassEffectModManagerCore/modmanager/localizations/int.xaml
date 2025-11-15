@@ -660,7 +660,6 @@
     <system:String x:Key="string_interp_thisModShouldBeReinstalled">This mod ({0}) should be reinstalled.</system:String>
     <!-- 0={Mod name} -->
     <system:String x:Key="string_thisModShouldBeReinstalled">This mod should be reinstalled.</system:String>
-    <system:String x:Key="string_invalidCompatibilityPack">Invalid compatibility pack</system:String>
     <system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">An error occurred building installation queues: {0}</system:String>
     <!-- 0={Exception message} -->
     <system:String x:Key="string_interp_optionGroupX">Option group: {0}</system:String>
