@@ -66,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     GroupName = M3L.GetString(M3L.string_Logging),
                     GroupDescription = M3L.GetString(M3L.string_description_logging),
                     AllSettings = [
-                        new M3BooleanSetting(settingsType, nameof(Settings.LogModStartup), M3L.string_LogModStartup, M3L.string_description_autobootLE),
+                        new M3BooleanSetting(settingsType, nameof(Settings.LogModStartup), M3L.string_LogModStartup, M3L.string_tooltip_logModLoading),
                         new M3BooleanSetting(settingsType, nameof(Settings.LogModInstallation), M3L.string_LogModInstallation, M3L.string_tooltip_logModInstaller),
                         new M3BooleanSetting(settingsType, nameof(Settings.LogModUpdater), M3L.string_LogModUpdater, M3L.string_tooltip_logModUpdater),
                         new M3BooleanSetting(settingsType, nameof(Settings.LogBackupAndRestore), M3L.string_logAllFilesCopiedDuringRestore, M3L.string_description_logOptionLotsa),
