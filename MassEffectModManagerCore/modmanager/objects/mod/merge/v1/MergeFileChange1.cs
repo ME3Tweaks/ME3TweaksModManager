@@ -2,7 +2,6 @@
 using System.Globalization;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Kismet;
-using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
@@ -10,7 +9,6 @@ using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
