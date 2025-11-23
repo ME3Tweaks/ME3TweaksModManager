@@ -1493,6 +1493,14 @@
                         Header="Build Base Milan"
                         Name="BuildBaseMilan_MenuItem"
                         Click="RouteDebugCall" />
+                    <MenuItem
+                       Header="Convert .mem to M3 Texture Override"
+                       Name="ConvertMEM_MenuItem"
+                       Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="Trigger BTP build on mod folder (installed)"
+                        Name="TriggerBTPBuild_MenuItem"
+                        Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
@@ -2317,7 +2325,7 @@
                                     Path="SelectedMod.RichDisplayedModDescription"
                                     Mode="OneWay" />
                                 <Binding
-                                    Path="NoModSelectedText"
+                                    Path="NoModSelectedRichText"
                                     Mode="OneWay" />
                             </PriorityBinding>
                         </xctk:RichTextBox.Text>
