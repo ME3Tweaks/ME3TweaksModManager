@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
@@ -140,8 +134,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             }
         }
 
-
-
         public virtual string GetDescription()
         {
             if (IsInArchive)
@@ -150,7 +142,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             }
             var modifiedExports = GetModifiedExportNames();
             var exportNotListed = M3L.GetString(M3L.string_textureExportsNotListedInThisMemFile);
-            var exportList = string.Join('\n', modifiedExports.Select(x => $@" - {(string.IsNullOrWhiteSpace(x) ? exportNotListed : x)}")); // do not localize
+            var elemCount = Math.Min(modifiedExports.Count, 100);
+            var exportList = string.Join('\n', modifiedExports.Take(elemCount).Select(x => $@" - {(string.IsNullOrWhiteSpace(x) ? exportNotListed : x)}")); // do not localize
+            if (modifiedExports.Count > 100)
+            {
+                // Written this way for localizer
+                exportList += "\n... " // do not localize
+                    + "(list truncated to 100 entries)";
+
+            }
             return M3L.GetString(M3L.string_interp_textureModModifiesExportsX, exportList);
         }
 
