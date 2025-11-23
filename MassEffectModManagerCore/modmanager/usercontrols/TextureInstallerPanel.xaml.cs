@@ -51,6 +51,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool ShowTextureWarning { get; init; } = true;
 
         /// <summary>
+        /// If marker installation should be skipped. Only use for advanced scenarios where you know what you are doing.
+        /// </summary>
+        public bool SkipMarkers { get; init; }
+
+        /// <summary>
         /// Target we are installing textures to
         /// </summary>
         public GameTarget Target { get; set; }
@@ -59,6 +64,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// List of files to install
         /// </summary>
         private readonly List<string> MEMFilesToInstall;
+
+        /// <summary>
+        /// Result of the MEM session. Can be null if one didn't run.
+        /// </summary>
+        public MEMSessionResult SessionResult;
 
         public TextureInstallerPanel(GameTarget target, List<string> memFilesToInstall)
         {
@@ -211,8 +221,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             if (markerResult.HasAnyErrors())
                             {
-                                M3Log.Error(
-                                    $@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
+                                M3Log.Error($@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
 
                                 if (Settings.LogModInstallation || markerResult.GetErrors().Count < 30)
                                 {
@@ -227,8 +236,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 }
 
                                 // Todo: Backup service specific strings.
-                                markerResult.AddFirstError(
-                                    M3L.GetString(M3L.string_dialog_leftoverTextureFilesFound));
+                                markerResult.AddFirstError(M3L.GetString(M3L.string_dialog_leftoverTextureFilesFound));
                                 b.Result = markerResult;
                                 return;
                             }
@@ -292,7 +300,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         numDone++;
                         PercentDone = (int)(numDone * 100.0 / Target.ModifiedBasegameFiles.Count);
                     }
-                    M3Log.Information($@"Updatign BGFIS with new texture modded hashes");
+                    M3Log.Information($@"Updating BGFIS with new texture modded hashes");
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(basegameFileDbUpdates);
                     b.Result = installResult;
                 }
@@ -314,6 +322,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (b.Result is MEMSessionResult mir)
                 {
+                    SessionResult = mir;
                     if (mir.ExitCode != 0)
                     {
                         // This is kind of technical, but will also catch some strange edge cases user may face if MEM unexpectedly dies.
@@ -326,7 +335,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         if (BGTask != null)
                         {
+                            // Show before dialog
                             BGTask.FinishedUIText = M3L.GetString(M3L.string_textureInstallationFailed);
+                            BackgroundTaskEngine.SubmitJobCompletion(BGTask);
+                            BGTask = null; // Done
                         }
 
                         ListDialog ld = null;
@@ -348,9 +360,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
 
+                // Finalize background task if it hasn't been yet
                 if (BGTask != null)
                 {
                     BackgroundTaskEngine.SubmitJobCompletion(BGTask);
+                    BGTask = null;
                 }
 
                 OnClosing(DataEventArgs.Empty);
@@ -370,9 +384,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Allow sleep when panel closes
             // 08/19/2025 - Also dispose of the timer in case it's doing something
             // dumb...
-            _keepAwakeTimer.Stop();
-            _keepAwakeTimer.Elapsed -= keepSystemAwake;
-            _keepAwakeTimer.Dispose();
+            _keepAwakeTimer?.Stop();
+            _keepAwakeTimer?.Elapsed -= keepSystemAwake;
+            _keepAwakeTimer?.Dispose();
             _keepAwakeTimer = null;
             SystemSleepManager.AllowSleep();
         }
