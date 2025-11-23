@@ -31,10 +31,11 @@ namespace ME3TweaksModManager.modmanager.helpers
         }
 
         private const string RT_BOLD = @"\b ";
-
+        private const string RT_ITALIC = @"\i ";
+        private const string RT_NEWLINE = @"\line ";
         public static string ConvertNewlines(string str)
         {
-            return str.Replace("\r\n", @"\line").Replace("\n", @"\line");
+            return str.Replace("\r\n", RT_NEWLINE).Replace("\n", RT_NEWLINE);
         }
 
         public static string EscapeText(string str)
@@ -44,12 +45,34 @@ namespace ME3TweaksModManager.modmanager.helpers
 
         public static string MakeBold(string str)
         {
-            return $@"{{\b {str}}}";
+            return $@"{{{RT_BOLD}{str}}}";
         }
 
         public static string MakeItalic(string str)
         {
-            return $@"{{\b {str}}}";
+            return $@"{{{RT_ITALIC}{str}}}";
+        }
+
+        internal static string ConvertUnicode(string modDescription)
+        {
+            // WIP SUPER INNEFICIENT
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 0; i < modDescription.Length; i++)
+            {
+                var c = modDescription[i];
+                var codePoint = (int)c;
+
+                if (codePoint > 0x7f)
+                {
+                    sb.Append($@"\u{codePoint}?");
+                } else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
