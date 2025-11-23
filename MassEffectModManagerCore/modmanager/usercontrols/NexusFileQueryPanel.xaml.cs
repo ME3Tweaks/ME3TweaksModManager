@@ -13,6 +13,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
@@ -71,7 +72,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SearchAgainstMod()
         {
-            ModSelectorDialog msd = new ModSelectorDialog(window, M3LoadedMods.Instance.AllLoadedMods.ToList(),
+            ModSelectorDialog msd = new ModSelectorDialog(window, M3LoadedMods.Instance.AllLoadedMods.OfType<IDisplayableMod>().ToList(),
                 M3L.GetString(M3L.string_selectModToCompareAgainstDatabase),
                 M3L.GetString(M3L.string_nfqp_selectModDialogText), M3L.GetString(M3L.string_selectMod))
             {
@@ -81,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (msd.SelectedMods.Any())
             {
-                QueryingMod = msd.SelectedMods[0];
+                QueryingMod = msd.SelectedMods[0] as Mod; // should always be accurate
                 PerformSearchAgainstMod();
             }
         }

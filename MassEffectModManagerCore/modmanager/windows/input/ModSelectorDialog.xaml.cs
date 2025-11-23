@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms.VisualStyles;
-using Dark.Net;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
-using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -19,12 +14,12 @@ namespace ME3TweaksModManager.modmanager.windows
     /// </summary>
     public partial class ModSelectorDialog : Window, INotifyPropertyChanged
     {
-        public ObservableCollectionExtended<Mod> AvailableMods { get; } = new ObservableCollectionExtended<Mod>();
-        public List<Mod> SelectedMods { get; } = new List<Mod>();
+        public ObservableCollectionExtended<IDisplayableMod> AvailableMods { get; } = new ObservableCollectionExtended<IDisplayableMod>();
+        public List<IDisplayableMod> SelectedMods { get; } = new List<IDisplayableMod>();
         public string DialogCaption { get; set; }
         public string AcceptButtonText { get; set; }
 
-        public ModSelectorDialog(Window owner, List<Mod> shownMods, string windowTitle, string selectorCaption, string acceptButtonText)
+        public ModSelectorDialog(Window owner, List<IDisplayableMod> shownMods, string windowTitle, string selectorCaption, string acceptButtonText)
         {
             Title = windowTitle;
             DialogCaption = selectorCaption;
@@ -35,8 +30,6 @@ namespace ME3TweaksModManager.modmanager.windows
             InitializeComponent();
             this.ApplyDarkNetWindowTheme();
         }
-
-
 
         public GenericCommand CommitModsCommand { get; set; }
         public GenericCommand CancelCommand { get; set; }
@@ -59,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void CommitMods()
         {
-            SelectedMods.ReplaceAll(ModListBox.SelectedItems.Cast<Mod>());
+            SelectedMods.ReplaceAll(ModListBox.SelectedItems.Cast<IDisplayableMod>());
             DialogResult = true;
             Close();
         }

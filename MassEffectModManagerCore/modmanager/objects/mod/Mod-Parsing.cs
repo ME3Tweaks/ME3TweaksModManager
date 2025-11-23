@@ -26,7 +26,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 {
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     [AddINotifyPropertyChangedInterface]
-    public partial class Mod : IImportableMod, IM3Mod
+    public partial class Mod : IImportableMod, IM3Mod, IDisplayableMod
     {
 
         private static readonly string[] DirectorySeparatorChars = new[] { @"\", @"/" };
@@ -93,6 +93,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// The mod's name.
         /// </summary>
         public string ModName { get; set; }
+        /// <summary>
+        /// IIDisplayableMod interface for name.
+        /// </summary>
+        public string DisplayName => ModName;
         /// <summary>
         /// Developer of the mod
         /// </summary>

@@ -9,6 +9,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
@@ -88,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void AddModToDeploymentWrapper()
         {
             // Not very performant, but it works...
-            var m = M3LoadedMods.Instance.AllLoadedMods.Where(x => BackupService.GetBackupStatus(x.Game).BackedUp).Except(ModsInDeployment.Select(x => x.ModBeingDeployed)).OrderBy(x => x.Game).ThenBy(x => x.ModName).ToList();
+            var m = M3LoadedMods.Instance.AllLoadedMods.Where(x => BackupService.GetBackupStatus(x.Game).BackedUp).Except(ModsInDeployment.Select(x => x.ModBeingDeployed)).OrderBy(x => x.Game).ThenBy(x => x.ModName).OfType<IDisplayableMod>().ToList();
             ModSelectorDialog msd = new ModSelectorDialog(window, m, M3L.GetString(M3L.string_addModsToDeployment),
                 M3L.GetString(M3L.string_description_addSelectedModsToDeployment),
                 M3L.GetString(M3L.string_addSelectedModsToDeployment))
@@ -100,7 +101,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (!DeploymentBlocked)
                 {
-                    foreach (var v in msd.SelectedMods)
+                    foreach (var v in msd.SelectedMods.OfType<Mod>())
                     {
                         AddModToDeployment(v);
                     }
