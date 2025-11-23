@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.Services.FileSource;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.batch;
@@ -22,7 +23,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
     /// Describes a MEMMod, which is a containing object for a .mem file
     /// </summary>
     [DebuggerDisplay(@"MEMMod | {Game} at {FilePath}")]
-    public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged, IBatchQueueMod
+    public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged, IBatchQueueMod, IDisplayableMod
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -48,6 +49,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
                 }
             }
         }
+
+        /// <summary>
+        /// IDisplayableMod interface for name.
+        /// </summary>
+        [JsonIgnore]
+        public virtual string DisplayName => DisplayString;
 
         /// <summary>
         /// The full path to the .mem file
