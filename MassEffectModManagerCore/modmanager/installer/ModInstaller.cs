@@ -10,6 +10,7 @@ using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.M3Merge.PlotManager;
 using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.TextureOverride;
@@ -289,23 +290,28 @@ namespace ME3TweaksModManager.modmanager.installer
             {
                 if (Settings.SkipLELauncher && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
                 {
-                    var gt = new GameTarget(MEGame.LELauncher, Path.Combine(Directory.GetParent(InstallOptionsPackage.InstallTarget.TargetPath).FullName, @"Launcher"), false, skipInit: true);
-                    if (gt.IsValid && !gt.IsBinkBypassInstalled())
+                    // 11/22/2025 - Cloned games may not be in same directory structure; check first
+                    var launcherPath = Path.Combine(Directory.GetParent(InstallOptionsPackage.InstallTarget.TargetPath).FullName, @"Launcher");
+                    if (Directory.Exists(launcherPath))
                     {
-                        // Bink isn't installed and it needs autoboot
-                        if (MUtilities.IsGameRunning(MEGame.LELauncher))
+                        var gt = new GameTarget(MEGame.LELauncher, launcherPath, false, skipInit: true);
+                        if (gt.IsValid && !gt.IsBinkBypassInstalled())
                         {
-                            M3Log.Warning(@"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
+                            // Bink isn't installed and it needs autoboot
+                            if (MUtilities.IsGameRunning(MEGame.LELauncher))
+                            {
+                                M3Log.Warning(@"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
+                            }
+                            else
+                            {
+                                // If it fails to install we don't really care
+                                gt.InstallBinkBypass(false);
+                            }
                         }
                         else
                         {
-                            // If it fails to install we don't really care
-                            gt.InstallBinkBypass(false);
+                            M3Log.Information(@"LE Launcher bink bypass is already installed - not installing for autoboot");
                         }
-                    }
-                    else
-                    {
-                        M3Log.Information(@"LE Launcher bink bypass is already installed - not installing for autoboot");
                     }
                 }
             }
@@ -1098,9 +1104,17 @@ namespace ME3TweaksModManager.modmanager.installer
 
             if (InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
             {
+                void onMergeUpdate(ProgressInfo pi)
+                {
+                    SetAction?.Invoke(pi.Status);
+                    SetPercent?.Invoke((int)Math.Round(pi.Value));
+                }
+
                 foreach (var dlcFolderInstalled in addedDLCFolders)
                 {
-                    M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, InstallOptionsPackage.InstallTarget.GetDLCPath(), Path.GetFileName(dlcFolderInstalled));
+                    var pi = new ProgressInfo();
+                    pi.OnUpdate = onMergeUpdate;
+                    M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, InstallOptionsPackage.InstallTarget.GetDLCPath(), Path.GetFileName(dlcFolderInstalled), pi);
                 }
             }
 

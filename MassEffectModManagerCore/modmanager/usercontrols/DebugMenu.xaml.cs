@@ -1,15 +1,21 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
+using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.ME3Tweaks.M3Merge.Game2Email;
+using ME3TweaksCore.Objects;
+using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.gamemd5;
-using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.modmanager.objects.gametarget;
-using SevenZip;
 using ME3TweaksModManager.modmanager.helpers;
-using System.Windows;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.milan;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.textures;
+using SevenZip;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -19,6 +25,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
 #if DEBUG
             if (sender == nameof(MainWindow.BuildBaseMilan_MenuItem)) BuildBaseMilan(window);
+            if (sender == nameof(MainWindow.TriggerBTPBuild_MenuItem)) TriggerBTPBuild(window);
+            if (sender == nameof(MainWindow.ConvertMEM_MenuItem)) ConvertMEMToTextureOverride(window);
             if (sender == nameof(MainWindow.Test7z_MenuItem)) Test7z(window);
             if (sender == nameof(MainWindow.RebuildMD5DB_MenuItem)) RebuildMD5Map(window);
             if (sender == nameof(MainWindow.TestMMV1_MenuItem)) BuildMMV1MergeMod(window);
@@ -38,6 +46,38 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
 #endif
         }
+#if DEBUG
+
+        private static void TriggerBTPBuild(MainWindow window)
+        {
+            if (window.SelectedMod == null)
+                return;
+
+            var target = window.GetCurrentTarget(window.SelectedMod.Game);
+            if (target == null)
+                return;
+
+            var dlcFolder = window.SelectedMod.GetAllPossibleCustomDLCFolders().FirstOrDefault();
+            if (dlcFolder == null)
+                return;
+
+            var gameDir = Path.Combine(target.GetDLCPath(), dlcFolder);
+            if (!Directory.Exists(gameDir))
+                return;
+
+            var task = BackgroundTaskEngine.SubmitBackgroundJob("Texture Override Merge", "Texture Override Merge", "Completed");
+            void onProgress(ProgressInfo pi)
+            {
+                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, $"{pi.Status}");
+            }
+            var pi = new ProgressInfo();
+            pi.OnUpdate = onProgress;
+            Task.Run(() =>
+            {
+                M3CTextureOverrideMerge.PerformDLCMerge(target.Game, target.GetDLCPath(), dlcFolder, pi);
+            }).ContinueWithOnUIThread(r => { BackgroundTaskEngine.SubmitJobCompletion(task); });
+
+        }
 
         private static void TestDetermineIfInstalled(MainWindow window)
         {
@@ -47,7 +87,44 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-#if DEBUG
+
+        private static void TestTextureMerge(MainWindow window)
+        {
+            var package = MEPackageHandler.OpenMEPackage(@"Z:\ModLibrary\LE1\PackageStoredTO\DLC_MOD_PackageStoredTO\CookedPCConsole\TO_EntryMenu.pcc");
+            foreach (var tex in package.Exports.Where(x => x.ClassName == "Texture2D"))
+            {
+                var texBin = ObjectBinary.From<UTexture2D>(tex);
+                var uncompBigMips = texBin.Mips.Where(x => x.StorageType == StorageTypes.pccUnc && (x.SizeX >= 64 || x.SizeY >= 64));
+                foreach (var bigMip in uncompBigMips)
+                {
+                    bigMip.Mip = TextureCompression.CompressTexture(bigMip.Mip, StorageTypes.pccOodle);
+                    bigMip.CompressedSize = bigMip.Mip.Length;
+                    bigMip.StorageType = StorageTypes.pccOodle;
+                }
+                tex.WriteBinary(texBin);
+            }
+
+            package.Save(@"S:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME1\BioGame\CookedPCConsole\EntryMenu.pcc");
+            return;
+
+
+
+
+
+
+
+
+        }
+
+        private static void ConvertMEMToTextureOverride(MainWindow window)
+        {
+           var converter = new MEMToTOConverter(window);
+            if (converter.SetupConversion())
+            {
+                converter.BeginConversion();
+            }
+        }
+
         private static void ShowBGFISDB_Click(MainWindow window)
         {
             var previewPanel = new BasegameFileIdentificationServicePanel();
