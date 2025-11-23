@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ME3TweaksModManager.modmanager.importer;
+﻿using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.objects.alternates;
-using ME3TweaksModManager.modmanager.usercontrols;
 using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
@@ -20,7 +15,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// Generates a blank mod object. You must specify you know what you are doing for this by specifying if this is a valid mod or not.
         /// </summary>
-        /// <param name="iKnowWhatImDoing"></param>
+        /// <param name="valid">Marks mod valid or not, for your need of use</param>
         public Mod(bool valid)
         {
             ValidMod = valid;

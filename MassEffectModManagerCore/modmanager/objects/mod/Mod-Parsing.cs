@@ -194,151 +194,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// </summary>
         public string DisplayedModDescription
         {
-            get
-            {
-                if (LoadFailedReason != null) return LoadFailedReason;
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine(ModDescription);
-                sb.AppendLine(@"=============================");
-                //Todo: Automatic configuration
-
-                //Todo: Optional manuals
-
-                sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modVersion, ModVersionString ?? @"1.0"));
-                sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modDeveloper, ModDeveloper));
-                if (ModModMakerID > 0)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modMakerCode, ModModMakerID.ToString()));
-                }
-                if (ModClassicUpdateCode > 0 && Settings.DeveloperMode)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_updateCode, ModClassicUpdateCode.ToString()));
-                }
-                //else if (NexusModID > 0 && Settings.DeveloperMode)
-                //{
-                //    sb.AppendLine($"NexusMods ID: {NexusModID}");
-                //}
-
-                sb.AppendLine(M3L.GetString(M3L.string_modparsing_installationInformationSplitter));
-                if (Settings.DeveloperMode)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture)));
-                }
-                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC
-                                                               && x.Header != ModJob.JobHeader.LOCALIZATION
-                                                               && x.Header != ModJob.JobHeader.TEXTUREMODS
-                                                               && x.Header != ModJob.JobHeader.HEADMORPHS).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
-                if (modifiesList.Count > 0)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modifies, string.Join(@", ", modifiesList)));
-                }
-
-                var customDLCJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC);
-                if (customDLCJob != null)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_addCustomDLCs, string.Join(@", ", customDLCJob.CustomDLCFolderMapping.Values)));
-                }
-
-                var localizationJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.LOCALIZATION);
-                if (localizationJob != null)
-                {
-                    var dlcReq = RequiredDLC.First().DLCFolderName; //Localization jobs, if valid, will always have something here.
-                    var tpmi = TPMIService.GetThirdPartyModInfo(dlcReq.Key, Game);
-                    if (tpmi != null) dlcReq += $@" ({tpmi.modname})";
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_addsTheFollowingLocalizationsToX, dlcReq));
-                    foreach (var l in localizationJob.FilesToInstall)
-                    {
-                        var langCode = l.Key.Substring(l.Key.Length - 7, 3);
-                        sb.AppendLine(@" - " + langCode);
-                    }
-                }
-
-                if (ASIModsToInstall.Any())
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_installsTheFollowingASIMods));
-                    foreach (var asi in ASIModsToInstall)
-                    {
-                        var realasi = ASIManager.GetASIModVersion(Game, asi.ASIGroupID, asi.Version);
-                        if (realasi == null)
-                        {
-                            var str = $@" - {asi.ASIGroupID}";
-                            if (asi.Version != null)
-                            {
-                                str += $@" v{asi.Version}";
-                            }
-
-                            str += @" (" + M3L.GetString(M3L.string_invalid) + @")";
-                            sb.AppendLine(str);
-                        }
-                        else
-                        {
-                            var str = $@" - {realasi.Name}";
-                            if (asi.Version != null)
-                            {
-                                str += $@" v{asi.Version}";
-                            }
-
-                            sb.AppendLine(str);
-                        }
-                    }
-                }
-
-
-                SortedSet<string> autoConfigs = GetUIAutoConfigs();
-                if (autoConfigs.Count > 0)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_modparsing_configCanChangeIfOtherDLCFound));
-                    foreach (var autoConfigDLC in autoConfigs)
-                    {
-                        sb.AppendLine($@" - {autoConfigDLC}");
-                    }
-                }
-
-
-                if (RequiredDLC.Count > 0)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_modparsing_requiresTheFollowingDLCToInstall));
-                    foreach (var reqDLC in RequiredDLC)
-                    {
-                        var info = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName.Key, Game);
-                        sb.AppendLine($@" - {reqDLC.ToUIString(info, false)}");
-                    }
-                }
-
-                if (OptionalSingleRequiredDLC.Any())
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_singleRequiredDLC));
-                    foreach (var reqDLC in OptionalSingleRequiredDLC)
-                    {
-                        string name = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName.Key, Game)?.modname ?? reqDLC.DLCFolderName.Key;
-                        sb.AppendLine($@" - {name}");
-                    }
-                }
-
-                var texJob = GetJob(ModJob.JobHeader.TEXTUREMODS);
-                if (texJob != null && texJob.TextureModReferences.Any())
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesTextureFiles));
-                    foreach (var reference in texJob.TextureModReferences)
-                    {
-                        string name = reference.Title;
-                        sb.AppendLine($@" - {name}");
-                    }
-                }
-
-                var headmorphJob = GetJob(ModJob.JobHeader.HEADMORPHS);
-                if (headmorphJob != null && headmorphJob.HeadMorphFiles.Any())
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesHeadmorphFiles));
-                    foreach (var reference in headmorphJob.HeadMorphFiles)
-                    {
-                        string name = reference.Title;
-                        sb.AppendLine($@" - {name}");
-                    }
-                }
-
-                return sb.ToString();
-            }
+            get => InternalGetModDescription(false);
         }
 
         /// <summary>
@@ -346,152 +202,195 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// </summary>
         public string RichDisplayedModDescription
         {
-            get
+            get => InternalGetModDescription(true);
+        }
+
+        /// <summary>
+        /// Gets the mod description, either rich text or plain text
+        /// </summary>
+        /// <param name="richText"></param>
+        /// <returns></returns>
+        private string InternalGetModDescription(bool richText)
+        {
+            if (LoadFailedReason != null) 
+            { 
+                if (richText)
+                {
+                    return RichTextHelper.GetHeader() + LoadFailedReason + RichTextHelper.GetFooter();
+                } 
+                else
+                {
+                    return LoadFailedReason;
+                }
+            }
+            // Code to get bold or not
+            string intMakeBold(string str)
             {
-                if (LoadFailedReason != null) return LoadFailedReason;
-                StringBuilder sb = new StringBuilder();
+                if (richText)
+                {
+                    return RichTextHelper.MakeBold(str);
+                }
+
+                // Do nothing
+                return str;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            if (richText)
+            {
                 sb.Append(RichTextHelper.GetHeader());
+                sb.AppendLine(RichTextHelper.ConvertUnicode(ModDescription));
+            } else
+            {
                 sb.AppendLine(ModDescription);
-                sb.AppendLine(@"=============================");
-                //Todo: Automatic configuration
+            }
+            sb.AppendLine(@"=============================");
+            //Todo: Automatic configuration
 
-                //Todo: Optional manuals
-                sb.AppendLine(RichTextHelper.MakeBold(M3L.GetString(M3L.string_interp_modparsing_modVersion, ModVersionString ?? @"1.0")));
-                sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modDeveloper, ModDeveloper));
-                if (ModModMakerID > 0)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modMakerCode, ModModMakerID.ToString()));
-                }
-                if (ModClassicUpdateCode > 0 && Settings.DeveloperMode)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_updateCode, ModClassicUpdateCode.ToString()));
-                }
-                //else if (NexusModID > 0 && Settings.DeveloperMode)
-                //{
-                //    sb.AppendLine($"NexusMods ID: {NexusModID}");
-                //}
+            //Todo: Optional manuals
+            sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_modVersion)) + $@": {ModVersionString ?? @"1.0"}");
+            sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_modDeveloper)) + $@": {ModDeveloper}");
+            if (ModModMakerID > 0)
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_modMakerCode)) + $@": {ModModMakerID}");
+            }
+            if (ModClassicUpdateCode > 0 && Settings.DeveloperMode)
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_updateCode)) + $@": {ModClassicUpdateCode}");
+            }
+            //else if (NexusModID > 0 && Settings.DeveloperMode)
+            //{
+            //    sb.AppendLine($"NexusMods ID: {NexusModID}");
+            //}
 
-                sb.AppendLine(M3L.GetString(M3L.string_modparsing_installationInformationSplitter));
-                if (Settings.DeveloperMode)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture)));
-                }
-                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC
-                                                               && x.Header != ModJob.JobHeader.LOCALIZATION
-                                                               && x.Header != ModJob.JobHeader.TEXTUREMODS
-                                                               && x.Header != ModJob.JobHeader.HEADMORPHS).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
-                if (modifiesList.Count > 0)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modifies, string.Join(@", ", modifiesList)));
-                }
+            sb.AppendLine(M3L.GetString(M3L.string_modparsing_installationInformationSplitter));
+            if (Settings.DeveloperMode)
+            {
+                sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture)));
+            }
+            var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC
+                                                           && x.Header != ModJob.JobHeader.LOCALIZATION
+                                                           && x.Header != ModJob.JobHeader.TEXTUREMODS
+                                                           && x.Header != ModJob.JobHeader.HEADMORPHS).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
+            if (modifiesList.Count > 0)
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_modifies)) + $@": {string.Join(@", ", modifiesList)}");
+            }
 
-                var customDLCJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC);
-                if (customDLCJob != null)
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_addCustomDLCs, string.Join(@", ", customDLCJob.CustomDLCFolderMapping.Values)));
-                }
+            var customDLCJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC);
+            if (customDLCJob != null)
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_addCustomDLCs)) + $@": {string.Join(@", ", customDLCJob.CustomDLCFolderMapping.Values)}");
+            }
 
-                var localizationJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.LOCALIZATION);
-                if (localizationJob != null)
+            var localizationJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.LOCALIZATION);
+            if (localizationJob != null)
+            {
+                var dlcReq = RequiredDLC.First().DLCFolderName; //Localization jobs, if valid, will always have something here.
+                var tpmi = TPMIService.GetThirdPartyModInfo(dlcReq.Key, Game);
+                if (tpmi != null) dlcReq += $@" ({tpmi.modname})";
+                sb.AppendLine(M3L.GetString(M3L.string_interp_addsTheFollowingLocalizationsToX, dlcReq));
+                foreach (var l in localizationJob.FilesToInstall)
                 {
-                    var dlcReq = RequiredDLC.First().DLCFolderName; //Localization jobs, if valid, will always have something here.
-                    var tpmi = TPMIService.GetThirdPartyModInfo(dlcReq.Key, Game);
-                    if (tpmi != null) dlcReq += $@" ({tpmi.modname})";
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_addsTheFollowingLocalizationsToX, dlcReq));
-                    foreach (var l in localizationJob.FilesToInstall)
+                    var langCode = l.Key.Substring(l.Key.Length - 7, 3);
+                    sb.AppendLine(@" - " + langCode);
+                }
+            }
+
+            if (ASIModsToInstall.Any())
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_installsTheFollowingASIMods)));
+                foreach (var asi in ASIModsToInstall)
+                {
+                    var realasi = ASIManager.GetASIModVersion(Game, asi.ASIGroupID, asi.Version);
+                    if (realasi == null)
                     {
-                        var langCode = l.Key.Substring(l.Key.Length - 7, 3);
-                        sb.AppendLine(@" - " + langCode);
-                    }
-                }
-
-                if (ASIModsToInstall.Any())
-                {
-                    sb.AppendLine(M3L.GetString(M3L.string_installsTheFollowingASIMods));
-                    foreach (var asi in ASIModsToInstall)
-                    {
-                        var realasi = ASIManager.GetASIModVersion(Game, asi.ASIGroupID, asi.Version);
-                        if (realasi == null)
+                        var str = $@" - {asi.ASIGroupID}";
+                        if (asi.Version != null)
                         {
-                            var str = $@" - {asi.ASIGroupID}";
-                            if (asi.Version != null)
-                            {
-                                str += $@" v{asi.Version}";
-                            }
-
-                            str += @" (" + M3L.GetString(M3L.string_invalid) + @")";
-                            sb.AppendLine(str);
+                            str += $@" v{asi.Version}";
                         }
-                        else
+
+                        str += @" (" + M3L.GetString(M3L.string_invalid) + @")";
+                        sb.AppendLine(str);
+                    }
+                    else
+                    {
+                        var str = $@" - {realasi.Name}";
+                        if (asi.Version != null)
                         {
-                            var str = $@" - {realasi.Name}";
-                            if (asi.Version != null)
-                            {
-                                str += $@" v{asi.Version}";
-                            }
-
-                            sb.AppendLine(str);
+                            str += $@" v{asi.Version}";
                         }
+
+                        sb.AppendLine(str);
                     }
                 }
+            }
 
 
-                SortedSet<string> autoConfigs = GetUIAutoConfigs();
-                if (autoConfigs.Count > 0)
+            SortedSet<string> autoConfigs = GetUIAutoConfigs();
+            if (autoConfigs.Count > 0)
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_configCanChangeIfOtherDLCFound)));
+                foreach (var autoConfigDLC in autoConfigs)
                 {
-                    sb.AppendLine(M3L.GetString(M3L.string_modparsing_configCanChangeIfOtherDLCFound));
-                    foreach (var autoConfigDLC in autoConfigs)
-                    {
-                        sb.AppendLine($@" - {autoConfigDLC}");
-                    }
+                    sb.AppendLine($@" - {autoConfigDLC}");
                 }
+            }
 
 
-                if (RequiredDLC.Count > 0)
+            if (RequiredDLC.Count > 0)
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_modparsing_requiresTheFollowingDLCToInstall)));
+                foreach (var reqDLC in RequiredDLC)
                 {
-                    sb.AppendLine(M3L.GetString(M3L.string_modparsing_requiresTheFollowingDLCToInstall));
-                    foreach (var reqDLC in RequiredDLC)
-                    {
-                        var info = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName.Key, Game);
-                        sb.AppendLine($@" - {reqDLC.ToUIString(info, false)}");
-                    }
+                    var info = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName.Key, Game);
+                    sb.AppendLine($@" - {reqDLC.ToUIString(info, false)}");
                 }
+            }
 
-                if (OptionalSingleRequiredDLC.Any())
+            if (OptionalSingleRequiredDLC.Any())
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_interp_singleRequiredDLC)));
+                foreach (var reqDLC in OptionalSingleRequiredDLC)
                 {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_singleRequiredDLC));
-                    foreach (var reqDLC in OptionalSingleRequiredDLC)
-                    {
-                        string name = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName.Key, Game)?.modname ?? reqDLC.DLCFolderName.Key;
-                        sb.AppendLine($@" - {name}");
-                    }
+                    string name = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName.Key, Game)?.modname ?? reqDLC.DLCFolderName.Key;
+                    sb.AppendLine($@" - {name}");
                 }
+            }
 
-                var texJob = GetJob(ModJob.JobHeader.TEXTUREMODS);
-                if (texJob != null && texJob.TextureModReferences.Any())
+            var texJob = GetJob(ModJob.JobHeader.TEXTUREMODS);
+            if (texJob != null && texJob.TextureModReferences.Any())
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_mod_modReferencesTextureFiles)));
+                foreach (var reference in texJob.TextureModReferences)
                 {
-                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesTextureFiles));
-                    foreach (var reference in texJob.TextureModReferences)
-                    {
-                        string name = reference.Title;
-                        sb.AppendLine($@" - {name}");
-                    }
+                    string name = reference.Title;
+                    sb.AppendLine($@" - {name}");
                 }
+            }
 
-                var headmorphJob = GetJob(ModJob.JobHeader.HEADMORPHS);
-                if (headmorphJob != null && headmorphJob.HeadMorphFiles.Any())
+            var headmorphJob = GetJob(ModJob.JobHeader.HEADMORPHS);
+            if (headmorphJob != null && headmorphJob.HeadMorphFiles.Any())
+            {
+                sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_mod_modReferencesHeadmorphFiles)));
+                foreach (var reference in headmorphJob.HeadMorphFiles)
                 {
-                    sb.AppendLine(M3L.GetString(M3L.string_mod_modReferencesHeadmorphFiles));
-                    foreach (var reference in headmorphJob.HeadMorphFiles)
-                    {
-                        string name = reference.Title;
-                        sb.AppendLine($@" - {name}");
-                    }
+                    string name = reference.Title;
+                    sb.AppendLine($@" - {name}");
                 }
+            }
 
+            if (richText)
+            {
                 sb.Append(RichTextHelper.GetFooter());
-
-                return RichTextHelper.ConvertNewlines(sb.ToString());
+                var final = sb.ToString();
+                var converted = RichTextHelper.ConvertNewlines(final);
+                return converted;
+            }
+            else
+            {
+                return sb.ToString();
             }
         }
 

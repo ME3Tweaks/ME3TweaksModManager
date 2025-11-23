@@ -349,17 +349,24 @@ namespace ME3TweaksModManager
 
         private int oldFailedBindableCount = 0;
 
-        public string NoModSelectedText
-        {
-            get
-            {
-                var retvar = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
-                var localizedTip = TipsService.GetTip(App.CurrentLanguage);
-                if (localizedTip != null)
-                {
-                    retvar += $"\n\n---------------------------------------------\n{localizedTip}"; //do not localize
-                }
+        public string NoModSelectedText => InternalNoModSelectedText(false);
+        public string NoModSelectedRichText => InternalNoModSelectedText(true);
 
+        private string InternalNoModSelectedText(bool richText)
+        {
+            var retvar = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
+            var localizedTip = TipsService.GetTip(App.CurrentLanguage);
+            if (localizedTip != null)
+            {
+                retvar += $"\n\n---------------------------------------------\n{localizedTip}"; //do not localize
+            }
+
+            if (richText)
+            {
+                // This probably doesn't work properly on non english language settings
+                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(retvar) +RichTextHelper.GetFooter();
+            } else
+            {
                 return retvar;
             }
         }
@@ -3912,8 +3919,8 @@ namespace ME3TweaksModManager
 
                 M3ServiceLoader.LoadServices(bw, Settings.ForcePullContentNextBoot);
                 Settings.ForcePullContentNextBoot = false; // We have pulled content now
-                PropertyChanged?.Invoke(this,
-                    new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText))); // Update localized tip shown
 
                 if (firstStartupCheck)
                 {

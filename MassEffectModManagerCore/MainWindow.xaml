@@ -2313,7 +2313,7 @@
                                     Path="SelectedMod.RichDisplayedModDescription"
                                     Mode="OneWay" />
                                 <Binding
-                                    Path="NoModSelectedText"
+                                    Path="NoModSelectedRichText"
                                     Mode="OneWay" />
                             </PriorityBinding>
                         </xctk:RichTextBox.Text>
