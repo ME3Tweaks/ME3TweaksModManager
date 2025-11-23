@@ -1652,20 +1652,20 @@
     <!-- 0={Filepath} 1={Instanced full path of export in package} -->
 
     <!-- Mod-Parsing -->
-    <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String>
+    <system:String x:Key="string_modparsing_modVersion">Mod version</system:String>
     <!-- 0 = version number -->
-    <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String>
+    <system:String x:Key="string_modparsing_modDeveloper">Mod developer</system:String>
     <!-- 0 = name-->
-    <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {0}</system:String>
+    <system:String x:Key="string_modparsing_modMakerCode">ModMaker code</system:String>
     <!-- 0 = number-->
-    <system:String x:Key="string_interp_modparsing_updateCode">Update code: {0}</system:String>
+    <system:String x:Key="string_modparsing_updateCode">Update code</system:String>
     <!-- 0 = number-->
     <system:String x:Key="string_modparsing_installationInformationSplitter">-------Installation information--------</system:String>
     <system:String x:Key="string_interp_modparsing_targetsModDesc">Targets ModDesc {0}</system:String>
     <!-- 0 = number -->
-    <system:String x:Key="string_interp_modparsing_modifies">Modifies: {0}</system:String>
+    <system:String x:Key="string_modparsing_modifies">Modifies</system:String>
     <!-- 0 = List of human readable DLC names (like bring down the sky)-->
-    <system:String x:Key="string_interp_modparsing_addCustomDLCs">Add Custom DLCs: {0}</system:String>
+    <system:String x:Key="string_modparsing_addCustomDLCs">Add Custom DLCs</system:String>
     <!-- 0 = list of dlc foldernames -->
     <system:String x:Key="string_modparsing_configCanChangeIfOtherDLCFound">Configuration of this mod can change if any of the following DLC are present at installation time:</system:String>
     <system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Requires the following DLC to install:</system:String>
