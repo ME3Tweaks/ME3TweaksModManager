@@ -31,6 +31,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public GenericCommand CancelCommand { get; private set; }
         #endregion
 
+        /// <summary>
+        /// Prechecks and then opens the milan installer panel
+        /// </summary>
+        /// <param name="mw"></param>
+        internal static void BuildBaseMilan(MainWindow mw)
+        {
+            var milanMod = MilanBaseInstaller.GetMilanMod();
+            if (milanMod == null)
+            {
+                M3L.ShowDialog(MainWindow.Instance, "You must download and import the Project Milan mod into your mod library in order to make a game target for Project Milan.", "Project Milan not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var mbip = new MilanBaseInstallerPanel();
+            mbip.Close += (a, b) => { mw.ReleaseBusyControl(); };
+            mw.ShowBusyControl(mbip);
+        }
+
         public MilanBaseInstallerPanel()
         {
             // Should this be here? Or should we have this in OnPanelVisible so queued panels

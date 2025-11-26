@@ -8,14 +8,10 @@ using ME3TweaksCore.Objects;
 using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.milan;
 using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.modmanager.textures;
 using SevenZip;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -24,9 +20,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public static void RouteDebugCall(string sender, MainWindow window)
         {
 #if DEBUG
-            if (sender == nameof(MainWindow.BuildBaseMilan_MenuItem)) BuildBaseMilan(window);
             if (sender == nameof(MainWindow.TriggerBTPBuild_MenuItem)) TriggerBTPBuild(window);
-            if (sender == nameof(MainWindow.ConvertMEM_MenuItem)) ConvertMEMToTextureOverride(window);
             if (sender == nameof(MainWindow.Test7z_MenuItem)) Test7z(window);
             if (sender == nameof(MainWindow.RebuildMD5DB_MenuItem)) RebuildMD5Map(window);
             if (sender == nameof(MainWindow.TestMMV1_MenuItem)) BuildMMV1MergeMod(window);
@@ -106,24 +100,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             package.Save(@"S:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME1\BioGame\CookedPCConsole\EntryMenu.pcc");
             return;
-
-
-
-
-
-
-
-
         }
 
-        private static void ConvertMEMToTextureOverride(MainWindow window)
-        {
-           var converter = new MEMToTOConverter(window);
-            if (converter.SetupConversion())
-            {
-                converter.BeginConversion();
-            }
-        }
+
 
         private static void ShowBGFISDB_Click(MainWindow window)
         {
@@ -231,22 +210,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 MemoryStream ms = new MemoryStream();
                 decompressor.ExtractFile(f.Index, ms);
             }
-        }
-
-        private static void BuildBaseMilan(MainWindow mw)
-        {
-#if DEBUG
-            var milanMod = MilanBaseInstaller.GetMilanMod();
-            if (milanMod == null)
-            {
-                M3L.ShowDialog(MainWindow.Instance, "You must download and import the Project Milan mod into your mod library in order to make a game target for Project Milan.", "Project Milan not found", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var mbip = new MilanBaseInstallerPanel();
-            mbip.Close += (a, b) => { mw.ReleaseBusyControl(); };
-            mw.ShowBusyControl(mbip);
-#endif
         }
 
         private static void ReloadSelectedMod_Click(MainWindow mw)
