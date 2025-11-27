@@ -316,7 +316,7 @@ namespace ME3TweaksModManager.modmanager.textures
             byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(tfcName));
             Guid result = new Guid(hash);
             GuidMap[tfcName] = result;
-            return g;
+            return result;
         }
 
         private void ConvertInstallationToOverride()
