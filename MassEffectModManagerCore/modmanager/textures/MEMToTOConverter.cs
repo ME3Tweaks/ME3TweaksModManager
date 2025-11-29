@@ -33,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.textures
         /// Max size of package "data" when uncompressed - due to how serialization 
         /// works it may be larger, but we buffer small enough it should be fine.
         /// </summary>
-        private const long maxDataSize = 1024 * 1024 * 1024; // 1 GiB
+        private const long MAX_PACKAGE_DATA_SIZE = 1024 * 1024 * 256; // 256 MiB - this is so memory usage on build doesn't go crazy since we also have to compress.
 
         /// <summary>
         /// Amount of data we've recorded to current package exports
@@ -76,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.textures
 
         public IEntry ExportInto(ExportEntry source, PackageCache cache)
         {
-            if (currentPackage == null || (source.DataSize + currentDataSize) > maxDataSize)
+            if (currentPackage == null || (source.DataSize + currentDataSize) > MAX_PACKAGE_DATA_SIZE)
             {
                 Rollover();
             }
