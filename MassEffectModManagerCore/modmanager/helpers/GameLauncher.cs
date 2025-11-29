@@ -44,6 +44,12 @@ namespace ME3TweaksModManager.modmanager.helpers
             return 0; // Manual save
         }
 
+        /// <summary>
+        /// Sets the save used by -RESUME.
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="SelectedGameTarget"></param>
+        /// <param name="autoresumeSaveChanged"></param>
         public static void SetAutoresumeSave(MainWindow window, GameTargetWPF SelectedGameTarget, Action autoresumeSaveChanged = null)
         {
             SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedGameTarget, M3L.GetString(M3L.string_autobootSave));
@@ -86,6 +92,13 @@ namespace ME3TweaksModManager.modmanager.helpers
             };
         }
 
+        /// <summary>
+        /// Launches the specific target.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="LaunchPackage"></param>
+        /// <param name="skipLauncher"></param>
+        /// <param name="autoresume"></param>
         public static void LaunchGame(GameTargetWPF target, LaunchOptionsPackage LaunchPackage, bool? skipLauncher = null, bool? autoresume = null)
         {
             if (!target.Game.IsLEGame()) return;
@@ -188,6 +201,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                         case MEGame.LE1:
                         case MEGame.LE2:
                         case MEGame.LE3:
+                        case MEGame.LMP:
                             gameId = 1328670;
                             break;
                     }
