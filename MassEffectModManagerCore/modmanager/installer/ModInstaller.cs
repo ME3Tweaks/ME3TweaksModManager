@@ -15,6 +15,7 @@ using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.me3tweakscoreextended;
+using ME3TweaksModManager.modmanager.asi;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -25,6 +26,7 @@ using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
+using ME3TweaksModManager.modmanager.objects.mod.moddesc;
 using ME3TweaksModManager.modmanager.objects.tlk;
 using NickStrupat;
 using SevenZip;
@@ -1112,9 +1114,19 @@ namespace ME3TweaksModManager.modmanager.installer
 
                 foreach (var dlcFolderInstalled in addedDLCFolders)
                 {
+                    // See if BTP already exists - if it does, do not do merge
+                    var dlcName = Path.GetFileName(dlcFolderInstalled);
+                    var btpPath = M3CTextureOverrideMerge.GetCombinedTexturePackagePath(InstallOptionsPackage.InstallTarget, dlcName);
+                    if (File.Exists(btpPath))
+                    {
+                        M3Log.Information($@"Detected BTP as part of install, skipping texture override merge");
+                        continue;
+                    }
+
+                    // Test build
                     var pi = new ProgressInfo();
                     pi.OnUpdate = onMergeUpdate;
-                    M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.ModBeingInstalled.Game, InstallOptionsPackage.InstallTarget.GetDLCPath(), Path.GetFileName(dlcFolderInstalled), pi);
+                    M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.InstallTarget, dlcName, pi);
                 }
             }
 
@@ -1184,19 +1196,17 @@ namespace ME3TweaksModManager.modmanager.installer
 
             // ModDesc 9: Install mod-requested ASI mods
             foreach (var asiMod in InstallOptionsPackage.ModBeingInstalled.ASIModsToInstall)
+            {
+                var asiToInstall = ASIManager.GetASIModVersion(InstallOptionsPackage.ModBeingInstalled.Game, asiMod.ASIGroupID, asiMod.Version, includeHidden: M3ASIManager.CanSeeHiddenASIs());
+                if (asiToInstall != null)
                 {
-                    var asiToInstall = ASIManager.GetASIModVersion(InstallOptionsPackage.ModBeingInstalled.Game, asiMod.ASIGroupID, asiMod.Version);
-                    if (asiToInstall != null)
-                    {
-                        ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
-                    }
-                    else
-                    {
-                        M3Log.Error($@"Unable to install ASI mod {asiMod.ToString()}: not found in ASI manifest.");
-                    }
+                    ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
                 }
-
-
+                else
+                {
+                    M3Log.Error($@"Unable to install ASI mod {asiMod.ToString()}: not found in ASI manifest.");
+                }
+            }
 
             if (sfarStagingDirectory != null)
             {

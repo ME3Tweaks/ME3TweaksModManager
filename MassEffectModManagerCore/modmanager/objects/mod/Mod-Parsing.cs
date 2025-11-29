@@ -11,6 +11,7 @@ using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksModManager.modmanager.asi;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -302,7 +303,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 sb.AppendLine(intMakeBold(M3L.GetString(M3L.string_installsTheFollowingASIMods)));
                 foreach (var asi in ASIModsToInstall)
                 {
-                    var realasi = ASIManager.GetASIModVersion(Game, asi.ASIGroupID, asi.Version);
+                    var realasi = ASIManager.GetASIModVersion(Game, asi.ASIGroupID, asi.Version, M3ASIManager.CanSeeHiddenASIs());
                     if (realasi == null)
                     {
                         var str = $@" - {asi.ASIGroupID}";
