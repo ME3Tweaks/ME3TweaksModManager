@@ -361,6 +361,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     // 11/30/2025 - Don't repopulate DLC mods on delete, just remove it.
                     selectedTarget.UIInstalledDLCMods.Remove(deletedMod);
+
+                    // 11/30/2025 - Update installation state of toggled mod
+                    // Run on background thread as this can stall pretty hard
+                    Task.Run(() =>
+                    {
+                        M3LoadedMods.RefreshInstallationModState(selectedTarget, deletedMod);
+                    });
                     // selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);
                 }
 
