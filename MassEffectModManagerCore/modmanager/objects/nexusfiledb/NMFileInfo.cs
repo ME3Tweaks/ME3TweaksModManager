@@ -39,7 +39,14 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
         {
             set
             {
-                LEGames = value.Split(',').Select(x => Enum.Parse<MEGame>(x)).ToArray();
+                if (value != null && value.Length > 0)
+                {
+                    LEGames = value.Split(',').Select(x => Enum.Parse<MEGame>(x)).ToArray();
+                }
+                else
+                {
+                    LEGames = [];
+                }
             }
         }
 
