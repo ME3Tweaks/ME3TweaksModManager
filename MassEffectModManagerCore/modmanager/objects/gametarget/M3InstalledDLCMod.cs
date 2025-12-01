@@ -36,6 +36,7 @@ namespace ME3TweaksModManager.modmanager.objects.gametarget
         {
             base.OnDLCFolderNameChanged();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DLCFolderNameString)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableDisableText))); // this is hack to make it work since it doesn't seem to fire...
         }
 
