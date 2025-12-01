@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             return Path.Combine(GetCurrentModLibraryDirectory(), @"Textures", game.ToString());
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// If the mod list hasn't actually booted once
@@ -856,19 +856,37 @@ namespace ME3TweaksModManager.modmanager.loaders
             return Directory.CreateDirectory(Path.Combine(GetCurrentModLibraryDirectory(), @"DeployedMods")).FullName;
         }
 
-        internal static void RefreshInstallationModState(GameTarget target, InstalledDLCMod toggledMod)
+        /// <summary>
+        /// Refreshes the installation status of a mod if the setting is enabled, for the given installed dlc mod object.
+        /// </summary>
+        /// <param name="target">Target to check against</param>
+        /// <param name="changedStateMod">Mod that was toggled or deleted</param>
+        internal static void RefreshInstallationModState(GameTarget target, InstalledDLCMod changedStateMod)
         {
             if (Settings.ShowInstalledModsInLibrary)
             {
-                M3Log.Information($@"Refreshing installation state for toggled DLC mod {toggledMod.ModName} on target {target.TargetPath}");
-                var realDlcFolderName = toggledMod.DLCFolderName.TrimStart('x');
+                var modsToUpdateState = new List<Mod>();
+                var realDlcFolderName = changedStateMod.DLCFolderName.TrimStart('x');
                 foreach (var mod in M3LoadedMods.Instance.AllLoadedMods.Where(x => x.Game == target.Game))
                 {
                     var dlcFolders = mod.GetAllPossibleCustomDLCFolders();
                     if (dlcFolders.Contains(realDlcFolderName, StringComparer.InvariantCultureIgnoreCase))
                     {
-                        mod.DetermineIfInstalled(target.GetInfoRequiredToDetermineIfInstalled());
+                        modsToUpdateState.Add(mod);
                     }
+                }
+
+                // Only refresh state if there's anything to do
+                if (modsToUpdateState.Any())
+                {
+                    var state = target.GetInfoRequiredToDetermineIfInstalled();
+
+                    foreach (var mod in modsToUpdateState)
+                    {
+                        M3Log.Information($@"Refreshing installation state for mod {changedStateMod.ModName} on target {target.TargetPath}");
+                        mod.DetermineIfInstalled(state);
+                    }
+
                 }
             }
         }
