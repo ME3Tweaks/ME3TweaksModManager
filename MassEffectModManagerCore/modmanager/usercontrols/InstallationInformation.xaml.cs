@@ -1,11 +1,11 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.ME3Tweaks.M3Merge.Game2Email;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
@@ -64,6 +64,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanRemoveTarget() => SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !SelectedTarget.RegistryActive;
 
+        /// <summary>
+        /// Removes the selected cached target from settings
+        /// </summary>
         private void RemoveTarget()
         {
             M3Utilities.RemoveCachedTarget(SelectedTarget);
@@ -111,11 +114,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true;
         }
 
+        /// <summary>
+        /// Invoked when modified files filter changes values
+        /// </summary>
         public void OnModifiedFilesFilterTextChanged()
         {
             SelectedTarget?.ModifiedBasegameFilesView.Refresh();
         }
 
+        /// <summary>
+        /// Restores all basegame files that have been modified. This doesn't wipe out extra stuff.
+        /// </summary>
         private void RestoreAllBasegame()
         {
             bool restorePackages = true;
@@ -133,7 +142,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var res = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     restore = res == MessageBoxResult.Yes;
 
-                    
+
                 }
             }
             else
@@ -323,7 +332,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 }
 
-                void notifyDLCModDeleted()
+                void notifyDLCModDeleted(InstalledDLCMod deletedMod)
                 {
                     if (selectedTarget.Game.IsGame1() || selectedTarget.Game.IsGame2())
                     {
@@ -349,10 +358,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         Result.TargetsToGlobalShaderMerge.Add(selectedTarget);
                     }
-                    selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);
+
+                    // 11/30/2025 - Don't repopulate DLC mods on delete, just remove it.
+                    selectedTarget.UIInstalledDLCMods.Remove(deletedMod);
+                    // selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);
                 }
 
-                void notifyToggled()
+                void notifyToggled(InstalledDLCMod toggledMod)
                 {
                     if (selectedTarget.Game.IsGame1() || selectedTarget.Game.IsGame2())
                     {
@@ -378,6 +390,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         Result.TargetsToGlobalShaderMerge.Add(selectedTarget);
                     }
+
+                    // 11/30/2025 - Update installation state of toggled mod
+                    // Run on background thread as this can stall pretty hard
+                    Task.Run(() =>
+                    {
+                        M3LoadedMods.RefreshInstallationModState(selectedTarget, toggledMod);
+                    });
                 }
 
                 selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);

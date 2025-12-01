@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.ComponentModel;
-using System.Windows;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+﻿using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
@@ -12,9 +9,10 @@ using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
-using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.loaders
 {
@@ -856,6 +854,23 @@ namespace ME3TweaksModManager.modmanager.loaders
         public static string GetDeploymentDirectory()
         {
             return Directory.CreateDirectory(Path.Combine(GetCurrentModLibraryDirectory(), @"DeployedMods")).FullName;
+        }
+
+        internal static void RefreshInstallationModState(GameTarget target, InstalledDLCMod toggledMod)
+        {
+            if (Settings.ShowInstalledModsInLibrary)
+            {
+                M3Log.Information($@"Refreshing installation state for toggled DLC mod {toggledMod.ModName} on target {target.TargetPath}");
+                var realDlcFolderName = toggledMod.DLCFolderName.TrimStart('x');
+                foreach (var mod in M3LoadedMods.Instance.AllLoadedMods.Where(x => x.Game == target.Game))
+                {
+                    var dlcFolders = mod.GetAllPossibleCustomDLCFolders();
+                    if (dlcFolders.Contains(realDlcFolderName, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        mod.DetermineIfInstalled(target.GetInfoRequiredToDetermineIfInstalled());
+                    }
+                }
+            }
         }
     }
 }

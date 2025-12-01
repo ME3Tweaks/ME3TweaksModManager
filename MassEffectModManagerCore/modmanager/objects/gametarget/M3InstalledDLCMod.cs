@@ -40,7 +40,8 @@ namespace ME3TweaksModManager.modmanager.objects.gametarget
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableDisableText))); // this is hack to make it work since it doesn't seem to fire...
         }
 
-        public M3InstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, Action notifyToggled, bool modNamePrefersTPMI) : base(dlcFolderPath, game, deleteConfirmationCallback, notifyDeleted, notifyToggled, modNamePrefersTPMI)
+        public M3InstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action<InstalledDLCMod> notifyDeleted, Action<InstalledDLCMod> notifyToggled, bool modNamePrefersTPMI) 
+            : base(dlcFolderPath, game, deleteConfirmationCallback, notifyDeleted, notifyToggled, modNamePrefersTPMI)
         {
         }
 
@@ -54,7 +55,7 @@ namespace ME3TweaksModManager.modmanager.objects.gametarget
         /// <param name="notifyToggled"></param>
         /// <param name="modNamePrefersTPMI"></param>
         /// <returns></returns>
-        public static M3InstalledDLCMod GenerateInstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, Action notifyToggled, bool modNamePrefersTPMI)
+        public static M3InstalledDLCMod GenerateInstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action<InstalledDLCMod> notifyDeleted, Action<InstalledDLCMod> notifyToggled, bool modNamePrefersTPMI)
         {
             return new M3InstalledDLCMod(dlcFolderPath, game, deleteConfirmationCallback, notifyDeleted, notifyToggled, modNamePrefersTPMI);
         }
