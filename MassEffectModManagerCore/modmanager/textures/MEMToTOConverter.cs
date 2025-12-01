@@ -104,7 +104,7 @@ namespace ME3TweaksModManager.modmanager.textures
 
             var name = currentPackageIndex == 1 ? basePackageName : basePackageName + currentPackageIndex;
             var path = Path.Combine(baseSavePath, $@"{name}.pcc");
-            M3Log.Information($@"Large data serializer - rolling new package {path}");
+            M3Log.Information($@"Large data serializer - rolling new package {path}, max content size: {FileSize.FormatSize(MAX_PACKAGE_DATA_SIZE)}");
             currentPackage = MEPackageHandler.CreateAndOpenPackage(path, game);
         }
 
@@ -113,6 +113,7 @@ namespace ME3TweaksModManager.modmanager.textures
         /// </summary>
         public void Finalize()
         {
+            M3Log.Information($@"Large data serializer - finalizing");
             if (currentPackage != null)
             {
                 currentPackage.Save();
@@ -246,7 +247,7 @@ namespace ME3TweaksModManager.modmanager.textures
         private void BeginMEMConversion()
         {
             // Install MEM file
-            var yn = M3L.ShowDialog(_window, "Perform texture install?", "Info", MessageBoxButton.YesNo);
+            var yn = M3L.ShowDialog(_window, "Perform texture install? If you don't have them already installed, you need to perform this or conversion will do nothing.", "Info", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (yn == MessageBoxResult.Yes)
             {
@@ -352,10 +353,12 @@ namespace ME3TweaksModManager.modmanager.textures
                 var stagingDir = Path.Combine(targetCookedPath, @"staging");
                 if (Directory.Exists(stagingDir))
                 {
+                    M3Log.Information($@"Clearing existing staging directory {stagingDir}");
                     MUtilities.DeleteFilesAndFoldersRecursively(stagingDir, deleteDirectoryItself: false);
                 }
                 Directory.CreateDirectory(stagingDir);
 
+                M3Log.Information($@"Identifying files with TexturesMEM TFCs and InternalFormatLODBias = -10 set on textures");
                 Parallel.ForEach(files, pack =>
                 {
                     done++;
@@ -373,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.textures
                         // Determine if texture is modified by MEM
                         bool isModifiedByMEM = false;
 
-                        var internalFormatLodBias = tex.GetProperty<IntProperty>("InternalFormatLODBias");
+                        var internalFormatLodBias = tex.GetProperty<IntProperty>(@"InternalFormatLODBias");
                         if (internalFormatLodBias != null && internalFormatLodBias.Value == -10)
                         {
                             // MEM Always sets -10 for some reason.
@@ -383,11 +386,11 @@ namespace ME3TweaksModManager.modmanager.textures
 
                         // Check TFC name, as above check will catch everything MEM, and we need to also know about our TFCs.
                         string tfc = null;
-                        var tfcProp = tex.GetProperty<NameProperty>("TextureFileCacheName");
+                        var tfcProp = tex.GetProperty<NameProperty>(@"TextureFileCacheName");
                         if (tfcProp != null)
                         {
                             tfc = tfcProp.Value.Name;
-                            if (tfc.StartsWith("TexturesMEM"))
+                            if (tfc.StartsWith(@"TexturesMEM"))
                             {
                                 isModifiedByMEM = true; // Extra catch chance I guess
                             }
@@ -404,7 +407,7 @@ namespace ME3TweaksModManager.modmanager.textures
                             var file = Path.Combine(stagingDir, pack.Key);
                             if (!File.Exists(file))
                             {
-                                M3Log.Information($@"Copying {pack.Key} to staging");
+                                M3Log.Information($@"Copying texture modded package {pack.Key} to staging");
                                 File.Copy(pack.Value, file);
                             }
                             lock (addObj)
@@ -418,13 +421,13 @@ namespace ME3TweaksModManager.modmanager.textures
                             {
                                 var tfcName = $@"{tfc}.tfc";
                                 var tfcPath = files[tfcName];
-                                var dest = Path.Combine(stagingDir, tfc + ".tfc");
+                                var dest = Path.Combine(stagingDir, tfc + @".tfc");
 
                                 lock (sync)
                                 {
                                     if (!File.Exists(dest))
                                     {
-                                        M3Log.Information($@"Copying {tfcPath} to staging");
+                                        M3Log.Information($@"Copying MEM TFC {tfcPath} to staging");
                                         File.Copy(tfcPath, dest);
                                     }
                                 }
@@ -470,12 +473,9 @@ namespace ME3TweaksModManager.modmanager.textures
                 total = copiedPackages.Count;
                 foreach (var cPackageP in copiedPackages)
                 {
+                    M3Log.Information($@"Extracting textures from {cPackageP}");
                     using var cPackage = MEPackageHandler.OpenMEPackage(cPackageP);
                     done++;
-                    if (done % 10 == 0)
-                    {
-                        M3Log.Information($@"PASS 2: {done}/{total}");
-                    }
 
                     BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, $"PASS 2: Build TO {done}/{total} {cPackage.FileNameNoExtension}");
                     foreach (var tex in cPackage.Exports.Where(x => x.IsA("Texture2D")).ToList())
@@ -509,7 +509,7 @@ namespace ME3TweaksModManager.modmanager.textures
                 copiedPackages.Sort();
 
                 // Rename MEM TFCs
-                M3Log.Information($@"Renaming MEM TFC files");
+                M3Log.Information($@"PASS 3: Renaming MEM TFC files");
                 var tfcFiles = Directory.GetFiles(stagingDir, "TexturesMEM*.tfc");
                 done = 0;
                 total = tfcFiles.Length;
@@ -545,8 +545,9 @@ namespace ME3TweaksModManager.modmanager.textures
                 }
 
                 // Update overrides to TO_
+                M3Log.Information($@"Updating override paths for new package names and IFPs");
                 var sourcePackages = new List<IMEPackage>();
-                foreach(var p in largeDataSerializer.PackagePaths)
+                foreach (var p in largeDataSerializer.PackagePaths)
                 {
                     sourcePackages.Add(MEPackageHandler.UnsafePartialLoad(p, p => false)); // load tables only
                 }
@@ -574,19 +575,26 @@ namespace ME3TweaksModManager.modmanager.textures
                 foreach (var sf in stagedFiles)
                 {
                     var destPath = Path.Combine(targetCookedPath, Path.GetFileName(sf));
-                    M3Log.Information($@"Move staged file to final: {Path.GetFileName(sf)}");
+                    M3Log.Information($@"Moving staged file to final location: {Path.GetFileName(sf)}");
                     File.Move(sf, destPath);
                 }
 
+                M3Log.Information($@"Deleting staging directory {stagingDir}");
                 Directory.Delete(stagingDir);
-
+                M3Log.Information($@"Deleting staging directory {stagingDir}");
             }).ContinueWithOnUIThread(x =>
             {
                 if (x.Exception != null)
                 {
+                    M3Log.Exception(x.Exception, @"Error converting MEM file: ");
+                    task.FinishedUIText = "Error converting .mem";
+                    BackgroundTaskEngine.SubmitJobCompletion(task);
                     Debugger.Break();
+                    M3L.ShowDialog(MainWindow.Instance, "An error occurred while converting the .mem to M3TO format:\n{e.Message}\n\nYou can find more detailed information in the application log.", "Error converting .mem", MessageBoxButton.OK, MessageBoxImage.Error);
+                } else
+                {
+                    BackgroundTaskEngine.SubmitJobCompletion(task);
                 }
-                BackgroundTaskEngine.SubmitJobCompletion(task);
             });
         }
     }
