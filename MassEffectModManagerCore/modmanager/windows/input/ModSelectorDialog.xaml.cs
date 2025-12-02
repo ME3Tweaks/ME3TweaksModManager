@@ -1,18 +1,21 @@
-﻿using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+﻿using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for ModSelectorDialog.xaml
     /// </summary>
-    public partial class ModSelectorDialog : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class ModSelectorDialog : Window
     {
         public ObservableCollectionExtended<IDisplayableMod> AvailableMods { get; } = new ObservableCollectionExtended<IDisplayableMod>();
         public List<IDisplayableMod> SelectedMods { get; } = new List<IDisplayableMod>();
@@ -57,9 +60,13 @@ namespace ME3TweaksModManager.modmanager.windows
             Close();
         }
 
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
-
+        private void ModSelectorList_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // Double click to install feature.
+            if (e.ClickCount >= 2 && sender is FrameworkElement fwe && fwe.DataContext is IDisplayableMod m && CanCommitMods())
+            {
+                CommitMods();
+            }
+        }
     }
 }
