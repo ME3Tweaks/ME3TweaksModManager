@@ -73,7 +73,6 @@ namespace ME3TweaksModManager.modmanager.textures
         /// </summary>
         public IReadOnlyList<string> PackagePaths => packagePaths;
 
-
         public IEntry ExportInto(ExportEntry source, PackageCache cache)
         {
             if (currentPackage == null || (source.DataSize + currentDataSize) > MAX_PACKAGE_DATA_SIZE)
@@ -83,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.textures
 
             // Export the texture to the new package
             currentDataSize += source.DataSize;
-            EntryExporter.ExportExportToPackage(source, currentPackage, out var portedEntry, cache);
+            EntryExporter.ExportExportToPackage(source, currentPackage, out var portedEntry, cache, new RelinkerOptionsPackage() { CheckImportsWhenExportingToPackage = false });
             return portedEntry;
         }
 
@@ -475,25 +474,36 @@ namespace ME3TweaksModManager.modmanager.textures
                 {
                     M3Log.Information($@"Extracting textures from {cPackageP}");
                     using var cPackage = MEPackageHandler.OpenMEPackage(cPackageP);
+
+                    // Change intenral filename so we cannot use this as a global importable file,
+                    // or it might try to port things as an import.
+                    if (EntryImporter.IsSafeToImportFrom(cPackage.FilePath, cPackage.Game, null))
+                    {
+                        cPackage.SetInternalFilepath(@"_" + cPackage.FileNameNoExtension + @".pcc");
+                    }
                     done++;
 
                     BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, $"PASS 2: Build TO {done}/{total} {cPackage.FileNameNoExtension}");
-                    foreach (var tex in cPackage.Exports.Where(x => x.IsA("Texture2D")).ToList())
+                    foreach (var tex in cPackage.Exports.Where(x => x.IsA(@"Texture2D")).ToList())
                     {
                         // Find package in buildPackage
-                        var tfc = tex.GetProperty<NameProperty>("TextureFileCacheName");
+                        var tfc = tex.GetProperty<NameProperty>(@"TextureFileCacheName");
                         if (tfc == null)
                             continue;
-                        if (tfc.Value.Name.StartsWith("TexturesMEM"))
+                        if (tfc.Value.Name.StartsWith(@"TexturesMEM"))
                         {
                             var portedEntry = largeDataSerializer.ExportInto(tex, cache);
 
                             // Repoint TFC
                             var texExport = portedEntry as ExportEntry;
+                            if (texExport == null)
+                            {
+                                M3Log.Error($@"Ported entry ported as an import! This will break things.");
+                            }
                             var newTfcName = GetNewTFCName(tfc.Value.Name, dlcName);
                             texExport.WriteProperty(new NameProperty(newTfcName, "TextureFileCacheName"));
                             var guid = GetGuidFromTFCName(newTfcName);
-                            texExport.WriteProperty(CommonStructs.GuidProp(guid, "TFCFileGuid"));
+                            texExport.WriteProperty(CommonStructs.GuidProp(guid, @"TFCFileGuid"));
                          
                             // This will correct the one set by MEM
                             Texture2D.UpdateLODBiasForTexture(texExport);
@@ -510,7 +520,7 @@ namespace ME3TweaksModManager.modmanager.textures
 
                 // Rename MEM TFCs
                 M3Log.Information($@"PASS 3: Renaming MEM TFC files");
-                var tfcFiles = Directory.GetFiles(stagingDir, "TexturesMEM*.tfc");
+                var tfcFiles = Directory.GetFiles(stagingDir, @"TexturesMEM*.tfc");
                 done = 0;
                 total = tfcFiles.Length;
                 foreach (var tfcFile in tfcFiles)
@@ -555,7 +565,8 @@ namespace ME3TweaksModManager.modmanager.textures
 
                 foreach (var tex in texturesDict.Values)
                 {
-                    var foundPackageName = sourcePackages.First(x => x.FindExport(tex.MemoryPath ?? tex.TextureIFP) != null);
+                    var foundPackageName = sourcePackages.FirstOrDefault(x => x.FindExport(tex.MemoryPath ?? tex.TextureIFP) != null);
+                    M3Log.Error($@"We could not find a package containg the export: {tex.MemoryPath ?? tex.TextureIFP}! This will break things.");
                     tex.CompilingSourcePackage = foundPackageName.FileNameNoExtension + @".pcc";
                     if (tex.MemoryPath == tex.TextureIFP)
                     {
@@ -576,6 +587,10 @@ namespace ME3TweaksModManager.modmanager.textures
                 {
                     var destPath = Path.Combine(targetCookedPath, Path.GetFileName(sf));
                     M3Log.Information($@"Moving staged file to final location: {Path.GetFileName(sf)}");
+                    if (File.Exists(destPath))
+                    {
+                        File.Delete(destPath);
+                    }
                     File.Move(sf, destPath);
                 }
 
@@ -590,7 +605,7 @@ namespace ME3TweaksModManager.modmanager.textures
                     task.FinishedUIText = "Error converting .mem";
                     BackgroundTaskEngine.SubmitJobCompletion(task);
                     Debugger.Break();
-                    M3L.ShowDialog(MainWindow.Instance, "An error occurred while converting the .mem to M3TO format:\n{e.Message}\n\nYou can find more detailed information in the application log.", "Error converting .mem", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(MainWindow.Instance, $"An error occurred while converting the .mem to M3TO format:\n{x.Exception.Message}\n\nYou can find more detailed information in the application log.", "Error converting .mem", MessageBoxButton.OK, MessageBoxImage.Error);
                 } else
                 {
                     BackgroundTaskEngine.SubmitJobCompletion(task);
