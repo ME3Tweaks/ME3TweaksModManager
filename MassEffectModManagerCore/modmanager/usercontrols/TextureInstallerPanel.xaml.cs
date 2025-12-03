@@ -280,6 +280,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     foreach (var f in trackedFileToOriginalMD5Map.Where(x => x.Key.RepresentsPackageFilePath()))
                     {
                         var path = Path.Combine(Target.TargetPath, f.Key);
+                        M3Log.Information($@"Inventorying file after texture install: {path}");
                         var existingInfo = BasegameFileIdentificationService.GetBasegameFileSource(Target, path, f.Value);
                         if (existingInfo != null) // This should never be null but we will check here anyways.
                         {
@@ -291,7 +292,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         numDone++;
                         PercentDone = (int)(numDone * 100.0 / Target.ModifiedBasegameFiles.Count);
                     }
-
+                    M3Log.Information($@"Updatign BGFIS with new texture modded hashes");
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(basegameFileDbUpdates);
                     b.Result = installResult;
                 }
