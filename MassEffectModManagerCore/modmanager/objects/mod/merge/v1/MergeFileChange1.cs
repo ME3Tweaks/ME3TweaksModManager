@@ -13,6 +13,8 @@ using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
 using ME3TweaksCore.Targets;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
@@ -88,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
         }
 
-        [Deprecated(@"Use LE1 config merge feature instead", DeprecationType.Deprecate, 1)]
+        [Obsolete(@"Use LE1 config merge feature instead")]
         private void DisableConfigFlag(IMEPackage package, ExportEntry export, Mod installingMod, Action<int> addMergeWeightCompleted)
         {
             if (ObjectBinary.From(export) is UProperty ob)
@@ -667,7 +669,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         public string[] ScriptFileNames { get; set; }
 
 
-        [Deprecated(@"This is only used in M3Mv1. Do not use in any v2 or newer code!", DeprecationType.Deprecate, 2)]
+        [Obsolete(@"This is only used in M3Mv1. Do not use in any v2 or newer code!")]
         [JsonProperty(@"scripts")]
         public string[] Scripts { get; set; }
 
