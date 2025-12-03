@@ -76,3 +76,20 @@ In your moddesc file, you must specify the ASI group id for Texture Override so 
 | LE2  | TBD          |
 | LE3  | TBD          |
 
+### Debugging at runtime
+You can view the `TextureOverride.log` file next to the game executable to see the log for the last session that had the TextureOverride ASI run in it. 
+
+#### In-game console commands
+- `to.enable`
+  - Enables texture overrides. Exports must be unloaded and reloaded for this to take effect, so you'll typically need to reload a map. Persistent objects in memory won't ever be affected by this, like textures from Startup or SFXGame.
+- `to.disable`
+  - Disables texture overrides. Exports must be unloaded and reloaded for this to take effect, so you'll typically need to reload a map. Persistent objects in memory won't ever be affected by this, like textures from Startup or SFXGame. 
+
+#### Command line options
+You can add there command line options in a custom launch configuration to help further debug issues.
+
+- `-disabletextureoverride`
+  - Disables overrides at boot, only loading the manifests, but not performing texture replacements
+- `-to-trace`
+  - Enables trace level logs which can help track down issues such as seeing what manifest items loaded, which BTP files were found, etc
+
