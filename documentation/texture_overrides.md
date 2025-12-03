@@ -1,6 +1,6 @@
 ![Documentation Image](images/documentation_header.png)
 
-**THIS DOCUMENT IS FOR UPCOMING CHANGES TO MOD MANAGER AND MAY CHANGE OR NOT MAKE IT TO RELEASE.**
+**THIS DOCUMENT IS FOR UPCOMING CHANGES TO MOD MANAGER AND MAY CHANGE OR NOT MAKE IT TO RELEASE. TOPICS DISCUSSED MAY NOT YET BE AVAIALBLE.**
 
 The M3 Texture Override (M3TO) system is a new feature included in Mod Manager 9.2 and up. This system significantly changes how texture modding can be achieved in Mass Effect Legendary Edition.
 
