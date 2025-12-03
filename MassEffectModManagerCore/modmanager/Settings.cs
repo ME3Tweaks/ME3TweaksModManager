@@ -142,7 +142,7 @@ namespace ME3TweaksModManager.modmanager
         {
             get
             {
-#if DEBUG
+#if DEBUG && FALSE
                 return true;
 #else
                 return _alphaMode;
