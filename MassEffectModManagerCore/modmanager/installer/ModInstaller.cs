@@ -1,56 +1,142 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using LegendaryExplorerCore.Compression;
+﻿using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Misc.ME3Tweaks;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.ME3Tweaks.M3Merge.PlotManager;
 using ME3TweaksCore.NativeMods;
-using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.gametarget;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
 using ME3TweaksModManager.modmanager.objects.tlk;
-using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.VisualBasic.Devices;
+using NickStrupat;
 using SevenZip;
-using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 
-namespace ME3TweaksModManager.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.installer
 {
     /// <summary>
-    /// Interaction logic for ModInstaller.xaml
+    /// Information about results of mod installation
     /// </summary>
-    public partial class ModInstaller : MMBusyPanelBase, INotifyPropertyChanged
+    public class ModInstallationResult
     {
         /// <summary>
-        /// The time between percent updates in ms.
+        /// Result code for the installer. 'NO_RESULT_CODE' if no result yet.
         /// </summary>
-        public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
+        public EModInstallerResult Result { get; set; } = EModInstallerResult.NO_RESULT_CODE;
+
+        /// <summary>
+        /// Error message (if applicable)
+        /// </summary>
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// A title for an error dialog (if applicable)
+        /// </summary>
+        public string ErrorTitle { get; set; }
+
+        /// <summary>
+        /// Indicates if the installation was aborted before it began
+        /// </summary>
+        public bool Aborted => Result is EModInstallerResult.USER_CANCELED_INSTALLATION
+                                      or EModInstallerResult.INSTALL_ABORTED_MALFORMED_RCW_FILE
+                                      or EModInstallerResult.INSTALL_ABORTED_BAD_ME2_COALESCED
+                                      or EModInstallerResult.INSTALL_ABORTED_USER_CANCELED_MISSING_MODULES
+                                      or EModInstallerResult.INSTALL_ABORTED_ALOT_BLOCKING
+                                      or EModInstallerResult.INSTALL_ABORTED_REQUIRED_DLC_MISSING
+                                      or EModInstallerResult.INSTALL_ABORTED_NOT_ENOUGH_SPACE
+                                      or EModInstallerResult.INSTALL_ABORTED_NO_BACKUP
+                                      or EModInstallerResult.INSTALL_ABORTED_OODLE_MISSING;
+
+        /// <summary>
+        /// Image to show on dialogs (if applicable)
+        /// </summary>
+        public MessageBoxImage ErrorImage { get; internal set; } = MessageBoxImage.Error;
+    }
+
+    /// <summary>
+    /// Describes the result of the mod installation.
+    /// </summary>
+    public enum EModInstallerResult
+    {
+        UNHANDLED_INSTALL_RESULT,
+        /// <summary>
+        /// Installation completed with no errors
+        /// </summary>
+        INSTALL_SUCCESSFUL,
+        USER_CANCELED_INSTALLATION,
+        /// <summary>
+        /// Required modules for install were missing and the user declined to continue
+        /// </summary>
+        INSTALL_ABORTED_USER_CANCELED_MISSING_MODULES,
+        INSTALL_ABORTED_ALOT_BLOCKING,
+        INSTALL_ABORTED_REQUIRED_DLC_MISSING,
+        /// <summary>
+        /// Mod installed but the computed number of completed tasks was wrong
+        /// </summary>
+        INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS,
+        /// <summary>
+        /// Unset result code
+        /// </summary>
+        NO_RESULT_CODE,
+        INSTALL_ABORTED_MALFORMED_RCW_FILE,
+        INSTALL_ABORTED_NOT_ENOUGH_SPACE,
+        INSTALL_ABORTED_BAD_ME2_COALESCED,
+        INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION,
+        INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER,
+        INSTALL_FAILED_EXCEPTION_FILE_COPY,
+        INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER,
+        // INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3, // Removed 11/11/2025 - no longer in codebase
+        INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES,
+        INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING,
+        /// <summary>
+        /// Mods requires an AMD processor (Black Blobs Fix for ME1)
+        /// </summary>
+        // INSTALL_ABORTED_AMD_PROCESSOR_REQUIRED, // Removed 11/11/2025 - this was moved to SharedInstaller a while ago, it is part of options precheck now
+        INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD,
+        /// <summary>
+        /// No backup was found and user canceled installation when prompted.
+        /// </summary>
+        INSTALL_ABORTED_NO_BACKUP,
+        /// <summary>
+        /// LE - Could not source oodle dll
+        /// </summary>
+        INSTALL_ABORTED_OODLE_MISSING
+    }
+
+
+    /// <summary>
+    /// Installer for M3 mods
+    /// </summary>
+    internal class ModInstaller
+    {
+        // Some consistent log strings to help trace exit procedures 
+        private const string FINISHING_INSTALLER_LOGSTR = @"<<<<<<< Finishing modinstaller";
+        private const string EXITING_INSTALLER_LOGSTR = @"<<<<<<< Exiting modinstaller";
+
+
+        /// <summary>
+        /// The installation result
+        /// </summary>
+        public ModInstallationResult InstallationResult { get; set; } = new ModInstallationResult();
 
         /// <summary>
         /// Options for the installer.
@@ -58,142 +144,29 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ModInstallOptionsPackage InstallOptionsPackage { get; private set; }
 
         /// <summary>
-        /// If installation of the mod succeeded; to be read by whatever invoked this panel
+        /// Delegate for updating the UI
         /// </summary>
-        public bool InstallationSucceeded { get; private set; }
+        public Action<string> SetAction { get; set; }
 
         /// <summary>
-        /// If installation of the mod was canceled; maybe the game was running. Maybe this should be an interface...
+        /// Delegate for setting the current task percent
         /// </summary>
-        public bool InstallationCancelled { get; private set; }
-
-
-        // Todo: Is this still necessary now that it's split?
-        public bool ModIsInstalling { get; set; }
+        public Action<int> SetPercent { get; set; }
 
         /// <summary>
-        /// Initializes the Mod Installer panel.
+        /// Delegate for controlling percentage visibility
         /// </summary>
-        /// <param name="package">The installation options package</param>
-        public ModInstaller(ModInstallOptionsPackage package)
+        public Action<bool> SetPercentVisibility { get; internal set; }
+
+        public ModInstaller(ModInstallOptionsPackage installOptionsPackage)
         {
-            M3MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", this);
-            M3Log.Information($@">>>>>>> Starting mod installer for mod: {package.ModBeingInstalled.ModName} {package.ModBeingInstalled.ModVersionString} for game {package.ModBeingInstalled.Game}. Install source: {(package.ModBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
-            InstallOptionsPackage = package;
-            LoadCommands();
-            lastPercentUpdateTime = DateTime.Now;
-            if (!package.BatchMode)
-            {
-                // Don't reload between batch installs to improve performance.
-                package.InstallTarget.ReloadGameTarget(false); //Reload so we can have consistent state with disk
-            }
-
-            Action = M3L.GetString(M3L.string_preparingToInstall);
-        }
-
-        private void LoadCommands()
-        {
-            // Has no commands anymore
-        }
-
-
-        private DateTime lastPercentUpdateTime;
-
-        /// <summary>
-        /// Describes the result of the mod installation.
-        /// </summary>
-        public enum ModInstallCompletedStatus
-        {
-            UNHANDLED_INSTALL_RESULT,
-            INSTALL_SUCCESSFUL,
-            USER_CANCELED_INSTALLATION,
-            INSTALL_FAILED_USER_CANCELED_MISSING_MODULES,
-            INSTALL_FAILED_ALOT_BLOCKING,
-            INSTALL_FAILED_REQUIRED_DLC_MISSING,
-            INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS,
-            NO_RESULT_CODE,
-            INSTALL_FAILED_MALFORMED_RCW_FILE,
-            INSTALL_ABORTED_NOT_ENOUGH_SPACE,
-            INSTALL_FAILED_BAD_ME2_COALESCED,
-            INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION,
-            INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER,
-            INSTALL_FAILED_EXCEPTION_FILE_COPY,
-            INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER,
-            INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3,
-            INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES,
-            INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING,
-            INSTALL_FAILED_AMD_PROCESSOR_REQUIRED,
-            INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD
+            InstallOptionsPackage = installOptionsPackage;
         }
 
         /// <summary>
-        /// The current ongoing action to display to the user.
+        /// Performs check for backup and shows dialog if no backup found asking if user wants to continue
         /// </summary>
-        public string Action { get; set; }
-        /// <summary>
-        /// The current percentage to show the user.
-        /// </summary>
-        public int Percent { get; set; }
-
-        /// <summary>
-        /// The bound percentage visibility.
-        /// </summary>
-        public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
-
-        private void BeginInstallingMod()
-        {
-            if (InstallOptionsPackage.InstallTarget == null)
-            {
-                M3Log.Error(@"The installation target is null! We're probably going to crash. How did the code get to this point?");
-            }
-
-            SystemSleepManager.PreventSleep(@"ModInstaller");
-            ModIsInstalling = true;
-            if (!CheckForGameBackup())
-            {
-                M3Log.Error(@"User aborted installation because they did not have a backup available");
-                InstallationSucceeded = false;
-                InstallationCancelled = true;
-                OnClosing(DataEventArgs.Empty);
-                return;
-            }
-
-            // Allow skipping if previous dialog was automatically gone through.
-            if (!InstallOptionsPackage.SkipPrerequesitesCheck && !SharedInstaller.ValidateModCanInstall(window, InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget))
-            {
-                M3Log.Error(@"Mod could not install - aborting");
-                InstallationSucceeded = false;
-                InstallationCancelled = true;
-                OnClosing(DataEventArgs.Empty);
-                return;
-            }
-
-            if (InstallOptionsPackage.InstallTarget.Game.IsLEGame())
-            {
-                if (!OodleHelper.EnsureOodleDll(InstallOptionsPackage.InstallTarget.TargetPath, M3Filesystem.GetDllDirectory()))
-                {
-                    M3Log.Error($@"Oodle dll could not be sourced from game: {InstallOptionsPackage.InstallTarget.TargetPath}. Installation cannot proceed");
-                    InstallationSucceeded = false;
-                    InstallationCancelled = true;
-                    var message = M3L.GetString(M3L.string_oodleNotFound);
-                    if (InstallOptionsPackage.InstallTarget.Supported)
-                    {
-                        message += " " + M3L.GetString(M3L.string_ensureGameIsValidDiscord);
-                    }
-                    M3L.ShowDialog(mainwindow, message, M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
-                    OnClosing(DataEventArgs.Empty);
-                    return;
-                }
-            }
-
-            M3Log.Information($@"BeginInstallingMod(): {InstallOptionsPackage.ModBeingInstalled.ModName}");
-            NamedBackgroundWorker bw = new NamedBackgroundWorker($@"ModInstaller-{InstallOptionsPackage.ModBeingInstalled.ModName}");
-            bw.WorkerReportsProgress = true;
-            bw.DoWork += InstallModBackgroundThread;
-            bw.RunWorkerCompleted += ModInstallationCompleted;
-            bw.RunWorkerAsync();
-        }
-
+        /// <returns></returns>
         private bool CheckForGameBackup()
         {
             var hasBackup = BackupService.GetBackupStatus(InstallOptionsPackage.ModBeingInstalled.Game).BackedUp;
@@ -209,20 +182,63 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            if (!hasAnyGameModificationJobs) return true; //Backup not required for DLC-only mods. Or balance change jobs
+            if (!hasAnyGameModificationJobs)
+                return true; //Backup not required for DLC-only mods. Or balance change jobs
 
             if (!hasBackup)
             {
-                var installAnyways = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, InstallOptionsPackage.ModBeingInstalled.Game.ToGameName(), InstallOptionsPackage.ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
+                var installAnyways = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, InstallOptionsPackage.ModBeingInstalled.Game.ToGameName(), InstallOptionsPackage.ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
                 return installAnyways == MessageBoxResult.Yes;
             }
 
             return true; //has backup
         }
 
+        /// <summary>
+        /// Performs installation precheck. Sets the result code if failures occurred.
+        /// </summary>
+        public void PerformPrecheck()
+        {
+            if (!CheckForGameBackup())
+            {
+                M3Log.Error(@"User aborted installation because they did not have a backup available");
+                InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_NO_BACKUP;
+                return;
+            }
 
+            // Allow skipping if previous dialog was automatically gone through.
+            if (!InstallOptionsPackage.SkipPrerequesitesCheck && !SharedInstaller.ValidateModCanInstall(MainWindow.Instance, InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget))
+            {
+                M3Log.Error(@"Mod could not install - aborting");
+                InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_USER_CANCELED_MISSING_MODULES;
+                // dialog should already have been shown...
+                return;
+            }
 
-        private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
+            if (InstallOptionsPackage.InstallTarget.Game.IsLEGame())
+            {
+                if (!OodleHelper.EnsureOodleDll(InstallOptionsPackage.InstallTarget.TargetPath, M3Filesystem.GetDllDirectory()))
+                {
+                    M3Log.Error($@"Oodle dll could not be sourced from game: {InstallOptionsPackage.InstallTarget.TargetPath}. Installation cannot proceed");
+                    InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_OODLE_MISSING;
+                    var message = M3L.GetString(M3L.string_oodleNotFound);
+                    if (InstallOptionsPackage.InstallTarget.Supported)
+                    {
+                        message += " " + M3L.GetString(M3L.string_ensureGameIsValidDiscord);
+                    }
+                    InstallationResult.ErrorMessage = message;
+                    InstallationResult.ErrorTitle = M3L.GetString(M3L.string_cannotInstallMod);
+                    return;
+                }
+            }
+
+            // OK
+        }
+
+        /// <summary>
+        /// Performs the mod installation. This is a blocking method.
+        /// </summary>
+        public void InstallMod()
         {
             var sw = Stopwatch.StartNew();
             bool testrun = false; //change to true to test
@@ -245,8 +261,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (!InstallOptionsPackage.BatchMode || InstallOptionsPackage.IsFirstBatchMod)
             {
                 var needsBinkInstalled = !InstallOptionsPackage.InstallTarget.IsBinkBypassInstalled();
-                if (!needsBinkInstalled && InstallOptionsPackage.ModBeingInstalled.RequiresEnhancedBink &&
-                    !InstallOptionsPackage.InstallTarget.IsEnhancedBinkInstalled())
+                if (!needsBinkInstalled && InstallOptionsPackage.ModBeingInstalled.RequiresEnhancedBink && !InstallOptionsPackage.InstallTarget.IsEnhancedBinkInstalled())
                 {
                     needsBinkInstalled = true;
                 }
@@ -259,16 +274,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     catch (Exception be)
                     {
-                        e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
-                        if (Application.Current != null)
-                        {
-                            Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow,
-                                M3L.GetString(M3L.string_interp_errorInstallingBinkBypassX, be.Message),
-                                M3L.GetString(M3L.string_title_errorInstallingBinkBypass), MessageBoxButton.OK,
-                                MessageBoxImage.Error));
-                        }
-
-                        M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                        InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
+                        InstallationResult.ErrorMessage = M3L.GetString(M3L.string_interp_errorInstallingBinkBypassX, be.Message);
+                        InstallationResult.ErrorTitle = M3L.GetString(M3L.string_title_errorInstallingBinkBypass);
+                        M3Log.Warning(EXITING_INSTALLER_LOGSTR);
                         return;
                     }
                 }
@@ -279,16 +288,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (Settings.SkipLELauncher && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
                 {
-                    GameTargetWPF gt = new GameTargetWPF(MEGame.LELauncher,
-                        Path.Combine(Directory.GetParent(InstallOptionsPackage.InstallTarget.TargetPath).FullName,
-                            @"Launcher"), false, skipInit: true);
+                    var gt = new GameTarget(MEGame.LELauncher, Path.Combine(Directory.GetParent(InstallOptionsPackage.InstallTarget.TargetPath).FullName, @"Launcher"), false, skipInit: true);
                     if (gt.IsValid && !gt.IsBinkBypassInstalled())
                     {
                         // Bink isn't installed and it needs autoboot
                         if (MUtilities.IsGameRunning(MEGame.LELauncher))
                         {
-                            M3Log.Warning(
-                                @"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
+                            M3Log.Warning(@"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
                         }
                         else
                         {
@@ -306,8 +312,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME2 && InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
             {
                 M3Log.Information(@"RCW mod: Beginning RCW mod subinstaller");
-                e.Result = InstallAttachedRCWMod();
-                M3Log.Information(@"<<<<<<< Finishing modinstaller");
+                InstallAttachedRCWMod();
+                
+                // Consistent logging
+                if (InstallationResult.Result == EModInstallerResult.INSTALL_SUCCESSFUL)
+                {
+                    M3Log.Information(FINISHING_INSTALLER_LOGSTR);
+                }
+                else
+                {
+                    M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+                }
                 return;
             }
 
@@ -322,8 +337,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             catch (Exception ex)
             {
                 M3Log.Error(@"Error building installation queues: " + App.FlattenException(ex));
-                M3Log.Information(@"<<<<<<< Exiting modinstaller");
-                e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES, ex.Message);
+                M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+                InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES;
+                InstallationResult.ErrorMessage = M3L.GetString(M3L.string_interp_errorOccuredBuildingInstallationQueues, ex.Message);
+                InstallationResult.ErrorTitle = M3L.GetString(M3L.string_errorInstallingMod);
                 return;
             }
 
@@ -364,17 +381,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             @"Textures are installed and user is attempting to install a mod. Warning user about texture tools no longer working after this");
 
                         bool cancel = false;
+
+                        // ask user if they want to cancel or continue
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            var res = M3L.ShowDialog(Window.GetWindow(this),
+                            var res = M3L.ShowDialog(MainWindow.Instance,
                                 M3L.GetString(M3L.string_warningTexturesAreInstalled),
                                 M3L.GetString(M3L.string_warningTextureModsAreInstalled),
                                 MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                             cancel = res == MessageBoxResult.No;
                         });
+
                         if (cancel)
                         {
-                            e.Result = ModInstallCompletedStatus.USER_CANCELED_INSTALLATION;
+                            // User canceled installation, exit installer thread
+                            InstallationResult.Result = EModInstallerResult.USER_CANCELED_INSTALLATION;
                             M3Log.Information(@"<<<<<<< Exiting modinstaller.");
                             return;
                         }
@@ -389,7 +410,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             bool cancel = false;
                             Application.Current.Dispatcher.Invoke(delegate
                             {
-                                var res = M3L.ShowDialog(Window.GetWindow(this),
+                                var res = M3L.ShowDialog(MainWindow.Instance,
                                     M3L.GetString(M3L.string_interp_devModeAlotInstalledWarning,
                                         InstallOptionsPackage.ModBeingInstalled.ModName), M3L.GetString(M3L.string_brokenTexturesWarning),
                                     MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
@@ -397,8 +418,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             });
                             if (cancel)
                             {
-                                e.Result = ModInstallCompletedStatus.USER_CANCELED_INSTALLATION;
-                                M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                                // This is not a warning so it's listed as info
+                                M3Log.Information(EXITING_INSTALLER_LOGSTR);
+                                InstallationResult.Result = EModInstallerResult.USER_CANCELED_INSTALLATION;
                                 return;
                             }
 
@@ -406,11 +428,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
                         else
                         {
-                            M3Log.Error(
-                                @"ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
+                            M3Log.Error(@"ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
+                            M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+
                             //ALOT Installed, this is attempting to install a package file
-                            e.Result = ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING;
-                            M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                            InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_ALOT_BLOCKING;
+                            InstallationResult.ErrorMessage = M3L.GetString(M3L.string_dialogInstallationBlockedByALOT);
+                            InstallationResult.ErrorTitle = M3L.GetString(M3L.string_installationBlocked);
                             return;
                         }
                     }
@@ -421,9 +445,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            Action = M3L.GetString(M3L.string_installing);
-            PercentVisibility = Visibility.Visible;
-            Percent = 0;
+            SetAction?.Invoke(M3L.GetString(M3L.string_installing));
+            SetPercent?.Invoke(0);
+            SetPercentVisibility?.Invoke(true);
 
             int numdone = 0;
 
@@ -593,15 +617,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 string driveletter = Path.GetPathRoot(InstallOptionsPackage.InstallTarget.TargetPath);
                 M3Log.Error($@"Insufficient disk space to install mod. Required: {FileSize.FormatSize(requiredSpaceToInstall)}, available on {driveletter}: {FileSize.FormatSize(freeSpaceOnTargetDisk)}");
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    string message = M3L.GetString(M3L.string_interp_dialogNotEnoughSpaceToInstall, driveletter, InstallOptionsPackage.ModBeingInstalled.ModName, FileSize.FormatSize(requiredSpaceToInstall).ToString(), FileSize.FormatSize(freeSpaceOnTargetDisk).ToString());
-                    M3L.ShowDialog(window, message, M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
-                });
-                e.Result = ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
-                M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+                InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
+                InstallationResult.ErrorMessage = M3L.GetString(M3L.string_interp_dialogNotEnoughSpaceToInstall, driveletter, InstallOptionsPackage.ModBeingInstalled.ModName, FileSize.FormatSize(requiredSpaceToInstall).ToString(), FileSize.FormatSize(freeSpaceOnTargetDisk).ToString());
+                InstallationResult.ErrorTitle = M3L.GetString(M3L.string_insufficientDiskSpace);
                 return;
             }
+
 
             //Delete existing custom DLC mods with same name
             // 05/08/2023: Restore ME3CMM feature that also removed DLCs that began with 'x' - disabled DLCs
@@ -627,16 +649,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         catch (Exception finalException)
                         {
                             M3Log.Error($@"Error deleting existing mod directory after admin attempt, {path}: {finalException.Message}");
-                            e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER, new List<string>(new[] { path, finalException.Message }));
-                            M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                            M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+                            setExistingDLCDeleteFailedResult(path, finalException.Message);
                             return;
                         }
                     }
                     catch (Exception ge)
                     {
+                        // Other unknown error
                         M3Log.Error($@"Error deleting existing mod directory {path}: {ge.Message}");
-                        e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER, new List<string>(new[] { path, ge.Message }));
-                        M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                        M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+                        setExistingDLCDeleteFailedResult(path, ge.Message);
                         return;
                     }
                 }
@@ -653,15 +676,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var fileMapping = sfarMapping.FirstOrDefault(x => x.Key == targetPath);
                 M3Log.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Value.FilePath} -> (SFAR) {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
-                Action = M3L.GetString(M3L.string_installing);
-                var now = DateTime.Now;
-                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
-                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+                SetAction?.Invoke(M3L.GetString(M3L.string_installing));
+                if (numdone > numFilesToInstall)
                 {
-                    //Don't update UI too often. Once per second is enough.
-                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
-                    lastPercentUpdateTime = now;
+                    Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
                 }
+
+                SetPercent?.Invoke((int)(numdone * 100.0 / numFilesToInstall));
             }
 
             void FileInstalledCallback(string targetPath)
@@ -671,7 +692,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var fileMapping = fullPathMappingDisk.FirstOrDefault(x => x.Value == targetPath);
                 M3Log.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
-                Action = M3L.GetString(M3L.string_installing);
+                SetAction?.Invoke(M3L.GetString(M3L.string_installing));
 
 
                 //BASEGAME FILE TRACKING
@@ -699,7 +720,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         package.Save(compress: true);
 
 #if DEBUG
-                        // TEST: REopen package
+                        // TEST: Reopen package
                         try
                         {
                             var p = MEPackageHandler.OpenMEPackage(targetPath);
@@ -709,14 +730,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
 
+                SetPercent?.Invoke((int)(numdone * 100.0 / numFilesToInstall));
+
                 var now = DateTime.Now;
-                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
-                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+#if DEBUG
+                if (numdone > numFilesToInstall)
                 {
-                    //Don't update UI too often. Once per second is enough.
-                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
-                    lastPercentUpdateTime = now;
+                    Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
                 }
+#endif
             }
 
             //Stage: Unpacked files installation
@@ -737,19 +759,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName },
                         {@"Version", InstallOptionsPackage.ModBeingInstalled.ModVersionString}
                     });
-                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_FILE_COPY;
+                    InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_EXCEPTION_FILE_COPY;
                     if (Application.Current != null)
                     {
                         // handled here so we can show what failed in string
-                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorCopyingFilesToTarget, ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(MainWindow.Instance, M3L.GetString(M3L.string_interp_dialog_errorCopyingFilesToTarget, ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
-                    M3Log.Warning(@"<<<<<<< Aborting modinstaller");
+                    M3Log.Warning(EXITING_INSTALLER_LOGSTR);
                     return;
                 }
             }
             else
             {
-                Action = M3L.GetString(M3L.string_loadingModArchive);
+                SetAction?.Invoke(M3L.GetString(M3L.string_loadingModArchive));
                 //Extraction to destination
                 string installationRedirectCallback(ArchiveFileInfo info)
                 {
@@ -801,13 +823,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName},
                             {@"Filename", InstallOptionsPackage.ModBeingInstalled.Archive.FileName},
                         });
-                        e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
+                        InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
                         if (Application.Current != null)
                         {
-                            Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
+                            Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(MainWindow.Instance, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
                         }
 
-                        M3Log.Warning(@"<<<<<<< Aborting modinstaller");
+                        M3Log.Warning(EXITING_INSTALLER_LOGSTR);
                         return;
                     }
                 }
@@ -888,9 +910,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     SystemSleepManager.PreventSleep(@"ModInstaller");
                     doneWeight += newWeightDone;
-                    Percent = (int)(doneWeight * 100.0 / totalWeight);
+                    var percent = (int)(doneWeight * 100.0 / totalWeight);
+                    SetPercent?.Invoke(percent);
 #if DEBUG
-                    if (Percent > 100)
+                    if (percent > 100)
                     {
                         Debug.WriteLine(@"Percent calculation is wrong!");
                         Debugger.Break();
@@ -970,7 +993,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // Run at the end of all merge mods so we get the final hash.
                 void convertMergeModRecordsToFileIdentificationRecords()
                 {
-                    Action = M3L.GetString(M3L.string_trackingMergemodChanges);
+                    SetAction?.Invoke(M3L.GetString(M3L.string_trackingMergemodChanges));
                     mmp.FinalizeFileTransitionMap();
                     foreach (var f in mmp.FileTransitionMap.Where(x => x.Value.WasSavedOnce))
                     {
@@ -980,8 +1003,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 if (allMMs.Any())
                 {
-                    Action = M3L.GetString(M3L.string_applyingMergemods);
-                    Percent = 0;
+                    SetAction?.Invoke(M3L.GetString(M3L.string_applyingMergemods));
+                    SetPercent?.Invoke(0);
                 }
 
                 foreach (var mergeMod in allMMs)
@@ -995,18 +1018,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         convertMergeModRecordsToFileIdentificationRecords(); // Run conversion now
 
                         // Error applying merge mod!
-                        InstallationSucceeded = false;
                         M3Log.Exception(ex, $@"An error occurred installing mergemod {mergeMod.MergeModFilename}: ");
-                        e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD;
-                        if (Application.Current != null)
-                        {
-                            Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow,
-                                M3L.GetString(M3L.string_interp_errorApplyingMergeModXY, mergeMod.MergeModFilename,
-                                    ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK,
-                                MessageBoxImage.Error));
-                        }
+                        M3Log.Warning(EXITING_INSTALLER_LOGSTR);
 
-                        M3Log.Warning(@"<<<<<<< Aborting modinstaller");
+                        InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD;
+                        InstallationResult.ErrorMessage = M3L.GetString(M3L.string_interp_errorApplyingMergeModXY, mergeMod.MergeModFilename, ex.Message);
+                        InstallationResult.ErrorTitle = M3L.GetString(M3L.string_errorInstallingMod);
                         return;
                     }
                 }
@@ -1017,8 +1034,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Stage: TLK merge (Game 1)
             if (InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null)
             {
-                Percent = 0;
-                Action = M3L.GetString(M3L.string_updatingTLKFiles);
+                SetPercent?.Invoke(0);
+                SetAction?.Invoke(M3L.GetString(M3L.string_updatingTLKFiles));
 
                 CompressedTLKMergeData compressedTlkData = null;
                 var mergeFiles = InstallOptionsPackage.ModBeingInstalled.PrepareTLKMerge(out compressedTlkData);
@@ -1055,21 +1072,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
                     }
 
-                    Percent = (int)(doneMerges * 100.0 / totalTlkMerges);
+                    SetPercent?.Invoke((int)(doneMerges * 100.0 / totalTlkMerges));
                     Interlocked.Increment(ref doneMerges);
                 });
 
                 if (parallelException != null)
                 {
-                    // Handle exception in parallel tlk merge
-                    InstallationSucceeded = false;
-                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
-                    if (Application.Current != null)
-                    {
-                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorInstallingTLKMergesX, parallelException.Message), M3L.GetString(M3L.string_title_errorInstallingTLKMerge), MessageBoxButton.OK, MessageBoxImage.Error));
-                    }
-
-                    M3Log.Warning(@"<<<<<<< Aborting modinstaller");
+                    M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+                    InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
+                    InstallationResult.ErrorMessage = M3L.GetString(M3L.string_interp_errorInstallingTLKMergesX, parallelException.Message);
+                    InstallationResult.ErrorTitle = M3L.GetString(M3L.string_title_errorInstallingTLKMerge);
                     return;
                 }
             }
@@ -1085,7 +1097,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             // Main installation step has completed
             M3Log.Information(@"Main stage of mod installation has completed");
-            Percent = (int)(numdone * 100.0 / numFilesToInstall);
+            SetPercent?.Invoke((int)(numdone * 100.0 / numFilesToInstall));
 
             // Mark items read only
             foreach (var readonlytarget in mappedReadOnlyTargets)
@@ -1106,12 +1118,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // Install supporting ASI files if necessary
-            Action = M3L.GetString(M3L.string_installingSupportFiles);
-            PercentVisibility = Visibility.Collapsed;
+            SetAction?.Invoke(M3L.GetString(M3L.string_installingSupportFiles));
+            SetPercentVisibility?.Invoke(false);
+
             if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME1)
             {
                 M3Log.Information(@"Installing supporting ASI files");
-                ASIManager.InstallASIToTargetByGroupID(16, @"DLC Mod Enabler", InstallOptionsPackage.InstallTarget); //16 = DLC Mod Enabler
+                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME1_DLC_MOD_ENABLER, @"DLC Mod Enabler", InstallOptionsPackage.InstallTarget); //16 = DLC Mod Enabler
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME2)
             {
@@ -1142,21 +1155,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE3)
             {
                 ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
-            }
+            } 
 
             // ModDesc 9: Install mod-requested ASI mods
             foreach (var asiMod in InstallOptionsPackage.ModBeingInstalled.ASIModsToInstall)
-            {
-                var asiToInstall = ASIManager.GetASIModVersion(InstallOptionsPackage.ModBeingInstalled.Game, asiMod.ASIGroupID, asiMod.Version);
-                if (asiToInstall != null)
                 {
-                    ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
+                    var asiToInstall = ASIManager.GetASIModVersion(InstallOptionsPackage.ModBeingInstalled.Game, asiMod.ASIGroupID, asiMod.Version);
+                    if (asiToInstall != null)
+                    {
+                        ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Unable to install ASI mod {asiMod.ToString()}: not found in ASI manifest.");
+                    }
                 }
-                else
-                {
-                    M3Log.Error($@"Unable to install ASI mod {asiMod.ToString()}: not found in ASI manifest.");
-                }
-            }
 
 
 
@@ -1167,8 +1180,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (numFilesToInstall == numdone)
             {
-                e.Result = ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
-                Action = M3L.GetString(M3L.string_installed);
+                // Successful installation
+                InstallationResult.Result = EModInstallerResult.INSTALL_SUCCESSFUL;
+                SetAction?.Invoke(M3L.GetString(M3L.string_installed));
                 if (Settings.ShowInstalledModsInLibrary)
                 {
                     var gs = new GameState()
@@ -1183,10 +1197,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             else
             {
                 M3Log.Warning($@"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
-                e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
+                InstallationResult.Result = EModInstallerResult.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
+                InstallationResult.ErrorMessage = M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck);
+                InstallationResult.ErrorTitle = M3L.GetString(M3L.string_installationSucceededMaybe);
+                InstallationResult.ErrorImage = MessageBoxImage.Warning;
             }
 
-            M3Log.Information(@"<<<<<<< Finishing modinstaller");
+            M3Log.Information(FINISHING_INSTALLER_LOGSTR);
             sw.Stop();
             Debug.WriteLine($@"Installer took {sw.ElapsedMilliseconds}ms");
             if (basegameFilesInstalled.Any() || basegameIdentificationServiceRecords.Any())
@@ -1210,8 +1227,38 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private ModInstallCompletedStatus InstallAttachedRCWMod()
+        /// <summary>
+        /// Shared code for setting the installation result when unable to delete existing DLC folder
+        /// </summary>
+        /// <param name="path">DLC folder path that failed to delete</param>
+        /// <param name="exceptionMessage">Message for exception to be interwoven into the error message in result</param>
+        private void setExistingDLCDeleteFailedResult(string path, string exceptionMessage)
         {
+            // Will only be one item in this list
+            var tpmi = TPMIService.GetThirdPartyModInfo(Path.GetFileName(path), InstallOptionsPackage.ModBeingInstalled.Game);
+            string message = M3L.GetString(M3L.string_interp_unableToFullyDeleteExistingModDirectory, path, exceptionMessage);
+            message += @" "; //this is here for localization tool
+            if (tpmi != null)
+            {
+                message += M3L.GetString(M3L.string_interp_thisModShouldBeReinstalled, tpmi.modname);
+            }
+            else
+            {
+                message += M3L.GetString(M3L.string_thisModShouldBeReinstalled);
+            }
+
+
+            InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER;
+            InstallationResult.ErrorMessage = message;
+            InstallationResult.ErrorTitle = M3L.GetString(M3L.string_errorInstallingMod);
+        }
+
+        /// <summary>
+        /// Installs an RCW mod by applying its changes to the Coalesced.ini. Sets the result information.
+        /// </summary>
+        private void InstallAttachedRCWMod()
+        {
+            // TODO: Set install result message!
             M3Log.Information(@"Installing attached RCW mod. Checking Coalesced.ini first to make sure this mod can be safely applied", Settings.LogModInstallation);
             ME2Coalesced me2c = null;
             try
@@ -1221,9 +1268,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             catch (Exception e)
             {
                 TelemetryInterposer.TrackError(e);
-                M3Log.Error(@"Error parsing ME2Coalesced: " + e.Message + @". We will abort this installation");
-                return ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED;
+                M3Log.Error($@"Error parsing ME2Coalesced: {e.Message}. We are aborting this installation");
+                InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_BAD_ME2_COALESCED;
+                InstallationResult.ErrorMessage = M3L.GetString(M3L.string_dialogInvalidME2Coalesced);
+                InstallationResult.ErrorTitle = M3L.GetString(M3L.string_installationAborted);
+                return;
             }
+
             RCWMod rcw = InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD).RCW;
             foreach (var rcwF in rcw.Files)
             {
@@ -1241,7 +1292,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         { @"me2mod mod name", rcw.ModName },
                         { @"Missing file", rcwF.FileName }
                     });
-                    return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
+                    setMalformedRCWResult();
+                    return;
                 }
 
                 foreach (var rcwS in rcwF.Sections)
@@ -1256,7 +1308,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             { @"File", rcwF.FileName },
                             { @"Missing Section", rcwS.SectionName }
                         });
-                        return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
+                        setMalformedRCWResult();
+                        return;
                     }
                 }
 
@@ -1305,7 +1358,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             {
                                 M3Log.Warning($@" - {k.RawText}");
                             }
-                            throw new Exception(@"There was an exception calculating the number of keys in the Ini. This issue is being investigated, please ensure telemetry is on.", e);
+                            throw new Exception(@"There was an exception calculating the number of keys in the Ini.", e);
                         }
                     }
 
@@ -1383,9 +1436,29 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
             me2c.Serialize();
-            return ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
+            InstallationResult.Result = EModInstallerResult.INSTALL_SUCCESSFUL;
         }
 
+        /// <summary>
+        /// Shared result for malformed RCW file
+        /// </summary>
+        /// <returns></returns>
+        private EModInstallerResult setMalformedRCWResult()
+        {
+            InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_MALFORMED_RCW_FILE;
+            InstallationResult.ErrorMessage = M3L.GetString(M3L.string_dialogInvalidRCWFile);
+            InstallationResult.ErrorTitle = M3L.GetString(M3L.string_installationAborted);
+            return InstallationResult.Result;
+        }
+
+        /// <summary>
+        /// Installs files into an SFAR.
+        /// </summary>
+        /// <param name="sfarJob"></param>
+        /// <param name="mod"></param>
+        /// <param name="FileInstalledCallback"></param>
+        /// <param name="ForcedSourcePath"></param>
+        /// <returns></returns>
         private bool InstallIntoSFAR(SFARFileMapping sfarJob, Mod mod, Action<Dictionary<string, Mod.InstallSourceFile>, string> FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
@@ -1432,316 +1505,5 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             return true;
         }
-
-        private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            SystemSleepManager.AllowSleep(); // We can go back to sleep again.
-
-            var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
-            if (e.Error != null)
-            {
-                M3Log.Error(@"An error occurred during mod installation.");
-                M3Log.Error(App.FlattenException(e.Error));
-                telemetryResult = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
-                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorOccuredDuringInstallation, App.FlattenException(e.Error)), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                if (e.Result is (ModInstallCompletedStatus mcis1, string message1))
-                {
-                    M3Log.Error(@"An error occurred during mod installation.");
-                    telemetryResult = mcis1;
-                    M3L.ShowDialog(mainwindow, message1, mcis1.ToString()); // title won't be localized as it's error code
-                }
-                else if (e.Result is ModInstallCompletedStatus mcis)
-                {
-                    Result.SelectedTarget = InstallOptionsPackage.InstallTarget;
-                    telemetryResult = mcis;
-                    //Success, canceled (generic and handled), ALOT canceled
-                    InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
-
-                    if (InstallationSucceeded && !string.IsNullOrWhiteSpace(InstallOptionsPackage.ModBeingInstalled.PostInstallToolLaunch))
-                    {
-                        Result.ToolToLaunch = InstallOptionsPackage.ModBeingInstalled.PostInstallToolLaunch;
-                    }
-
-                    if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
-                    {
-                        InstallationCancelled = true;
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationBlockedByALOT), M3L.GetString(M3L.string_installationBlocked), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
-                    {
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck), M3L.GetString(M3L.string_installationSucceededMaybe), MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE)
-                    {
-                        InstallationCancelled = true;
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED)
-                    {
-                        InstallationCancelled = true;
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidME2Coalesced), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_AMD_PROCESSOR_REQUIRED)
-                    {
-                        InstallationCancelled = true;
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_modRequiresAMDProcessor), M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else if (mcis is ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES or ModInstallCompletedStatus.USER_CANCELED_INSTALLATION or ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
-                    {
-                        InstallationCancelled = true;
-                    }
-                    else if (mcis is ModInstallCompletedStatus.INSTALL_SUCCESSFUL)
-                    {
-                        // This is handled below but is here for visual clarity.
-                    }
-                    else
-                    {
-                        // Track unhandled results
-                        TelemetryInterposer.TrackEvent(@"Unhandled install result", new CaseInsensitiveDictionary<string>()
-                        {
-                            {@"Result name", mcis.ToString()}
-                        });
-                    }
-                }
-                else if (e.Result is (ModInstallCompletedStatus dlcCode, List<DLCRequirement> failReqs))
-                {
-                    //telemetryResult = dlcCode;
-                    //// A DLC requirement failed
-                    //string dlcText = "";
-                    //foreach (var dlc in failReqs)
-                    //{
-                    //    var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName.Key, InstallOptionsPackage.ModBeingInstalled.Game);
-                    //    if (info != null)
-                    //    {
-                    //        dlcText += $"\n - {info.modname} ({dlc.DLCFolderName})"; //Do not localize
-                    //    }
-                    //    else
-                    //    {
-                    //        dlcText += $"\n - {dlc.DLCFolderName}"; //Do not localize
-                    //    }
-
-                    //    if (dlc.MinVersion != null)
-                    //    {
-                    //        dlcText += @" " + M3L.GetString(M3L.string_interp_minVersionAppend, dlc.MinVersion);
-                    //    }
-                    //}
-
-                    //// Show dialog
-                    //if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING)
-                    //{
-                    //    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                    //}
-                    //else if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING)
-                    //{
-                    //}
-
-                    //InstallationCancelled = true;
-
-                }
-                else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
-                {
-                    telemetryResult = result;
-                    //Failures with results
-                    M3Log.Warning(@"Installation failed with status " + result.ToString());
-                    switch (result)
-                    {
-                        case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:
-                            // Will only be one item in this list
-                            var tpmi = TPMIService.GetThirdPartyModInfo(Path.GetFileName(items[0]), InstallOptionsPackage.ModBeingInstalled.Game);
-                            string message = M3L.GetString(M3L.string_interp_unableToFullyDeleteExistingModDirectory, items[0], items[1]);
-                            message += @" "; //this is here for localization tool
-                            if (tpmi != null)
-                            {
-                                message += M3L.GetString(M3L.string_interp_thisModShouldBeReinstalled, tpmi.modname);
-                            }
-                            else
-                            {
-                                message += M3L.GetString(M3L.string_thisModShouldBeReinstalled);
-                            }
-                            M3L.ShowDialog(window, message, M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error);
-                            break;
-                        case ModInstallCompletedStatus.INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3:
-                            M3L.ShowDialog(window, string.Join('\n', items), M3L.GetString(M3L.string_invalidCompatibilityPack), MessageBoxButton.OK, MessageBoxImage.Error);
-                            break;
-                        case ModInstallCompletedStatus.INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES:
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_errorOccuredBuildingInstallationQueues, items[0]), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error);
-                            break;
-                    }
-                }
-                else
-                {
-                    M3Log.Fatal(@"The application is going to crash due to a sanity check failure in the mod installer (no result!). Please report this to ME3Tweaks so this can be fixed.");
-
-                    // Once this issue has been fixed these lines can be commented out or removed (June 14 2020)
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_appAboutToCrashYouFoundBug), M3L.GetString(M3L.string_appCrash), MessageBoxButton.OK, MessageBoxImage.Error);
-                    M3Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
-                    // End bug message
-                    if (e.Result == null)
-                    {
-                        M3Log.Fatal(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
-                        throw new Exception(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
-                    }
-                    else
-                    {
-                        M3Log.Fatal(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
-                        throw new Exception(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
-                    }
-                }
-            }
-
-            // This must go after handling of result so the variable is properly set
-            // Only make changes if user didn't cancel
-            if (!InstallationCancelled)
-            {
-                Result.AddTargetMerges(InstallOptionsPackage.InstallTarget);
-            }
-
-            var telemetryInfo = new Dictionary<string, string>()
-            {
-                {@"Mod name", $@"{InstallOptionsPackage.ModBeingInstalled.ModName} {InstallOptionsPackage.ModBeingInstalled.ModVersionString}"},
-                {@"Installed from", InstallOptionsPackage.ModBeingInstalled.IsInArchive ? @"Archive" : @"Library"},
-                {@"Type", InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null ? @"RCW .me2mod" : @"Standard"},
-                {@"Game", InstallOptionsPackage.ModBeingInstalled.Game.ToString()},
-                {@"Result", telemetryResult.ToString()},
-                {@"Author", InstallOptionsPackage.ModBeingInstalled.ModDeveloper}
-            };
-
-            string alternateOptionsPicked = "";
-            foreach (var job in InstallOptionsPackage.ModBeingInstalled.InstallationJobs)
-            {
-                foreach (var af in job.AlternateFiles)
-                {
-                    if (string.IsNullOrWhiteSpace(af.FriendlyName)) continue;
-                    if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
-                    alternateOptionsPicked += $@"{af.FriendlyName}={af.UIIsSelected.ToString()}";
-                }
-                foreach (var ad in job.AlternateDLCs)
-                {
-                    if (string.IsNullOrWhiteSpace(ad.FriendlyName)) continue;
-                    if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
-                    alternateOptionsPicked += $@"{ad.FriendlyName}={ad.UIIsSelected.ToString()}";
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(alternateOptionsPicked))
-            {
-                telemetryInfo[@"Alternate Options Selected"] = alternateOptionsPicked;
-            }
-
-            TelemetryInterposer.TrackEvent(@"Installed a mod", telemetryInfo);
-            OnClosing(DataEventArgs.Empty);
-        }
-
-        private void InstallCancel_Click(object sender, RoutedEventArgs e)
-        {
-            InstallationSucceeded = false;
-            InstallationCancelled = true;
-            OnClosing(DataEventArgs.Empty);
-        }
-
-        public override void HandleKeyPress(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape && !ModIsInstalling)
-            {
-                OnClosing(DataEventArgs.Empty);
-            }
-        }
-
-        private void AlternateItem_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is Grid grid)
-            {
-                if (grid.DataContext is AlternateDLC ad)
-                {
-                    if (!ad.UIIsSelectable)
-                    {
-                        return; //cannot select this item
-                    }
-                    if (ad.IsManual)
-                    {
-                        if (ad.GroupName != null && ad.UIIsSelected) return; //Cannot deselect group
-                        ad.UIIsSelected = !ad.UIIsSelected;
-                    }
-                }
-                else if (grid.DataContext is AlternateFile af && af.IsManual)
-                {
-                    if (af.GroupName != null && af.UIIsSelected) return; //Cannot deselect group
-                    af.UIIsSelected = !af.UIIsSelected;
-                    Debug.WriteLine(@"Is selected: " + af.UIIsSelected);
-                }
-                else if (grid.DataContext is ReadOnlyOption ro)
-                {
-                    ro.UIIsSelected = !ro.UIIsSelected;
-                }
-            }
-        }
-
-        public override void OnPanelVisible()
-        {
-            GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
-            InitializeComponent();
-            BeginInstallingMod();
-        }
-
-        protected override void OnClosing(DataEventArgs e)
-        {
-            // Ensure we can go to sleep still. This probably isn't necessary, but probably isn't a bad idea either.
-            SystemSleepManager.AllowSleep();
-
-            if (InstallOptionsPackage.ModBeingInstalled.Archive != null)
-            {
-                InstallOptionsPackage.ModBeingInstalled.Archive.Dispose();
-                InstallOptionsPackage.ModBeingInstalled.Archive = null;
-            }
-
-            var mergeMods = InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.BASEGAME)?.MergeMods;
-            if (mergeMods != null)
-            {
-                foreach (var mm in mergeMods)
-                {
-                    mm.ReleaseAssets();
-                }
-            }
-
-            base.OnClosing(DataEventArgs.Empty);
-        }
-
-        private void DebugPrintInstallationQueue_Click(object sender, RoutedEventArgs e)
-        {
-#if DEBUG
-            //if (InstallOptionsPackage.ModBeingInstalled != null)
-            //{
-            //    var queues = InstallOptionsPackage.ModBeingInstalled.GetInstallationQueues(InstallOptionsPackage.InstallTarget);
-            //    Debug.WriteLine(@"Installation Queue:");
-            //    foreach (var job in queues.Item1)
-            //    {
-            //        foreach (var file in job.Value.unpackedJobMapping)
-            //        {
-            //            Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-            //        }
-            //    }
-
-            //    foreach (var job in queues.Item2)
-            //    {
-            //        foreach (var file in job.Item3)
-            //        {
-            //            Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-            //        }
-            //    }
-            //}
-#endif
-        }
-
-        public override bool CanBeForceClosed()
-        {
-            // Cannot be force closed
-            return false;
-        }
-
-        // ISizeAdjustable Interface
-        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

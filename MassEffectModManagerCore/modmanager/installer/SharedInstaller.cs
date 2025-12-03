@@ -1,13 +1,9 @@
 ﻿using System.Windows;
-using System.Windows.Threading;
 using LegendaryExplorerCore.GameFilesystem;
-using LegendaryExplorerCore.Misc;
-using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.modmanager.usercontrols;
 
 namespace ME3TweaksModManager.modmanager.installer
 {
@@ -46,7 +42,6 @@ namespace ME3TweaksModManager.modmanager.installer
                 }
 
                 ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-
                 return false;
             }
 
@@ -75,14 +70,13 @@ namespace ME3TweaksModManager.modmanager.installer
             if (mod.Game == MEGame.ME1 && mod.RequiresAMD && !App.IsRunningOnAMD)
             {
                 M3Log.Error(@"This mod can only be installed on AMD processors, as it does nothing for Intel users.");
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_modRequiresAMDProcessor), M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
             // Mod can install
             return true;
         }
-
-
 
         /// <summary>
         /// Just to clean up code a bit.
