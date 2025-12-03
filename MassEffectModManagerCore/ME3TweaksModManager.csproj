@@ -11,7 +11,7 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>9.1.0.135</Version>
+		<Version>9.2.0.136</Version>
 		<Copyright>ME3Tweaks 2012-2025</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>ME3TweaksModManager</PackageId>
@@ -196,20 +196,20 @@
 		<PackageReference Include="DarkNet" Version="2.3.0" />
 		<PackageReference Include="Flurl" Version="4.0.0" />
 		<PackageReference Include="Flurl.Http" Version="4.0.2" />
-		<PackageReference Include="Fody" Version="6.9.2">
+		<PackageReference Include="Fody" Version="6.9.3">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="FontAwesome5" Version="2.1.11" />
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api" Version="1.4.9" />
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.SelfApi" Version="2.5.13" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api" Version="1.4.10" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.SelfApi" Version="2.5.14" />
 		<PackageReference Include="Microsoft.AppCenter" Version="5.0.7" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.7" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.7" />
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
@@ -218,8 +218,8 @@
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
-		<PackageReference Include="SSH.NET" Version="2025.0.0" />
-		<PackageReference Include="WatsonWebsocket" Version="4.1.4" />
+		<PackageReference Include="SSH.NET" Version="2025.1.0" />
+		<PackageReference Include="WatsonWebsocket" Version="4.1.7" />
 		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
 	</ItemGroup>
 	<ItemGroup>
