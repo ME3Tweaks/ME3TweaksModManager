@@ -68,3 +68,11 @@ For each texture, you must specify the source package name, relative to the Cook
 
 **IMPORTANT:** The instanced full path and memory path must be identical in your file. All exports in a `TO_` should be Forced Export, as they are not the "original" package the object resides in at runtime.
 
+In your moddesc file, you must specify the ASI group id for Texture Override so that Mod Manager installs it with your mod, otherwise textures will not be overridden:
+
+| Game | ASI Group ID |
+|------|--------------|
+| LE1  | TBD          |
+| LE2  | TBD          |
+| LE3  | TBD          |
+
