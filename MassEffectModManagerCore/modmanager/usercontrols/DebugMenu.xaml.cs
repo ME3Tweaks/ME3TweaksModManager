@@ -10,11 +10,9 @@ using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.modmanager.textures;
 using SevenZip;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -102,24 +100,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             package.Save(@"S:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME1\BioGame\CookedPCConsole\EntryMenu.pcc");
             return;
-
-
-
-
-
-
-
-
         }
 
-        private static void ConvertMEMToTextureOverride(MainWindow window)
-        {
-           var converter = new MEMToTOConverter(window);
-            if (converter.SetupConversion())
-            {
-                converter.BeginConversion();
-            }
-        }
+
 
         private static void ShowBGFISDB_Click(MainWindow window)
         {

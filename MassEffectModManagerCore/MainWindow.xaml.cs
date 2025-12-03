@@ -1,21 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Management;
-using System.Runtime;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media.Animation;
-using System.Windows.Navigation;
-using System.Windows.Threading;
-using System.Xml;
-using System.Xml.Linq;
-using AdonisUI;
+﻿using AdonisUI;
 using CliWrap;
 using CliWrap.EventStream;
 using CommandLine;
@@ -42,7 +25,6 @@ using ME3TweaksCore.ME3Tweaks.M3Merge.GlobalShader;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksCore.TextureOverride;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
@@ -64,11 +46,29 @@ using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.tlk;
 using ME3TweaksModManager.modmanager.telemetry;
+using ME3TweaksModManager.modmanager.textures;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Management;
+using System.Runtime;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Markup;
+using System.Windows.Media.Animation;
+using System.Windows.Navigation;
+using System.Windows.Threading;
+using System.Xml;
+using System.Xml.Linq;
 using LaunchOptionSelectorDialog = ME3TweaksModManager.modmanager.windows.dialog.LaunchOptionSelectorDialog;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
@@ -891,6 +891,7 @@ namespace ME3TweaksModManager
         public ICommand InstallHeadmorphCommand { get; set; }
         public ICommand ApplyM3HeadmorphCommand { get; set; }
         public ICommand DiagToolOpenAllPackagesCommand { get; set; }
+        public ICommand ConvertMEMToTOCommand { get; set; }
 
 
         private void LoadCommands()
@@ -957,7 +958,7 @@ namespace ME3TweaksModManager
             StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget.Game.IsLEGame());
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
             DiagToolOpenAllPackagesCommand = new GenericCommand(DiagAllOpenPackages, CanRunGameDiagTool);
-
+            ConvertMEMToTOCommand = new GenericCommand(ConvertMEMToTextureOverride, () => M3LoadedMods.Instance.ModsLoaded);
         }
 
         private void OpenDownloadManager()
@@ -5632,6 +5633,15 @@ namespace ME3TweaksModManager
             return queuedUserControls.Any(x => x.GetType() == type);
         }
 
+        private void ConvertMEMToTextureOverride()
+        {
+            var converter = new MEMToTOConverter(this);
+            if (converter.SetupConversion())
+            {
+                converter.BeginConversion();
+            }
+        }
+
         public void UpdateMenuTargets()
         {
             // Populate the list of available games, for menus
@@ -5660,6 +5670,14 @@ namespace ME3TweaksModManager
             });
 
             return result;
+        }
+
+        private void OnBottomGameIDImageClick(object sender, MouseButtonEventArgs e)
+        {
+            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+            {
+                Settings.AlphaMode = true;
+            }
         }
     }
 }

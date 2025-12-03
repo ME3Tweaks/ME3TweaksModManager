@@ -1403,6 +1403,16 @@
                         IsCheckable="True"
                         StaysOpenOnClick="True"
                         IsChecked="{Binding Path=(modmanager:Settings.SessionOnly_SuppressDLCMerge)}" />
+                    <MenuItem
+                       Header="Convert .mem to M3 Texture Override"
+                       Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                       ToolTip="Converts a .mem file to a texture override version by installing the .mem, inspecting the changes, and then pulling them to a chosen DLC mod."                       
+                       Command="{Binding ConvertMEMToTOCommand}" />
+                </MenuItem>
+                <MenuItem
+                    Header="Alpha"
+                    Padding="4"
+                    Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
@@ -1488,6 +1498,10 @@
                     <MenuItem
                         Header="{DynamicResource string_test7z}"
                         Name="Test7z_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="Trigger BTP build on mod folder (installed)"
+                        Name="TriggerBTPBuild_MenuItem"
                         Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
@@ -1674,7 +1688,9 @@
                             Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"
                             Width="24"
                             Height="24"
-                            Margin="5,0" />
+                            Margin="5,0"
+                            MouseRightButtonUp="OnBottomGameIDImageClick"
+                            />
                         <Button
                             MinWidth="70"
                             Padding="10,7"
