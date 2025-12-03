@@ -376,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ProgressMax = b.TotalAmount;
                 ProgressValue = b.AmountCompleted;
                 var now = DateTime.Now;
-                if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
+                if ((now - lastPercentUpdateTime).Milliseconds > ModInstallerPanel.PERCENT_REFRESH_COOLDOWN)
                 {
                     //Don't update UI too often. Once per second is enough.
                     var progValue = ProgressValue * 100.0 / ProgressMax;
@@ -441,7 +441,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 // Todo: Combine this with the other update.
                 var now = DateTime.Now;
-                if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
+                if ((now - lastPercentUpdateTime).Milliseconds > ModInstallerPanel.PERCENT_REFRESH_COOLDOWN)
                 {
                     //Don't update UI too often. Once per second is enough.
                     var progValue = ProgressValue * 100.0 / ProgressMax;

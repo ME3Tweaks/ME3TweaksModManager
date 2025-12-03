@@ -372,12 +372,9 @@ namespace ME3TweaksModManager.modmanager.loaders
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
-                bool canAutoCheckForModUpdates =
-                    MOnlineContent
-                        .CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
+                bool canAutoCheckForModUpdates = MOnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
-                LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader",
-                    M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
+                LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 M3Log.Information(@"Loading mods from mod library: " + GetCurrentModLibraryDirectory());
 
                 List<(MEGame game, string path)> modDescsToLoad = new();

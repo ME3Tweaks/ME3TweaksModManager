@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
-using Windows.Storage.Provider;
 
 namespace ME3TweaksModManager.modmanager.objects
 {

@@ -1,4 +1,6 @@
-﻿using LegendaryExplorerCore.Helpers;
+﻿using System.Diagnostics;
+using System.Globalization;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
@@ -12,9 +14,6 @@ using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
-using ME3TweaksCore.Targets;
-using System.Diagnostics;
-using System.Globalization;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {

@@ -7,6 +7,8 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.gametarget;
 using SevenZip;
 using ME3TweaksModManager.modmanager.helpers;
+using System.Windows;
+using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
