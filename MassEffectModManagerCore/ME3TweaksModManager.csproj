@@ -5,7 +5,6 @@
 		<PublishTrimmed>false</PublishTrimmed>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
-		<!-- Windows 2004 -->
 		<TargetFrameworks>net10.0-windows</TargetFrameworks>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
