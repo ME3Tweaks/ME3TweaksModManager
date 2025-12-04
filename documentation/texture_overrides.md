@@ -43,6 +43,7 @@ This new system allows you to use texture overrides in the same system as DLC mo
  - You don't need to reset the game to make changes to your mod configurations
  - First class support in Mod Manager, including mix/match options.
  - You can include m3to's in a standard mod to allow changing texture options in your own mod without shipping duplicate packages
+ - It is compatible with MEM installed texture mods if a user uses them still, but the usual nothing-after-mem-textures rules still apply when mixed with MEM.
 
 **Cons:**
  - File sizes compared to .mem files is slightly larger due to having to use less efficient compression techniques (about 10%)
