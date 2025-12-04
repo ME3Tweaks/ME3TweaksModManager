@@ -17,6 +17,7 @@ using System.Windows;
 using System.Xml.Linq;
 using ME3TweaksCore.TextureOverride;
 using Microsoft.Win32;
+using ME3TweaksCore.Objects;
 
 namespace ME3TweaksModManager
 {
@@ -682,12 +683,18 @@ namespace ME3TweaksModManager
                 "Extracting textures from BTP",
                 "Finished extracting textures");
 
+            void OnUpdate(ProgressInfo _pi)
+            {
+                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, "Extracting textures from BTP" + $@" {_pi.Value:F2}%");
+            }
+            var pi = new ProgressInfo();
+            pi.OnUpdate = OnUpdate;
 
             Task.Run(() =>
             {
                 using var fs = File.OpenRead(file);
                 var btp = new BinaryTexturePackage(fs); // Do not load mip data yet
-                btp.ReconstituteSource(fs, testMetadataFile, outputFolder);
+                btp.ReconstituteSource(fs, testMetadataFile, outputFolder, pi);
             }).ContinueWithOnUIThread(x =>
             {
                 if (x.Exception != null)
