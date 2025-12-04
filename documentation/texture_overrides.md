@@ -47,6 +47,7 @@ This new system allows you to use texture overrides in the same system as DLC mo
 **Cons:**
  - File sizes compared to .mem files is slightly larger due to having to use less efficient compression techniques (about 10%)
  - Textures are overriden by MemoryPath and not by CRC, so new same-crc textures won't be overridden. Developers should not be making new copies of texture exports without changes, so if this is an issue, developers need to properly design their mods
+ - MEM is well tested, this is not (yet) :)
 
 ME3Tweaks Mod Manager 9.2 includes a 'Convert MEM to TO' feature that can convert .mem files to a basic texture override mod that vanilla's the game, installs the .mem, then extracts the changes and builds an optimized installation for you. This process takes some time but only needs to be done by developers.
 
