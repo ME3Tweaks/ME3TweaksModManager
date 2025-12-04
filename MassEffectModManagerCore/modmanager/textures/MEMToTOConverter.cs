@@ -8,6 +8,7 @@ using LegendaryExplorerCore.Unreal.ObjectInfo;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -24,105 +25,6 @@ using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.textures
 {
-    /// <summary>
-    /// Class for handling serializing large amounts of data to. Only tracks single export transfers at a time. Splits files once they reach 512MB.
-    /// </summary>
-    class LargePackageChunkedSerializer
-    {
-        /// <summary>
-        /// Max size of package "data" when uncompressed - due to how serialization 
-        /// works it may be larger, but we buffer small enough it should be fine.
-        /// </summary>
-        private const long MAX_PACKAGE_DATA_SIZE = 1024 * 1024 * 256; // 256 MiB - this is so memory usage on build doesn't go crazy since we also have to compress.
-
-        /// <summary>
-        /// Amount of data we've recorded to current package exports
-        /// </summary>
-        private long currentDataSize = 0;
-
-        /// <summary>
-        /// Current package that is being serialized to
-        /// </summary>
-        private IMEPackage currentPackage;
-
-        /// <summary>
-        /// The current index of the package we are serializing
-        /// </summary>
-        int currentPackageIndex = 0;
-
-        /// <summary>
-        /// Where serialized data gets written out to when packages are saved
-        /// </summary>
-        public string baseSavePath { private get;  init; }
-
-        /// <summary>
-        /// Game packages are for
-        /// </summary>
-        public MEGame game { private get; init; }
-
-        /// <summary>
-        /// Name of packages to roll through
-        /// </summary>
-        public string basePackageName { private get; init; }
-
-
-        private List<string> packagePaths = new();
-
-        /// <summary>
-        /// Saved package paths list
-        /// </summary>
-        public IReadOnlyList<string> PackagePaths => packagePaths;
-
-        public IEntry ExportInto(ExportEntry source, PackageCache cache)
-        {
-            if (currentPackage == null || (source.DataSize + currentDataSize) > MAX_PACKAGE_DATA_SIZE)
-            {
-                Rollover();
-            }
-
-            // Export the texture to the new package
-            currentDataSize += source.DataSize;
-            EntryExporter.ExportExportToPackage(source, currentPackage, out var portedEntry, cache, new RelinkerOptionsPackage() { CheckImportsWhenExportingToPackage = false });
-            return portedEntry;
-        }
-
-        /// <summary>
-        /// Saves current package, resets, and starts next package
-        /// </summary>
-        private void Rollover()
-        {
-            if (currentPackage != null)
-            {
-                M3Log.Information($@"Large data serializer - saving package...");
-                currentPackage.Save();
-                packagePaths.Add(currentPackage.FilePath);
-            }
-
-            currentPackageIndex++;
-            currentDataSize = 0;
-
-            var name = currentPackageIndex == 1 ? basePackageName : basePackageName + currentPackageIndex;
-            var path = Path.Combine(baseSavePath, $@"{name}.pcc");
-            M3Log.Information($@"Large data serializer - rolling new package {path}, max content size: {FileSize.FormatSize(MAX_PACKAGE_DATA_SIZE)}");
-            currentPackage = MEPackageHandler.CreateAndOpenPackage(path, game);
-        }
-
-        /// <summary>
-        /// Saves package and resets serializer
-        /// </summary>
-        public void Finalize()
-        {
-            M3Log.Information($@"Large data serializer - finalizing");
-            if (currentPackage != null)
-            {
-                currentPackage.Save();
-                packagePaths.Add(currentPackage.FilePath);
-            }
-            currentPackageIndex = 0;
-            currentDataSize = 0;
-        }
-    }
-
     /// <summary>
     /// Class that orchestrates the main window and converts a MEM to texture override.
     /// </summary>
@@ -514,7 +416,7 @@ namespace ME3TweaksModManager.modmanager.textures
                 }
 
                 // Ensure package is saved
-                largeDataSerializer.Finalize();
+                largeDataSerializer.Finish();
 
                 copiedPackages.Sort();
 
