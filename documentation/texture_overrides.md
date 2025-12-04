@@ -24,6 +24,8 @@ MEM installed textures based on the CRC of the top mip. All textures with the sa
 
 The M3TO system can replace textures at runtime without the need for any in-game package edits. This is achieved by hijacking texture serialization and replacing mip data with our own on exports that have a matching full path in a Binary Texture Package (BTP) file. Using .m3to files shipped in your DLC folder, Mod Manager can compile the referenced texture overrides into single Binary Texture Package for your mod that is loaded by the new `Texture Override` ASI.
 
+<img width="936" height="723" alt="image" src="https://github.com/user-attachments/assets/d9460c51-bb72-4411-a778-8fe4040b2e1d" />
+
 This ASI adds new features for texture loading to the game:
  -  Texture2D export (and subclasses) are modified at runtime if the memory path of the texture matches one a loaded BTP file. If there is an override for that texture, the original data is deallocated and replaced with the new data from the manifest. To the game, nothing is different.
  - LE2/LE3: DLC TFCs now load earlier, allowing you to override textures that load before DLC mount, such as EntryMenu, Human male Eye Diff, etc. Prior to this, you'd have to ship the TFC in the basegame, otherwise the higher mips would turn black.
