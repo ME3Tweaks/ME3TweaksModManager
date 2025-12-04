@@ -66,14 +66,17 @@ Texture overrides must be stored in package files that have filenames starting w
 <img width="1054" height="805" alt="Image" src="https://github.com/user-attachments/assets/0777c02c-88c1-49cf-beb6-8297e4a1aedb" />
 
 
-Inside your .m3to file, you specify your overrides, as well as the game the m3to is for. An m3to is just a JSON file with a custom extension.
+Inside your .m3to file(s), you specify your overrides, as well as the game the m3to is for. An m3to is just a JSON file with a custom extension.
 
 <img width="1409" height="364" alt="Image" src="https://github.com/user-attachments/assets/990f886e-7e59-4d00-a23c-1437d9a3a4f4" />
 
 For each texture, you must specify the source package name, relative to the CookedPCConsole folder of your DLC mod. You also must specify the `textureifp`, which is the instanced full path as shown in your package. 
 
 > [!WARNING]
-> The instanced full path and memory path must be identical in your file. All exports in a `TO_` should be Forced Export, as they are not the "original" package the object resides in at runtime. Textures must **NEVER** be at the root of your TO file! 
+> The instanced full path and memory path must be identical in your file. All exports in a `TO_` should be Forced Export, as they are not the "original" package the object resides in at runtime. Textures must **NEVER** be at the root of your TO file!
+
+> [!IMPORTANT]
+> `TO_` packages are only used when mod installation completes. Mod Manager will automatically delete the installed `TO_` files after BTP compile unless it is in Developer Mode.
 
 In your moddesc file, you must specify the ASI group id for Texture Override so that Mod Manager installs it with your mod, otherwise textures will not be overridden:
 
