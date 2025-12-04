@@ -93,7 +93,7 @@ The preferred option for most developers will be to simply ship the .m3to files 
 ### Option 2
 A mod shipping a precompiled BTP file has only a single configuration which cannot be changed by the user. The benefit of this method is skipping the compile step, which for large texture mods may take significant time for users.
 
-To use this option, you develop your mod in the style of Option 1, then copy both the `CombinedTexturesOverride.btp` and `BTPMetadata.btm` file that reside directly under your DLC folder (not in CookedPCConsole!).
+To use this option, you develop your mod in the style of Option 1, install your mod, then copy both the `CombinedTexturesOverride.btp` and `BTPMetadata.btm` file that reside directly under your DLC folder (not in CookedPCConsole!) into the version in your mod library. You can then move your `.m3to` and `TO_` files out of your mod. It is best to do this at the very end of development to ensure your BTP is in sync with your TFC files (if any).
 
 <img width="751" height="275" alt="image" src="https://github.com/user-attachments/assets/3cbd81c0-50cc-4e52-aac3-7507e6bff8d9" />
 
