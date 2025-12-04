@@ -50,12 +50,15 @@ ME3Tweaks Mod Manager 9.2 includes a 'Convert MEM to TO' feature that can conver
 
 
 ### M3TO setup
+> [!NOTE]
+> Using the M3 Texture Override system requires you to set your moddesc version to 9.2 or higher.
 
-An M3TO mod deployment includes the following files:
+Building a mod that uses the M3TO system requires the following files:
  - At least one `TextureOverride-[WhateverNameYouWant].m3to` file
  - At least one `TO_` package that contains your texture overrides
+ - .tfc files if your overrides use external streaming mips
 
-Texture overrides must be stored in package files starting with `TO_`. Files not starting with `TO_` as the filename will be rejected, as they could override game files, which is not allowed by this system. If your mod isn't shipping a precompiled BTP, `TO` files should strive to be less than 30MiB, every 10MiB of a `TO_` translate to about 350MiB of system memory for a client during the build process. If your file is bigger than 30MiB, you should chunk it into a new file.
+Texture overrides must be stored in package files that have filenames starting with `TO_`. Files not starting with `TO_` as the filename will be rejected, as they could override game files, which is not allowed by this system. If your mod isn't shipping a precompiled BTP, `TO` files should strive to be between 5MiB and 25MiB, to improve compile performance for users. If your mod doesn't make up that size, that's fine, but for larger ones, consider chunking your files up. Every 10MiB of a `TO_` translates to about 350MiB of system memory for a client during the build process.
 
 <img width="1054" height="805" alt="Image" src="https://github.com/user-attachments/assets/0777c02c-88c1-49cf-beb6-8297e4a1aedb" />
 
@@ -66,7 +69,8 @@ Inside your .m3to file, you specify your overrides, as well as the game the m3to
 
 For each texture, you must specify the source package name, relative to the CookedPCConsole folder of your DLC mod. You also must specify the `textureifp`, which is the instanced full path as shown in your package. 
 
-**IMPORTANT:** The instanced full path and memory path must be identical in your file. All exports in a `TO_` should be Forced Export, as they are not the "original" package the object resides in at runtime.
+> [!WARNING]
+> The instanced full path and memory path must be identical in your file. All exports in a `TO_` should be Forced Export, as they are not the "original" package the object resides in at runtime. Textures must **NEVER** be at the root of your TO file! 
 
 In your moddesc file, you must specify the ASI group id for Texture Override so that Mod Manager installs it with your mod, otherwise textures will not be overridden:
 
@@ -75,6 +79,27 @@ In your moddesc file, you must specify the ASI group id for Texture Override so 
 | LE1  | TBD          |
 | LE2  | TBD          |
 | LE3  | TBD          |
+
+
+## Deployment options
+M3 Texture Overrides can be deployed in one of two ways (they cannot be combined):
+
+1. A DLC folder with `.m3to` files that trigger a BTP compile on install
+2. A DLC folder with a precompiled `CombinedTexturesOverride.btp` and matching `BTPMetadata.btm` files
+
+### Option 1
+The preferred option for most developers will be to simply ship the .m3to files and let Mod Manager compile the BTP file for you. This lets you ship source override assets directly and enables you to use the alternates system in Mod Manager to allow users to pick and choose options that each deploy different .m3to files.
+
+### Option 2
+A mod shipping a precompiled BTP file has only a single configuration which cannot be changed by the user. The benefit of this method is skipping the compile step, which for large texture mods may take significant time for users.
+
+To use this option, you develop your mod in the style of Option 1, then copy both the `CombinedTexturesOverride.btp` and `BTPMetadata.btm` file that reside directly under your DLC folder (not in CookedPCConsole!).
+
+<img width="751" height="275" alt="image" src="https://github.com/user-attachments/assets/3cbd81c0-50cc-4e52-aac3-7507e6bff8d9" />
+
+> [!IMPORTANT]
+> You **MUST** include the matching `BTPMetadata.btm` file with your deployment or Mod Manager will refuse to deploy or load your mod. This file contains the data to reconstitute package files from your BTP file. This is mandatory to keep the BTP file format in line with other custom formats that allow reversing changes and allow data recovery if the source packages are lost. To regenerate your package files, drag and drop the .btp file onto Mod Manager.
+
 
 ### Debugging at runtime
 You can view the `TextureOverride.log` file next to the game executable to see the log for the last session that had the TextureOverride ASI run in it. 
