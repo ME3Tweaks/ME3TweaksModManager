@@ -849,7 +849,6 @@ namespace ME3TweaksModManager
         public ICommand AddStarterKitContentCommand { get; set; }
         public ICommand InstallHeadmorphCommand { get; set; }
         public ICommand ApplyM3HeadmorphCommand { get; set; }
-        public ICommand DiagToolOpenAllPackagesCommand { get; set; }
         public ICommand ConvertMEMToTOCommand { get; set; }
 
 
@@ -916,7 +915,6 @@ namespace ME3TweaksModManager
             ApplyM3HeadmorphCommand = new GenericCommand(BeginInstallingM3Headmorph, CanInstallM3Headmorph);
             StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget.Game.IsLEGame());
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
-            DiagToolOpenAllPackagesCommand = new GenericCommand(DiagAllOpenPackages, CanRunGameDiagTool);
             ConvertMEMToTOCommand = new GenericCommand(ConvertMEMToTextureOverride, () => M3LoadedMods.Instance.ModsLoaded);
         }
 
@@ -974,30 +972,6 @@ namespace ME3TweaksModManager
 
             ListDialog ld = new ListDialog(mapping, M3L.GetString(M3L.string_interp_modNameDLCOptionKeys, SelectedMod.ModName), M3L.GetString(M3L.string_dialog_modUsesTheseOptionKeys, SelectedMod.ModName), this);
             ld.Show();
-        }
-
-        private void DiagAllOpenPackages()
-        {
-            List<string> issues = new List<string>();
-            ShowRunAndDone(updateUIString =>
-            {
-                issues = DiagnosticTools.VerifyPackages(SelectedGameTarget,
-                                       (x, y) => updateUIString?.Invoke(M3L.GetString(M3L.string_interp_checkingPackagesXY, x, y)));
-                return M3L.GetString(M3L.string_interp_finishedPackageCheckIssuesCountIssuesFound, issues.Count);
-
-            }, M3L.GetString(M3L.string_checkingPackages), M3L.GetString(M3L.string_finishedCheckingPackages), () =>
-            {
-                if (issues.Count > 0)
-                {
-                    ListDialog ld = new ListDialog(issues, M3L.GetString(M3L.string_packageCheckFoundIssues), M3L.GetString(M3L.string_theFollowingPackagesFailedToOpen), this);
-                    ld.Show();
-                }
-            });
-        }
-
-        private bool CanRunGameDiagTool()
-        {
-            return SelectedGameTarget != null && SelectedGameTarget.Game.IsMEGame();
         }
 
         private void SelectSpecificSaveForBoot()
