@@ -91,15 +91,16 @@
                         ToolTip="{DynamicResource string_tooltip_currentTarget}"
                         IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
                     <TextBlock
-                        Text="{DynamicResource string_texturesCheck}"
+                        Text="Extended diagnostics"
                         FontWeight="Bold"
                         Margin="0,10,0,0" />
                     <TextBlock
-                        Text="{DynamicResource string_description_fullTexturesCheck}" />
+                        Text="Extended diagnostics perform additional checks on your game, but take a significant amount of additional time. Select this if requested by a developer."
+                        TextWrapping="Wrap"/>
                     <CheckBox
-                        Content="{DynamicResource string_fullTexturesCheck}"
-                        ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
-                        IsChecked="{Binding TextureCheck}"
+                        Content="Perform extended diagnostics"
+                        ToolTip="Check to enable additional diagnostic tests"
+                        IsChecked="{Binding AdvancedDiagnostics}"
                         IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
                     <TextBlock
                         Text="{DynamicResource string_saveFile}"
@@ -119,16 +120,6 @@
                             Command="{Binding SelectSaveCommand}"
                             Margin="5,0" />
                     </StackPanel>
-                    <!--<TextBlock
-                    Text="Additional features"
-                    FontWeight="Bold"
-                    Margin="0,10,0,0" />
-                <TextBlock Text="A full textures check can take several minutes, but will validate texture references in all package files."/>
-                <CheckBox
-                    Content="{DynamicResource string_fullTexturesCheck}"
-                    ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
-                    IsChecked="{Binding TextureCheck}"
-                    IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />-->
                 </StackPanel>
             </GroupBox>
             <TextBlock

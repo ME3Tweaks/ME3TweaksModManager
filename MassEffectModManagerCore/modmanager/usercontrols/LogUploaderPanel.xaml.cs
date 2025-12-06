@@ -1,18 +1,13 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Diagnostics.Support;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save.shared;
@@ -28,10 +23,28 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class LogUploaderPanel : MMBusyPanelBase
     {
+        /// <summary>
+        /// If log upload is in progress
+        /// </summary>
         public bool UploadingLog { get; private set; }
+        /// <summary>
+        /// The message shown in the UI about what's happening
+        /// </summary>
         public string CollectionStatusMessage { get; set; }
-        //public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
+        
+        /// <summary>
+        /// If advanced diagnostics should be performed
+        /// </summary>
+        public bool AdvancedDiagnostics { get; set; }
+
+        /// <summary>
+        /// List of available application logs
+        /// </summary>
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
+
+        /// <summary>
+        /// List of available diagnostic targets
+        /// </summary>
         public ObservableCollectionExtended<GameTargetWPF> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
 
         /// <summary>
@@ -163,7 +176,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     DiagnosticTarget = SelectedDiagnosticTarget,
                     SelectedLog = SelectedLog,
                     Attachments = GetAttachments(),
-                    PerformFullTexturesCheck = TextureCheck,
+                    AdvancedDiagnosticsEnabled = AdvancedDiagnostics,
                     UpdateTaskbarProgressStateCallback = updateTaskbarProgressStateCallback,
                     UpdateProgressCallback = updateProgressCallback,
                     SelectedSaveFilePath = SelectedSaveFile?.SaveFilePath,
