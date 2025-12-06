@@ -4401,11 +4401,12 @@ namespace ME3TweaksModManager
 
         private void UploadLog_Click(object sender, RoutedEventArgs e)
         {
-            ShowLogUploadPanel();
+            ShowLogUploadPanel(null);
         }
-        internal void ShowLogUploadPanel()
+
+        internal void ShowLogUploadPanel(GameTarget selectedTarget)
         {
-            var logUploaderUI = new LogUploaderPanel();
+            var logUploaderUI = new LogUploaderPanel(selectedTarget);
             logUploaderUI.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(logUploaderUI);
         }

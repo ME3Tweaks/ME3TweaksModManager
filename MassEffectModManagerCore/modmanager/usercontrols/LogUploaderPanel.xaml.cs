@@ -7,6 +7,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Diagnostics.Support;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF.Targets;
@@ -32,9 +33,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         //public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
         public ObservableCollectionExtended<GameTargetWPF> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
-        public LogUploaderPanel()
+
+        /// <summary>
+        /// The target to auto select when we populate the list
+        /// </summary>
+        private GameTarget preselectedTarget;
+
+        public LogUploaderPanel(GameTarget preselectedTarget)
         {
-            DataContext = this;
+            this.preselectedTarget = preselectedTarget;
             LoadCommands();
         }
 
@@ -49,11 +56,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
             DiagnosticTargets.Add(new GameTargetWPF(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false, true));
             DiagnosticTargets.AddRange(targets.Where(x => x.Game != MEGame.LELauncher));
-            SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
-            //if (LogSelector_ComboBox.Items.Count > 0)
-            //{
-            //    LogSelector_ComboBox.SelectedIndex = 0;
-            //}
+            
+            // Select the preselected target
+            if (preselectedTarget != null)
+            {
+                SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault(x => x.TargetPath == preselectedTarget.TargetPath);
+                preselectedTarget = null; // Lose reference
+            }
+            
+            // Select the 'choose a target' if none is set
+            if (SelectedDiagnosticTarget == null)
+            {
+                SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
+            }
         }
 
         public ICommand UploadLogCommand { get; set; }
