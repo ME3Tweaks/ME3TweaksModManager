@@ -331,7 +331,7 @@ namespace ME3TweaksModManager
         }
 
         /// <summary>
-        /// The text for the start game button
+        /// The current selected launch option
         /// </summary>
         public LaunchOptionsPackage SelectedLaunchOption { get; set; } = M3LoadedMods.GetDefaultLaunchOptionsPackage();
 
@@ -4345,7 +4345,8 @@ namespace ME3TweaksModManager
 
         private void UpdateSelectedLaunchOption()
         {
-            if (SelectedGameTarget == null) return;
+            if (SelectedGameTarget == null) 
+                return;
 
             if (M3LoadedMods.Instance == null || !SelectedGameTarget.Game.IsLEGame())
             {
