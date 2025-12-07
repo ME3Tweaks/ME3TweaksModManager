@@ -108,7 +108,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void SetPercent(int percent)
         {
             DateTime now = DateTime.Now;
-            if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+            if (percent == 0 || percent == 100 || (now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
             {
                 //Don't update UI too often
                 Percent = percent;
