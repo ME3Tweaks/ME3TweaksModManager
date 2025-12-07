@@ -169,8 +169,8 @@
                                                     <fa5:ImageAwesome
                                                         Icon="{Binding BackgroundIcon}"
                                                         Foreground="{Binding Background}"
-                                                        Width="8" 
-                                                        Height="10"
+                                                        Width="10" 
+                                                        Height="11"
                                                         Visibility="{Binding CheckDone, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                     <fa5:ImageAwesome
                                                         Icon="{Binding Icon}"
