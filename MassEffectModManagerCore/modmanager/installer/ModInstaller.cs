@@ -123,7 +123,11 @@ namespace ME3TweaksModManager.modmanager.installer
         /// <summary>
         /// LE - Could not source oodle dll
         /// </summary>
-        INSTALL_ABORTED_OODLE_MISSING
+        INSTALL_ABORTED_OODLE_MISSING,
+        /// <summary>
+        /// LE - Failure building BTP file
+        /// </summary>
+        INSTALL_FAILED_BTP_BUILD_FAILED
     }
 
 
@@ -1104,7 +1108,9 @@ namespace ME3TweaksModManager.modmanager.installer
                 }
             }
 
-            if (InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+            // We check for 9.2 or higher here to force mods to update to 9.2 to use this feature,
+            // this ensures the developer is aware changes have been made.
+            if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= 9.2 && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
             {
                 void onMergeUpdate(ProgressInfo pi)
                 {
@@ -1126,7 +1132,16 @@ namespace ME3TweaksModManager.modmanager.installer
                     // Test build
                     var pi = new ProgressInfo();
                     pi.OnUpdate = onMergeUpdate;
-                    M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.InstallTarget, dlcName, pi);
+                    var mergeError = M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.InstallTarget, dlcName, pi);
+                    if (mergeError != null)
+                    {
+                        // An error occurred during merge
+                        InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_BTP_BUILD_FAILED;
+                        InstallationResult.ErrorMessage = mergeError;
+                        InstallationResult.ErrorTitle = "Texture override merge failed";
+                        InstallationResult.ErrorImage = MessageBoxImage.Error;
+                        return;
+                    }
                 }
             }
 
