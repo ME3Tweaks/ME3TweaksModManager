@@ -1,14 +1,18 @@
-﻿using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.Diagnostics;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
-using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Diagnostics.Support;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksCore.TextureOverride;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
-using Newtonsoft.Json;
-using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
-using LegendaryExplorerCore.Diagnostics;
+using ME3TweaksModManager.modmanager.objects.mod.merge;
+using Newtonsoft.Json;
+using System.IO.Hashing;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -316,6 +320,62 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 #endregion
             }
 
+
+            // Check BTP has matching metadata file if using this
+            bool usingPrecompiledBTP = false;
+            bool hasM3TOFiles = false;
+            foreach (var rel in referencedFiles)
+            {
+                if (Path.GetFileName(rel).StartsWith(TextureOverrideManifest.PREFIX_TEXTURE_OVERRIDE_MANIFEST)
+                    && Path.GetExtension(rel) == TextureOverrideManifest.EXTENSION_TEXTURE_OVERRIDE_MANIFEST)
+                {
+                    // Detected an .m3to
+                    hasM3TOFiles = true;
+                }
+
+                if (Path.GetFileName(rel) == M3CTextureOverrideMerge.COMBINED_BTP_FILENAME)
+                {
+                    // Detected a precompiled BTP.
+                    usingPrecompiledBTP = true;
+
+                    // Check for metadata file.
+                    var path = Path.Combine(item.ModToValidateAgainst.ModPath, rel);
+                    var dir = Directory.GetParent(path).FullName;
+                    var btmPath = Path.Combine(dir, M3CTextureOverrideMerge.BTP_METADATA_FILENAME);
+                    if (!File.Exists(btmPath))
+                    {
+                        item.AddBlockingError($"Mod ships precompiled texture override file but is missing required metadata file {M3CTextureOverrideMerge.BTP_METADATA_FILENAME} next to it");
+                        continue;
+                    }
+
+                    // Verify metadata file matches
+                    var btpStream = File.OpenRead(path);
+                    BinaryTexturePackage btp = null;
+                    try
+                    {
+                        btp = new BinaryTexturePackage(btpStream);
+                    }
+                    catch (Exception e)
+                    {
+                        M3Log.Error($@"Error reading BTP file: {e.Message}");
+                        item.AddBlockingError($"Unable to parse precompiled BTP: {e.Message}");
+                        continue;
+                    }
+
+                    var hash = Crc32.HashToUInt32(File.ReadAllBytes(btmPath));
+                    if (btp.Header.MetadataCRC != hash)
+                    {
+                        MLog.Error($@"Precompiled BTP has a mismatched metadata file! CRC we got: {hash}, CRC we expected: {btp.Header.MetadataCRC}");
+                        item.AddBlockingError($@"Included BTP metadata file (BTPMetadata.btm) is invalid, the BTP must be rebuilt");
+                        continue;
+                    }
+                }
+            }
+
+            if (usingPrecompiledBTP && hasM3TOFiles)
+            {
+                item.AddSignificantIssue("This mod is using a precompiled BTP file; the included .m3to files will not be used and should be removed");
+            }
 
             //Check moddesc.ini for things that shouldn't be present - unofficial
             if (item.ModToValidateAgainst.IsUnofficial)
