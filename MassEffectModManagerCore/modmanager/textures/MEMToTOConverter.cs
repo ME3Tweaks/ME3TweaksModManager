@@ -341,13 +341,7 @@ namespace ME3TweaksModManager.modmanager.textures
                         if (!texturesDict.ContainsKey(memoryPath))
                         {
                             var overrideEntry = new TextureOverrideTextureEntry();
-                            overrideEntry.TextureIFP = ifp;
-                            if (!tex.IsForcedExport)
-                            {
-                                // it will become forced export so we have to set the IFP to what it will become
-                                overrideEntry.TextureIFP = memoryPath;
-                            }
-
+                            overrideEntry.TextureIFP = memoryPath;
                             overrideEntry.CompilingSourcePackage = pack.Key;
                             texturesDict[memoryPath] = overrideEntry;
                         }
@@ -464,7 +458,10 @@ namespace ME3TweaksModManager.modmanager.textures
                 foreach (var tex in texturesDict.Values)
                 {
                     var foundPackageName = sourcePackages.FirstOrDefault(x => x.FindExport(tex.TextureIFP) != null);
-                    M3Log.Error($@"We could not find a package containg the export: {tex.TextureIFP}! This will break things.");
+                    if (foundPackageName == null)
+                    {
+                        M3Log.Error($@"We could not find a package containg the export: {tex.TextureIFP}! This will break things.");
+                    }
                     tex.CompilingSourcePackage = foundPackageName.FileNameNoExtension + @".pcc";
                 }
 
