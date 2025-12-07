@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
+using LegendaryExplorerCore.Diagnostics;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -269,7 +270,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 }
             }
 
-            // Check for texture markers
+            // Check for texture markers, malformed packages
             var packageFiles = referencedFiles.Where(x => x.RepresentsPackageFilePath());
             foreach (var p in packageFiles)
             {
@@ -280,30 +281,41 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     item.AddBlockingError(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                 }
 
-                var package = MEPackageHandler.QuickOpenMEPackage(fullPath);
+                var package = MEPackageHandler.UnsafePartialLoad(fullPath, x => false);
+
+                #region Malformed packages
+                if (package.NameCount == 0)
                 {
-                    if (package.NameCount == 0)
-                    {
-                        item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
-                    }
-
-                    if (package.ImportCount == 0)
-                    {
-                        // Is there always an import? I assume from native classes...?
-                        item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
-                    }
-
-                    if (package.ExportCount == 0)
-                    {
-                        item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
-                    }
-
-                    if (package.Game != item.ModToValidateAgainst.Game)
-                    {
-                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningPackageForOtherGameFound, package.FilePath.Substring(item.ModToValidateAgainst.ModPath.Length + 1), package.Game, item.ModToValidateAgainst.Game));
-                    }
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
                 }
+
+                if (package.ImportCount == 0)
+                {
+                    // Is there always an import? I assume from native classes...?
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
+                }
+
+                if (package.ExportCount == 0)
+                {
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
+                }
+
+                if (package.Game != item.ModToValidateAgainst.Game)
+                {
+                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningPackageForOtherGameFound, package.FilePath.Substring(item.ModToValidateAgainst.ModPath.Length + 1), package.Game, item.ModToValidateAgainst.Game));
+                }
+                #endregion
+
+                #region Bad forced export
+                //12/7/2025 - Forced export checks
+                var badLeaves = PackageDiags.GetBadForcedExportLeaves(package);
+                if (badLeaves.Any())
+                {
+                    item.AddBlockingError($"{p} has inconsistent ForcedExport flag usage that must be fixed before deployment. Use the experiments in Legendary Explorer's package editor to find and correct this issue.", badLeaves[0].Entry);
+                }
+                #endregion
             }
+
 
             //Check moddesc.ini for things that shouldn't be present - unofficial
             if (item.ModToValidateAgainst.IsUnofficial)
