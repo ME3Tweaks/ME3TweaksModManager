@@ -1,4 +1,5 @@
-﻿using LegendaryExplorerCore.Gammtek.Extensions;
+﻿using LegendaryExplorerCore.Diagnostics;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
@@ -221,6 +222,40 @@ namespace ME3TweaksModManager.modmanager.textures
             return result;
         }
 
+        private static void FixFEChain(ExportEntry exp)
+        {
+            var root = exp.GetRoot();
+            if (root == exp)
+                return; // No chain
+
+            var shouldBeFE = root is ExportEntry rExp ? rExp.IsForcedExport : true;
+            if (shouldBeFE)
+            {
+                exp.ExportFlags |= UnrealFlags.EExportFlags.ForcedExport;
+            }
+            else
+            {
+                exp.ExportFlags &= ~UnrealFlags.EExportFlags.ForcedExport;
+            }
+
+            if (exp.Parent is ExportEntry pExp)
+            {
+                FixFEChain(pExp);
+            }
+        }
+
+        private void FixFE(IMEPackage package)
+        {
+            var badLeaves = PackageDiags.GetBadForcedExportLeaves(package);
+            foreach(var leaf in badLeaves)
+            {
+                if (leaf.Entry is ExportEntry exp)
+                {
+                    FixFEChain(exp);
+                }
+            }
+        }
+
         private void ConvertInstallationToOverride()
         {
             var task = BackgroundTaskEngine.SubmitBackgroundJob(@"BTO Build", "Pass 1: Inventory", "Completed");
@@ -356,7 +391,8 @@ namespace ME3TweaksModManager.modmanager.textures
                 {
                     game = modBeingConverted.Game,
                     basePackageName = $@"TO_{dlcName}",
-                    baseSavePath = stagingDir
+                    baseSavePath = stagingDir,
+                    OnSave = FixFE
                 };
    
                 var cache = new PackageCache();
