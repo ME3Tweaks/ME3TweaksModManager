@@ -347,10 +347,6 @@ namespace ME3TweaksModManager.modmanager.textures
                                 // it will become forced export so we have to set the IFP to what it will become
                                 overrideEntry.TextureIFP = memoryPath;
                             }
-                            else
-                            {
-                                overrideEntry.MemoryPath = memoryPath;
-                            }
 
                             overrideEntry.CompilingSourcePackage = pack.Key;
                             texturesDict[memoryPath] = overrideEntry;
@@ -467,14 +463,9 @@ namespace ME3TweaksModManager.modmanager.textures
 
                 foreach (var tex in texturesDict.Values)
                 {
-                    var foundPackageName = sourcePackages.FirstOrDefault(x => x.FindExport(tex.MemoryPath ?? tex.TextureIFP) != null);
-                    M3Log.Error($@"We could not find a package containg the export: {tex.MemoryPath ?? tex.TextureIFP}! This will break things.");
+                    var foundPackageName = sourcePackages.FirstOrDefault(x => x.FindExport(tex.TextureIFP) != null);
+                    M3Log.Error($@"We could not find a package containg the export: {tex.TextureIFP}! This will break things.");
                     tex.CompilingSourcePackage = foundPackageName.FileNameNoExtension + @".pcc";
-                    if (tex.MemoryPath == tex.TextureIFP)
-                    {
-                        // Don't need to serialize this
-                        tex.MemoryPath = null;
-                    }
                 }
 
                 // Write out the final manifest.
