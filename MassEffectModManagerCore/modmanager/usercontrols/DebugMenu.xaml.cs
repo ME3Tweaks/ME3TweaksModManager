@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             pi.OnUpdate = onProgress;
             Task.Run(() =>
             {
-                M3CTextureOverrideMerge.PerformDLCMerge(target, dlcFolder, pi);
+                M3CTextureOverrideMerge.PerformDLCMerge(target, dlcFolder, false, pi);
             }).ContinueWithOnUIThread(r => { BackgroundTaskEngine.SubmitJobCompletion(task); });
 
         }

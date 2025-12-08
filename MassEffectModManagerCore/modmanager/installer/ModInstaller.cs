@@ -1132,7 +1132,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     // Test build
                     var pi = new ProgressInfo();
                     pi.OnUpdate = onMergeUpdate;
-                    var mergeError = M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.InstallTarget, dlcName, pi);
+                    var mergeError = M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.InstallTarget, dlcName, !Settings.DeveloperMode, pi);
                     if (mergeError != null)
                     {
                         // An error occurred during merge
