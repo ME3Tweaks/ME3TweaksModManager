@@ -83,9 +83,9 @@ In your moddesc file, you must specify the ASI group id for Texture Override so 
 
 | Game | ASI Group ID |
 |------|--------------|
-| LE1  | TBD          |
-| LE2  | TBD          |
-| LE3  | TBD          |
+| LE1  | 88          |
+| LE2  | 89          |
+| LE3  | 87          |
 
 
 ## Deployment options
