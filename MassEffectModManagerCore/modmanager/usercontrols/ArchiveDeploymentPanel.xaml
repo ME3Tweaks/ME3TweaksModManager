@@ -1,5 +1,12 @@
 ﻿<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.ArchiveDeploymentPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:checks="clr-namespace:ME3TweaksModManager.modmanager.objects.deployment.checks" xmlns:deployment="clr-namespace:ME3TweaksModManager.modmanager.objects.deployment"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.ArchiveDeploymentPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:fa5="http://schemas.fontawesome.com/icons/" 
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" 
+    xmlns:checks="clr-namespace:ME3TweaksModManager.modmanager.objects.deployment.checks" xmlns:deployment="clr-namespace:ME3TweaksModManager.modmanager.objects.deployment"
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     mc:Ignorable="d"

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using CommandLine;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
@@ -16,9 +17,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     {
         public ICommand CloseCommand { get; set; }
 
+        public RelayCommand BeginImportCommand { get; set; }
+
         public string DownloadLocationText { get; set; }
 
+        /// <summary>
+        /// List of downloads show in the in the panel
+        /// </summary>
         public ObservableCollectionExtended<ModDownload> Downloads { get; } = new ObservableCollectionExtended<ModDownload>();
+
         public DownloadManagerPanel()
         {
             LoadCommands();
@@ -26,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             // Setup location text.
             DownloadLocationText = Settings.ModDownloadCacheFolder == null
-                ? "Downloads will automatically be deleted when Mod Manager closes (mods imported into the library will be unaffected). You can change this in the application settings."
+                ? "Downloads will automatically be deleted when Mod Manager closes. Mods imported into the library will be unaffected. You can change this in the application settings  ."
                 : $"Downloaded files are saved to the following location, which can be changed in the settings:\n{Settings.ModDownloadCacheFolder}";
 
         }
@@ -65,6 +72,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(CloseWrapper);
+            BeginImportCommand = new RelayCommand(StartModImport, 
+                x=> x is ModDownload md && md.CanImport);
+        }
+
+        private void StartModImport(object obj)
+        {
+            if (obj is ModDownload md)
+            {
+                BeginImportFor(md);
+            }
         }
 
         private void CloseWrapper()
@@ -128,14 +145,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // Is there only one active download? If so, we will immediately kick to import
                     if (Downloads.Count == 1)
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            CloseWrapper();
-                            mainwindow.ShowModArchiveImportForDownload(md);
-                        });
+                        BeginImportFor(md);
                     }
                 }
             }
+        }
+
+        private void BeginImportFor(ModDownload md)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                CloseWrapper();
+                mainwindow.ShowModArchiveImportForDownload(md);
+            });
         }
 
         private void DownloadError(object sender, string e)
