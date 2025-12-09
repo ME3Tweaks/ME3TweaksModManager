@@ -64,12 +64,13 @@ Building a mod that uses the M3TO system requires the following files:
 
 Texture overrides must be stored in package files that have filenames starting with `TO_`. Files not starting with `TO_` as the filename will be rejected, as they could override game files, which is not allowed by this system. If your mod isn't shipping a precompiled BTP, `TO` files should strive to be between 5MiB and 25MiB, to improve compile performance for users. If your mod doesn't make up that size, that's fine, but for larger ones, consider chunking your files up. Every 10MiB of a `TO_` translates to about 350MiB of system memory for a client during the build process.
 
-<img width="1054" height="805" alt="Image" src="https://github.com/user-attachments/assets/0777c02c-88c1-49cf-beb6-8297e4a1aedb" />
+<img width="1054" height="805" alt="520537065-0777c02c-88c1-49cf-beb6-8297e4a1aedb" src="https://github.com/user-attachments/assets/ec3749cb-1b4e-428b-a656-332ba4265fdd" />
 
 
 Inside your .m3to file(s), you specify your overrides, as well as the game the m3to is for. An m3to is just a JSON file with a custom extension.
 
-<img width="1409" height="364" alt="Image" src="https://github.com/user-attachments/assets/990f886e-7e59-4d00-a23c-1437d9a3a4f4" />
+<img width="1409" height="364" alt="520537321-990f886e-7e59-4d00-a23c-1437d9a3a4f4" src="https://github.com/user-attachments/assets/4c2751c5-3e28-4260-950b-8304a8d7eb9d" />
+
 
 For each texture, you must specify the source package name, relative to the CookedPCConsole folder of your DLC mod. You also must specify the `textureifp`, which is the instanced full path as shown in your package. 
 
