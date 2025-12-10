@@ -62,7 +62,7 @@ namespace ME3TweaksModManager
             // Global Shader Cache Override
             @".hlsl",
             // Binary Texture Package
-            @".btp"
+            BinaryTexturePackage.EXTENSION_TEXTURE_OVERRIDE_BINARY
         };
 
         /// <summary>
