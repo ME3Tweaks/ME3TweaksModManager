@@ -149,7 +149,7 @@ namespace ME3TweaksModManager
                             var impInstallCancel = M3L.ShowDialog(this,
                                 M3L.GetString(M3L.string_importOrInstallTheseMemFilesQuestion)
                                 + "\n\n" // do not localize
-                                + string.Join("\n - ", memFiles.Select(Path.GetFileName)), // do not localize
+                                + @" - " + string.Join("\n - ", memFiles.Select(Path.GetFileName)), // do not localize
                                 M3L.GetString(M3L.string_importOrInstall),
                                 MessageBoxButton.YesNoCancel,
                                 MessageBoxImage.Question,
