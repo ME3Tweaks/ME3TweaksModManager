@@ -76,6 +76,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {MODDESC_DESCRIPTOR_UPDATES_BLACKLISTEDFILES, UpdaterServiceBlacklistedFiles},
                 {MODDESC_DESCRIPTOR_UPDATES_ADDITIONAL_FOLDERS, AdditionalDeploymentFolders},
                 {MODDESC_DESCRIPTOR_UPDATES_ADDITIONAL_FILES, AdditionalDeploymentFiles},
+                {MODDESC_DESCRIPTOR_UPDATES_NEXUSUPDATECHECK, new MDParameter(@"string", MODDESC_DESCRIPTOR_UPDATES_NEXUSUPDATECHECK, NexusUpdateCheck ? @"" : MODDESC_VALUE_FALSE, new [] {@"", MODDESC_VALUE_TRUE, MODDESC_VALUE_FALSE}, @"") {Header = MODDESC_HEADERKEY_UPDATES}}
             };
 
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, MODDESC_HEADERKEY_UPDATES));
