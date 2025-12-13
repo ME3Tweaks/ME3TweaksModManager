@@ -398,212 +398,211 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         var fileName = Path.GetFileName(sp);
                         if (!packageMap.ContainsKey(fileName))
                         {
-                            item.AddBlockingError($"Included texture override manfiest file {m3toRel} references source package '{sp}' which is not referenced by the mod and will never be able able to be compiled");
+                            item.AddBlockingError($"Included texture override manifest file {m3toRel} references source package '{sp}' which is not referenced by the mod and will never be able able to be compiled");
                             continue;
                         }
                     }
                 }
+            }
 
-                //Check moddesc.ini for things that shouldn't be present - unofficial
-                if (item.ModToValidateAgainst.IsUnofficial)
+            //Check moddesc.ini for things that shouldn't be present - unofficial
+            if (item.ModToValidateAgainst.IsUnofficial)
+            {
+                item.AddBlockingError(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
+            }
+
+            //Check moddesc.ini for things that shouldn't be present - importedby
+            if (item.ModToValidateAgainst.ImportedByBuild > 0)
+            {
+                item.AddBlockingError(M3L.GetString(M3L.string_error_foundImportedByDesriptor));
+            }
+
+            // Check mod name length
+            if (item.ModToValidateAgainst.ModName.Length > 40)
+            {
+                item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
+            }
+
+
+            #region Check 2DA is not in autoload and M3DA (LE1)
+
+            if (item.ModToValidateAgainst.Game == MEGame.LE1)
+            {
+                // Get autoloads
+                var autoloads = item.ModToValidateAgainst.GetAllRelativeReferences().Where(x => Path.GetFileName(x).CaseInsensitiveEquals(@"autoload.ini"));
+                var m3das = item.ModToValidateAgainst.GetAllRelativeReferences().Where(x => Path.GetExtension(x).CaseInsensitiveEquals(@".m3da")).ToList();
+                foreach (var autoloadPath in autoloads)
                 {
-                    item.AddBlockingError(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
-                }
-
-                //Check moddesc.ini for things that shouldn't be present - importedby
-                if (item.ModToValidateAgainst.ImportedByBuild > 0)
-                {
-                    item.AddBlockingError(M3L.GetString(M3L.string_error_foundImportedByDesriptor));
-                }
-
-                // Check mod name length
-                if (item.ModToValidateAgainst.ModName.Length > 40)
-                {
-                    item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
-                }
-
-
-                #region Check 2DA is not in autoload and M3DA (LE1)
-
-                if (item.ModToValidateAgainst.Game == MEGame.LE1)
-                {
-                    // Get autoloads
-                    var autoloads = item.ModToValidateAgainst.GetAllRelativeReferences().Where(x => Path.GetFileName(x).CaseInsensitiveEquals(@"autoload.ini"));
-                    var m3das = item.ModToValidateAgainst.GetAllRelativeReferences().Where(x => Path.GetExtension(x).CaseInsensitiveEquals(@".m3da")).ToList();
-                    foreach (var autoloadPath in autoloads)
+                    var dlcRoot = Directory.GetParent(Path.Combine(item.ModToValidateAgainst.ModPath, autoloadPath)).FullName;
+                    AutoloadIni autoload = new AutoloadIni(Path.Combine(dlcRoot, @"autoload.ini")); // Full path
+                    if (autoload.Bio2DAs.Any() && m3das.Any())
                     {
-                        var dlcRoot = Directory.GetParent(Path.Combine(item.ModToValidateAgainst.ModPath, autoloadPath)).FullName;
-                        AutoloadIni autoload = new AutoloadIni(Path.Combine(dlcRoot, @"autoload.ini")); // Full path
-                        if (autoload.Bio2DAs.Any() && m3das.Any())
-                        {
-                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_modsDontMixAutoloadAndM3DA, autoloadPath));
-                        }
-                    }
-                }
-                #endregion
-
-                #region Check for full-file mergemod targets
-                // Check if our mod contains any basegame only files that are hot merge mod targets.
-                var basegameJob = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME);
-                if (basegameJob != null)
-                {
-                    // Get files installed into CookedPC of basegame (without extension)
-                    var basegameCookedPrefix = $@"BioGame/{item.ModToValidateAgainst.Game.CookedDirName()}/";
-
-                    // Job files.
-                    var cookedDirTargets = basegameJob.FilesToInstall.Keys.Where(x => x.Replace("\\", "/").TrimStart('/').StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && x.RepresentsPackageFilePath()).Select(x => Path.GetFileNameWithoutExtension(x)).ToList(); // do not localize
-
-                    // Find alternates that may target this directory.
-                    var alts = basegameJob.AlternateFiles.Where(
-                        x => x.Operation
-                    is AlternateFile.AltFileOperation.OP_SUBSTITUTE
-                    or AlternateFile.AltFileOperation.OP_INSTALL
-                    or AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES
-                    ).ToList();
-
-                    foreach (var alt in alts)
-                    {
-                        switch (alt.Operation)
-                        {
-                            case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                            case AlternateFile.AltFileOperation.OP_INSTALL:
-                                var testPath = alt.ModFile.Replace("\\", "/").TrimStart('/'); // do not localize
-                                if (testPath.StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && testPath.RepresentsPackageFilePath())
-                                {
-                                    cookedDirTargets.Add(Path.GetFileNameWithoutExtension(alt.ModFile));
-                                }
-                                break;
-                            case AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES:
-                                foreach (var mlFile in alt.MultiListSourceFiles)
-                                {
-                                    string destPath;
-                                    if (alt.FlattenMultilistOutput)
-                                    {
-                                        destPath = alt.MultiListTargetPath + @"\" + Path.GetFileName(mlFile);
-                                    }
-                                    else
-                                    {
-                                        destPath = alt.MultiListTargetPath + @"\" + mlFile;
-                                    }
-
-                                    destPath = destPath.Replace(@"\", @"//").TrimStart('/');
-
-                                    if (destPath.StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && destPath.RepresentsPackageFilePath())
-                                    {
-                                        cookedDirTargets.Add(Path.GetFileNameWithoutExtension(destPath));
-                                    }
-                                }
-                                break;
-                        }
-                    }
-
-                    // Get list of files that our merge mod supports.
-                    var mergeTargets = MergeModLoader.GetAllowedMergeTargetFilenames(item.ModToValidateAgainst.Game).Select(x => Path.GetFileNameWithoutExtension(x).StripUnrealLocalization()).ToList();
-
-                    // 
-                    foreach (var mt in mergeTargets)
-                    {
-                        if (cookedDirTargets.Contains(mt, StringComparer.InvariantCultureIgnoreCase))
-                        {
-                            item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_basegameFullFileWarning, mt));
-                        }
-                    }
-                }
-                #endregion
-
-                #region Check for misc development files such as decompiled folders and other .bin files.
-
-                var installableFiles = item.ModToValidateAgainst.GetAllInstallableFiles();
-
-                var developmentOnlyFiles = new[] { @".xml", @".dds", @".png" }; // Should maybe check for duplicate coalesceds...
-                var devFiles = installableFiles.Where(x => developmentOnlyFiles.Contains(Path.GetExtension(x))).ToList();
-                foreach (var file in devFiles)
-                {
-                    var ext = Path.GetExtension(file);
-
-                    item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_unusedExtraFileTypeFound, ext, file));
-                }
-                #endregion
-
-                #region Check if it is enrolled in Nexus Updater Service
-
-                if (item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
-                {
-                    item.AddInfoWarning(M3L.GetString(M3L.string_deployment_nexusUpdaterServiceInfo, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.Game));
-                }
-                #endregion
-
-                #region Check for m3za so user doesn't forget
-                // Check for compressed m3za
-                if (item.ModToValidateAgainst.Game.IsGame1() && item.ModToValidateAgainst.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null && item.ModToValidateAgainst.ModDescTargetVersion >= 8.0)
-                {
-                    var m3zaFile = Path.Combine(item.ModToValidateAgainst.ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
-                    if (File.Exists(m3zaFile))
-                    {
-                        item.AddInfoWarning(M3L.GetString(M3L.string_interp_compressedTlkDataInfo, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkCompressedFilename));
-                    }
-                }
-                #endregion
-
-                #region Check if in TMPI already
-
-                var dlcFolders = item.ModToValidateAgainst.GetAllPossibleCustomDLCFolders();
-                foreach (var dlc in dlcFolders)
-                {
-                    var tpmi = TPMIService.GetThirdPartyModInfo(dlc, item.ModToValidateAgainst.Game);
-                    if (tpmi != null && !tpmi.modname.CaseInsensitiveEquals(item.ModToValidateAgainst.ModName))
-                    {
-                        item.AddInfoWarning(M3L.GetString(M3L.string_interp_modWithDifferentNameInTPMI, dlc, tpmi.modname));
-                    }
-                }
-                #endregion
-
-                #region Check merge mod version with moddesc version
-
-                foreach (var mergeMod in item.ModToValidateAgainst.GetAllMergeMods())
-                {
-                    using var ms = File.OpenRead(Path.Combine(item.ModToValidateAgainst.ModPath, mergeMod));
-                    var mm = MergeModLoader.LoadMergeMod(ms, mergeMod, false);
-                    if (mm != null)
-                    {
-                        if (mm.MergeModVersion > 1) // 1 is supposed on all
-                        {
-                            if (item.ModToValidateAgainst.ModDescTargetVersion < MergeModLoader.GetMinimumCmmVerRequirement(mm.MergeModVersion))
-                            {
-                                item.AddBlockingError(M3L.GetString(M3L.string_interp_mergeModFeatureLevelIncompatible, mergeMod, mm.MergeModVersion, MergeModLoader.GetMinimumCmmVerRequirement(mm.MergeModVersion)));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        item.AddBlockingError(M3L.GetString(M3L.string_interp_mergeModFailedToLoadUnknownFeatureLevel, mergeMod, item.ModToValidateAgainst.ModDescTargetVersion));
-                    }
-                }
-                #endregion
-
-                // End of check
-                if (!item.HasAnyMessages())
-                {
-                    item.ItemText = M3L.GetString(M3L.string_noMiscellaneousIssuesDetected);
-                    item.ToolTip = M3L.GetString(M3L.string_validationOK);
-                }
-                else
-                {
-                    if (item.HasOnlyInfoMessages())
-                    {
-                        item.ItemText = M3L.GetString(M3L.string_guidanceAvailable);
-                        item.ToolTip = M3L.GetString(M3L.string_tooltip_guidanceAvailable);
-                        item.DialogMessage = M3L.GetString(M3L.string_dialog_guidanceAvailable);
-                        item.DialogTitle = M3L.GetString(M3L.string_miscellaneousGuidance);
-                    }
-                    else
-                    {
-                        item.ItemText = M3L.GetString(M3L.string_detectedMiscellaneousIssues);
-                        item.ToolTip = M3L.GetString(M3L.string_tooltip_deploymentChecksFoundMiscIssues);
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_modsDontMixAutoloadAndM3DA, autoloadPath));
                     }
                 }
             }
+            #endregion
 
+            #region Check for full-file mergemod targets
+            // Check if our mod contains any basegame only files that are hot merge mod targets.
+            var basegameJob = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME);
+            if (basegameJob != null)
+            {
+                // Get files installed into CookedPC of basegame (without extension)
+                var basegameCookedPrefix = $@"BioGame/{item.ModToValidateAgainst.Game.CookedDirName()}/";
+
+                // Job files.
+                var cookedDirTargets = basegameJob.FilesToInstall.Keys.Where(x => x.Replace("\\", "/").TrimStart('/').StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && x.RepresentsPackageFilePath()).Select(x => Path.GetFileNameWithoutExtension(x)).ToList(); // do not localize
+
+                // Find alternates that may target this directory.
+                var alts = basegameJob.AlternateFiles.Where(
+                    x => x.Operation
+                is AlternateFile.AltFileOperation.OP_SUBSTITUTE
+                or AlternateFile.AltFileOperation.OP_INSTALL
+                or AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES
+                ).ToList();
+
+                foreach (var alt in alts)
+                {
+                    switch (alt.Operation)
+                    {
+                        case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
+                        case AlternateFile.AltFileOperation.OP_INSTALL:
+                            var testPath = alt.ModFile.Replace("\\", "/").TrimStart('/'); // do not localize
+                            if (testPath.StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && testPath.RepresentsPackageFilePath())
+                            {
+                                cookedDirTargets.Add(Path.GetFileNameWithoutExtension(alt.ModFile));
+                            }
+                            break;
+                        case AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES:
+                            foreach (var mlFile in alt.MultiListSourceFiles)
+                            {
+                                string destPath;
+                                if (alt.FlattenMultilistOutput)
+                                {
+                                    destPath = alt.MultiListTargetPath + @"\" + Path.GetFileName(mlFile);
+                                }
+                                else
+                                {
+                                    destPath = alt.MultiListTargetPath + @"\" + mlFile;
+                                }
+
+                                destPath = destPath.Replace(@"\", @"//").TrimStart('/');
+
+                                if (destPath.StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && destPath.RepresentsPackageFilePath())
+                                {
+                                    cookedDirTargets.Add(Path.GetFileNameWithoutExtension(destPath));
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                // Get list of files that our merge mod supports.
+                var mergeTargets = MergeModLoader.GetAllowedMergeTargetFilenames(item.ModToValidateAgainst.Game).Select(x => Path.GetFileNameWithoutExtension(x).StripUnrealLocalization()).ToList();
+
+                // 
+                foreach (var mt in mergeTargets)
+                {
+                    if (cookedDirTargets.Contains(mt, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_basegameFullFileWarning, mt));
+                    }
+                }
+            }
+            #endregion
+
+            #region Check for misc development files such as decompiled folders and other .bin files.
+
+            var installableFiles = item.ModToValidateAgainst.GetAllInstallableFiles();
+
+            var developmentOnlyFiles = new[] { @".xml", @".dds", @".png" }; // Should maybe check for duplicate coalesceds...
+            var devFiles = installableFiles.Where(x => developmentOnlyFiles.Contains(Path.GetExtension(x))).ToList();
+            foreach (var file in devFiles)
+            {
+                var ext = Path.GetExtension(file);
+
+                item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_unusedExtraFileTypeFound, ext, file));
+            }
+            #endregion
+
+            #region Check if it is enrolled in Nexus Updater Service
+
+            if (item.ModToValidateAgainst.NexusUpdateCheck && item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
+            {
+                item.AddInfoWarning(M3L.GetString(M3L.string_deployment_nexusUpdaterServiceInfo, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.Game));
+            }
+            #endregion
+
+            #region Check for m3za so user doesn't forget
+            // Check for compressed m3za
+            if (item.ModToValidateAgainst.Game.IsGame1() && item.ModToValidateAgainst.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null && item.ModToValidateAgainst.ModDescTargetVersion >= 8.0)
+            {
+                var m3zaFile = Path.Combine(item.ModToValidateAgainst.ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
+                if (File.Exists(m3zaFile))
+                {
+                    item.AddInfoWarning(M3L.GetString(M3L.string_interp_compressedTlkDataInfo, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkCompressedFilename));
+                }
+            }
+            #endregion
+
+            #region Check if in TMPI already
+
+            var dlcFolders = item.ModToValidateAgainst.GetAllPossibleCustomDLCFolders();
+            foreach (var dlc in dlcFolders)
+            {
+                var tpmi = TPMIService.GetThirdPartyModInfo(dlc, item.ModToValidateAgainst.Game);
+                if (tpmi != null && !tpmi.modname.CaseInsensitiveEquals(item.ModToValidateAgainst.ModName))
+                {
+                    item.AddInfoWarning(M3L.GetString(M3L.string_interp_modWithDifferentNameInTPMI, dlc, tpmi.modname));
+                }
+            }
+            #endregion
+
+            #region Check merge mod version with moddesc version
+
+            foreach (var mergeMod in item.ModToValidateAgainst.GetAllMergeMods())
+            {
+                using var ms = File.OpenRead(Path.Combine(item.ModToValidateAgainst.ModPath, mergeMod));
+                var mm = MergeModLoader.LoadMergeMod(ms, mergeMod, false);
+                if (mm != null)
+                {
+                    if (mm.MergeModVersion > 1) // 1 is supposed on all
+                    {
+                        if (item.ModToValidateAgainst.ModDescTargetVersion < MergeModLoader.GetMinimumCmmVerRequirement(mm.MergeModVersion))
+                        {
+                            item.AddBlockingError(M3L.GetString(M3L.string_interp_mergeModFeatureLevelIncompatible, mergeMod, mm.MergeModVersion, MergeModLoader.GetMinimumCmmVerRequirement(mm.MergeModVersion)));
+                        }
+                    }
+                }
+                else
+                {
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_mergeModFailedToLoadUnknownFeatureLevel, mergeMod, item.ModToValidateAgainst.ModDescTargetVersion));
+                }
+            }
+            #endregion
+
+            // End of check
+            if (!item.HasAnyMessages())
+            {
+                item.ItemText = M3L.GetString(M3L.string_noMiscellaneousIssuesDetected);
+                item.ToolTip = M3L.GetString(M3L.string_validationOK);
+            }
+            else
+            {
+                if (item.HasOnlyInfoMessages())
+                {
+                    item.ItemText = M3L.GetString(M3L.string_guidanceAvailable);
+                    item.ToolTip = M3L.GetString(M3L.string_tooltip_guidanceAvailable);
+                    item.DialogMessage = M3L.GetString(M3L.string_dialog_guidanceAvailable);
+                    item.DialogTitle = M3L.GetString(M3L.string_miscellaneousGuidance);
+                }
+                else
+                {
+                    item.ItemText = M3L.GetString(M3L.string_detectedMiscellaneousIssues);
+                    item.ToolTip = M3L.GetString(M3L.string_tooltip_deploymentChecksFoundMiscIssues);
+                }
+            }
         }
     }
 }
