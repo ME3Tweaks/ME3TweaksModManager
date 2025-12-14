@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProductVersion>9.0.30729</ProductVersion>
     <AssemblyName>SevenZipSharp</AssemblyName>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>SevenZip.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags />
@@ -36,6 +36,7 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DefineConstants>TRACE;DEBUG;UNMANAGED</DefineConstants>
@@ -90,6 +91,9 @@
   <ItemGroup>
     <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
     <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Security.Permissions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\ME3TweaksCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" Condition="'$(TargetFramework)' == 'net45'">

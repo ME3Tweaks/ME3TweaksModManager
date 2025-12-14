@@ -398,29 +398,30 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         var fileName = Path.GetFileName(sp);
                         if (!packageMap.ContainsKey(fileName))
                         {
-                            item.AddBlockingError($"Included texture override manfiest file {m3toRel} references source package '{sp}' which is not referenced by the mod and will never be able able to be compiled");
+                            item.AddBlockingError($"Included texture override manifest file {m3toRel} references source package '{sp}' which is not referenced by the mod and will never be able able to be compiled");
                             continue;
                         }
                     }
                 }
+            }
 
-                //Check moddesc.ini for things that shouldn't be present - unofficial
-                if (item.ModToValidateAgainst.IsUnofficial)
-                {
-                    item.AddBlockingError(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
-                }
+            //Check moddesc.ini for things that shouldn't be present - unofficial
+            if (item.ModToValidateAgainst.IsUnofficial)
+            {
+                item.AddBlockingError(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
+            }
 
-                //Check moddesc.ini for things that shouldn't be present - importedby
-                if (item.ModToValidateAgainst.ImportedByBuild > 0)
-                {
-                    item.AddBlockingError(M3L.GetString(M3L.string_error_foundImportedByDesriptor));
-                }
+            //Check moddesc.ini for things that shouldn't be present - importedby
+            if (item.ModToValidateAgainst.ImportedByBuild > 0)
+            {
+                item.AddBlockingError(M3L.GetString(M3L.string_error_foundImportedByDesriptor));
+            }
 
-                // Check mod name length
-                if (item.ModToValidateAgainst.ModName.Length > 40)
-                {
-                    item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
-                }
+            // Check mod name length
+            if (item.ModToValidateAgainst.ModName.Length > 40)
+            {
+                item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
+            }
 
 
             #region Check 2DA is not in autoload and M3DA (LE1)
@@ -527,7 +528,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             #region Check if it is enrolled in Nexus Updater Service
 
-            if (item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
+            if (item.ModToValidateAgainst.NexusUpdateCheck && item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
             {
                 item.AddInfoWarning(M3L.GetString(M3L.string_deployment_nexusUpdaterServiceInfo, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.Game));
             }
