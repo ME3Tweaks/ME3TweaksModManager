@@ -12,6 +12,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save.shared;
+using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.modmanager.windows.input;
 using ME3TweaksModManager.ui;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -199,7 +200,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         var res = M3L.ShowDialog(Window.GetWindow(this), lup.Response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
 
                         // 12/13/2025 - Add local log viewer if ME3Tweaks is down or inaccessible
-                        var localLogViewer = new MLogViewerWindow(lup.FullLogText);
+                        var localLogViewer = new M3LogViewerWindow(lup.FullLogText);
                         localLogViewer.Show();
                         return;
                     }
