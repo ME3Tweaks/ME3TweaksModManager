@@ -6,6 +6,7 @@ using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Diagnostics.Support;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
+using ME3TweaksCoreWPF.LogViewer;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
@@ -31,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// The message shown in the UI about what's happening
         /// </summary>
         public string CollectionStatusMessage { get; set; }
-        
+
         /// <summary>
         /// If advanced diagnostics should be performed
         /// </summary>
@@ -69,14 +70,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
             DiagnosticTargets.Add(new GameTargetWPF(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false, true));
             DiagnosticTargets.AddRange(targets.Where(x => x.Game != MEGame.LELauncher));
-            
+
             // Select the preselected target
             if (preselectedTarget != null)
             {
                 SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault(x => x.TargetPath == preselectedTarget.TargetPath);
                 preselectedTarget = null; // Lose reference
             }
-            
+
             // Select the 'choose a target' if none is set
             if (SelectedDiagnosticTarget == null)
             {
@@ -101,8 +102,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SelectSave()
         {
-            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedDiagnosticTarget,
-                M3L.GetString(M3L.string_selectASaveToIncludeWithDiagnostic));
+            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedDiagnosticTarget, M3L.GetString(M3L.string_selectASaveToIncludeWithDiagnostic));
             ssui.Show();
             ssui.Closed += (sender, args) =>
             {
@@ -139,7 +139,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void StartLogUpload(bool isPreviousCrashLog = false)
         {
             UploadingLog = true;
-            //TopText = M3L.GetString(M3L.string_collectingLogInformation);
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"LogUpload");
             nbw.WorkerReportsProgress = true;
             nbw.ProgressChanged += (a, b) =>
@@ -180,7 +179,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     UpdateTaskbarProgressStateCallback = updateTaskbarProgressStateCallback,
                     UpdateProgressCallback = updateProgressCallback,
                     SelectedSaveFilePath = SelectedSaveFile?.SaveFilePath,
-                    UpdateStatusCallback = updateStatusCallback,
+                    UpdateStatusCallback = updateStatusCallback
                 };
 
                 b.Result = LogCollector.SubmitDiagnosticLog(package);
@@ -188,16 +187,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
-                if (b.Error == null && b.Result is string response)
+                if (b.Error == null && b.Result is LogUploadPackage lup)
                 {
-                    if (response.StartsWith(@"http"))
+                    if (false && lup.Response.StartsWith(@"http"))
                     {
-                        M3Utilities.OpenWebpage(response);
+                        M3Utilities.OpenWebpage(lup.Response);
                     }
                     else
                     {
                         OnClosing(DataEventArgs.Empty);
-                        var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        var res = M3L.ShowDialog(Window.GetWindow(this), lup.Response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+
+                        // 12/13/2025 - Add local log viewer if ME3Tweaks is down or inaccessible
+                        var localLogViewer = new MLogViewerWindow(lup.FullLogText);
+                        localLogViewer.Show();
                         return;
                     }
                 }
@@ -228,11 +231,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 e.Handled = true;
                 OnClosing(DataEventArgs.Empty);
-            }
-
-            if (e.Key == Key.Space)
-            {
-                Debugger.Break();
             }
         }
 

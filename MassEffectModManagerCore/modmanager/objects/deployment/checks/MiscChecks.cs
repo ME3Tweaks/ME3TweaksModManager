@@ -263,7 +263,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
             var referencedFiles = item.ModToValidateAgainst.GetAllRelativeReferences(false);
 
-            // Check for metacmms
+            #region Check for metacmm files
             var metacmms = referencedFiles.Where(x => Path.GetFileName(x) == @"_metacmm.txt").ToList();
             if (metacmms.Any())
             {
@@ -273,8 +273,9 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     item.AddBlockingError(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
                 }
             }
+            #endregion
 
-            // Check for texture markers, malformed packages
+            #region Check for texture markers and malformed packages
             var packageFiles = referencedFiles.Where(x => x.RepresentsPackageFilePath());
             foreach (var p in packageFiles)
             {
@@ -319,9 +320,9 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 }
                 #endregion
             }
+            #endregion
 
-
-            // Check BTP has matching metadata file if using this
+            #region Ensure precompiled BTP has matching metadata file
             bool usingPrecompiledBTP = false;
             List<string> m3toFiles = new List<string>();
             foreach (var rel in referencedFiles)
@@ -404,8 +405,9 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     }
                 }
             }
+            #endregion
 
-            //Check moddesc.ini for things that shouldn't be present - unofficial
+            #region moddesc.ini checks
             if (item.ModToValidateAgainst.IsUnofficial)
             {
                 item.AddBlockingError(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
@@ -418,14 +420,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
 
             // Check mod name length
-            if (item.ModToValidateAgainst.ModName.Length > 40)
+            if (item.ModToValidateAgainst.ModName.Length > 35)
             {
                 item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
             }
-
+            #endregion
 
             #region Check 2DA is not in autoload and M3DA (LE1)
-
             if (item.ModToValidateAgainst.Game == MEGame.LE1)
             {
                 // Get autoloads
@@ -443,7 +444,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
             #endregion
 
-            #region Check for full-file mergemod targets
+            #region Check for full-file replacement of mergemod targets
             // Check if our mod contains any basegame only files that are hot merge mod targets.
             var basegameJob = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME);
             if (basegameJob != null)
@@ -513,7 +514,6 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check for misc development files such as decompiled folders and other .bin files.
-
             var installableFiles = item.ModToValidateAgainst.GetAllInstallableFiles();
 
             var developmentOnlyFiles = new[] { @".xml", @".dds", @".png" }; // Should maybe check for duplicate coalesceds...
@@ -527,7 +527,6 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check if it is enrolled in Nexus Updater Service
-
             if (item.ModToValidateAgainst.NexusUpdateCheck && item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
             {
                 item.AddInfoWarning(M3L.GetString(M3L.string_deployment_nexusUpdaterServiceInfo, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.Game));
@@ -547,7 +546,6 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check if in TMPI already
-
             var dlcFolders = item.ModToValidateAgainst.GetAllPossibleCustomDLCFolders();
             foreach (var dlc in dlcFolders)
             {
@@ -560,14 +558,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check merge mod version with moddesc version
-
             foreach (var mergeMod in item.ModToValidateAgainst.GetAllMergeMods())
             {
                 using var ms = File.OpenRead(Path.Combine(item.ModToValidateAgainst.ModPath, mergeMod));
                 var mm = MergeModLoader.LoadMergeMod(ms, mergeMod, false);
                 if (mm != null)
                 {
-                    if (mm.MergeModVersion > 1) // 1 is supposed on all
+                    if (mm.MergeModVersion > 1) // 1 is supported on all
                     {
                         if (item.ModToValidateAgainst.ModDescTargetVersion < MergeModLoader.GetMinimumCmmVerRequirement(mm.MergeModVersion))
                         {
@@ -582,7 +579,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
             #endregion
 
-            #region Check if LE1 ships Bio2DA Merge target as DLC 
+            #region Check if LE1 ships any Bio2DA Merge targets as DLC 
             if (item.ModToValidateAgainst.Game == MEGame.LE1)
             {
                 foreach (var installableFile in installableFiles)
@@ -621,8 +618,6 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     item.ToolTip = M3L.GetString(M3L.string_tooltip_deploymentChecksFoundMiscIssues);
                 }
             }
-            }
-
         }
     }
 }
