@@ -30,6 +30,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, MODDESC_HEADERKEY_MODMANAGER));
 
             // ModInfo
+            // Need to determine if nexus id is in the url
+            bool showNexusId = false;
+            if (ModWebsite != null) {
+                var nfi = NexusFileInfo.FromModSite(Game, ModWebsite);
+                if (nfi == null)
+                {
+                    showNexusId = true;
+                }
+            }
+
             parameterDictionary = new Dictionary<string, object>()
             {
                 {MODDESC_DESCRIPTOR_MODINFO_GAME, Game.ToString().ToUpper()}, // Upper for LELAUNCHER
@@ -39,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {MODDESC_DESCRIPTOR_MODINFO_DEVELOPER, ModDeveloper},
                 {MODDESC_DESCRIPTOR_MODINFO_SITE, ModWebsite == Mod.DefaultWebsite ? "" : ModWebsite},
                 {MODDESC_DESCRIPTOR_MODINFO_UPDATECODE, ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
-                {MODDESC_DESCRIPTOR_MODINFO_NEXUSMODSDOMAINID, NexusModID > 0 ? NexusModID.ToString() : null},
+                {MODDESC_DESCRIPTOR_MODINFO_NEXUSMODSDOMAINID, NexusModID > 0 && showNexusId ? NexusModID.ToString() : null},
                 {MODDESC_DESCRIPTOR_MODINFO_REQUIREDDLC, string.Join(';',RequiredDLC.Select(x=>x.Serialize(false)).Concat(OptionalSingleRequiredDLC.Select(x=>x.Serialize(true))))},
                 {MODDESC_DESCRIPTOR_MODINFO_BANNERIMAGENAME, new MDParameter(@"string", MODDESC_DESCRIPTOR_MODINFO_BANNERIMAGENAME, BannerImageName, new [] {@""}, @"") {Header = MODDESC_HEADERKEY_MODINFO, AllowedValuesPopulationFunc = PopulateImageFileOptions}}, // Uses image population function // do not localize
                 {MODDESC_DESCRIPTOR_MODINFO_SORTALTERNATES, new MDParameter(@"string", MODDESC_DESCRIPTOR_MODINFO_SORTALTERNATES, SortAlternateOptions ? @"" : MODDESC_VALUE_FALSE, new [] {@"", MODDESC_VALUE_TRUE, MODDESC_VALUE_FALSE}, @"") {Header = MODDESC_HEADERKEY_MODINFO}}, //don't put checkedbydefault in if it is not set to true. // do not localize
