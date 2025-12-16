@@ -330,9 +330,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 switch(operation)
                 {
                     case ESevenZipOperation.FinalMove:
-                        OperationText = $"Finalizing deployment...";
-                        ProgressValue = (ulong) value;
-                        ProgressMax = (ulong)value2;
+                        OperationText = $"Finalizing archive...";
+                        unchecked
+                        {
+                            ProgressValue = (long) value;
+                            ProgressMax = (long)value2;
+                        }
                         break;
                 }
             }
@@ -388,8 +391,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             compressor.Progressing += (a, b) =>
             {
                 //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
-                ProgressMax = b.TotalAmount;
-                ProgressValue = b.AmountCompleted;
+                ProgressMax = (long) b.TotalAmount;
+                ProgressValue = (long) b.AmountCompleted;
                 var now = DateTime.Now;
                 if ((now - lastPercentUpdateTime).Milliseconds > ModInstallerPanel.PERCENT_REFRESH_COOLDOWN)
                 {
@@ -613,11 +616,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <summary>
         /// Maximum on the progress bar
         /// </summary>
-        public ulong ProgressMax { get; set; } = 100;
+        public long ProgressMax { get; set; } = 100;
         /// <summary>
         /// The current value of the progress bar
         /// </summary>
-        public ulong ProgressValue { get; set; } = 0;
+        public long ProgressValue { get; set; } = 0;
         /// <summary>
         /// The bottom left text that describes the current operation
         /// </summary>
