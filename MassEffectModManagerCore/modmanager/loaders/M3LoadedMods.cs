@@ -570,6 +570,9 @@ namespace ME3TweaksModManager.modmanager.loaders
                 }
 
                 ModsReloaded?.Invoke(this, EventArgs.Empty);
+                
+                // 12/21/2025 - Run filter to ensure filter text is applied to the UI
+                FilterMods();
             };
             bw.RunWorkerAsync();
         }
