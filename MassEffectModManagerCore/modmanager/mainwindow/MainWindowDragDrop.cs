@@ -566,6 +566,11 @@ namespace ME3TweaksModManager
 
                                 if (!File.Exists(fxc))
                                 {
+                                    fxc = Environment.GetEnvironmentVariable("DXSDK_DIR") + @"Utilities\bin\x86\fxc.exe";
+                                }
+
+                                if (!File.Exists(fxc))
+                                {
                                     M3Log.Warning("Could not find fxc - install a Windows SDK that contains FXC");
                                     M3L.ShowDialog(this,
                                         "Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.",
