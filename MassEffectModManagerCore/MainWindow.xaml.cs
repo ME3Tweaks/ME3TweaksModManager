@@ -323,8 +323,9 @@ namespace ME3TweaksModManager
             if (richText)
             {
                 // This probably doesn't work properly on non english language settings
-                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(retvar) +RichTextHelper.GetFooter();
-            } else
+                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(retvar) + RichTextHelper.GetFooter();
+            }
+            else
             {
                 return retvar;
             }
@@ -559,7 +560,7 @@ namespace ME3TweaksModManager
         /// Updates the Nexus Login status
         /// </summary>
         /// <param name="languageUpdateOnly">If we should only update the language text instead of a full update of API keys</param>
-        public async void RefreshNexusStatus(bool languageUpdateOnly = false)
+        public async Task RefreshNexusStatus(bool languageUpdateOnly = false)
         {
             if (NexusModsUtilities.HasAPIKey)
             {
@@ -751,7 +752,7 @@ namespace ME3TweaksModManager
             if (DownloadingTask != null)
             {
                 var downloads = DownloadManager.GetDownloads();
-                if (downloads.Count(x=>x.Value.IsDownloading) == 0)
+                if (downloads.Count(x => x.Value.IsDownloading) == 0)
                 {
                     BackgroundTaskEngine.SubmitJobCompletion(DownloadingTask);
                     DownloadingTask = null;
@@ -4345,7 +4346,7 @@ namespace ME3TweaksModManager
 
         private void UpdateSelectedLaunchOption()
         {
-            if (SelectedGameTarget == null) 
+            if (SelectedGameTarget == null)
                 return;
 
             if (M3LoadedMods.Instance == null || !SelectedGameTarget.Game.IsLEGame())

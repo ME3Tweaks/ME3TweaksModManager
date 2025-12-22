@@ -544,103 +544,109 @@ namespace ME3TweaksModManager
 
                             break;
                         case @".hlsl":
-                            try
-                            {
-                                var fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") + @"x86\fxc.exe";
-                                if (!File.Exists(fxc))
-                                {
-                                    fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") +
-                                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
-                                }
-
-                                if (!File.Exists(fxc))
-                                {
-                                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir") + @"bin\" +
-                                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
-                                }
-
-                                if (!File.Exists(fxc))
-                                {
-                                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir_80") + @"bin\x86\fxc.exe";
-                                }
-
-                                if (!File.Exists(fxc))
-                                {
-                                    fxc = Environment.GetEnvironmentVariable("DXSDK_DIR") + @"Utilities\bin\x86\fxc.exe";
-                                }
-
-                                if (!File.Exists(fxc))
-                                {
-                                    M3Log.Warning("Could not find fxc - install a Windows SDK that contains FXC");
-                                    M3L.ShowDialog(this,
-                                        "Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.",
-                                        "FXC not found", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
-                                }
-
-                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Shader Compiler");
-                                var fname = Path.GetFileName(file);
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"ShaderCompile",
-                                    "Compiling shaders",
-                                    "Compiled shaders");
-                                nbw.DoWork += async (a, b) =>
-                                {
-                                    void progress(int done, int total)
-                                    {
-                                        int percent = (int)Math.Round(done * 100.0f / total);
-                                        BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task,
-                                            $"Compiling shaders {percent}%");
-                                    }
-
-                                    int total = files.Length;
-                                    int done = 0;
-                                    foreach (var f in files)
-                                    {
-                                        var isPixelShader = f.Contains("PixelShader",
-                                            StringComparison.OrdinalIgnoreCase);
-                                        var typeParam = isPixelShader ? "ps_5_0" : "vs_5_0";
-                                        var outPath = Path.Combine(Directory.GetParent(file).FullName, Path.GetFileNameWithoutExtension(f) + @".m3gs");
-                                        var cmd = Cli.Wrap(fxc)
-                                            .WithArguments($"/T {typeParam} /Fo \"{outPath}\" \"{f}\"")
-                                            .WithValidation(CommandResultValidation.None); // do not localize
-                                        await foreach (var cmdEvent in cmd.ListenAsync())
-                                        {
-                                            switch (cmdEvent)
-                                            {
-                                                case StartedCommandEvent started:
-                                                    M3Log.Information($@"FXC: Process started with id {started.ProcessId}");
-                                                    break;
-                                                case StandardOutputCommandEvent stdOut:
-                                                    M3Log.Information($@"FXC: {stdOut.Text}");
-                                                    break;
-                                                case StandardErrorCommandEvent stdErr:
-                                                    M3Log.Error($@"FXC: {stdErr.Text}");
-                                                    break;
-                                                case ExitedCommandEvent exited:
-                                                    M3Log.Information($@"FXC: Process exited with code {exited.ExitCode}");
-                                                    break;
-                                            }
-                                        }
-
-                                        done++;
-                                        progress(done, total);
-                                    }
-                                };
-                                nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
-                                nbw.RunWorkerAsync();
-                            }
-                            catch (Exception ex)
-                            {
-                                // Show dialog or something.
-                                M3Log.Exception(ex, $@"Error compiling shaders:");
-                            }
-
+                            ConvertHLSLToM3GS(files).ContinueWithOnUIThread(_ => { });
+                            // Do not loop; we handle it here.
+                            continueLoop = false;
                             break;
                         case BinaryTexturePackage.EXTENSION_TEXTURE_OVERRIDE_BINARY:
                             HandleBTPFileDrop(file);
                             break;
                     }
                 }
+            }
+        }
+
+        private async Task ConvertHLSLToM3GS(string[] files)
+        {
+            try
+            {
+                var fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") + @"x86\fxc.exe";
+                if (!File.Exists(fxc))
+                {
+                    fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") +
+                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
+                }
+
+                if (!File.Exists(fxc))
+                {
+                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir") + @"bin\" +
+                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
+                }
+
+                if (!File.Exists(fxc))
+                {
+                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir_80") + @"bin\x86\fxc.exe";
+                }
+
+                if (!File.Exists(fxc))
+                {
+                    fxc = Environment.GetEnvironmentVariable("DXSDK_DIR") + @"Utilities\bin\x86\fxc.exe";
+                }
+
+                if (!File.Exists(fxc))
+                {
+                    M3Log.Warning("Could not find fxc - install a Windows SDK that contains FXC");
+                    M3L.ShowDialog(this,
+                        "Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.",
+                        "FXC not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"ShaderCompile",
+                    "Compiling shaders",
+                    "Compiled shaders");
+
+                await Task.Run(async () =>
+                {
+                    void progress(int done, int total)
+                    {
+                        int percent = (int)Math.Round(done * 100.0f / total);
+                        BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task,
+                            $"Compiling shaders {percent}%");
+                    }
+
+                    int total = files.Length;
+                    int done = 0;
+                    foreach (var f in files)
+                    {
+                        var isPixelShader = f.Contains("PixelShader",
+                            StringComparison.OrdinalIgnoreCase);
+                        var typeParam = isPixelShader ? "ps_5_0" : "vs_5_0";
+                        var outPath = Path.Combine(Directory.GetParent(f).FullName, Path.GetFileNameWithoutExtension(f) + @".m3gs");
+                        var cmd = Cli.Wrap(fxc)
+                            .WithArguments($@"/T {typeParam} /Fo ""{outPath}"" ""{f}""")
+                            .WithValidation(CommandResultValidation.None);
+                        
+                        await foreach (var cmdEvent in cmd.ListenAsync())
+                        {
+                            switch (cmdEvent)
+                            {
+                                case StartedCommandEvent started:
+                                    M3Log.Information($@"FXC: Process started with id {started.ProcessId}");
+                                    break;
+                                case StandardOutputCommandEvent stdOut:
+                                    M3Log.Information($@"FXC: {stdOut.Text}");
+                                    break;
+                                case StandardErrorCommandEvent stdErr:
+                                    M3Log.Error($@"FXC: {stdErr.Text}");
+                                    break;
+                                case ExitedCommandEvent exited:
+                                    M3Log.Information($@"FXC: Process exited with code {exited.ExitCode}");
+                                    break;
+                            }
+                        }
+
+                        done++;
+                        progress(done, total);
+                    }
+                    M3Log.Information(@"Shader compile complete");
+                });
+
+                BackgroundTaskEngine.SubmitJobCompletion(task);
+            }
+            catch (Exception ex)
+            {
+                M3Log.Exception(ex, $@"Error compiling shaders:");
             }
         }
 
