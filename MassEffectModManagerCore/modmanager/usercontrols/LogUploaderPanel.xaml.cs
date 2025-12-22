@@ -190,7 +190,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 if (b.Error == null && b.Result is LogUploadPackage lup)
                 {
-                    if (false && lup.Response.StartsWith(@"http"))
+                    if (lup.Response.StartsWith(@"https"))
                     {
                         M3Utilities.OpenWebpage(lup.Response);
                     }
