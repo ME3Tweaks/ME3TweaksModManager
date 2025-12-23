@@ -21,8 +21,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static string GetHeader()
         {
-            // todo: change this to unicode.
-            return @"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\fs18";
+            return @"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\fs18 "; // Must contain space on the end
         }
 
         public static string GetFooter()
