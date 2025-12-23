@@ -40,6 +40,7 @@
             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
             BorderThickness="1"
             IsTextSearchEnabled="True"
+            TextSearch.TextPath="ModName"
             Tag="{Binding DataContext}">
             <ListBox.ItemTemplate>
                 <DataTemplate
