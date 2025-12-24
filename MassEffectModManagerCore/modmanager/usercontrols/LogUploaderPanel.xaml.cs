@@ -183,7 +183,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     UpdateStatusCallback = updateStatusCallback
                 };
 
-                b.Result = LogCollector.SubmitDiagnosticLog(package);
+                b.Result = LogCollector.SubmitDiagnosticLogAsync(package).Result;
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
