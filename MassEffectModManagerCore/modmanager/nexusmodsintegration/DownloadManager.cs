@@ -129,8 +129,15 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     // remove the event
                     dl.IsDuplicate = true;
                     dl.DownloadStateChanged += DownloadStateChanged;
-                    dl.DownloadState = EModDownloadState.FAILED; // Will remove download
-                    dl.DownloadStateChanged -= DownloadStateChanged;
+                    try
+                    {
+                        dl.DownloadState = EModDownloadState.FAILED; // Will remove download
+                    }
+                    finally
+                    {
+                        // If setting state triggers exception we still want this to run
+                        dl.DownloadStateChanged -= DownloadStateChanged;
+                    }
                     return dl;
                 }
 
@@ -181,9 +188,9 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
                 // Attempt to a new start download, as states have changed.
                 if (item.DownloadState is EModDownloadState.QUEUED or EModDownloadState.FINISHED or EModDownloadState.FAILED)
-                {    
+                {
                     TryStartDownload();
-                 
+
                     // refresh bindings
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -260,7 +267,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             if (sender is ModArchiveImport mai)
             {
                 // Poor performance for how much progress will be called. We should probably use a lookup or simply cache the variable.
-                var md = Downloads.FirstOrDefault(x => x.Value.ImportFlow == mai).Value;
+                var md = Downloads.FirstOrDefault(x => x.Value != null && x.Value.ImportFlow == mai).Value;
                 if (md != null)
                 {
                     // Debug.WriteLine($@"ImportProgress: {e.AmountCompleted}/{e.TotalAmount} IsIndeterminate: {e.IsIndeterminate}");
@@ -417,24 +424,13 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// <param name="downloadedMod"></param>
         public static void RemoveDownload(ModDownload downloadedMod)
         {
-            if (downloadedMod.IsDuplicate)
-            {
-                var kvp = Downloads.FirstOrDefault(x => x.Value == downloadedMod);
-                if (kvp.Key != null && Downloads.TryRemove(kvp.Key, out _))
-                {
-                    {
-                        M3Log.Information($@"Duplicate download was removed: {downloadedMod.CreateDownloadKey()}");
-                        OnDownloadRemoved?.Invoke(downloadedMod, EventArgs.Empty);
-                    }
-                }
-
-                return;
-            }
-
+            DisassociateDownload(downloadedMod);
+            
+            // Duplicates are never in the dictionary, so just try to remove by key
             var key = downloadedMod.CreateDownloadKey();
             if (Downloads.TryRemove(key, out _))
             {
-                M3Log.Information($@"Download was removed: {downloadedMod.CreateDownloadKey()}");
+                M3Log.Information($@"Download was removed: {key}");
                 OnDownloadRemoved?.Invoke(downloadedMod, EventArgs.Empty);
             }
         }
