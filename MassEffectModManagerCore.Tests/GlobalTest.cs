@@ -69,8 +69,9 @@ namespace ME3TweaksModManager.Tests
                 //BackupService.RefreshBackupStatus(null); // used in mixin testing
 
                 CombinedServiceData = JsonConvert.DeserializeObject<JToken>(MOnlineContent.FetchRemoteString(M3ServiceLoader.CombinedServiceFetchURL.MainURL));
-
+#if AZURE
                 App.ExecutableLocation = Path.Combine(TestDataPath, "Executable", "ME3TweaksModManager.exe");
+#endif
                 Directory.CreateDirectory(Directory.GetParent(App.ExecutableLocation).FullName); // For faking 
                 initialized = true;
             }
