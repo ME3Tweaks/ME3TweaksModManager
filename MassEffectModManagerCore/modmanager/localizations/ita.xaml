@@ -518,10 +518,10 @@
 	<system:String x:Key="string_interp_im3v_missingRequiredImageParameter">Il parametro immagine necessario '{1}' manca da {0}.</system:String>
 	<system:String x:Key="string_interp_im3v_nonExistentImageReference">{0} fa riferimento all'assetto immagine {1}, ma questo file non esiste all'interno del percorso M3Images.</system:String>
 	<system:String x:Key="string_importAnInstalledDLCMod">Importa una Mod DLC installata</system:String>
-	<system:String x:Key="string_description_importFromGameToModManager">Puoi importare una mod da una installazione del gioco dentro il Mod Manager usando questo importer, che ti permetterà di installare la mod in seguito in modo facile e veloce. Le mod importate in questo modo non supportano opzioni di configurazione, aggiornamenti e altre funzioni del Mod Manager. Importa le mod da archivi per il supporto completo delle funzioni.</system:String>
-	<system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mod che sono state installate tramite un installer gestito (come Mod Manager o l'ALOT Installer) non possono essere importate tramite questo importer.</system:String>
+	<system:String x:Key="string_description_importFromGameToModManager">Puoi importare una mod da una installazione del gioco nel Mod Manager con questo importer, che ti permetterà di installarla in seguito in modo facile e veloce. Le mod importate in questo modo non supportano opzioni di configurazione, aggiornamenti o altre funzioni del Mod Manager. Importa le mod dai loro archivi per avere supporto completo.</system:String>
+	<system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Le mod che sono state installate tramite un managed installer (come Mod Manager o l'ALOT Installer) non possono essere importate tramite questo importer.</system:String>
 	<system:String x:Key="string_importMod">Importa mod</system:String>
-	<system:String x:Key="string_thisInstallationHasBeenTextureModded">Questa installazione ha texture moddate</system:String>
+	<system:String x:Key="string_thisInstallationHasBeenTextureModded">Questa installazione ha subito modifiche alle texture</system:String>
 	<system:String x:Key="string_cannotImportModsFromTextureModdedTarget">Non puoi importare mod dall'installazione di un gioco che ha delle Texture Mod installate.</system:String>
 	<system:String x:Key="string_thisModHasNotBeenCatalogedByME3TweaksYet">Questa mod non è ancora stata catalogata da ME3Tweaks</system:String>
 	<system:String x:Key="string_pleaseEnterModInfoForTPMI">Questa mod non sembra essere parte del Servizio Identificazione Mod di Terze Parti del Mod Manager (TPMI in inglese). Questo servizio aiuta utenti e sviluppatori a identificare le mod nel Mod Manager e in altri strumenti. Per favore inserisci le informazioni seguenti, verranno inviate a ME3Tweaks per la revisione prima che la mod venga aggiunta al servizio TPMI.</system:String>
@@ -603,7 +603,7 @@
 	<system:String x:Key="string_restoreMPSfarsQuestion">Ripristinare tutti i file SFAR del multiplayer modificati?</system:String>
 	<system:String x:Key="string_interp_backupAtX">Backup in {0}</system:String>
 	<system:String x:Key="string_noBackupForThisGame">Nessun backup per questo gioco</system:String>
-	<system:String x:Key="string_interp_cannotDeleteModsWhileXIsRunning">Impossibile elminare le mod mentre {0} è aperto.</system:String>
+	<system:String x:Key="string_interp_cannotDeleteModsWhileXIsRunning">Impossibile eliminare le mod mentre {0} è aperto.</system:String>
 	<system:String x:Key="string_interp_deletingXwhileTexturesInstalled" xml:space="preserve">L'eliminazione di {0}, mentre le Texture Mod sono installate, non causerà l'interruzione del gioco, tuttavia non sarà possibile installare ulteriori Texture Mod senza un ripristino dal backup o una completa eliminazione e reinstallazione del gioco.\n\nSei sicuro di voler eliminare questa Mod DLC?</system:String>
 	<system:String x:Key="string_deletingWillPutGameInUnsupportedConfig">L'eliminazione porterà il gioco in una configurazione non supportata.</system:String>
 	<system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">Rimuovere {0} dalla installazione del gioco?</system:String>
@@ -1054,13 +1054,13 @@
 	<system:String x:Key="string_rcwModsCannotBeDeployed">Impossibile distribuire mod .me2mod con il Mod Manager</system:String>
 	<system:String x:Key="string_rcwModsCannotBeDeployedDescription">Le mod RCW (.me2mod) non possono essere distribuite con il Mod Manager. I file RCW .me2mod possono essere distribuiti direttamente, e il Mod Manager può importarli direttamente.</system:String>
 	<system:String x:Key="string_cannotDeployMe2modFiles">Impossibile distribuire file .me2mod</system:String>
-	<system:String x:Key="string_decompilingCoalescedFile">Decompilazione del file Coalesced</system:String>
+	<system:String x:Key="string_decompilingCoalescedFile">Decompilazione del file Coalesced in corso</system:String>
 	<system:String x:Key="string_decompiledCoalescedFile">File Coalesced decompilato</system:String>
-	<system:String x:Key="string_compilingCoalescedFile">Compilazione del file Coalesced</system:String>
+	<system:String x:Key="string_compilingCoalescedFile">Compilazione del file Coalesced in corso</system:String>
 	<system:String x:Key="string_compiledCoalescedFile">File Coalesced compilato</system:String>
-	<system:String x:Key="string_compilingTLKFile">Compilazione del file TLK</system:String>
+	<system:String x:Key="string_compilingTLKFile">Compilazione del file TLK in corso</system:String>
 	<system:String x:Key="string_compiledTLKFile">File TLK compilato</system:String>
-	<system:String x:Key="string_decompilingTLKFile">Decompilazione del file TLK</system:String>
+	<system:String x:Key="string_decompilingTLKFile">Decompilazione del file TLK in corso</system:String>
 	<system:String x:Key="string_decompiledTLKFile">File TLK decompilato</system:String>
 	<system:String x:Key="string_tooltip_me1ASILoader">Abilita il caricamento delle Mod ASI, il quale abilita l'override del caricamento delle Mod DLC</system:String>
 	<system:String x:Key="string_tooltip_me23ASILoader">Abilita i DLC modificati, abilita la console, abilita il funzionamento delle Mod ASI</system:String>
@@ -1841,7 +1841,7 @@
 	<system:String x:Key="string_finalizingMod">Finalizzazione della mod in corso</system:String>
 	<system:String x:Key="string_enterModMakerModCodeOrSelectFromTheTopMods">Inserisci il codice della mod del ModMaker o selezionala dalle mod più famose</system:String>
 	<system:String x:Key="string_downloadingModDeltaFromME3Tweaks">Scaricamento della mod delta da ME3Tweaks</system:String>
-	<system:String x:Key="string_dialog_me3tweaksModMakerRequiresBackup">ME3Tweaks ModMaker richiede un backup di Mass Effect 3 per funzionare. Un backup non modificato del gioco non è stato trovato.</system:String>
+	<system:String x:Key="string_dialog_me3tweaksModMakerRequiresBackup">ME3Tweaks ModMaker richiede un backup di Mass Effect 3 per funzionare. Non è stato trovato nessun backup non modificato del gioco.</system:String>
 	<system:String x:Key="string_noBackupAvailable">Nessun backup disponibile</system:String>
 	<system:String x:Key="string_description_modmakerOnlineModCreationTool">ME3Tweaks ModMaker è uno strumento online per la creazione di mod per Mass Effect 3. Puoi creare mod tramite una interfaccia punta e clicca facile da usare e ti permette di modificare migliaia di script e variabili del gameplay.</system:String>
 	<system:String x:Key="string_openME3TweaksModMaker">Apri ME3TWeaks ModMaker</system:String>
@@ -1853,12 +1853,12 @@
 	<system:String x:Key="string_downloadAborted">Download annullato</system:String>
 	<system:String x:Key="string_compile">Compila</system:String>
 	<system:String x:Key="string_selectAModMakerXmlFile">Seleziona un file xml del ModMaker</system:String>
-	<system:String x:Key="string_useLocalFileInstead">Usa altrimenti file locali</system:String>
+	<system:String x:Key="string_useLocalFileInstead">Usa file locali</system:String>
 	<system:String x:Key="string_selectModMakerModXmlFile">Seleziona file xml della mod del ModMaker</system:String>
 	<system:String x:Key="string_modMakerXMLFiles">File xml del ModMaker</system:String>
-	<system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Aggiunge i Mixin per assicurare le corrette funzionalità della Controller Mod, come il movimento corretto dellla telecamera, se la mod modifica gli stessi file delle mod per il Controller.&#10;Non selezionarlo se non usi una mod per il supporto al Controller. Quando usi questa impostazione, installa questa mod DOPO aver installato una mod per il supporto del Controller</system:String>
-	<system:String x:Key="string_addControllerSupportMixinsIfNecessary">Aggiunge i Mixin di supporto per il Controller, se necessario</system:String>
-	<system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Usa altrimenti un file xml del ModMaker locale</system:String>
+	<system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Aggiunge Mixin per assicurare le corrette funzionalità di mod per il Controller, come il movimento corretto della telecamera, se la mod modifica gli stessi file di mod di quel tipo.&#10;Non selezionarlo se non usi mod per il Controller. Quando usi questa impostazione, installa questa mod DOPO aver installato una mod di quel tipo.</system:String>
+	<system:String x:Key="string_addControllerSupportMixinsIfNecessary">Aggiungi i Mixin di supporto per il Controller, se necessario</system:String>
+	<system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Usa piuttosto un file xml del ModMaker locale</system:String>
 	<system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Inietta automaticamente un file BioInput.xml modificato nella cartella keybindsoverride, se disponibile.&#10;Definisci delle associazioni di tasti personalizzate nell'Iniettore di Associazioni di Tasti Personalizzate nel menu Strumenti.</system:String>
 	<system:String x:Key="string_injectCustomKeybindsIfAvailable">Inietta associazioni di tasti personalizzate (se disponibile)</system:String>
 	<system:String x:Key="string_nxm_interp_handlerProgramDoesNotExist">Impossibile evocare il gestore per il dominio {0}: l'applicazione specificata {1} non esiste</system:String>
@@ -1874,7 +1874,7 @@
 	<system:String x:Key="string_searching">Ricerca in corso...</system:String>
 	<system:String x:Key="string_goToModPage">Vai alla pagina della mod</system:String>
 	<system:String x:Key="string_interp_lastIndexing">Ultimo file indicizzato: {0}, ultima mod indicizzata: {1}</system:String>
-	<system:String x:Key="string_interp_resultsCount">{0} risultati(o)</system:String>
+	<system:String x:Key="string_interp_resultsCount">{0} risultati</system:String>
 	<system:String x:Key="string_tooltip_downloadThisMod">Scarica questa mod</system:String>
 	<system:String x:Key="string_tooltip_premiumRequiredForDownload">Devi essere un utente premium di NexusMods per scaricare direttamente con il Mod Manager</system:String>
 	<system:String x:Key="string_tooltip_nexusfilesqueryAllLE">A causa del modo in cui NexusMods memorizza i file non è possibile individuare accuratamente a quale gioco appartiene il file di una mod.&#10;Usa questa opzione per cercare tutti i file per la LE.</system:String>
