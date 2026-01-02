@@ -143,7 +143,9 @@
                             HorizontalContentAlignment="Stretch"
                             HorizontalAlignment="Stretch"
                             AlternationCount="2"
-                            Padding="0">
+                            Padding="0"
+                            VirtualizingPanel.ScrollUnit="Pixel"
+                            ScrollViewer.CanContentScroll="True">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate
                                     DataType="{x:Type gametarget:M3InstalledDLCMod}">
@@ -317,6 +319,7 @@
                             HorizontalAlignment="Stretch"
                             AlternationCount="2"
                             VirtualizingStackPanel.IsVirtualizing="True"
+                            VirtualizingPanel.ScrollUnit="Pixel"
                             ScrollViewer.CanContentScroll="True">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate
@@ -394,7 +397,7 @@
                             </ItemsControl.Template>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <VirtualizingStackPanel />
+                                    <VirtualizingStackPanel/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
@@ -653,7 +656,9 @@
                                TextWrapping="Wrap"/>-->
                                 <ItemsControl
                                     ItemsSource="{Binding TextureInstallHistory}"
-                                    Visibility="{Binding TextureInstallHistory.BindableCount, Converter={StaticResource NonEqualIntVisibilityConverter}, ConverterParameter=0}">
+                                    Visibility="{Binding TextureInstallHistory.BindableCount, Converter={StaticResource NonEqualIntVisibilityConverter}, ConverterParameter=0}"
+                                    VirtualizingPanel.ScrollUnit="Pixel"
+                                    ScrollViewer.CanContentScroll="True">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate
                                             DataType="{x:Type targets:TextureModInstallationInfo}">
