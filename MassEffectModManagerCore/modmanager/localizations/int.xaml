@@ -857,7 +857,7 @@
     <system:String x:Key="string_noReferenceIssuesWereDetected">No reference issues were detected</system:String>
     <system:String x:Key="string_referencesCheckDetectedIssues">References check detected issues</system:String>
     <system:String x:Key="string_modsNotInThirdPartyIdentificationService">Mod(s) not in Third Party Identification Service</system:String>
-    <system:String x:Key="string_interp_infoModNameTooLong">The mod name '{0}' is more than 40 characters long ({1} characters). Consider shortening the name of this mod so it can be easily read by the user in the mod library.</system:String>
+    <system:String x:Key="string_interp_infoModNameTooLong">The mod name '{0}' is more than 35 characters long ({1} characters). Consider shortening the name of this mod so it can be easily read by the user in the mod library.</system:String>
     <!-- 0={ModName} 1={integer} -->
     <system:String x:Key="string_interp_fatalMissingNeverstreamFlag">{0} texture {1} {2} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If texture LODs are raised, this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.</system:String>
     <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
