@@ -345,11 +345,18 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                                                GameId = (int)e.Attribute(@"game"),
                                                versionstr = (string)e.Attribute(@"version"),
                                                UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute(@"updated_timestamp")).DateTime,
-                                               changelog = (string)e.Attribute(@"changelog") // This will be null if not set
+                                               changelog = (string)e.Attribute(@"changelog"), // This will be null if not set
+                                               status = (string)e.Attribute(@"status")
                                            }).ToList();
-                modUpdateInfos.AddRange(nexusModsUpdateInfo);
+                modUpdateInfos.AddRange(nexusModsUpdateInfo.Where(x=>x.status == "published"));
+#if DEBUG
+                foreach(var np in nexusModsUpdateInfo.Where(x => x.status != "published"))
+                {
+                    M3Log.Information($@"Mod was filtered out from updates: {np.NexusModsId} - {np.status}");
+                }
+#endif
 
-                #endregion
+#endregion
                 return modUpdateInfos;
             }
             catch (Exception e)
@@ -589,6 +596,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         [Localizable(true)]
         public class NexusModUpdateInfo : ModUpdateInfo
         {
+            /// <summary>
+            /// The status as listed on the NexusMods API
+            /// </summary>
+            public string status { get; set; }
 
             public NexusModUpdateInfo()
             {
