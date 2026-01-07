@@ -137,9 +137,9 @@
                                 Value="{Binding CurrentBytesDownloaded}"
                                 IsIndeterminate="{Binding Indeterminate}" />
                         </Grid>
-                        <TextBlock
+                        <usercontrols:TextShorteningToggle
                             Text="{Binding changelog}"
-                            TextWrapping="Wrap" />
+                            CollapsedMaxHeight="80"/>
                         <Expander
                             x:Name="ftl_Expander"
                             Header="{Binding FilesToDownloadUIString}"
@@ -350,12 +350,12 @@
                             Maximum="{Binding DownloadFlow.ProgressMaximum, Mode=OneWay}"
                             Value="{Binding DownloadFlow.ProgressValue, Mode=OneWay}"
                             IsIndeterminate="{Binding DownloadFlow.ProgressIndeterminate, Mode=OneWay}" />
-                        <TextBlock
+                        <usercontrols:TextShorteningToggle
                             Text="{Binding changelog}"
                             Grid.Row="5"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
-                            TextWrapping="Wrap" />
+                            CollapsedMaxHeight="80"/>
                     </Grid>
                     <DataTemplate.Triggers>
                         <Trigger
