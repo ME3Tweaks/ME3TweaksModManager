@@ -10,7 +10,11 @@ namespace AdonisUI
     {
         public static ComponentResourceKey AdonisUI => new ComponentResourceKey(typeof(Icons), "AdonisUI");
 
+        public static ComponentResourceKey AdonisUIFull => new ComponentResourceKey(typeof(Icons), "AdonisUIFull");
+
         public static ComponentResourceKey AdonisUIGrayscale => new ComponentResourceKey(typeof(Icons), "AdonisUIGrayscale");
+
+        public static ComponentResourceKey AdonisUIDarkFull => new ComponentResourceKey(typeof(Icons), "AdonisUIDarkFull");
 
         public static ComponentResourceKey Error => new ComponentResourceKey(typeof(Icons), "Error");
 
