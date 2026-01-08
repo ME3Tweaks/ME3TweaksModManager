@@ -12,6 +12,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using SevenZip;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -38,8 +39,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowWelcomePanel_MenuItem)) ShowWelcomePanel_Click(window);
             if (sender == nameof(MainWindow.ShowBGFISDB_MenuItem)) ShowBGFISDB_Click(window);
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
+            if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
 #endif
         }
+
 #if DEBUG
 
         private static void TriggerBTPBuild(MainWindow window)
@@ -280,6 +283,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static void TestCode_Click(MainWindow mw)
         {
+
+        }
+
+        private static void ShowXceedDialog(MainWindow window)
+        {
+            // Used to test theming
+            Task.Run(() =>
+            {
+                Thread.Sleep(200);
+            }).ContinueWithOnUIThread(x =>
+            {
+                M3L.ShowDialog(window, @"This is a test dialog", @"Test dialog", System.Windows.MessageBoxButton.YesNoCancel, System.Windows.MessageBoxImage.Warning);
+            });
 
         }
 #endif
