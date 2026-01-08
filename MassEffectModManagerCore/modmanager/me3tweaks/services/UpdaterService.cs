@@ -345,11 +345,32 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                                                GameId = (int)e.Attribute(@"game"),
                                                versionstr = (string)e.Attribute(@"version"),
                                                UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute(@"updated_timestamp")).DateTime,
-                                               changelog = (string)e.Attribute(@"changelog") // This will be null if not set
+                                               changelog = (string)e.Attribute(@"changelog"), // This will be null if not set
+                                               status = (string)e.Attribute(@"status")
                                            }).ToList();
-                modUpdateInfos.AddRange(nexusModsUpdateInfo);
 
-                #endregion
+//                foreach(var i in  nexusModsUpdateInfo)
+//                {
+//                    i.changelog = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mollis, urna in porta ultrices, tellus augue dignissim dui, at pharetra augue orci vel lacus. Maecenas id faucibus justo. Morbi lobortis magna nec orci mollis accumsan. In urna tortor, euismod ac purus id, scelerisque luctus nibh. In in rutrum ex. Donec a mauris tortor. Fusce rhoncus ex at magna pulvinar finibus sed et ex.
+
+//Cras vitae efficitur dui, sit amet mattis est. Duis non augue vitae sem imperdiet condimentum non vitae ex. Mauris sed ipsum ac nisl interdum pretium nec eget odio. Maecenas scelerisque dapibus consequat. Duis nunc ligula, feugiat ullamcorper ligula vitae, lobortis ornare ante. Vestibulum aliquam bibendum lacus, eget cursus ligula sollicitudin et. Fusce ante ante, sollicitudin vitae augue condimentum, tristique imperdiet nisi. Sed purus ipsum, finibus a dignissim malesuada, tempor non massa. Interdum et malesuada fames ac ante ipsum primis in faucibus. Praesent a eleifend tellus. Cras gravida ex vel lorem mattis lacinia. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc at auctor nunc. Suspendisse tempus id est vel gravida. Quisque bibendum dignissim auctor.
+
+//Mauris eget congue dolor, id placerat nisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed iaculis tincidunt massa, eu auctor massa imperdiet at. Cras sem tellus, tempor ut ante ut, aliquet vestibulum dui. Aenean vulputate nulla eu eleifend varius. Pellentesque iaculis enim sit amet lacus accumsan placerat. Aenean sit amet justo quam. Proin ut diam non purus sodales imperdiet a non leo.
+
+//Suspendisse accumsan metus ut consequat euismod. Mauris scelerisque tortor sit amet diam sodales, sit amet porttitor lectus fermentum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent egestas massa ac est tempus gravida. Quisque nisi urna, sollicitudin vel tempus ac, semper quis mauris. Curabitur tristique sapien quis arcu condimentum venenatis. Proin maximus cursus iaculis. Pellentesque sagittis accumsan tincidunt. Vestibulum nunc lorem, ullamcorper non augue et, dapibus dignissim nisi. Donec sit amet diam eget ante consectetur scelerisque.
+
+//Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nam ut metus nibh. Aenean elementum, purus eu viverra gravida, odio augue commodo urna, nec feugiat libero metus vel nulla. Sed rhoncus sapien eu ligula interdum, in luctus nulla molestie. In egestas ac odio nec lacinia. Quisque hendrerit vel urna sed dignissim. Sed vel nulla nec ligula aliquam imperdiet sed imperdiet mi. In hac habitasse platea dictumst. Phasellus eleifend risus vel mauris tincidunt, nec lacinia nisl egestas. ";
+//                }
+
+                modUpdateInfos.AddRange(nexusModsUpdateInfo.Where(x=>x.status == "published"));
+#if DEBUG
+                foreach(var np in nexusModsUpdateInfo.Where(x => x.status != "published"))
+                {
+                    M3Log.Information($@"Mod was filtered out from updates: {np.NexusModsId} - {np.status}");
+                }
+#endif
+
+#endregion
                 return modUpdateInfos;
             }
             catch (Exception e)
@@ -589,6 +610,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         [Localizable(true)]
         public class NexusModUpdateInfo : ModUpdateInfo
         {
+            /// <summary>
+            /// The status as listed on the NexusMods API
+            /// </summary>
+            public string status { get; set; }
 
             public NexusModUpdateInfo()
             {

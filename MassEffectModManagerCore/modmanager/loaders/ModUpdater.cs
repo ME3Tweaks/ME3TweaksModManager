@@ -112,9 +112,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 //Calculate NEXUSMOD Updates
                 foreach (var mm in updatableMods.Where(x => x.NexusModID > 0 && x.ModClassicUpdateCode == 0)) //check zero as Mgamerz's mods will list me3tweaks with a nexus code still for integrations
                 {
-                    var matchingUpdateInfoForMod = updateManifestModInfos.OfType<M3OnlineContent.NexusModUpdateInfo>().FirstOrDefault(x => x.NexusModsId == mm.NexusModID
-                                                                                                                                   && M3Utilities.GetGameFromNumber(x.GameId) == mm.Game
-                                                                                                                                   && updates.All(y => !y.mod.Equals(x.mod)));
+                    var matchingUpdateInfoForMod = updateManifestModInfos.OfType<M3OnlineContent.NexusModUpdateInfo>().FirstOrDefault(x => x.NexusModsId == mm.NexusModID);
                     if (matchingUpdateInfoForMod != null)
                     {
                         if (Version.TryParse(matchingUpdateInfoForMod.versionstr, out var serverVer))
@@ -126,7 +124,6 @@ namespace ME3TweaksModManager.modmanager.loaders
                                 updates.Add(clonedInfo);
                                 clonedInfo.SetLocalizedInfo();
                                 M3Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
-
                             }
                         }
                         else
