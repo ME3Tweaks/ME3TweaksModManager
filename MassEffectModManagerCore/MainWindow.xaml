@@ -1438,6 +1438,10 @@
                         Name="DebugPrintInstallationQueue_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
+                        Header="Trigger BTP build on mod folder (installed)"
+                        Name="TriggerBTPBuild_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
                         Header="{DynamicResource string_requiresSelectedTarget}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem
@@ -1500,9 +1504,9 @@
                         Name="Test7z_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Trigger BTP build on mod folder (installed)"
-                        Name="TriggerBTPBuild_MenuItem"
-                        Click="RouteDebugCall" />
+                        Header="Show test dialog"
+                        Name="ShowXceedDialog_MenuItem"
+                        Click="RouteDebugCall"/>
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
