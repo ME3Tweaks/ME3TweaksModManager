@@ -8,10 +8,10 @@ using System.Diagnostics;
 
 namespace IniParser.Parser
 {
-	/// <summary>
-	/// 	Responsible for parsing an string from an ini file, and creating
-	/// 	an <see cref="IniData"/> structure.
-	/// </summary>
+    /// <summary>
+    /// 	Responsible for parsing an string from an ini file, and creating
+    /// 	an <see cref="IniData"/> structure.
+    /// </summary>
     public class IniDataParser
     {
         #region Private
@@ -70,9 +70,9 @@ namespace IniParser.Parser
         /// </remarks>
 
         public ReadOnlyCollection<Exception> Errors {get {return _errorExceptions.AsReadOnly();} }
-		#endregion
+        #endregion
 
-		#region Operations
+        #region Operations
 
         /// <summary>
         ///     Parses a string containing valid ini data
@@ -89,7 +89,7 @@ namespace IniParser.Parser
         /// </exception>
         public IniData Parse(string iniDataString)
         {
-            
+
             IniData iniData = Configuration.CaseInsensitive ? new IniDataCaseInsensitive() : new IniData();
             iniData.Configuration = this.Configuration.Clone();
 
@@ -113,12 +113,12 @@ namespace IniParser.Parser
 
                     try
                     {
-                        ProcessLine(line, iniData);
+                        ProcessLine(lines, ref lineNumber, iniData);
                     }
                     catch (Exception ex)
                     {
                         var errorEx = new ParsingException(ex.Message, lineNumber+1, line, ex);
-                        if (Configuration.ThrowExceptionsOnError) 
+                        if (Configuration.ThrowExceptionsOnError)
                         {
                             throw errorEx;
                         }
@@ -141,13 +141,13 @@ namespace IniParser.Parser
                     }
                     // No sections, put the comment in the last key value pair
                     // but only if the ini file contains at least one key-value pair
-                    else if (iniData.Global.Count > 0) 
+                    else if (iniData.Global.Count > 0)
                     {
                         iniData.Global.GetLast().Comments
                             .AddRange(_currentCommentListTemp);
                     }
-                    
-                    
+
+
                     _currentCommentListTemp.Clear();
                 }
 
@@ -155,8 +155,8 @@ namespace IniParser.Parser
             catch(Exception ex)
             {
                 _errorExceptions.Add(ex);
-                if (Configuration.ThrowExceptionsOnError) 
-                { 
+                if (Configuration.ThrowExceptionsOnError)
+                {
                     throw;
                 }
             }
@@ -175,7 +175,7 @@ namespace IniParser.Parser
         // Probably for the most common cases you can change the parsing behavior
         //  using a custom configuration object rather than creating derived classes.
         // See IniParserConfiguration interface, and IniDataParser constructor
-		//  to change the default configuration.
+        //  to change the default configuration.
 
         /// <summary>
         ///     Checks if a given string contains a comment.
@@ -188,7 +188,7 @@ namespace IniParser.Parser
         /// </returns>
         protected virtual bool LineContainsAComment(string line)
         {
-            return !string.IsNullOrEmpty(line) 
+            return !string.IsNullOrEmpty(line)
                 && Configuration.CommentRegex.Match(line).Success;
         }
 
@@ -203,7 +203,7 @@ namespace IniParser.Parser
         /// </returns>
         protected virtual bool LineMatchesASection(string line)
         {
-            return !string.IsNullOrEmpty(line) 
+            return !string.IsNullOrEmpty(line)
                 && Configuration.SectionRegex.Match(line).Success;
         }
 
@@ -241,12 +241,13 @@ namespace IniParser.Parser
         }
 
         /// <summary>
-        ///     Processes one line and parses the data found in that line
+        ///     Processes one line and parses the data found in that line. If the data is a list that spans multiple lines, it will process all those lines.
         ///     (section or key/value pair who may or may not have comments)
         /// </summary>
-        /// <param name="currentLine">The string with the line to process</param>
-        protected virtual void ProcessLine(string currentLine, IniData currentIniData)
+        /// <param name="lineNumber">The current lineNumber to process. If multiple lines are processed, it will be set to the last processed line.</param>
+        protected virtual void ProcessLine(string[] lines, ref int lineNumber, IniData currentIniData)
         {
+            string currentLine = lines[lineNumber];
             currentLine = currentLine.Trim();
 
             // Extract comments from current line and store them in a tmp field
@@ -280,7 +281,7 @@ namespace IniParser.Parser
             //Process keys
             if (LineMatchesAKeyValuePair(currentLine))
             {
-                ProcessKeyValuePair(currentLine, currentIniData);
+                ProcessKeyValuePair(currentLine, lines, ref lineNumber, currentIniData);
                 return;
             }
 
@@ -341,14 +342,14 @@ namespace IniParser.Parser
         /// <param name="line">
         ///     The string to be processed
         /// </param>
-        protected virtual void ProcessKeyValuePair(string line, IniData currentIniData)
+        protected virtual void ProcessKeyValuePair(string line, string[] lines, ref int lineNumber, IniData currentIniData)
         {
             // get key and value data
             string key = ExtractKey(line);
 
-			if (string.IsNullOrEmpty(key) && Configuration.SkipInvalidLines) return;
+            if (string.IsNullOrEmpty(key) && Configuration.SkipInvalidLines) return;
 
-            string value = ExtractValue(line);
+            string value = ExtractValue(line, lines, ref lineNumber);
 
             // Check if we haven't read any section yet
             if (string.IsNullOrEmpty(_currentSectionNameTemp))
@@ -387,17 +388,64 @@ namespace IniParser.Parser
         /// <summary>
         ///     Extracts the value portion of a string containing a key/value pair..
         /// </summary>
-        /// <param name="s">
-        ///     The string to be processed, which contains a key/value pair
-        /// </param>
         /// <returns>
         ///     The name of the extracted value.
         /// </returns>
-        protected virtual string ExtractValue(string s)
+        protected virtual string ExtractValue(string firstLine, string[] lines, ref int lineNumber)
         {
-            int index = s.IndexOf(Configuration.KeyValueAssigmentChar, 0);
+            int index = firstLine.IndexOf(Configuration.KeyValueAssigmentChar, 0);
 
-            return s.Substring(index + 1, s.Length - index - 1).Trim();
+            string value = firstLine.Substring(index + 1, firstLine.Length - index - 1).Trim();
+
+            if (value.Length is 0 || value[0] != '(')
+            {
+                return value;
+            }
+
+            // potential multi-line value
+            int firstLineNumber = lineNumber;
+            int openParens = 0;
+            bool inQuotes = false;
+            string currentLine = value;
+            value = "";
+            while (true)
+            {
+                for (var i = 0; i < currentLine.Length; i++)
+                {
+                    switch (currentLine[i])
+                    {
+                        case '(' when inQuotes is false:
+                            openParens++;
+                            break;
+                        case ')' when inQuotes is false:
+                            openParens--;
+                            break;
+                        case '\"':
+                            inQuotes = !inQuotes;
+                            break;
+                    }
+                }
+                if (inQuotes)
+                {
+                    throw new ParsingException("Strings must be terminated on the same line.", lineNumber + 1, firstLine);
+                }
+                value += currentLine.Trim();
+                if (openParens <= 0)
+                {
+                    return value;
+                }
+                lineNumber++;
+                if (lineNumber >= lines.Length)
+                {
+                    throw new ParsingException("Unterminated multi-line value", firstLineNumber + 1, firstLine);
+                }
+                currentLine = lines[lineNumber];
+                // comments will be associated with the whole kvp unfortunately
+                if (LineContainsAComment(currentLine))
+                {
+                    currentLine = ExtractComment(currentLine);
+                }
+            }
         }
 
         /// <summary>
