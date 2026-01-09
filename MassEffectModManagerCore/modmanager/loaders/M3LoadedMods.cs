@@ -489,6 +489,16 @@ namespace ME3TweaksModManager.modmanager.loaders
                     }
                 }
 
+#if DEBUG
+                while (AllLoadedMods.Count < 30)
+                {
+                    var m = new Mod(MEGame.LE1);
+                    m.ModName = @"Debug Name";
+                    m.ModDescription = @"Debug Placeholder";
+                    AllLoadedMods.Add(m);
+                }
+#endif
+
                 // Ensure nothing is set to loading.
                 foreach (var gf in Instance.GameFilters)
                 {

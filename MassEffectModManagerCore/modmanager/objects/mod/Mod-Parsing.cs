@@ -675,6 +675,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
         }
 
+#if DEBUG
+        /// <summary>
+        /// DEBUG ONLY - empty constructor
+        /// </summary>
+        public Mod(MEGame game) { Game = game; }
+#endif
         private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp", @".usf", @".isb" };
 
         /// <summary>
@@ -963,7 +969,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
 
             //This was in Java version - I believe this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
-            ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
+            // This also fixes double rounding hopefully
+            ModDescTargetVersion = ModFileFormats.NormalizeModescVersion(ModDescTargetVersion);
             M3Log.Information(@"Parsing mod using moddesc version: " + ModDescTargetVersion, Settings.LogModStartup);
 
             // End of version rounding
