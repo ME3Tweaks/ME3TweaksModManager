@@ -10,7 +10,6 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore;
-using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Helpers.MEM;
@@ -499,7 +498,7 @@ namespace ME3TweaksModManager
                 }
 
                 SelectedMod = x;
-                ModsList_ListBox.ScrollIntoView(x);
+                ModsList_ListBox.ScrollIntoView(SelectedMod);
             });
 
             // MOD UPDATER

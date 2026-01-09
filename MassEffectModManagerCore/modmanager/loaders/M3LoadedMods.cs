@@ -489,16 +489,6 @@ namespace ME3TweaksModManager.modmanager.loaders
                     }
                 }
 
-#if DEBUG
-                while (AllLoadedMods.Count < 30)
-                {
-                    var m = new Mod(MEGame.LE1);
-                    m.ModName = @"Debug Name";
-                    m.ModDescription = @"Debug Placeholder";
-                    AllLoadedMods.Add(m);
-                }
-#endif
-
                 // Ensure nothing is set to loading.
                 foreach (var gf in Instance.GameFilters)
                 {
@@ -574,6 +564,13 @@ namespace ME3TweaksModManager.modmanager.loaders
                 ModsLoaded = true;
                 IsLoadingMods = false;
                 LoadedOnce = true;
+
+                // 12/21/2025 - Run filter to ensure filter text is applied to the UI
+                // 01/08/2026 - Note: This changes the UI so it must be run BEFORE
+                //              selection callback or it will appear to not scroll the 
+                //              list
+                FilterMods();
+
                 if (b.Result is Mod m)
                 {
                     SelectModCallback?.Invoke(m);
@@ -581,8 +578,7 @@ namespace ME3TweaksModManager.modmanager.loaders
 
                 ModsReloaded?.Invoke(this, EventArgs.Empty);
                 
-                // 12/21/2025 - Run filter to ensure filter text is applied to the UI
-                FilterMods();
+                
             };
             bw.RunWorkerAsync();
         }
