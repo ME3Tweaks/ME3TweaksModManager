@@ -10,6 +10,7 @@ using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.windows;
 using SevenZip;
 using System.Diagnostics;
 using System.Threading;
@@ -283,7 +284,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static void TestCode_Click(MainWindow mw)
         {
-
+            var helpWindow = new DynamicHelpWindow();
+            helpWindow.Owner = mw; // Set owner if needed
+            helpWindow.ShowDialog();
         }
 
         private static void ShowXceedDialog(MainWindow window)
