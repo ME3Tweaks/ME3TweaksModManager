@@ -3701,7 +3701,7 @@ namespace ME3TweaksModManager
                         Title += @" - "
                         + M3L.GetString(M3L.string_cleaningUpPleaseWait);
 
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerIsPerformingCleanupOperations) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3),
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerIsPerformingCleanupOperations) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3), // do not localize
                             M3L.GetString(M3L.string_operationInProgress), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
@@ -3711,7 +3711,7 @@ namespace ME3TweaksModManager
 
                         Title += @" - "
                         + M3L.GetString(M3L.string_cleaningUpPleaseWait);
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerWillAutocloseBackgroundTasks) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3),
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerWillAutocloseBackgroundTasks) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3), // do not localize
                             M3L.GetString(M3L.string_operationInProgress), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     return;
@@ -3747,7 +3747,8 @@ namespace ME3TweaksModManager
                 M3Log.Warning(@"Cannot safely close app while mods are importing, aborting application exit request");
                 M3L.ShowDialog(this,
                     "There are currently mods importing into the library. Please wait until they are finished as aborting import may leave a library mods in a broken state."
-                    + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3), "Mods currently importing",
+                    + "\n\n" // do not localize
+                    + M3L.GetString(M3L.string_howToForceCloseM3), "Mods currently importing",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 ;
                 return;

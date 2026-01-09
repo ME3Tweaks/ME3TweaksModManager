@@ -362,9 +362,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 //Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nam ut metus nibh. Aenean elementum, purus eu viverra gravida, odio augue commodo urna, nec feugiat libero metus vel nulla. Sed rhoncus sapien eu ligula interdum, in luctus nulla molestie. In egestas ac odio nec lacinia. Quisque hendrerit vel urna sed dignissim. Sed vel nulla nec ligula aliquam imperdiet sed imperdiet mi. In hac habitasse platea dictumst. Phasellus eleifend risus vel mauris tincidunt, nec lacinia nisl egestas. ";
 //                }
 
-                modUpdateInfos.AddRange(nexusModsUpdateInfo.Where(x=>x.status == "published"));
+                modUpdateInfos.AddRange(nexusModsUpdateInfo.Where(x=>x.status == @"published"));
 #if DEBUG
-                foreach(var np in nexusModsUpdateInfo.Where(x => x.status != "published"))
+                foreach(var np in nexusModsUpdateInfo.Where(x => x.status != @"published"))
                 {
                     M3Log.Information($@"Mod was filtered out from updates: {np.NexusModsId} - {np.status}");
                 }

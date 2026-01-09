@@ -34,7 +34,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         private const string RT_NEWLINE = @"\line ";
         public static string ConvertNewlines(string str)
         {
-            return str.Replace("\r\n", RT_NEWLINE).Replace("\n", RT_NEWLINE);
+            return str.Replace("\r\n", RT_NEWLINE).Replace("\n", RT_NEWLINE); // do not localize
         }
 
         public static string EscapeText(string str)
