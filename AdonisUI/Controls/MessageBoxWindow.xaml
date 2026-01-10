@@ -150,6 +150,8 @@
                                             <Button Content="{Binding Label}"
                                                     IsDefault="{Binding IsDefault}"
                                                     IsCancel="{Binding IsCancel}"
+                                                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}"
+                                                    BorderThickness="1"
                                                     Style="{Binding ButtonStyle, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MessageBoxWindow}}}"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
