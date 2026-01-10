@@ -297,7 +297,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Thread.Sleep(200);
             }).ContinueWithOnUIThread(x =>
             {
-                M3L.ShowDialog(window, @"This is a test dialog", @"Test dialog", System.Windows.MessageBoxButton.YesNoCancel, System.Windows.MessageBoxImage.Warning);
+                var title = @"Test dialog";
+                var str = @"This is a test dialog. I am a long running message. Do you want to continue?\n\nPlease make sure I fit the width you need and don't look goofy. The defaults seem to be really poor";
+                var buttons = System.Windows.MessageBoxButton.YesNoCancel;
+                var icon = System.Windows.MessageBoxImage.Warning;
+
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, str,title,buttons,icon);
+                M3L.ShowDialog(window, str, title, buttons, icon);
             });
 
         }

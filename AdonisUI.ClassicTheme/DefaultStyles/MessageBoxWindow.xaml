@@ -17,8 +17,6 @@
                        BasedOn="{StaticResource {x:Type Button}}">
                     <Setter Property="MinWidth" Value="78"/>
                     <Setter Property="Margin" Value="0, 0, 12, 0"/>
-                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
-                    <Setter Property="BorderThickness" Value="1"/>
                     <Setter Property="Padding" Value="{adonisUi:Space 2, 0.5}"/>
                 </Style>
             </Setter.Value>
