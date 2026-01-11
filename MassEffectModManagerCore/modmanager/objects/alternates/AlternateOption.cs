@@ -1,18 +1,19 @@
-﻿using System.Diagnostics;
-using System.IO.Hashing;
-using System.Text;
-using System.Windows.Media.Imaging;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+﻿using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.ui;
+using System.Diagnostics;
+using System.IO.Hashing;
+using System.Text;
+using System.Windows.Media.Imaging;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
 {
@@ -557,13 +558,13 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             ReadAutoApplicableText(properties); // This can't fail validation
 
             // ModDesc 6.0: Mutually exclusive options
-            if (modForValidating.ModDescTargetVersion >= 6.0)
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_0)
             {
                 GroupName = properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_OPTIONGROUP, out string groupName) ? groupName : null;
             }
 
             // ModDesc 8.0: Read dev-defined OptionKey, SortOrder, Hidden
-            if (modForValidating.ModDescTargetVersion >= 8.0)
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
             {
                 if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_HIDDEN, out string hiddenValue))
                 {
