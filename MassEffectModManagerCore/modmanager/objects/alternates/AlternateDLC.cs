@@ -610,6 +610,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTargetWPF target)
         {
+            // This value should be cached before calling the base method.
+            UIIsSelectable_PreDepends = UIIsSelectable;
+
             if (DLCRequirementsForManual != null)
             {
                 var metas = target.GetMetaMappedInstalledDLC();

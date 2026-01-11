@@ -599,6 +599,14 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             base.CopyForEditor(file);
             return file;
         }
+
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTargetWPF target)
+        {
+            // This value should be cached before calling the base method.
+            UIIsSelectable_PreDepends = UIIsSelectable;
+
+            return base.UpdateSelectability(allOptionsDependedOn, mod, target);
+        }
     }
 }
 
