@@ -91,7 +91,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         /// <summary>
         /// UI-only
-        /// </summary>
+        /// </summaryTarget 
         public virtual double TextOpacity
         {
             get
@@ -132,6 +132,16 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public bool UIIsSelected { get; set; }
         #endregion
+
+        public void OnUIIsSelectedChanged(object old, object newv)
+        {
+            Debug.WriteLine($@"{FriendlyName} UISelected changed: {old} -> {newv}");
+        }
+
+        public void OnUIIsSelectableChanged(object old, object newv)
+        {
+            Debug.WriteLine($@"{FriendlyName} UIIsSelectable changed: {old} -> {newv}");
+        }
 
         /// <summary>
         /// The root path where the multilists (if used) for this alternate is stored at
@@ -341,28 +351,37 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         /// <param name="dependsAction">Action to perform</param>
         /// <returns>True if changed states, false if not</returns>
-        /// <exception cref="NotImplementedException"></exception>
         private bool InternalApplyDepends(EDependsOnAction dependsAction)
         {
             var initialSelection = UIIsSelected;
 
             // Can we select?
-            var hasUserChoice = dependsAction is EDependsOnAction.ACTION_ALLOW_SELECT or EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED;
-            var alreadyHasUserChoice = UIIsSelectable;
+            var targetStateHasUserChoice = dependsAction is EDependsOnAction.ACTION_ALLOW_SELECT or EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED;
+            var currentStateHasUserChoice = UIIsSelectable;
 
-            if (!hasUserChoice)
+            if (!targetStateHasUserChoice)
             {
-                // We're going to lock the option.
+                // We're going to lock the option either checked or unchecked depending on action.
+                Debug.WriteLine($@" > Target state does not have user choice: {dependsAction}");
                 UIIsSelected = dependsAction == EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED;
             }
-            else if (!alreadyHasUserChoice)
+            else if (!currentStateHasUserChoice)
             {
-                // If the user is gaining the ability to make a decision, we will follow the action by the developer. We don't want to modify the existing user choice if they have a choice
-                // and this update doesn't change the ability for the user to make a choice
+                // If the user is gaining the ability to make a decision,
+                //    we will follow the action by the developer.
+                Debug.WriteLine($@" > Current state does not have user choice, user is gaining ability to make a choice.");
                 UIIsSelected = dependsAction == EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED; // Other option is unchecked.
             }
+            else
+            {
+                // We don't want to modify the existing user choice if they have a choice
+                // and this update doesn't change the ability for the user to make a choice
+                Debug.WriteLine($@" > Target state has choice {dependsAction}, current state has choice {currentStateHasUserChoice}. Keeping the current user selection.");
+                // UIIsSelected = dependsAction == EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED;
+            }
 
-            UIIsSelectable = hasUserChoice; // Make option selectable if it provider user choice
+            UIIsSelectable = targetStateHasUserChoice; // Make option selectable if it provider user choice
+            Debug.WriteLine($@"ApplyDepends {FriendlyName}: {dependsAction} (selection, haschoice): init: {initialSelection},{currentStateHasUserChoice} -> result: {UIIsSelected},{UIIsSelectable}");
             return initialSelection != UIIsSelected;
         }
 

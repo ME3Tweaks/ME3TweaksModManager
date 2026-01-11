@@ -447,6 +447,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (sender is AlternateOption ao && data is DataEventArgs args && args.Data is bool newState)
             {
+                Debug.WriteLine("===================");
                 var altsToUpdate = findOptionsDependentOn(ao);
 
                 if (altsToUpdate.Any())
@@ -552,12 +553,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var allOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
 
 #if DEBUG
-            Debug.WriteLine($@"Matching on optionkey {alternateOption.OptionKey}");
+            Debug.WriteLine($@"Finding options dependent on optionkey: {alternateOption.OptionKey}");
             foreach (var op in allOptions)
             {
                 foreach (var k in op.DependsOnKeys)
                 {
-                    Debug.WriteLine($@"{op.FriendlyName} | {k.Key} matches {alternateOption.OptionKey}: {k.Key == alternateOption.OptionKey}");
+                    if (k.Key == alternateOption.OptionKey)
+                    {
+                        Debug.WriteLine($@"{op.FriendlyName} | {k} depends on {alternateOption.OptionKey}: {k.Key == alternateOption.OptionKey}");
+                    }
                 }
             }
 #endif
