@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using LegendaryExplorerCore.Helpers;
+﻿using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
@@ -9,9 +7,12 @@ using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
@@ -45,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             var export = package.FindExport(ExportInstancedFullPath);
 
             // Mod MUST target 8.1 or higher to be able to use this functionality at all
-            if (mmp.AssociatedMod.ModDescTargetVersion < 8.1 && export == null)
+            if (mmp.AssociatedMod.ModDescTargetVersion < ModDescConsts.MODDESC_VERSION_8_1 && export == null)
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_couldNotFindExportInPackage, package.FilePath, ExportInstancedFullPath));
             }

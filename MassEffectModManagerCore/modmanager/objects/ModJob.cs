@@ -1,8 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using IniParser.Model;
+﻿using IniParser.Model;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.alternates;
@@ -10,6 +9,8 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -606,7 +607,7 @@ namespace ME3TweaksModManager.modmanager.objects
             if (duplicates.Any())
             {
                 // On Moddesc 8.0 and higher this will cause the mod to fail to load
-                if (modForValidating.ModDescTargetVersion >= 8.0)
+                if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
                 {
                     M3Log.Error($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicate option keys: {string.Join(',', duplicates.SelectMany(x => x).Select(x => x.FriendlyName))}");
                     failureReason = M3L.GetString(M3L.string_interp_validation_modjob_duplicateOptionKeys, string.Join(',', duplicates.SelectMany(x => x).Select(x => x.FriendlyName)));

@@ -1,20 +1,21 @@
 ﻿using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.ME3Tweaks.ModManager;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.batch;
+using ME3TweaksModManager.modmanager.objects.exceptions;
+using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using ME3TweaksCore.Objects;
-using ME3TweaksModManager.modmanager.installer;
-using ME3TweaksModManager.modmanager.objects.exceptions;
-using ME3TweaksModManager.modmanager.objects.installer;
-using ME3TweaksModManager.modmanager.objects.batch;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -583,7 +584,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // 06/11/2022 - Change to only 8.0 or higher to prevent breaking old mods that abused the group not having a default
                     // option picked
                     // NEEDS A BIT MORE VALIDATION ON PASSING OPTIONS THROUGH
-                    if (group.SelectedOption.UINotApplicable && ModBeingInstalled.ModDescTargetVersion >= 8.0) return false; // Option must be selectable by user in order for it to be chosen by multi selector
+                    if (group.SelectedOption.UINotApplicable && ModBeingInstalled.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0) return false; // Option must be selectable by user in order for it to be chosen by multi selector
                 }
                 else
                 {

@@ -4,6 +4,7 @@ using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.ME3Tweaks.M3Merge.Bio2DATable;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.localizations;
@@ -535,7 +536,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             #region Check for m3za so user doesn't forget
             // Check for compressed m3za
-            if (item.ModToValidateAgainst.Game.IsGame1() && item.ModToValidateAgainst.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null && item.ModToValidateAgainst.ModDescTargetVersion >= 8.0)
+            if (item.ModToValidateAgainst.Game.IsGame1() && item.ModToValidateAgainst.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null && item.ModToValidateAgainst.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
             {
                 var m3zaFile = Path.Combine(item.ModToValidateAgainst.ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
                 if (File.Exists(m3zaFile))

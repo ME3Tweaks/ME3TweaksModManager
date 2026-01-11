@@ -1,13 +1,14 @@
-﻿using System.Diagnostics;
-using System.Xml.Linq;
-using LegendaryExplorerCore.Compression;
+﻿using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.tlk;
+using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -36,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (allFilenames == null) // will be null if loading from compressed data
             {
                 // The guard at start of method will ensure compressed data is never null
-                if (ModDescTargetVersion >= 9.0)
+                if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                 {
                     // Mod Manager 9: Filter files based on option keys
 
@@ -150,7 +151,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         {
             compressedTlkData = null;
             List<string> allTlkFilenames = null;
-            if (ModDescTargetVersion >= 8)
+            if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
             {
                 // ModDesc 8 mods can use this feature
                 compressedTlkData = ReadCompressedTlkMergeFile();

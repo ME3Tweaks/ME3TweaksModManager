@@ -141,7 +141,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
                     {
                         // ME3 remapping headers
-                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, foldername, modForValidating.ModDescTargetVersion >= 9.0));
+                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, foldername, modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0));
                         continue;
                     }
                     if (!dlc.StartsWith(@"DLC_"))
@@ -153,7 +153,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     else
                     {
                         // Direct DLC name
-                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, dlc, modForValidating.ModDescTargetVersion >= 9.0));
+                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, dlc, modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0));
                     }
                 }
             }

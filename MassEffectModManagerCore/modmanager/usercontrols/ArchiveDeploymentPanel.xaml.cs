@@ -1,14 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.TextureOverride;
@@ -25,6 +19,13 @@ using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using SevenZip;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -259,7 +260,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 var references = modBeingDeployed.GetAllRelativeReferences(true);
 
-                if (modBeingDeployed.ModDescTargetVersion >= 8.0)
+                if (modBeingDeployed.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
                 {
                     // ModDesc 8 / Mod Manager 8 uses a CompressedTLKMergeInfo file instead. Do not compress these files at all, it will be handled in a separate step.
                     references = references.Where(x => !x.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase)).ToList();
@@ -474,7 +475,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 var references = modBeingDeployed.GetAllRelativeReferences(true);
 
-                if (modBeingDeployed.ModDescTargetVersion >= 8.0 && references.Any(x => x.StartsWith(Mod.Game1EmbeddedTlkFolderName)))
+                if (modBeingDeployed.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0 && references.Any(x => x.StartsWith(Mod.Game1EmbeddedTlkFolderName)))
                 {
                     // It needs a compression tlk merge file installed
                     currentDeploymentStep = M3L.GetString(M3L.string_creatingCombinedTLKMergeFile);
@@ -587,7 +588,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return false; // Referenced image file should not be compressed.
             if (modRelPath == @"moddesc.ini")
                 return false; // moddesc.ini should not be compressed.
-            if (modBeingDeployed.ModDescTargetVersion >= 8.0 && fileMapping.Key.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase))
+            if (modBeingDeployed.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0 && fileMapping.Key.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase))
                 return false; // ModDesc 8 / Mod Manager 8 uses a CompressedTLKMergeInfo file instead.
             return true;
         }

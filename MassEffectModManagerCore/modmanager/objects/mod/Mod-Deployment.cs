@@ -1,4 +1,5 @@
-﻿using ME3TweaksModManager.modmanager.importer;
+﻿using ME3TweaksCore.ME3Tweaks.ModManager;
+using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using SevenZip;
 
@@ -186,7 +187,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 if (job.Game1TLKXmls != null)
                 {
                     bool usedCombinedFile = false;
-                    if (ModDescTargetVersion >= 8.0)
+                    if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
                     {
                         var m3zaf = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
                         if (FilesystemInterposer.FileExists(m3zaf, archive))

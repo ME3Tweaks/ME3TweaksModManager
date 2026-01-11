@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
@@ -19,6 +14,12 @@ using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.tlk;
 using SevenZip;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -292,7 +293,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     // Look in CustomDLC job for alternates there.
                     // Technically this could be done under this header, but it'd be a lot of work I don't really want to do
                     // to port another job with alternates
-                    if (ModDescTargetVersion >= 9.0 && options.SelectedOptions.TryGetValue(ModJob.JobHeader.CUSTOMDLC, out var custDlcOptions))
+                    if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0 && options.SelectedOptions.TryGetValue(ModJob.JobHeader.CUSTOMDLC, out var custDlcOptions))
                     {
                         var custOptions = custDlcOptions.OfType<AlternateDLC>().ToList(); ;
                         foreach (var option in custOptions.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ENABLE_TLKMERGE_OPTIONKEY))

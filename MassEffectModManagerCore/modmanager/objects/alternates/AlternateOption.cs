@@ -328,7 +328,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     // as not triggering NotMet. However, before 9.2
                     // this always ran here, so we run it here to ensure
                     // backwards compatibility.
-                    if (mod.ModDescTargetVersion <= 9.1)
+                    if (mod.ModDescTargetVersion <= ModDescConsts.MODDESC_VERSION_9_1)
                     {
                         // Unlock the option
                         ApplyDependsOnMet(mod);
@@ -349,7 +349,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             // Mod Manager 9.2: Bugfix - Met() should only be run
             // after we know all others are not met
             // Also, record changed, which 9.1 and below did not do
-            if (mod.ModDescTargetVersion > 9.1 && dependsOnIsMet)
+            if (mod.ModDescTargetVersion > ModDescConsts.MODDESC_VERSION_9_1 && dependsOnIsMet)
             {
                 // Apply DependsOnMet condition
                 changed = ApplyDependsOnMet(mod);
@@ -390,7 +390,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             // Can we select?
             var targetStateHasUserChoice = dependsAction is EDependsOnAction.ACTION_ALLOW_SELECT or EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED;
             var currentStateHasUserChoice = UIIsSelectable_PreDepends;
-            if (mod.ModDescTargetVersion <= 9.1)
+            if (mod.ModDescTargetVersion <= ModDescConsts.MODDESC_VERSION_9_1)
             {
                 // In 9.1 and below, for backwards compatibility, we
                 // use what it originally used - UIIsSelectable,
@@ -481,7 +481,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <returns></returns>
         private bool ReadImageAssetOptions(Mod modForValidating, Dictionary<string, string> properties)
         {
-            if (modForValidating.ModDescTargetVersion >= 6.2)
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_2)
             {
                 if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_IMAGENAME, out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
                 {
