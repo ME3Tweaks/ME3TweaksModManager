@@ -19,7 +19,6 @@
         <Setter Property="WindowStyle" Value="ToolWindow"/>
         <Setter Property="SizeToContent" Value="WidthAndHeight"/>
         <Setter Property="ShowInTaskbar" Value="False"/>
-        <Setter Property="MinWidth" Value="400"/>
         <Setter Property="MinHeight" Value="60"/>
         <Setter Property="IconVisibility" Value="Collapsed"/>
         <Setter Property="Content" Value="{Binding}"/>

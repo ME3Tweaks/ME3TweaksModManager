@@ -145,7 +145,11 @@ namespace AdonisUI.Controls
             Rect screenBounds = GetCurrentScreenBounds();
             Size transformedScreenBounds = TransformToWindowCoordinates(new Size(screenBounds.Width, screenBounds.Height));
             MaxHeight = transformedScreenBounds.Height * MaxRelativeScreenHeight;
-            MaxWidth = CalcMaxWidth(transformedScreenBounds);
+            MaxWidth = 500; 
+            // ME3Tweaks - don't calc max width
+            // CalcMaxWidth(transformedScreenBounds);
+
+
 
             AttachButtonClickHandlers();
 
@@ -231,7 +235,7 @@ namespace AdonisUI.Controls
             double additionalWidthRequiredForButtons = Math.Max(CalcDesiredActualSizeDiff(buttonContainer).X, 0);
             fittingMaxWidth = Math.Min(fittingMaxWidth + additionalWidthRequiredForButtons, maxAbsoluteScreenWidth);
 
-            return fittingMaxWidth;
+            return 450; // fittingMaxWidth;
         }
 
         /// <summary>
