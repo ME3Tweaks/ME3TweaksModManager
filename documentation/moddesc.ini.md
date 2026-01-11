@@ -83,6 +83,8 @@ Valid values for cmmver are listed below with the main highlights of that releas
 | 8.0            | OT / LE         | 2022         | Supports alternate dependencies, alternate sorting, flattening output of multilist applications                                                                                                                                                             |
 | 8.1            | OT / LE         | 2023         | Supports referencing texture mods for use in batch installer, referencing headmorphs for installation, supports mods that require the enhanced bink codec                                                                                                   |
 | 9.0            | OT / LE         | 2024         | Supports alternate conditions that depend on other DLC mod's chosen installation options, merge mod class update feature, alternates for the GAME1_EMBEDDED_TLK feature (via CUSTOMDLC header), ASI installation requests, special batch installer sorting  |
+| 9.1            | OT / LE         | 2025         | Changes how parenthesis and brackets are parsed in the depends system to be more reliable  |
+| 9.2            | OT / LE         | 2026         | Adds support for the M3TO and M3GS feature. Supports multiple .sqm files in a single DLC mod, changes how selection logic for the DependsOn system works to fix bugs  |
 
 If a cmmver descriptor is not set, the default 1.0 value will be used, which has almost no features. Mod Manager 8.2 did not include changes to moddesc, thus it had not cmmver associated with it.
 
