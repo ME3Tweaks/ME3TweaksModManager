@@ -2492,6 +2492,12 @@ namespace ME3TweaksModManager
                 {
                     if (target.Game.IsLEGame())
                     {
+                        // Validate that the launch option matches the target's game
+                        if (SelectedLaunchOption != null && SelectedLaunchOption.Game != target.Game)
+                        {
+                            M3Log.Warning($@"Launch option game ({SelectedLaunchOption.Game}) does not match target game ({target.Game}). Using default launch option for {target.Game}.");
+                            SelectedLaunchOption = M3LoadedMods.GetDefaultLaunchOptionsPackage(target.Game);
+                        }
                         GameLauncher.LaunchGame(target, SelectedLaunchOption, skipLauncher, autoboot);
                     }
                     else
