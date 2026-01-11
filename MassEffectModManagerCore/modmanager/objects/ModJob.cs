@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using IniParser.Model;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.alternates;
@@ -131,12 +125,12 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <summary>
         /// Maps in-game relative paths to the file that will be used to install to that location. The key is the target, the value is the source file that will be used.
         /// </summary>
-        public Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        public CaseInsensitiveDictionary<string> FilesToInstall = new();
 
         /// <summary>
         /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game). This is only used for always installed folders, not alternates
         /// </summary>
-        public Dictionary<string, string> CustomDLCFolderMapping = new Dictionary<string, string>();
+        public CaseInsensitiveDictionary<string> CustomDLCFolderMapping = new();
 
 
         /// <summary>
@@ -249,15 +243,15 @@ namespace ME3TweaksModManager.modmanager.objects
 
         /// <summary>
         /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same.
+        /// Performs security validation on file extensions and path traversal, and verifies the source file exists.
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
-        /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <param name="mod">Mod to parse against</param>
-        /// <returns>string of failure reason. null if OK.</returns>
+        /// <returns>String containing failure reason if validation fails; null if successful.</returns>
         internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
-            // Security check
+            // Validate file extension for security (blocks .exe, .dll, .asi)
             if (!checkExtension(sourceRelativePath, out string failReason))
             {
                 return failReason;
@@ -289,6 +283,13 @@ namespace ME3TweaksModManager.modmanager.objects
             return null;
         }
 
+        /// <summary>
+        /// Validates that the file extension is allowed for mod installation.
+        /// Blocks executable files (.exe, .dll, .asi) for security purposes.
+        /// </summary>
+        /// <param name="sourceRelativePath">Path to validate the extension of</param>
+        /// <param name="failReason">Output parameter containing the localized error message if validation fails</param>
+        /// <returns>True if the extension is allowed; false otherwise</returns>
         private bool checkExtension(string sourceRelativePath, out string failReason)
         {
             var ext = Path.GetExtension(sourceRelativePath).ToLower();
@@ -315,29 +316,18 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         /// <summary>
-        /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same. This is for automapping. This does not check the security!
+        /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same.
+        /// This is for automapping where the source path has been pre-validated.
+        /// Note: This method performs extension security validation but does NOT verify file existence, as the source path is assumed to be pre-validated or pre-parsed.
+        /// This does not check the security for scoped silos!
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
-        /// <param name="sourcePath">Path to parsed file</param>
+        /// <param name="sourcePath">Pre-validated source path to file (may be relative to mod root or absolute)</param>
         /// <param name="mod">Mod to parse against</param>
-        /// <returns>string of failure reason. null if OK.</returns>
+        /// <returns>String containing failure reason if validation fails; null if successful.</returns>
         internal string AddPreparsedFileToInstall(string destRelativePath, string sourcePath, Mod mod)
         {
-            //string checkingSourceFile;
-            //if (JobDirectory != null)
-            //{
-            //    checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
-            //}
-            //else
-            //{
-            //    //root (legacy)
-            //    checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, sourceRelativePath);
-            //}
-            //if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
-            //{
-            //    return M3L.GetString(M3L.string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist, checkingSourceFile);
-            //}
-            //Security check
+            // Validate file extension for security (blocks .exe, .dll, .asi)
             if (!checkExtension(sourcePath, out string failReason))
             {
                 return failReason;
@@ -350,15 +340,17 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         /// <summary>
-        /// Adds a file to the add/replace list of files to install. This will not replace an existing file in the mapping if the destination path is the same, it will instead throw an error.
+        /// Adds a file to the add/replace list of files to install. 
+        /// Unlike AddFileToInstall, this will NOT replace an existing file in the mapping if the destination path is already present - it will return an error instead.
+        /// This is used for the legacy addfiles descriptor.
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="mod">Mod to parse against</param>
-        /// <returns>string of failure reason. null if OK.</returns>
+        /// <returns>String containing failure reason if validation fails; null if successful.</returns>
         internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
-            //Security check
+            // Validate file extension for security (blocks .exe, .dll, .asi)
             if (!checkExtension(sourceRelativePath, out string failReason))
             {
                 return failReason;
@@ -438,6 +430,13 @@ namespace ME3TweaksModManager.modmanager.objects
         /// </summary>
         private static readonly IReadOnlyDictionary<JobHeader, string> LEHeadersToDLCNamesMap = new Dictionary<JobHeader, string> { };
 
+        /// <summary>
+        /// Gets the mapping of job headers to DLC folder names for the specified game.
+        /// This is used to determine which DLC folder a job header corresponds to.
+        /// </summary>
+        /// <param name="game">The game to get the mapping for</param>
+        /// <returns>A read-only dictionary mapping JobHeader enum values to DLC folder names</returns>
+        /// <exception cref="Exception">Thrown if the game type is unknown or unsupported</exception>
         internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(MEGame game)
         {
             switch (game)
@@ -454,7 +453,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 case MEGame.LELauncher:
                     return LEHeadersToDLCNamesMap;
                 default:
-                    throw new Exception(@"Can't get supported list of headers for unknown game type.");
+                    throw new Exception(@"Can't get supported list of headers for unknown game");
             }
         }
         /// <summary>
@@ -471,7 +470,8 @@ namespace ME3TweaksModManager.modmanager.objects
         public ObservableCollection<AlternateDLC> AlternateDLCs { get; } = new ObservableCollection<AlternateDLC>();
 
         /// <summary>
-        /// A list of referenced texture mods under the Textures folder
+        /// Gets the list of supported non-CustomDLC job headers for the specified game.
+        /// This includes BASEGAME and all official DLC headers, but excludes CUSTOMDLC.
         /// </summary>
         public List<M3MEMMod> TextureModReferences { get; set; } = new(0);
 
@@ -512,10 +512,13 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         /// <summary>
-        /// Gets list of official DLC headers for the specified game.
+        /// Gets the list of official DLC headers for the specified game.
+        /// This excludes BASEGAME and only returns headers for official DLC content.
+        /// For Legendary Edition games, this returns an empty array as all DLC is integrated.
         /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
+        /// <param name="game">The game to get official DLC headers for</param>
+        /// <returns>An array of official DLC JobHeader values for the specified game</returns>
+        /// <exception cref="Exception">Thrown if the game type is unknown or unsupported</exception>
         internal static JobHeader[] GetSupportedOfficialDLCHeaders(MEGame game)
         {
             switch (game)
@@ -532,10 +535,19 @@ namespace ME3TweaksModManager.modmanager.objects
                 case MEGame.LELauncher:
                     return new JobHeader[] { }; // LE does not support any DLC headers
                 default:
-                    throw new Exception(@"Can't get supported list of dlc headers for unknown game type.");
+                    throw new Exception(@"Can't get supported list of dlc headers for unknown game.");
             }
         }
 
+        /// <summary>
+        /// Validates all alternate options (AlternateFiles and AlternateDLCs) associated with this job.
+        /// Ensures that:
+        /// - Option groups have at least one and only one item marked as CheckedByDefault
+        /// - All OptionKeys are unique across all alternates
+        /// </summary>
+        /// <param name="modForValidating">The mod being validated, used to check ModDesc version for strict validation rules</param>
+        /// <param name="failureReason">Output parameter containing the localized error message if validation fails</param>
+        /// <returns>True if all alternates are valid; false otherwise</returns>
         public bool ValidateAlternates(Mod modForValidating, out string failureReason)
         {
             // Validate option groups
@@ -612,9 +624,11 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         /// <summary>
-        /// Serializes this job into the specified IniData object
+        /// Serializes this job's configuration into the specified IniData object.
+        /// The serialization format depends on the job's header type (CUSTOMDLC, vanilla jobs, etc.).
         /// </summary>
-        /// <param name="ini"></param>
+        /// <param name="ini">The IniData object to serialize into</param>
+        /// <param name="associatedMod">The mod this job belongs to, used to determine game-specific serialization</param>
         public void Serialize(IniData ini, Mod associatedMod)
         {
             var header = Header.ToString();
@@ -643,6 +657,13 @@ namespace ME3TweaksModManager.modmanager.objects
             }
         }
 
+        /// <summary>
+        /// Determines if this job is a "vanilla" job, meaning it targets the base game or official DLC.
+        /// Vanilla jobs exclude CUSTOMDLC, LOCALIZATION, and other special job types.
+        /// </summary>
+        /// <param name="job">The job to check</param>
+        /// <param name="game">The game to check against</param>
+        /// <returns>True if the job is a vanilla job (BASEGAME or official DLC); false otherwise</returns>
         public static bool IsVanillaJob(ModJob job, MEGame game)
         {
             var officialHeaders = GetHeadersToDLCNamesMap(game);
@@ -650,11 +671,13 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         /// <summary>
-        /// Gets a list of allowable and not-allowable directories that can be installed to by this job. Disallowed always overrides allowed and if an item is not listed in allowed it is implicitly not allowed
+        /// Gets the allowed and disallowed directory scopes (silos) for this job.
+        /// Silos define which directories files can be installed to based on the job header and game.
+        /// Disallowed silos always override allowed silos.
         /// </summary>
-        /// <param name="job"></param>
-        /// <param name="game"></param>
-        /// <returns></returns>
+        /// <param name="job">The job to get scopes for</param>
+        /// <param name="game">The game to get scopes for</param>
+        /// <returns>A SiloScopes object containing allowed and disallowed directories, or null if the job type has no scopes</returns>
         public static SiloScopes GetScopedSilos(ModJob job, MEGame game)
         {
             switch (job.Header)
@@ -780,6 +803,12 @@ namespace ME3TweaksModManager.modmanager.objects
             return true;
         }
 
+        /// <summary>
+        /// Determines if this job targets an official DLC for the specified game.
+        /// Returns false for BASEGAME, CUSTOMDLC, and special job types.
+        /// </summary>
+        /// <param name="game">The game to check against</param>
+        /// <returns>True if this job is for official DLC; false otherwise</returns>
         public bool IsOfficialDLCJob(MEGame game) => GetSupportedOfficialDLCHeaders(game).Contains(Header);
 
         #region Raw values for editor
