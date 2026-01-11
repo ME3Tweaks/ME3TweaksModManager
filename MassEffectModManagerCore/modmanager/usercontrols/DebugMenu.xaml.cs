@@ -304,6 +304,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 Xceed.Wpf.Toolkit.MessageBox.Show(window, str,title,buttons,icon);
                 M3L.ShowDialog(window, str, title, buttons, icon);
+                M3L.ShowDialog(window, "Done.");
             });
 
         }
