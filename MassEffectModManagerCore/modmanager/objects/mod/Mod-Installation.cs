@@ -51,7 +51,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (customDLCMapping != null)
             {
                 //Make clone so original value is not modified
-                customDLCMapping = new Dictionary<string, string>(customDLCMapping); //prevent altering the source object
+                customDLCMapping = new CaseInsensitiveDictionary<string>(customDLCMapping); //prevent altering the source object
             }
 
             foreach (var job in InstallationJobs)
