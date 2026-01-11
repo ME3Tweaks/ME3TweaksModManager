@@ -245,8 +245,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             if (SelectedOption != newItem)
             {
                 // Multi mode
-                SelectedOption.UIIsSelected = false;
-                SelectedOption.RaiseIsSelectedChanged(); // Raise that we are de-selecting this multi-option. This is so deselection logic occurs
+                var previousOption = SelectedOption; // Store the previous option BEFORE changing SelectedOption (as this may trigger changes)
+                previousOption.UIIsSelected = false;
+                previousOption.RaiseIsSelectedChanged(); // Raise that we are de-selecting this multi-option. This is so deselection logic occurs
 
                 SelectedOption = newItem;
                 SelectedOption.UIIsSelected = true;
