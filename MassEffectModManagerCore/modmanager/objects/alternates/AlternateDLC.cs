@@ -3,6 +3,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
@@ -89,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
         {
             // 08/01/2024 - ModDesc 9.1 (Mod Manager 9.0.1's parser) uses the new method that better handles value splitting
-            var properties = modForValidating.ModDescTargetVersion >= 9.1 ?
+            var properties = modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_1 ?
                 StringStructParser.GetSplitMapValues(alternateDLCText, false, '(', ')', '[', ']')
                 : StringStructParser.GetCommaSplitValues(alternateDLCText);
      
@@ -99,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 FriendlyName = friendlyName;
             }
 
-            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_0 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
                 M3Log.Error(@"Alternate DLC does not specify FriendlyName. Mods targeting moddesc >= 6.0 require FriendlyName");
@@ -135,7 +136,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 Description = description;
             }
 
-            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_0 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
                 M3Log.Error($@"Alternate DLC {FriendlyName} cannot have empty Description or missing Description descriptor as it targets cmmver >= 6");
@@ -153,7 +154,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {
                     if (Condition == AltDLCCondition.COND_MANUAL)
                     {
-                        if (modForValidating.ModDescTargetVersion >= 6.3)
+                        if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_3)
                         {
                             // On 6.3 trigger failure on this mod to help ensure users design mod properly
                             M3Log.Error($@"{modForValidating.ModName} has Alternate DLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.");
@@ -229,7 +230,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {
                     // ModDesc 8.0 change: Require MultiListRootPath not be an empty string.
                     // This checks because EGM LE did not set it so this would break loading that mod on future builds
-                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_ROOTPATH, out var rootpath) && (modForValidating.ModDescTargetVersion < 8.0 || !string.IsNullOrWhiteSpace(rootpath)))
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_ROOTPATH, out var rootpath) && (modForValidating.ModDescTargetVersion < ModDescConsts.MODDESC_VERSION_8_0 || !string.IsNullOrWhiteSpace(rootpath)))
                     {
                         MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
                     }
@@ -267,8 +268,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                     // ModDesc 8.0: Allow flattening output of multilist output.
                     // Backported to 7.0 125 build for EGM - it must work on 125 7.0 and above.
-                    if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
-                        || modForValidating.ModDescTargetVersion >= 8.0)
+                    if ((modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_7_0 && modForValidating.MinimumSupportedBuild >= 125)
+                        || modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
                     {
                         if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_FLATTENOUTPUT, out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
                         {
@@ -381,12 +382,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 var reqList = new List<DLCRequirement>();
                 foreach (var originalReq in dlcReqs)
                 {
-                    var testreq = modForValidating.ModDescTargetVersion >= 9.0
+                    var testreq = modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0
                         ? DLCRequirement.ParseRequirementKeyed(originalReq, modForValidating.ModDescTargetVersion)
-                        : DLCRequirement.ParseRequirement(originalReq, false, modForValidating.ModDescTargetVersion >= 6.3);
+                        : DLCRequirement.ParseRequirement(originalReq, false, modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_3);
 
                     // Backcompat code: Force strip off +/-. 
-                    if (modForValidating.ModDescTargetVersion < 6.3)
+                    if (modForValidating.ModDescTargetVersion < ModDescConsts.MODDESC_VERSION_6_3)
                     {
                         // ModDesc < 6.3 did not support +/-, so we strip it off.
                         testreq.DLCFolderName.IsPlus = null;
@@ -402,7 +403,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                     // Moddesc 8: You can no longer DLCRequirements on vanilla LE DLC, since they're always present,
                     // and removing vanilla DLCs is not supported.
-                    if (modForValidating.ModDescTargetVersion >= 8.0 && modForValidating.Game.IsLEGame() && MEDirectories.OfficialDLC(modForValidating.Game).Contains(testreq.DLCFolderName.Key, StringComparer.InvariantCultureIgnoreCase))
+                    if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0 && modForValidating.Game.IsLEGame() && MEDirectories.OfficialDLC(modForValidating.Game).Contains(testreq.DLCFolderName.Key, StringComparer.InvariantCultureIgnoreCase))
                     {
                         M3Log.Error($@"Alternate DLC ({FriendlyName}) DLCRequirements specifies a DLC that ships in Legendary Edition. Legendary Edition mods targeting moddesc 8.0 and higher cannot set DLCRequirements on vanilla DLC, as Mod Manager does not support games that do not have the vanilla DLC. Unsupported value: {originalReq}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcrequirementsHasOfficialLEDLC, FriendlyName, originalReq);
@@ -545,7 +546,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 case AltDLCCondition.COND_DLC_PRESENT:
                 case AltDLCCondition.COND_ANY_DLC_PRESENT:
                     UIIsSelected = ConditionalDLC.Any(i => metaInfo.ContainsKey(i.DLCFolderName.Key));
-                    if (UIIsSelected && mod.ModDescTargetVersion >= 9.0)
+                    if (UIIsSelected && mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                     {
                         UIIsSelected = CheckExtraConditions(metaInfo);
                     }
@@ -555,7 +556,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     break;
                 case AltDLCCondition.COND_ALL_DLC_PRESENT:
                     UIIsSelected = ConditionalDLC.All(i => metaInfo.ContainsKey(i.DLCFolderName.Key));
-                    if (UIIsSelected && mod.ModDescTargetVersion >= 9.0)
+                    if (UIIsSelected && mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                     {
                         UIIsSelected = CheckExtraConditions(metaInfo);
                     }
@@ -585,7 +586,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                                 if (condDlc.DLCFolderName.IsPlus == true)
                                 {
                                     selected &= metaInfo.ContainsKey(condDlc.DLCFolderName.Key);
-                                    if (selected && mod.ModDescTargetVersion >= 9.0)
+                                    if (selected && mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                                     {
                                         // Can only check for option keys for mods that are installed.
                                         selected = CheckExtraConditions(metaInfo);
@@ -617,12 +618,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 var metas = target.GetMetaMappedInstalledDLC();
 
-                if (mod.ModDescTargetVersion >= 9.0)
+                if (mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                 {
                     // ModDesc 9.0: Switched to DLCRequirement system
                     UIIsSelectable = DLCRequirementsForManual.All(x => x.IsRequirementMet(target, metas));
                 }
-                else if (mod.ModDescTargetVersion >= 6.3)
+                else if (mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_3)
                 {
                     // ModDesc 6.3: +/- system allowed different DLC setups.
                     var requiredDLC = DLCRequirementsForManual.Where(x => x.DLCFolderName.IsPlus == null || x.DLCFolderName.IsPlus.Value).Select(x => x.DLCFolderName.Key); // none or + means 'must exist'
@@ -636,7 +637,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     UIIsSelectable = metas.Keys.ContainsAll(DLCRequirementsForManual.Select(x => x.ToString()), StringComparer.InvariantCultureIgnoreCase);
                 }
 
-                if (!UIIsSelectable && mod.ModDescTargetVersion >= 6.2)
+                if (!UIIsSelectable && mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_2)
                 {
                     // Mod Manager 6.2: If requirements are not met this option is forcibly not checked.
                     // Mods targeting Moddesc 6 or 6.1 would possibly be bugged if they used this feature

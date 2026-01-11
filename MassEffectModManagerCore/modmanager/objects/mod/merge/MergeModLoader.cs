@@ -2,6 +2,7 @@
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
@@ -134,7 +135,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         public static int? GetMergeModVersionForCompile(Window window, string file, double featureLevel = 0)
         {
             // Pre-provided value
-            if (featureLevel >= 9.0)
+            if (featureLevel >= ModDescConsts.MODDESC_VERSION_9_0)
                 return 2;
             if (featureLevel > 0)
                 return 1;
@@ -158,7 +159,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
                 var moddescVerEntry = ini[@"ModManager"][@"cmmver"];
                 if (moddescVerEntry.HasValue && double.TryParse(moddescVerEntry.Value, out var mdVer))
                 {
-                    return mdVer >= 9.0 ? 2 : 1;
+                    return mdVer >= ModDescConsts.MODDESC_VERSION_9_0 ? 2 : 1;
                 }
             }
 
@@ -176,9 +177,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         public static double GetMinimumCmmVerRequirement(int mmMergeModVersion)
         {
             if (mmMergeModVersion == 1)
-                return 7.0;
+                return ModDescConsts.MODDESC_VERSION_7_0;
             if (mmMergeModVersion == 2)
-                return 9.0;
+                return ModDescConsts.MODDESC_VERSION_9_0;
 
             return 100;
         }

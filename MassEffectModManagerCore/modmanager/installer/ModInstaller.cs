@@ -9,6 +9,7 @@ using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.M3Merge.PlotManager;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
@@ -1110,7 +1111,8 @@ namespace ME3TweaksModManager.modmanager.installer
 
             // We check for 9.2 or higher here to force mods to update to 9.2 to use this feature,
             // this ensures the developer is aware changes have been made.
-            if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= 9.2 && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+            if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_2 
+                && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
             {
                 void onMergeUpdate(ProgressInfo pi)
                 {
