@@ -131,7 +131,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (result != null)
                 {
                     // Issue opening the file.
-                    M3L.ShowDialog(window, $"Error opening moddesc.ini file: {result}", M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_errorOpeningModdesciniFileResult, result), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
