@@ -175,7 +175,6 @@ namespace LocalizationHelper
                 var m3coreRoot = Path.Combine(coreRoot, "ME3TweaksCore");
                 var m3coreWpfRoot = Path.Combine(coreRoot, "ME3TweaksCoreWPF");
 
-
                 files.AddRange(Directory.EnumerateFiles(m3coreRoot, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
                 files.AddRange(Directory.EnumerateFiles(m3coreWpfRoot, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
 
@@ -462,11 +461,137 @@ namespace LocalizationHelper
             HashSet<string> s = new HashSet<string>();
             HashSet<string> origStrForSubsOnly = new HashSet<string>();
             bool sectionIsLocalizable = true;
+            bool inRawStringLiteral = false;
+            string rawStringClosingDelimiter = null;
+            bool inMultiLineVerbatimString = false;
+            
             for (int x = 0; x < filelines.Length; x++)
             {
                 if (x == 132)
                     Debug.WriteLine("ok");
                 var line = filelines[x];
+                
+                // Check if we're entering or exiting a raw string literal
+                if (!inRawStringLiteral && !inMultiLineVerbatimString)
+                {
+                    // Look for raw string literal start: """ or $"""
+                    var trimmedLine = line.TrimStart();
+                    if (trimmedLine.StartsWith("\"\"\"") || trimmedLine.StartsWith("$\"\"\""))
+                    {
+                        // Count the number of quotes to determine the delimiter
+                        int quoteCount = 0;
+                        int startIndex = trimmedLine.StartsWith("$") ? 1 : 0;
+                        while (startIndex + quoteCount < trimmedLine.Length && trimmedLine[startIndex + quoteCount] == '"')
+                        {
+                            quoteCount++;
+                        }
+                        
+                        if (quoteCount >= 3)
+                        {
+                            // This is a raw string literal
+                            inRawStringLiteral = true;
+                            rawStringClosingDelimiter = new string('"', quoteCount);
+                            
+                            // Check if it closes on the same line
+                            var afterOpening = trimmedLine.Substring(startIndex + quoteCount);
+                            if (afterOpening.Contains(rawStringClosingDelimiter))
+                            {
+                                // Single-line raw string literal, close it immediately
+                                inRawStringLiteral = false;
+                                rawStringClosingDelimiter = null;
+                            }
+                            continue;
+                        }
+                    }
+                    
+                    // Check for multi-line verbatim string literal start: @" or $@"
+                    // This must be at start of assignment or after = 
+                    if (line.Contains("@\""))
+                    {
+                        // Find the position of @"
+                        int atPos = line.IndexOf("@\"");
+                        // Check if preceded by $ (for interpolated verbatim)
+                        if (atPos > 0 && line[atPos - 1] == '$')
+                        {
+                            atPos--; // Include the $
+                        }
+                        
+                        // Count the number of quotes in the rest of the line to see if it closes
+                        int quoteCount = 0;
+                        bool escaped = false;
+                        for (int i = line.IndexOf("@\"") + 2; i < line.Length; i++)
+                        {
+                            if (line[i] == '"')
+                            {
+                                quoteCount++;
+                                // Check if it's an escaped quote ("") 
+                                if (i + 1 < line.Length && line[i + 1] == '"')
+                                {
+                                    i++; // Skip the next quote
+                                    quoteCount++;
+                                    escaped = true;
+                                }
+                            }
+                        }
+                        
+                        // If we have an odd number of quotes, or no closing quote, this continues to next line
+                        // Verbatim strings can span multiple lines
+                        if (quoteCount % 2 == 0 && quoteCount == 0)
+                        {
+                            // No closing quote found, this is a multi-line verbatim string
+                            inMultiLineVerbatimString = true;
+                            continue;
+                        }
+                        else if (quoteCount == 1 || (quoteCount % 2 == 1))
+                        {
+                            // Odd number means the string is closed on this line (the last quote closes it)
+                            // Don't set the flag, process normally
+                        }
+                        else if (quoteCount >= 2 && quoteCount % 2 == 0 && escaped)
+                        {
+                            // All quotes are escaped pairs, string continues to next line
+                            inMultiLineVerbatimString = true;
+                            continue;
+                        }
+                    }
+                }
+                else if (inRawStringLiteral)
+                {
+                    // We're in a raw string literal, check if this line closes it
+                    if (line.TrimEnd().EndsWith(rawStringClosingDelimiter))
+                    {
+                        inRawStringLiteral = false;
+                        rawStringClosingDelimiter = null;
+                    }
+                    continue; // Skip all lines inside raw string literals
+                }
+                else if (inMultiLineVerbatimString)
+                {
+                    // We're in a multi-line verbatim string, check if this line closes it
+                    // Count quotes in this line
+                    int quoteCount = 0;
+                    for (int i = 0; i < line.Length; i++)
+                    {
+                        if (line[i] == '"')
+                        {
+                            quoteCount++;
+                            // Check for escaped quote ("")
+                            if (i + 1 < line.Length && line[i + 1] == '"')
+                            {
+                                i++; // Skip the next quote
+                                quoteCount++;
+                            }
+                        }
+                    }
+                    
+                    // If we have an odd number of quotes, the last one closes the string
+                    if (quoteCount % 2 == 1)
+                    {
+                        inMultiLineVerbatimString = false;
+                    }
+                    continue; // Skip all lines inside multi-line verbatim strings
+                }
+                
                 if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
                 if (line.Contains("Localizable(true)", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -504,20 +629,51 @@ namespace LocalizationHelper
                     if (atPos == -1) break;
                     
                     // Check if it's $@ or just @
+                    bool isInterpolated = atPos > 0 && line[atPos - 1] == '$';
+                    int startPos = isInterpolated ? atPos - 1 : atPos;
                     int quotePos = atPos + 1;
-                    if (atPos > 0 && line[atPos - 1] == '$')
-                    {
-                        // This is $@
-                        atPos = atPos - 1;
-                    }
                     
                     // Check if next char is "
                     if (quotePos < line.Length && line[quotePos] == '"')
                     {
                         // Find the end of the verbatim string (look for closing ")
                         int endPos = quotePos + 1;
+                        int braceDepth = 0; // Track brace depth for interpolated strings
+                        
                         while (endPos < line.Length)
                         {
+                            if (isInterpolated)
+                            {
+                                // In interpolated verbatim strings, we need to track braces
+                                if (line[endPos] == '{')
+                                {
+                                    if (endPos + 1 < line.Length && line[endPos + 1] == '{')
+                                    {
+                                        // Escaped brace {{
+                                        endPos += 2;
+                                        continue;
+                                    }
+                                    braceDepth++;
+                                    endPos++;
+                                    continue;
+                                }
+                                else if (line[endPos] == '}')
+                                {
+                                    if (endPos + 1 < line.Length && line[endPos + 1] == '}')
+                                    {
+                                        // Escaped brace }}
+                                        endPos += 2;
+                                        continue;
+                                    }
+                                    if (braceDepth > 0)
+                                    {
+                                        braceDepth--;
+                                        endPos++;
+                                        continue;
+                                    }
+                                }
+                            }
+                            
                             if (line[endPos] == '"')
                             {
                                 // Check if it's an escaped quote ("") or end of string
@@ -528,10 +684,19 @@ namespace LocalizationHelper
                                 }
                                 else
                                 {
-                                    // End of verbatim string
-                                    verbatimStringRanges.Add((atPos, endPos));
-                                    searchPos = endPos + 1;
-                                    break;
+                                    // Only end the string if we're not inside an interpolation
+                                    if (!isInterpolated || braceDepth == 0)
+                                    {
+                                        // End of verbatim string
+                                        verbatimStringRanges.Add((startPos, endPos));
+                                        searchPos = endPos + 1;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        // We're inside an interpolation expression, this quote is part of a nested string
+                                        endPos++;
+                                    }
                                 }
                             }
                             else
@@ -542,7 +707,7 @@ namespace LocalizationHelper
                         if (endPos >= line.Length)
                         {
                             // String continues to end of line
-                            verbatimStringRanges.Add((atPos, line.Length - 1));
+                            verbatimStringRanges.Add((startPos, line.Length - 1));
                             break;
                         }
                     }
@@ -1048,6 +1213,11 @@ namespace LocalizationHelper
                 i++;
                 foreach (var csFile in csFiles)
                 {
+                    if (csFile.EndsWith(@".g.cs") || csFile.EndsWith(@".g.i.cs"))
+                    {
+                        // This is a pregen file
+                        continue;
+                    }
                     if (!LocalizingM3)
                     {
                         if (csFile.Contains("ME3TweaksCore\\submodules", StringComparison.InvariantCultureIgnoreCase))
@@ -1270,7 +1440,7 @@ namespace LocalizationHelper
             if (str.Equals("Faster Legs", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("GatorZ", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("OneGreatMod", StringComparison.InvariantCultureIgnoreCase)) return false;
-            if (str.Equals("Faster Legs DLC Module", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Faster Legs DLC Module", StringComparison.OrdinalIgnoreCase)) return false;
             return true;
         }
 
