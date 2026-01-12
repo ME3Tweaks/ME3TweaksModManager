@@ -24,15 +24,31 @@ using Path = System.IO.Path;
 namespace LocalizationHelper
 {
     /// <summary>
-    /// Interaction logic for LocalizationTablesUI.xaml
+    /// Main window for the ME3Tweaks Mod Manager localization editor.
+    /// Provides functionality for translating, editing, and managing localizations for both
+    /// ME3TweaksModManager and ME3TweaksCore projects across multiple languages.
     /// </summary>
     public partial class LocalizationTablesUI : Window, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Controls the visibility of the loading overlay during initialization.
+        /// </summary>
         public Visibility LoadingVisibility { get; set; } = Visibility.Visible;
+        
+        /// <summary>
+        /// Array of fully supported language codes that have complete translations.
+        /// </summary>
         private string[] FullySupportedLangs = { "deu", "rus", /*"pol", "bra",*/ "ita", /*"fra"*/ };
 
+        /// <summary>
+        /// List of all supported language codes in the application.
+        /// </summary>
         public List<string> GlobalSupportedLanguages = new List<string>();
 
+        /// <summary>
+        /// Initializes a new instance of the LocalizationTablesUI window.
+        /// Sets up the UI, loads available languages, and fetches localization data from GitHub.
+        /// </summary>
         public LocalizationTablesUI()
         {
             Title = $"ME3Tweaks Mod Manager Localizer {Assembly.GetExecutingAssembly().GetName().Version}";
@@ -53,9 +69,22 @@ namespace LocalizationHelper
             LoadLocalizations(false, @"ME3TweaksCore", @"ME3TweaksCore/Localization/Dictionaries/", M3CLocalizationBranches, M3CLocalizationCategories);
         }
 
+        /// <summary>
+        /// Gets or sets the currently selected language for editing.
+        /// </summary>
         public static LocalizationLanguage CurrentLanguage { get; set; }
+        
+        /// <summary>
+        /// Collection of available languages for localization.
+        /// </summary>
         public ObservableCollectionExtended<LocalizationLanguage> Languages { get; } = new();
 
+        /// <summary>
+        /// Auto-save timer callback that periodically saves the current localization work.
+        /// Saves both ME3TweaksModManager and ME3TweaksCore localizations to the AppData folder.
+        /// </summary>
+        /// <param name="sender">The timer that triggered the event.</param>
+        /// <param name="eventArgs">Event arguments.</param>
         public void AutoSave(object sender, EventArgs eventArgs)
         {
             try
@@ -72,7 +101,6 @@ namespace LocalizationHelper
                 // Save M3C
                 sb = CreateXamlDocument(true);
                 locSavePath = Path.Combine(GetAppDataFolder(), $"m3c-{lang}.xaml");
-                locSavePath = Path.Combine(GetAppDataFolder(), $"m3c-{lang}.xaml");
                 File.WriteAllText(locSavePath, sb);
 
             }
@@ -82,6 +110,11 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Gets the application data folder where localization files are stored.
+        /// </summary>
+        /// <param name="createIfMissing">If true, the folder will be created if it doesn't exist.</param>
+        /// <returns>The application data folder path.</returns>
         internal static string GetAppDataFolder(bool createIfMissing = true)
         {
             var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
@@ -95,23 +128,54 @@ namespace LocalizationHelper
         }
 
 
+        /// <summary>
+        /// Gets or sets the loading message displayed to the user during initialization.
+        /// </summary>
         public string PleaseWaitString { get; set; } = "Please wait, starting up";
 
+        /// <summary>
+        /// Collection of available localization branches for ME3TweaksModManager.
+        /// </summary>
         public ObservableCollectionExtended<string> M3LocalizationBranches { get; } =
             new ObservableCollectionExtended<string>();
 
+        /// <summary>
+        /// Collection of available localization branches for ME3TweaksCore.
+        /// </summary>
         public ObservableCollectionExtended<string> M3CLocalizationBranches { get; } =
             new ObservableCollectionExtended<string>();
 
+        /// <summary>
+        /// Collection of localized tip strings from the tips service.
+        /// </summary>
         public ObservableCollectionExtended<LocalizedString> LocalizedTips { get; } =
             new ObservableCollectionExtended<LocalizedString>();
 
+        /// <summary>
+        /// Collection of localized tutorial strings from the tutorial service.
+        /// </summary>
         public ObservableCollectionExtended<LocalizedString> LocalizedTutorialService { get; } =
             new ObservableCollectionExtended<LocalizedString>();
 
+        /// <summary>
+        /// Gets or sets the currently selected branch for ME3TweaksModManager localizations.
+        /// </summary>
         public string M3SelectedBranch { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the currently selected branch for ME3TweaksCore localizations.
+        /// </summary>
         public string M3CSelectedBranch { get; set; }
 
+        /// <summary>
+        /// Loads localization data from GitHub for a specific repository.
+        /// </summary>
+        /// <param name="fullLoad">If true, also loads tips, tutorials, and dynamic help content.</param>
+        /// <param name="repo">The GitHub repository name (e.g., "ME3TweaksModManager").</param>
+        /// <param name="branchLocalizationPath">The path within the repository where localization files are stored.</param>
+        /// <param name="branchDest">Collection to populate with available branches.</param>
+        /// <param name="categoryDest">Collection to populate with localization categories.</param>
+        /// <param name="branch">Optional specific branch to load. If null, uses the first available branch.</param>
         private void LoadLocalizations(bool fullLoad, string repo, string branchLocalizationPath,
             ObservableCollectionExtended<string> branchDest,
             ObservableCollectionExtended<LocalizationCategory> categoryDest,
@@ -439,11 +503,35 @@ namespace LocalizationHelper
         }
 
 
+        /// <summary>
+        /// Timer used for automatic saving of localization work in progress.
+        /// </summary>
         public DispatcherTimer autosaveTimer;
+        
+        /// <summary>
+        /// Stores the previously selected ME3TweaksModManager branch to detect changes.
+        /// </summary>
         private string m3oldBranch = null;
+        
+        /// <summary>
+        /// Stores the previously selected ME3TweaksCore branch to detect changes.
+        /// </summary>
         private string m3coldBranch = null;
+        
+        /// <summary>
+        /// Dictionary mapping language codes to their localized dynamic help XML content.
+        /// </summary>
         private Dictionary<string, string> dynamicHelpLocalizations = new Dictionary<string, string>();
+        
+        /// <summary>
+        /// List of non-localized help sections that should be preserved when saving dynamic help.
+        /// </summary>
         private List<string> nonLocalizedHelpSections = new List<string>();
+        
+        /// <summary>
+        /// Called when the ME3TweaksModManager selected branch changes.
+        /// Reloads localizations for the new branch.
+        /// </summary>
         public void OnM3SelectedBranchChanged()
         {
             if (m3oldBranch != null)
@@ -460,6 +548,10 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Called when the ME3TweaksCore selected branch changes.
+        /// Reloads localizations for the new branch.
+        /// </summary>
         public void OnM3CSelectedBranchChanged()
         {
             if (m3coldBranch != null)
@@ -477,10 +569,10 @@ namespace LocalizationHelper
         }
 
         /// <summary>
-        /// Parses a dictionary of localization strings
+        /// Parses localization XAML documents and applies translations to the category structure.
         /// </summary>
-        /// <param name="categories">List of categories to apply localizations to</param>
-        /// <param name="langToXamlMap">map of languageCode to Xaml document text</param>
+        /// <param name="categories">List of categories to apply localizations to.</param>
+        /// <param name="langToXamlMap">Dictionary mapping language codes to XAML document text.</param>
         private void parseLocalizations(List<LocalizationCategory> categories, Dictionary<string, string> langToXamlMap)
         {
             foreach (var lang in langToXamlMap.Keys)
@@ -534,6 +626,11 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Extracts localization information from a single line of XAML.
+        /// </summary>
+        /// <param name="line">The XAML line to parse.</param>
+        /// <returns>A tuple containing preserve whitespace flag, key, and text value.</returns>
         private (bool preserveWhitespace, string key, string text) extractInfo(string line)
         {
             var closingTagIndex = line.IndexOf(">");
@@ -550,25 +647,76 @@ namespace LocalizationHelper
             return (preserveWhitespace, keyVal, text);
         }
 
+        /// <summary>
+        /// Gets or sets the currently selected category for ME3TweaksModManager.
+        /// </summary>
         public LocalizationCategory M3SelectedCategory { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the currently selected category for ME3TweaksCore.
+        /// </summary>
         public LocalizationCategory M3CSelectedCategory { get; set; }
 
+        /// <summary>
+        /// Collection of localization categories for ME3TweaksModManager.
+        /// </summary>
         public ObservableCollectionExtended<LocalizationCategory> M3LocalizationCategories { get; } =
             new ObservableCollectionExtended<LocalizationCategory>();
 
+        /// <summary>
+        /// Collection of localization categories for ME3TweaksCore.
+        /// </summary>
         public ObservableCollectionExtended<LocalizationCategory> M3CLocalizationCategories { get; } =
             new ObservableCollectionExtended<LocalizationCategory>();
 
+        /// <summary>
+        /// Command to save the current localization to a file.
+        /// </summary>
         public ICommand SaveLocalizationCommand { get; set; }
+        
+        /// <summary>
+        /// Command to copy the current localization to the clipboard.
+        /// </summary>
         public ICommand CopyLocalizationCommand { get; set; }
+        
+        /// <summary>
+        /// Command to load a localization from a file.
+        /// </summary>
         public ICommand LoadLocalizationCommand { get; set; }
+        
+        /// <summary>
+        /// Command to save tips localization to a file.
+        /// </summary>
         public ICommand SaveTipsLocalizationCommand { get; set; }
+        
+        /// <summary>
+        /// Command to load the localized help menu for the current language.
+        /// </summary>
         public ICommand LoadLocalizedHelpMenuCommand { get; set; }
+        
+        /// <summary>
+        /// Command to save the localized help menu.
+        /// </summary>
         public ICommand SaveLocalizedHelpMenuCommand { get; set; }
+        
+        /// <summary>
+        /// Command to save tutorial localization to a file.
+        /// </summary>
         public ICommand SaveTutorialLocalizationCommand { get; set; }
+        
+        /// <summary>
+        /// Command to open the auto-save directory in Windows Explorer.
+        /// </summary>
         public ICommand OpenAutosaveDirCommand { get; set; }
+        
+        /// <summary>
+        /// Command to add a new language to the localization editor.
+        /// </summary>
         public ICommand AddLangCommand { get; set; }
 
+        /// <summary>
+        /// Initializes all command bindings for the application.
+        /// </summary>
         private void LoadCommands()
         {
             OpenAutosaveDirCommand = new GenericCommand(OpenAutosavesLocation);
@@ -582,6 +730,9 @@ namespace LocalizationHelper
             SaveLocalizedHelpMenuCommand = new GenericCommand(SaveLocalizedHelpMenu, CanAddLang);
         }
 
+        /// <summary>
+        /// Prompts the user to add a new language and adds it to the available languages.
+        /// </summary>
         private void AddLanguage()
         {
             var result = PromptDialog.Prompt(this, "Enter a 3 letter language code for your new language.",
@@ -602,16 +753,26 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Determines if a new language can be added (requires loaded localizations).
+        /// </summary>
+        /// <returns>True if localizations are loaded; otherwise, false.</returns>
         private bool CanAddLang()
         {
             return M3LocalizationCategories != null && M3LocalizationCategories.Any() && M3CLocalizationCategories != null && M3CLocalizationCategories.Any();
         }
 
+        /// <summary>
+        /// Opens the auto-save directory in Windows Explorer.
+        /// </summary>
         private void OpenAutosavesLocation()
         {
             Process.Start("explorer.exe", GetAppDataFolder());
         }
 
+        /// <summary>
+        /// Saves the localized dynamic help menu XML to a file.
+        /// </summary>
         private void SaveLocalizedHelpMenu()
         {
             string lang = CurrentLanguage?.LangCode;
@@ -661,6 +822,9 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Loads the localized help menu for the current language into the editor.
+        /// </summary>
         private void LoadLocalizedHelpMenu()
         {
             string lang = CurrentLanguage?.LangCode;
@@ -671,6 +835,9 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Saves tutorial localizations to a text file for upload to the tutorial service.
+        /// </summary>
         private void SaveTutorialLocalization()
         {
             string lang = CurrentLanguage?.LangCode;
@@ -698,6 +865,9 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Saves tips localizations to a text file for upload to the tips service.
+        /// </summary>
         private void SaveTipsLocalization()
         {
             string lang = CurrentLanguage?.LangCode;
@@ -724,6 +894,10 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Copies the current localization XAML to the clipboard.
+        /// </summary>
+        /// <param name="obj">Boolean indicating if this is for ME3TweaksCore (true) or ME3TweaksModManager (false).</param>
         private void CopyLocalization(object obj)
         {
             string lang = CurrentLanguage?.LangCode;
@@ -738,8 +912,9 @@ namespace LocalizationHelper
         }
 
         /// <summary>
-        /// Opens a file
+        /// Opens a file dialog to load a localization XAML file.
         /// </summary>
+        /// <param name="obj">Boolean indicating if this is for ME3TweaksCore (true) or ME3TweaksModManager (false).</param>
         private void LoadLocalization(object obj)
         {
             if (obj is bool m3core)
@@ -806,6 +981,11 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Determines if a localization can be saved (requires loaded categories).
+        /// </summary>
+        /// <param name="obj">Boolean indicating which project to check.</param>
+        /// <returns>True if localizations are loaded; otherwise, false.</returns>
         private bool CanSaveLocalization(object obj)
         {
             if (obj is bool m3core)
@@ -818,6 +998,12 @@ namespace LocalizationHelper
             return false;
         }
 
+        /// <summary>
+        /// Creates a complete XAML ResourceDictionary document from the current localizations.
+        /// Validates interpolations and formats the output according to XAML standards.
+        /// </summary>
+        /// <param name="m3core">If true, generates for ME3TweaksCore; otherwise, for ME3TweaksModManager.</param>
+        /// <returns>The complete XAML document as a string.</returns>
         private string CreateXamlDocument(bool m3core)
         {
             string lang = CurrentLanguage?.LangCode;
@@ -908,6 +1094,11 @@ namespace LocalizationHelper
 
         }
 
+        /// <summary>
+        /// Validates that string interpolations (e.g., {0}, {1}) are correctly formatted.
+        /// </summary>
+        /// <param name="lstr">The localized string to check.</param>
+        /// <returns>A tuple indicating success and a failure reason if validation fails.</returns>
         private (bool ok, string failurereason) checkInterpolations(string lstr)
         {
             // Check for { and } with items in them that are not 0-9.
@@ -954,6 +1145,10 @@ namespace LocalizationHelper
             return (true, null);
         }
 
+        /// <summary>
+        /// Saves the current localization to a XAML file via a file dialog.
+        /// </summary>
+        /// <param name="obj">Boolean indicating if this is for ME3TweaksCore (true) or ME3TweaksModManager (false).</param>
         private void SaveLocalization(object obj)
         {
             if (obj is bool m3core)
@@ -982,52 +1177,74 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Represents a category grouping of localized strings.
+        /// </summary>
         [DebuggerDisplay("LocCat {CategoryName} with {LocalizedStringsForSection.Count} entries")]
         public class LocalizationCategory : INotifyPropertyChanged
         {
+            /// <summary>
+            /// Gets or sets the name of this localization category.
+            /// </summary>
             public string CategoryName { get; set; }
+            
+            /// <summary>
+            /// Gets whether any strings in this category have changed from the previous version or are not localized.
+            /// </summary>
             public bool HasChangedStrings => LocalizedStringsForSection.Any(x => x.ChangedFromPrevious || x.LocalStringNotLocalized);
 
+            /// <summary>
+            /// Collection of localized strings within this category.
+            /// </summary>
             public ObservableCollectionExtended<LocalizedString> LocalizedStringsForSection { get; } =
                 new ObservableCollectionExtended<LocalizedString>();
 
+            /// <summary>
+            /// Notifies that the language has changed and UI should update.
+            /// </summary>
             public void OnLanguageChanged()
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasChangedStrings)));
             }
 
+            /// <summary>
+            /// Occurs when a property value changes.
+            /// </summary>
             public event PropertyChangedEventHandler PropertyChanged;
         }
 
+        /// <summary>
+        /// Represents a single localizable string with translations in multiple languages.
+        /// </summary>
         public class LocalizedString : INotifyPropertyChanged
         {
             /// <summary>
-            /// The ID of the string
+            /// Gets or sets the unique identifier key for this localized string.
             /// </summary>
             public string key { get; set; }
 
             /// <summary>
-            /// If we should preserver whitespace (e.g. it has newlines)
+            /// Gets or sets whether whitespace (including newlines) should be preserved in the output.
             /// </summary>
             public bool preservewhitespace { get; set; }
 
             /// <summary>
-            /// Notes about this string (if any)
+            /// Gets or sets optional notes or comments about this string for translators.
             /// </summary>
             public string notes { get; set; }
 
             /// <summary>
-            /// The english string
+            /// Gets or initializes the English (INT) version of this string.
             /// </summary>
             public string EnglishString { get; init; }
 
             /// <summary>
-            /// The dictionary containing each localized language's string
+            /// Dictionary containing translations for each language code.
             /// </summary>
             public readonly Dictionary<string, string> Localizations = new();
 
             /// <summary>
-            /// The localized string for the current language
+            /// Gets or sets the localized string for the currently selected language.
             /// </summary>
             public string LocalizedStr
             {
@@ -1049,12 +1266,22 @@ namespace LocalizationHelper
                 }
             }
 
+            /// <summary>
+            /// Gets or sets whether this string has changed from the previous build.
+            /// </summary>
             public bool ChangedFromPrevious { get; set; }
+            
+            /// <summary>
+            /// Gets whether the current language's string is missing or empty.
+            /// </summary>
             public bool LocalStringNotLocalized
             {
                 get { return LocalizationTablesUI.CurrentLanguage != null && string.IsNullOrWhiteSpace(LocalizedStr); }
             }
 
+            /// <summary>
+            /// Notifies that the current language has changed and properties should rebind.
+            /// </summary>
             public void OnCurrentLanguageChanged()
             {
                 // Rebind
@@ -1062,23 +1289,44 @@ namespace LocalizationHelper
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LocalStringNotLocalized)));
             }
 
-#pragma warning disable
+            /// <summary>
+            /// Occurs when a property value changes.
+            /// </summary>
             public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         }
 
-#pragma warning disable
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
-
+        
+        /// <summary>
+        /// Gets or sets the currently selected item in the ME3TweaksModManager data grid.
+        /// </summary>
         public LocalizedString SelectedDataGridItem { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the currently selected item in the ME3TweaksCore data grid.
+        /// </summary>
         public LocalizedString SelectedDataGridItemM3C { get; set; }
 
+        /// <summary>
+        /// Gets or sets the text to search for in localizations.
+        /// </summary>
         public string SearchText { get; set; } = "";
 
+        /// <summary>
+        /// Gets or sets the currently selected tab index (0 = M3, 1 = M3C, etc.).
+        /// </summary>
         public int SelectedTabIndex { get; set; }
 
 
+        /// <summary>
+        /// Handles the Find button click event. Searches for the next occurrence of the search text
+        /// in keys, English strings, or localized strings.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void Find_Clicked(object sender, RoutedEventArgs e)
         {
             var m3core = SelectedTabIndex == 1;
@@ -1171,6 +1419,11 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Handles the KeyDown event in the search box to trigger search on Enter key.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Keyboard event arguments.</param>
         private void SeachBox_OnKeyDownHandler(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
@@ -1179,6 +1432,11 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Handles language selection click events from the UI.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void Language_Clicked(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement fw && fw.DataContext is LocalizationLanguage ll)
@@ -1187,6 +1445,10 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Changes the active language and updates all localized strings in the UI.
+        /// </summary>
+        /// <param name="ll">The language to switch to.</param>
         private void ChangeLanguage(LocalizationLanguage ll)
         {
             CurrentLanguage = ll;

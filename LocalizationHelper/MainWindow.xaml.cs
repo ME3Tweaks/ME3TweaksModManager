@@ -1,5 +1,4 @@
-﻿
-#if DEBUG
+﻿#if DEBUG
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -19,17 +18,42 @@ using Path = System.IO.Path;
 namespace LocalizationHelper
 {
     /// <summary>
-    /// Localizer for ME3Tweaks Mod Manager
+    /// Main window for the ME3Tweaks Mod Manager Localization Helper tool.
+    /// This tool assists in extracting, managing, and synchronizing localization strings
+    /// from C# and XAML source files for both ME3Tweaks Mod Manager (M3) and ME3TweaksCore projects.
     /// </summary>
+    /// <remarks>
+    /// The tool provides functionality to:
+    /// - Extract localizable strings from C# source files
+    /// - Extract localizable strings from XAML files
+    /// - Generate localization keys in camelCase format
+    /// - Synchronize localization dictionaries across multiple language files
+    /// - Push localized strings back into source files
+    /// - Validate localization coverage
+    /// This tool only compiles in DEBUG mode.
+    /// </remarks>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         /// <summary>
-        /// If we are operating on M3 (true) or M3Core (false)
+        /// Determines whether the tool is operating on ME3Tweaks Mod Manager (true) or ME3TweaksCore (false).
         /// </summary>
         private bool LocalizingM3 = true;
 
+        /// <summary>
+        /// Gets the collection of source files available for localization.
+        /// Contains relative paths to all C# and XAML files that can be localized.
+        /// </summary>
         public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
+        
+        /// <summary>
+        /// Gets or sets the currently selected file for localization operations.
+        /// </summary>
         public string SelectedFile { get; set; }
+        
+        /// <summary>
+        /// Initializes a new instance of the MainWindow class.
+        /// Sets up the data context and loads the initial file list.
+        /// </summary>
         public MainWindow()
         {
             DataContext = this;
@@ -37,6 +61,21 @@ namespace LocalizationHelper
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Reloads the list of source files available for localization based on the current project context (M3 or M3Core).
+        /// Scans predefined directories for C# and XAML files and populates the SourceFiles collection.
+        /// </summary>
+        /// <remarks>
+        /// For M3, scans directories including:
+        /// - ui, modmanager (base), deployment, diagnostics, exceptions, importer, loaders, meim
+        /// - starterkit, usercontrols, converters, windows, me3tweaks, nexusmodsintegration
+        /// - objects, gameini, helpers, plotmanager, merge, save, headmorph
+        /// 
+        /// For M3Core, scans:
+        /// - ME3TweaksCore and ME3TweaksCoreWPF directories (excluding submodules and obj folders)
+        /// 
+        /// Excludes certain non-localizable files like JPatch.cs, DynamicHelp.cs, and AboutPanel.xaml.
+        /// </remarks>
         private void ReloadData()
         {
             List<string> files = new List<string>();
@@ -96,9 +135,7 @@ namespace LocalizationHelper
                 
                 // Top folder only
                 files.AddRange(Directory.EnumerateFiles(save, "*.cs", SearchOption.TopDirectoryOnly).Select(x => x.Substring(rootLen)));
-
-
-
+ 
                 //these files are not localized
                 files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
                 files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
@@ -167,9 +204,25 @@ namespace LocalizationHelper
             SourceFiles.ReplaceAll(files);
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the selected file is a C# source file.
+        /// </summary>
         public bool SelectedCS { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether the selected file is a XAML file.
+        /// </summary>
         public bool SelectedXAML { get; set; }
 
+        /// <summary>
+        /// Handles the change of the selected file. Determines file type and initiates string extraction.
+        /// </summary>
+        /// <remarks>
+        /// When a file is selected:
+        /// - Clears the result and strings text boxes
+        /// - Determines if the file is C# or XAML
+        /// - Calls the appropriate extraction method (PullStringsFromCS or PullStringsFromXaml)
+        /// </remarks>
         public void OnSelectedFileChanged()
         {
             SelectedCS = false;
@@ -200,9 +253,29 @@ namespace LocalizationHelper
         }
 
 #pragma warning disable
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
+        /// <summary>
+        /// Extracts localizable strings from a XAML file and generates localization keys.
+        /// </summary>
+        /// <param name="sender">The file path of the XAML file to process.</param>
+        /// <param name="e">Event arguments (unused).</param>
+        /// <remarks>
+        /// Parses the XAML document and examines the following attributes for localization:
+        /// - Title, Header, ToolTip, Content, Text, Watermark, DirectionsText
+        /// 
+        /// Filters out:
+        /// - Strings already using DynamicResource binding (starting with "{")
+        /// - Language names, game names, job headers
+        /// - Non-localizable words and paths
+        /// 
+        /// Generates localization keys in format: string_{camelCaseText} or string_tooltip_{camelCaseText}
+        /// Handles multi-line strings by preserving whitespace with xml:space="preserve" attribute.
+        /// </remarks>
         private void PullStringsFromXaml(object sender, RoutedEventArgs e)
         {
             try
@@ -334,6 +407,15 @@ namespace LocalizationHelper
 
         }
 
+        /// <summary>
+        /// Extracts localization information (whitespace preservation flag and key name) from a XAML string line.
+        /// </summary>
+        /// <param name="line">The XAML line containing a system:String element.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - preserveWhitespace: true if xml:space="preserve" is present
+        /// - key: the value of the x:Key attribute
+        /// </returns>
         private (bool preserveWhitespace, string key) extractInfo(string line)
         {
             var closingTagIndex = line.IndexOf(">");
@@ -346,10 +428,32 @@ namespace LocalizationHelper
         }
 
         /// <summary>
-        /// Pulls localizable strings from a .cs file and puts them into the interface
+        /// Extracts localizable strings from a C# source file using regular expressions.
+        /// Generates localization keys and identifies string interpolation patterns.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The file path of the C# file to process.</param>
+        /// <param name="e">Event arguments (unused).</param>
+        /// <remarks>
+        /// String extraction rules:
+        /// - Uses regex pattern to find all quoted strings: ([$@]*(\".+?\"))
+        /// - Skips strings in comments (after //, except for http://)
+        /// - Skips literal strings (starting with @ or $@)
+        /// - Skips log statements (M3Log or MLog)
+        /// - Skips lines with [DebuggerDisplay] attributes
+        /// - Respects //Localizable(true) and //Localizable(false) directives
+        /// - Can force localization with //force localize comment
+        /// 
+        /// String interpolation handling:
+        /// - Detects interpolated strings (starting with $)
+        /// - Extracts substitution patterns {variable}
+        /// - Replaces with numbered placeholders {0}, {1}, etc.
+        /// - Generates XML comments showing parameter mappings
+        /// 
+        /// Key generation:
+        /// - Regular strings: string_{camelCaseText}
+        /// - Interpolated strings: string_interp_{camelCaseText}
+        /// - Preserves whitespace for strings containing \n
+        /// </remarks>
         private void PullStringsFromCS(object sender, RoutedEventArgs e)
         {
             var regex = "([$@]*(\".+?\"))";
@@ -389,11 +493,84 @@ namespace LocalizationHelper
                     Debug.WriteLine($@"Skipping log line at {x}");
                     continue;
                 }
+
+                // Find all verbatim string literal positions to skip matches inside them
+                List<(int start, int end)> verbatimStringRanges = new List<(int, int)>();
+                int searchPos = 0;
+                while (searchPos < line.Length)
+                {
+                    // Look for @ or $@ followed by "
+                    int atPos = line.IndexOf('@', searchPos);
+                    if (atPos == -1) break;
+                    
+                    // Check if it's $@ or just @
+                    int quotePos = atPos + 1;
+                    if (atPos > 0 && line[atPos - 1] == '$')
+                    {
+                        // This is $@
+                        atPos = atPos - 1;
+                    }
+                    
+                    // Check if next char is "
+                    if (quotePos < line.Length && line[quotePos] == '"')
+                    {
+                        // Find the end of the verbatim string (look for closing ")
+                        int endPos = quotePos + 1;
+                        while (endPos < line.Length)
+                        {
+                            if (line[endPos] == '"')
+                            {
+                                // Check if it's an escaped quote ("") or end of string
+                                if (endPos + 1 < line.Length && line[endPos + 1] == '"')
+                                {
+                                    // Escaped quote, skip both
+                                    endPos += 2;
+                                }
+                                else
+                                {
+                                    // End of verbatim string
+                                    verbatimStringRanges.Add((atPos, endPos));
+                                    searchPos = endPos + 1;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                endPos++;
+                            }
+                        }
+                        if (endPos >= line.Length)
+                        {
+                            // String continues to end of line
+                            verbatimStringRanges.Add((atPos, line.Length - 1));
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        searchPos = quotePos;
+                    }
+                }
+
                 var matches = r.Matches(line);
                 foreach (var match in matches)
                 {
                     bool xmlPreserve = false;
                     var matchIndex = line.IndexOf(match.ToString());
+                    
+                    // Check if this match is inside a verbatim string literal
+                    bool insideVerbatimString = false;
+                    foreach (var range in verbatimStringRanges)
+                    {
+                        if (matchIndex >= range.start && matchIndex <= range.end)
+                        {
+                            insideVerbatimString = true;
+                            break;
+                        }
+                    }
+                    
+                    if (insideVerbatimString) continue; // Skip strings inside verbatim literals
+                    
                     if (commentIndex >= 0 && matchIndex > commentIndex)
                     {
                         // Check it's not http:// in same line
@@ -492,6 +669,21 @@ namespace LocalizationHelper
 
         }
 
+        /// <summary>
+        /// Converts a string to camelCase format suitable for localization key names.
+        /// </summary>
+        /// <param name="str">The input string to convert.</param>
+        /// <returns>A camelCase version of the input string with special characters removed.</returns>
+        /// <remarks>
+        /// Transformations applied:
+        /// - Splits on spaces
+        /// - Removes: . ? ( ) : / \ { } - ' ,
+        /// - Replaces "?" with "Question"
+        /// - First word starts with lowercase
+        /// - Subsequent words start with uppercase
+        /// 
+        /// Example: "Save Settings?" becomes "saveSettingsQuestion"
+        /// </remarks>
         private string toCamelCase(string str)
         {
             var words = str.Split();
@@ -525,6 +717,12 @@ namespace LocalizationHelper
             return res;
         }
 
+        /// <summary>
+        /// Converts the first character of a string to uppercase or lowercase.
+        /// </summary>
+        /// <param name="s">The string to modify.</param>
+        /// <param name="upper">If true, converts to uppercase; if false, converts to lowercase.</param>
+        /// <returns>The string with the first character cased as specified, or empty string if input is null/empty.</returns>
         static string caseFirst(string s, bool upper)
         {
             // Check for empty string.
@@ -537,6 +735,26 @@ namespace LocalizationHelper
             return (upper ? char.ToUpper(s[0]) : char.ToLower(s[0])) + s.Substring(1);
         }
 
+        /// <summary>
+        /// Pushes localization strings back into a C# source file by replacing hardcoded strings
+        /// with M3L.GetString() or LC.GetString() calls.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// Process:
+        /// 1. Parses localization strings from StringsTextBox
+        /// 2. Matches each string with its localization key
+        /// 3. Replaces hardcoded strings with GetString calls
+        /// 4. Preserves string interpolation parameters
+        /// 
+        /// Generated code format:
+        /// - M3: M3L.GetString(M3L.string_keyName)
+        /// - M3Core: LC.GetString(LC.string_keyName)
+        /// - With parameters: M3L.GetString(M3L.string_keyName, param1, param2)
+        /// 
+        /// The resulting code is displayed in ResultTextBox.
+        /// </remarks>
         private void PushCSStrings_Clicked(object sender, RoutedEventArgs e)
         {
             var text = StringsTextBox.Text;
@@ -615,6 +833,23 @@ namespace LocalizationHelper
             ResultTextBox.Text = sb.ToString();
         }
 
+        /// <summary>
+        /// Pushes localization strings back into a XAML file by replacing hardcoded attribute values
+        /// with DynamicResource bindings.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// Process:
+        /// 1. Parses localization strings from StringsTextBox
+        /// 2. Loads the selected XAML file
+        /// 3. Examines attributes: Title, Header, ToolTip, Content, Text, Watermark, DirectionsText
+        /// 4. Matches attribute values with localization keys
+        /// 5. Replaces with DynamicResource binding: {DynamicResource string_keyName}
+        /// 
+        /// The resulting XAML is formatted with proper indentation and displayed in ResultTextBox.
+        /// XML declaration is removed from the output for easier copying.
+        /// </remarks>
         private void PushXamlStrings_Clicked(object sender, RoutedEventArgs e)
         {
             var sourceStringsXaml = StringsTextBox.Text;
@@ -678,6 +913,18 @@ namespace LocalizationHelper
 
         }
 
+        /// <summary>
+        /// Formats an XML document with proper indentation and newlines.
+        /// </summary>
+        /// <param name="doc">The XML document to format.</param>
+        /// <returns>A formatted XML string with UTF-8 encoding, proper indentation, and newlines on attributes.</returns>
+        /// <remarks>
+        /// Formatting settings:
+        /// - Encoding: UTF-8
+        /// - Indent: 4 spaces
+        /// - NewLineOnAttributes: true
+        /// - ConformanceLevel: Document
+        /// </remarks>
         public static string Beautify(System.Xml.XmlDocument doc)
         {
             string strRetValue = null;
@@ -735,6 +982,23 @@ namespace LocalizationHelper
             return strRetValue;
         } // End Function Beautify
 
+        /// <summary>
+        /// Scans C# files in predefined directories for non-localized strings and outputs them to debug console.
+        /// Used for localization coverage verification.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// For M3, scans:
+        /// - modmanager\usercontrols, objects, windows, helpers
+        /// - MainWindow.xaml.cs
+        /// 
+        /// For M3Core, scans:
+        /// - ME3TweaksCore and ME3TweaksCoreWPF directories
+        /// - Excludes: submodules, AssemblyInfo, AssemblyAttributes, LocalizationStringKeys, LocalizationCore
+        /// 
+        /// Each found string is output with its line number and suggested localization key.
+        /// </remarks>
         private void Check_Clicked(object sender, RoutedEventArgs e)
         {
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
@@ -826,6 +1090,27 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Scans XAML files in predefined directories for non-localized attribute values and outputs them to debug console.
+        /// Used for localization coverage verification in UI files.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// Scans XAML files in:
+        /// - modmanager\usercontrols
+        /// - modmanager\windows
+        /// - MainWindow.xaml
+        /// 
+        /// Examines attributes: Header, ToolTip, Content, Text, Watermark
+        /// 
+        /// Skips:
+        /// - AboutPanel.xaml (contains many non-localizable strings)
+        /// - Strings already using DynamicResource
+        /// - Language names, game names, special keywords
+        /// 
+        /// Outputs suggested localization keys for each found string.
+        /// </remarks>
         private void CheckXamls_Clicked(object sender, RoutedEventArgs e)
         {
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
@@ -930,6 +1215,14 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Determines if a string is not a game name (Mass Effect series game titles or abbreviations).
+        /// </summary>
+        /// <param name="str">The string to check.</param>
+        /// <returns>True if the string is not a game name; false if it is a game name.</returns>
+        /// <remarks>
+        /// Recognizes: Mass Effect, Mass Effect 2, Mass Effect 3, Mass Effect LE, ME1, ME2, ME3, LE1, LE2, LE3
+        /// </remarks>
         private bool isNotGameName(string str)
         {
             if (str.Equals("Mass Effect", StringComparison.InvariantCultureIgnoreCase)) return false;
@@ -945,6 +1238,20 @@ namespace LocalizationHelper
             return true;
         }
 
+        /// <summary>
+        /// Determines if a string is not a non-localizable word or phrase.
+        /// </summary>
+        /// <param name="str">The string to check.</param>
+        /// <returns>True if the string should be localized; false if it should not be localized.</returns>
+        /// <remarks>
+        /// Non-localizable items include:
+        /// - ME3Tweaks Mod Manager
+        /// - Mass Effect Ini Modder
+        /// - Multilist
+        /// - Special symbols: =>, ->
+        /// - Mod author names: GatorZ, OneGreatMod
+        /// - Technical terms: moddir, Faster Legs, Faster Legs DLC Module
+        /// </remarks>
         private bool isNotLocalizableWord(string str)
         {
             if (str.Equals("ME3Tweaks Mod Manager", StringComparison.InvariantCultureIgnoreCase)) return false;
@@ -960,6 +1267,15 @@ namespace LocalizationHelper
             return true;
         }
 
+        /// <summary>
+        /// Determines if a string is not a ModJob header identifier.
+        /// </summary>
+        /// <param name="str">The string to check (automatically trims surrounding brackets).</param>
+        /// <returns>True if the string is not a job header; false if it is a valid ModJob.JobHeader enum value.</returns>
+        /// <remarks>
+        /// Job headers are configuration sections in mod description files.
+        /// Examples: [CUSTOMDLC], [BASEGAME], [BALANCE_CHANGES]
+        /// </remarks>
         private bool isNotJobheader(string str)
         {
             str = str.TrimStart('[');
@@ -973,6 +1289,23 @@ namespace LocalizationHelper
             return true;
         }
 
+        /// <summary>
+        /// Determines if a string is not a language name.
+        /// </summary>
+        /// <param name="str">The string to check.</param>
+        /// <returns>True if the string is not a language name; false if it is a language name.</returns>
+        /// <remarks>
+        /// Recognizes language names:
+        /// - Deutsch (German)
+        /// - English
+        /// - Español (Spanish)
+        /// - Français (French)
+        /// - Polski (Polish)
+        /// - Pусский (Russian)
+        /// - Português (Portuguese)
+        /// - 한국어 (Korean)
+        /// - Italiano (Italian)
+        /// </remarks>
         private bool isNotLangWord(string str)
         {
             if (str.Equals("Deutsch", StringComparison.InvariantCultureIgnoreCase)) return false;
@@ -987,6 +1320,16 @@ namespace LocalizationHelper
             return true;
         }
 
+        /// <summary>
+        /// Validates that strings containing newline characters (\n) have the xml:space="preserve" attribute.
+        /// Outputs non-compliant strings to debug console.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// Checks the int.xaml localization file for strings containing \n.
+        /// Strings with newlines must have xml:space="preserve" to maintain formatting in XAML.
+        /// </remarks>
         private void CheckXmlSpacePreserve_Clicked(object sender, RoutedEventArgs e)
         {
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
@@ -1016,11 +1359,29 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Opens the Localization Tables UI window for managing translation tables.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void OpenLoalizationUI_Clicked(object sender, RoutedEventArgs e)
         {
             new LocalizationTablesUI().Show();
         }
 
+        /// <summary>
+        /// Performs a diff between two localization files (old and new) to identify changes.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// Prompts the user to select:
+        /// 1. OLD localization file (base version)
+        /// 2. NEW localization file (updated version)
+        /// 
+        /// Generates a diff report showing added, removed, and modified localization keys.
+        /// The result is output to the debug console via LocalizationFileDiff.generateDiff().
+        /// </remarks>
         private void PerformINTDiff_Clicked(object sender, RoutedEventArgs e)
         {
             string oldfile = null, newfile = null;
@@ -1052,6 +1413,16 @@ namespace LocalizationHelper
 
         }
 
+        /// <summary>
+        /// Switches between ME3Tweaks Mod Manager (M3) and ME3TweaksCore localization contexts.
+        /// Reloads the file list for the newly selected project.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// Toggles the LocalizingM3 flag and calls ReloadData() to refresh the source file list
+        /// with the appropriate project's directories and exclusions.
+        /// </remarks>
         private void SwitchProjects_Clicked(object sender, RoutedEventArgs e)
         {
             LocalizingM3 = !LocalizingM3;
