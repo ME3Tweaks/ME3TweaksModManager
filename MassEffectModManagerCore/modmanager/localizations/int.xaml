@@ -1258,6 +1258,10 @@
     <system:String x:Key="string_saveFile">Save file</system:String>
     <system:String x:Key="string_description_saveFile">You can optionally include a save file in your game diagnostic. Only select a save if requested.</system:String>
     <system:String x:Key="string_selectSaveFile">Select save file</system:String>
+    <system:String x:Key="string_extendedDiagnostics">Extended diagnostics</system:String>
+    <system:String x:Key="string_desc_extendedDiagnostics">Extended diagnostics perform additional checks on your game, but take a significant amount of additional time. Select this if requested by a developer.</system:String>
+    <system:String x:Key="string_tooltip_extendedDiagnostics">Check to enable additional diagnostic tests</system:String>
+    <system:String x:Key="string_checkbox_extendedDiagnostics">Perform extended diagnostics</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>
@@ -3108,4 +3112,8 @@
     <!-- Auto Restore Panel -->
     <system:String x:Key="string_interp_errorRestoringFromBackupX">There was an error restoring from backup: {0}</system:String>
     <!-- 0={Error Message} -->
+    
+    <!-- Log Viewer -->
+    <system:String x:Key="string_title_logViewer">ME3Tweaks Mod Manager Log Viewer</system:String>
+
 </ResourceDictionary>

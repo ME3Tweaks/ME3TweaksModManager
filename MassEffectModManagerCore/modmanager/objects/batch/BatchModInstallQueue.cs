@@ -348,7 +348,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 {
                     if (progressDelegate != null) // null check prevents string allocations
                     {
-                        pi.Status = M3L.GetString(M3L.string_interp_hashingXYpercent, currentFile, pi.Value.ToString("0.00"));
+                        pi.Status = M3L.GetString(M3L.string_interp_hashingXYpercent, currentFile, pi.Value.ToString(@"0.00"));
                         progressDelegate(pi);
                     }
                 }
