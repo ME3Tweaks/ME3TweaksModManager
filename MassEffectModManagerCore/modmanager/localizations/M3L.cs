@@ -1597,6 +1597,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_indexingForUpdatesXY = "string_interp_indexingForUpdatesXY";
 		public const string string_interp_calculatingUpdateDeltaXY = "string_interp_calculatingUpdateDeltaXY";
 		public const string string_inRestoreMode = "string_inRestoreMode";
+		public const string string_updateFailed = "string_updateFailed";
 		public const string string_interp_appliesToX = "string_interp_appliesToX";
 		public const string string_interp_partOfX = "string_interp_partOfX";
 		public const string string_interp_versionX = "string_interp_versionX";
@@ -2050,6 +2051,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_notEnoughFreeSpaceForDownload = "string_interp_notEnoughFreeSpaceForDownload";
 		public const string string_verifyingDownload = "string_verifyingDownload";
 		public const string string_fileDidNotVerifyDownloadMayBeCorrupt = "string_fileDidNotVerifyDownloadMayBeCorrupt";
+		public const string string_downloadQueued = "string_downloadQueued";
+		public const string string_modsAreDownloading = "string_modsAreDownloading";
+		public const string string_modDownloadsComplete = "string_modDownloadsComplete";
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
 		public const string string_mergeModFileDoesNotHaveCorrectMagicHeader = "string_mergeModFileDoesNotHaveCorrectMagicHeader";
 		public const string string_interp_unsupportedMergeModVersionVersionX = "string_interp_unsupportedMergeModVersionVersionX";

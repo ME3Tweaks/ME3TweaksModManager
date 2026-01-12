@@ -2717,6 +2717,9 @@
     <!-- 0={Drive letter (C:\, D:\ etc)} 1={Mod downloaded filename} 2={Filesize (human readable)} 3={Free spaced (human readable)} -->
     <system:String x:Key="string_verifyingDownload">Verifying download</system:String>
     <system:String x:Key="string_fileDidNotVerifyDownloadMayBeCorrupt">File did not verify, download may be corrupt.</system:String>
+    <system:String x:Key="string_downloadQueued">Download queued</system:String>
+    <system:String x:Key="string_modsAreDownloading">Mods are downloading</system:String>
+    <system:String x:Key="string_modDownloadsComplete">Mod downloads complete</system:String>
 
     <!-- Plot Manager Sync Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>

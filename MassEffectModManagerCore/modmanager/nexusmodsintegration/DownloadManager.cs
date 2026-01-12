@@ -183,7 +183,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     // Notify listeners that we have metadata available about the download now available in the event they
                     // need to use it before we move on
                     OnDownloadMetadataLoaded?.Invoke(item, EventArgs.Empty);
-                    item.Status = "Download queued";
+                    item.Status = M3L.GetString(M3L.string_downloadQueued);
                 }
 
                 // Attempt to a new start download, as states have changed.
@@ -425,7 +425,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         public static void RemoveDownload(ModDownload downloadedMod)
         {
             DisassociateDownload(downloadedMod);
-            
+
             // Duplicates are never in the dictionary, so just try to remove by key
             var key = downloadedMod.CreateDownloadKey();
             if (Downloads.TryRemove(key, out _))
@@ -441,7 +441,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// <returns></returns>
         public static BackgroundTask GenerateBackgroundTask()
         {
-            return BackgroundTaskEngine.SubmitBackgroundJob(@"DownloadManager", "Mods are downloading", "Mod downloads complete");
+            return BackgroundTaskEngine.SubmitBackgroundJob(@"DownloadManager", M3L.GetString(M3L.string_modsAreDownloading), M3L.GetString(M3L.string_modDownloadsComplete));
         }
     }
 }
