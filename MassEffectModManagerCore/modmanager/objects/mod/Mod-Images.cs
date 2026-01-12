@@ -9,8 +9,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
     {
-        private const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
-        private const double RequiredAspectRatioTolerance = 0.08;
+        internal const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
+        internal const double RequiredAspectRatioTolerance = 0.08;
 
         /// <summary>
         /// The images folder for a mod. Do not change
@@ -125,7 +125,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 var bitmap = LoadModImageAsset(BannerImageName);
                 if (bitmap != null)
                 {
-                    var aspectRatio = bitmap.Width / bitmap.Height;
+                    var aspectRatio = (double)bitmap.Width / bitmap.Height;
                     var aspectRatioDiff = RequiredBannerAspectRatio - aspectRatio;
                     if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
                     {

@@ -287,11 +287,9 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         if (bitmap != null)
                         {
                             var aspectRatio = (double)bitmap.Width / bitmap.Height;
-                            const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
-                            const double RequiredAspectRatioTolerance = 0.08;
-                            var aspectRatioDiff = RequiredBannerAspectRatio - aspectRatio;
+                            var aspectRatioDiff = Mod.RequiredBannerAspectRatio - aspectRatio;
                             
-                            if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
+                            if (Math.Abs(aspectRatioDiff) > Mod.RequiredAspectRatioTolerance)
                             {
                                 item.AddBlockingError(M3L.GetString(M3L.string_deployment_bannerImageInvalidAspectRatio, 
                                     item.ModToValidateAgainst.BannerImageName, 
