@@ -877,6 +877,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deployment_sqmIssueInvalidHenchId = "string_deployment_sqmIssueInvalidHenchId";
 		public const string string_deployment_basegameFullFileWarning = "string_deployment_basegameFullFileWarning";
 		public const string string_deployment_unusedExtraFileTypeFound = "string_deployment_unusedExtraFileTypeFound";
+		public const string string_deployment_bannerImageInvalidAspectRatio = "string_deployment_bannerImageInvalidAspectRatio";
 		public const string string_deployment_nexusUpdaterServiceInfo = "string_deployment_nexusUpdaterServiceInfo";
 		public const string string_interp_compressedTlkDataInfo = "string_interp_compressedTlkDataInfo";
 		public const string string_interp_exceptionValidatingOutfitManifestMergeManifest = "string_interp_exceptionValidatingOutfitManifestMergeManifest";

@@ -1,4 +1,6 @@
-﻿using LegendaryExplorerCore.GameFilesystem;
+﻿using System;
+using System.Linq;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
@@ -266,6 +268,42 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 {
                     //Mods cannot include metacmm files
                     item.AddBlockingError(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
+                }
+            }
+
+            // Check banner image aspect ratio
+            if (!string.IsNullOrWhiteSpace(item.ModToValidateAgainst.BannerImageName))
+            {
+                var bannerImagePath = FilesystemInterposer.PathCombine(item.ModToValidateAgainst.IsInArchive, 
+                    item.ModToValidateAgainst.ModPath, 
+                    Mod.M3IMAGES_FOLDER_NAME, 
+                    item.ModToValidateAgainst.BannerImageName);
+                
+                if (FilesystemInterposer.FileExists(bannerImagePath, item.ModToValidateAgainst.Archive))
+                {
+                    try
+                    {
+                        var bitmap = item.ModToValidateAgainst.LoadModImageAsset(item.ModToValidateAgainst.BannerImageName);
+                        if (bitmap != null)
+                        {
+                            var aspectRatio = bitmap.Width / bitmap.Height;
+                            const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
+                            const double RequiredAspectRatioTolerance = 0.08;
+                            var aspectRatioDiff = RequiredBannerAspectRatio - aspectRatio;
+                            
+                            if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
+                            {
+                                item.AddBlockingError(M3L.GetString(M3L.string_deployment_bannerImageInvalidAspectRatio, 
+                                    item.ModToValidateAgainst.BannerImageName, 
+                                    bitmap.Width, 
+                                    bitmap.Height));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        M3Log.Warning($@"Error checking banner image aspect ratio: {ex.Message}");
+                    }
                 }
             }
 
