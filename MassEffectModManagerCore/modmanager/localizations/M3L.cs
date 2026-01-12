@@ -2044,6 +2044,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_startingDownloadAttemptX = "string_interp_startingDownloadAttemptX";
 		public const string string_startingDownload = "string_startingDownload";
 		public const string string_downloadComplete = "string_downloadComplete";
+		public const string string_canceled = "string_canceled";
 		public const string string_modDownloader = "string_modDownloader";
 		public const string string_initializing = "string_initializing";
 		public const string string_cancelDownload = "string_cancelDownload";

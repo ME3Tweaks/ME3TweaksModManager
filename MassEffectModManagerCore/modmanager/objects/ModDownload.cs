@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
-using ME3TweaksCoreWPF.UI;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -82,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             // Import is only set to true if download is done and we aren't set to auto import
             CanImport = DownloadState == EModDownloadState.DOWNLOADCOMPLETE && !AutoImport;
-            
+
             switch (DownloadState)
             {
                 // Download has stopped.
@@ -111,12 +110,12 @@ namespace ME3TweaksModManager.modmanager.objects
             // Fire state changed after we update the active variable
             DownloadStateChanged?.Invoke(this, null);
         }
-        
+
         /// <summary>
         /// If download is in state where user could press 'Import' button.
         /// </summary>
         public bool CanImport { get; set; }
-        
+
         public event EventHandler<EventArgs> DownloadStateChanged;
 
 
@@ -569,7 +568,7 @@ namespace ME3TweaksModManager.modmanager.objects
 
                 if (CancellationController.Token.IsCancellationRequested)
                 {
-                    Status = "Canceled";
+                    Status = M3L.GetString(M3L.string_canceled);
                     DownloadState = EModDownloadState.DOWNLOADCANCELED;
                 }
                 else

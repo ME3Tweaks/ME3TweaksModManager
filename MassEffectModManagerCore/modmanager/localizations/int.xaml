@@ -2707,6 +2707,7 @@
     <!-- 0={i+1} -->
     <system:String x:Key="string_startingDownload">Starting download</system:String>
     <system:String x:Key="string_downloadComplete">Download complete</system:String>
+    <system:String x:Key="string_canceled">Canceled</system:String>
 
     <!-- Mod Downloader -->
     <system:String x:Key="string_modDownloader">Download Manager</system:String>
