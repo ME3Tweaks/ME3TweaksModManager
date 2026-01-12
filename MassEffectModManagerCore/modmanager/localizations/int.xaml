@@ -2113,6 +2113,7 @@
     <!-- 0={Mod name} 1={Integer} -->
     <system:String x:Key="string_inRestoreMode">In restore mode</system:String>
     <!-- Shown when a mod that failed to load is forced into checking for updates. This is called 'restore mode' and will always return an update if possible -->
+    <system:String x:Key="string_updateFailed">Update failed</system:String>
 
     <!-- Mixin Class-->
     <system:String x:Key="string_interp_appliesToX">Applies to file {0}</system:String>
