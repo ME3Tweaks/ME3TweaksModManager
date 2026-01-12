@@ -967,7 +967,9 @@
     <system:String x:Key="string_deploymentFailed">Deployment failed</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialog_deploymentFailedWrongNumMods">Mod deployment failed: The amount of mods expected in the archive did not match the amount that were parsed.\nExpected: {0}\nDetected: {1}\n\nPlease report this to Mgamerz on the ME3Tweaks Discord.</system:String>
     <!-- 0={expectedModCount} 1={foundCount} -->
-
+    <system:String x:Key="string_interp_finalizingArchive">Finalizing archive...</system:String>
+    <!-- This indicates an archive is being copied across disks. Not sure what a good text to put here was, as there is not much horizontal space -->
+    
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
     <!-- 0={Filepath} -->

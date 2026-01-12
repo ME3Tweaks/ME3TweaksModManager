@@ -328,13 +328,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             void on7zOperation(ESevenZipOperation operation, object value, object value2)
             {
-                switch(operation)
+                switch (operation)
                 {
                     case ESevenZipOperation.FinalMove:
-                        OperationText = $"Finalizing archive...";
+                        OperationText = M3L.GetString(M3L.string_interp_finalizingArchive);
                         unchecked
                         {
-                            ProgressValue = (long) value;
+                            ProgressValue = (long)value;
                             ProgressMax = (long)value2;
                         }
                         break;
@@ -392,8 +392,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             compressor.Progressing += (a, b) =>
             {
                 //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
-                ProgressMax = (long) b.TotalAmount;
-                ProgressValue = (long) b.AmountCompleted;
+                ProgressMax = (long)b.TotalAmount;
+                ProgressValue = (long)b.AmountCompleted;
                 var now = DateTime.Now;
                 if ((now - lastPercentUpdateTime).Milliseconds > ModInstallerPanel.PERCENT_REFRESH_COOLDOWN)
                 {

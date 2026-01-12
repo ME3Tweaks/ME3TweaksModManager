@@ -806,6 +806,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_validatingArchiveFile = "string_validatingArchiveFile";
 		public const string string_deploymentFailed = "string_deploymentFailed";
 		public const string string_interp_dialog_deploymentFailedWrongNumMods = "string_interp_dialog_deploymentFailedWrongNumMods";
+		public const string string_interp_finalizingArchive = "string_interp_finalizingArchive";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
 		public const string string_interp_detectedTFCFromAnotherModTPMI = "string_interp_detectedTFCFromAnotherModTPMI";
 		public const string string_interp_detectedTFCFromAnotherModUnknown = "string_interp_detectedTFCFromAnotherModUnknown";
