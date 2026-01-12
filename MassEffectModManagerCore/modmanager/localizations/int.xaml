@@ -2412,6 +2412,8 @@
     <system:String x:Key="string_selectDeploymentDestination">Select deployment destination</system:String>
     <system:String x:Key="string_tooltip_createSharableVersionOfThisInstallGroup">Create sharable version of this install group</system:String>
     <system:String x:Key="string_shareGroup">Share group</system:String>
+    <system:String x:Key="string_interp_hashingXYpercent">Hashing {0} {1}%</system:String>
+    <!-- 0={Filename} 1={Progress number (may contain decimal places)} -->
 
     <!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>

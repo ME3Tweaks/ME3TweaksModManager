@@ -1824,6 +1824,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_selectDeploymentDestination = "string_selectDeploymentDestination";
 		public const string string_tooltip_createSharableVersionOfThisInstallGroup = "string_tooltip_createSharableVersionOfThisInstallGroup";
 		public const string string_shareGroup = "string_shareGroup";
+		public const string string_interp_hashingXYpercent = "string_interp_hashingXYpercent";
 		public const string string_importAnInstalledDLCMod = "string_importAnInstalledDLCMod";
 		public const string string_description_importFromGameToModManager = "string_description_importFromGameToModManager";
 		public const string string_modsInstalledByManagedSolutionCannotBeImported = "string_modsInstalledByManagedSolutionCannotBeImported";
