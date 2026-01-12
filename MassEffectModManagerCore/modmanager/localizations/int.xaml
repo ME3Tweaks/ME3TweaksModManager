@@ -565,7 +565,23 @@
     <!-- 0={Error Message} -->
     <system:String x:Key="string_interp_mergemodAssetIsZeroBytes">Mergemod asset is zero bytes: {0}. Assets cannot be empty.</system:String>
     <!-- 0={Filename} -->
-
+    <system:String x:Key="string_downloadManager">Download Manager</system:String>
+    <system:String x:Key="string_tooltip_showCurrentRunningDownloads">Show current running downloads</system:String>
+    <system:String x:Key="string_convertMemToM3TextureOverride">Convert .mem to M3 Texture Override</system:String>
+    <system:String x:Key="string_tooltip_convertMemtoM3TextureOverride">Converts a .mem file to a texture override version by installing the .mem, inspecting the changes, and then pulling them to a chosen DLC mod.</system:String>
+    <system:String x:Key="string_alpha">Alpha</system:String>
+    <!-- Similar to how Beta is done for menu -->
+    <system:String x:Key="string_interp_errorOpeningModdesciniFileResult">Error opening moddesc.ini file: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_dialog_exitWhileDownloading">There are currently mods downloading. Are you sure you want to quit?</system:String>
+    <system:String x:Key="string_downloadsInProgress">Downloads in progress</system:String>
+    <system:String x:Key="string_dialog_exitWhileImporting">There are currently mods importing into the library. Please wait until they are finished as aborting import may leave a library mods in a broken state.</system:String>
+    <system:String x:Key="string_modsCurrentlyImporting">Mods currently importing</system:String>
+    <system:String x:Key="string_mergingGlobalShaders">Merging global shaders</system:String>
+    <system:String x:Key="string_mergedGlobalShaders">Merged global shaders</system:String>
+    <system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Error merging global shaders: {0}</system:String>
+    <!-- 0={Error message} -->
+    
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
@@ -587,6 +603,8 @@
     <system:String x:Key="string_autobootLE2Test">Autoboot LE2 test</system:String>
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <system:String x:Key="string_showBasegameFileIdentificationServiceViewer">Show Basegame File Identification Service Viewer</system:String>
+    <system:String x:Key="string_triggerBTPBuildOnModFolderInstalled">Trigger BTP build on mod folder (installed)</system:String>
+    <system:String x:Key="string_showTestDialog">Show test dialog</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>

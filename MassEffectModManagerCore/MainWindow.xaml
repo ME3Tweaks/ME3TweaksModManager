@@ -16,7 +16,8 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
     xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
-    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -511,9 +512,9 @@
                         Header="{DynamicResource string_importAndManageMods}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem
-                        Header="Download Manager"
+                        Header="{DynamicResource string_downloadManager}"
                         Command="{Binding OpenDownloadManagerCommand}"
-                        ToolTip="Show current running downloads">
+                        ToolTip="{DynamicResource string_tooltip_showCurrentRunningDownloads}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -1404,16 +1405,15 @@
                         StaysOpenOnClick="True"
                         IsChecked="{Binding Path=(modmanager:Settings.SessionOnly_SuppressDLCMerge)}" />
                     <MenuItem
-                       Header="Convert .mem to M3 Texture Override"
-                       Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
-                       ToolTip="Converts a .mem file to a texture override version by installing the .mem, inspecting the changes, and then pulling them to a chosen DLC mod."                       
-                       Command="{Binding ConvertMEMToTOCommand}" />
+                        Header="{DynamicResource string_convertMemToM3TextureOverride}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                        ToolTip="{DynamicResource string_tooltip_convertMemtoM3TextureOverride}"
+                        Command="{Binding ConvertMEMToTOCommand}" />
                 </MenuItem>
                 <MenuItem
-                    Header="Alpha"
+                    Header="{DynamicResource string_alpha}"
                     Padding="4"
-                    Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}">
-                </MenuItem>
+                    Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}"></MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
                     Visibility="{x:Static local:App.DebugOnlyVisibility}"
@@ -1438,7 +1438,7 @@
                         Name="DebugPrintInstallationQueue_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Trigger BTP build on mod folder (installed)"
+                        Header="{DynamicResource string_triggerBTPBuildOnModFolderInstalled}"
                         Name="TriggerBTPBuild_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
@@ -1504,9 +1504,9 @@
                         Name="Test7z_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Show test dialog"
+                        Header="{DynamicResource string_showTestDialog}"
                         Name="ShowXceedDialog_MenuItem"
-                        Click="RouteDebugCall"/>
+                        Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
@@ -1532,7 +1532,6 @@
                                 Width="16" />
                         </MenuItem.Icon>
                     </MenuItem>
-                
                     <MenuItem
                         Header="{DynamicResource string_About}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
@@ -1681,8 +1680,7 @@
                             Width="24"
                             Height="24"
                             Margin="5,0"
-                            MouseRightButtonUp="OnBottomGameIDImageClick"
-                            />
+                            MouseRightButtonUp="OnBottomGameIDImageClick" />
                         <Button
                             MinWidth="70"
                             Padding="10,7"

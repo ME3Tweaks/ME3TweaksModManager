@@ -1415,7 +1415,7 @@ namespace ME3TweaksModManager
             if (result != null)
             {
                 // Issue opening the file.
-                M3L.ShowDialog(this, $"Error opening moddesc.ini file: {result}", M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorOpeningModdesciniFileResult, result), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -3734,7 +3734,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Mods are currently downloading - prompting user if they really want to close");
 
                 var abortResult = M3L.ShowDialog(this,
-                    "There are currently mods downloading. Are you sure you want to quit?", "Downloads in progress",
+                    M3L.GetString(M3L.string_dialog_exitWhileDownloading), M3L.GetString(M3L.string_downloadsInProgress),
                     MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (abortResult == MessageBoxResult.No)
                 {
@@ -3752,9 +3752,9 @@ namespace ME3TweaksModManager
             {
                 M3Log.Warning(@"Cannot safely close app while mods are importing, aborting application exit request");
                 M3L.ShowDialog(this,
-                    "There are currently mods importing into the library. Please wait until they are finished as aborting import may leave a library mods in a broken state."
+                    M3L.GetString(M3L.string_dialog_exitWhileImporting)
                     + "\n\n" // do not localize
-                    + M3L.GetString(M3L.string_howToForceCloseM3), "Mods currently importing",
+                    + M3L.GetString(M3L.string_howToForceCloseM3), M3L.GetString(M3L.string_modsCurrentlyImporting),
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 ;
                 return;
@@ -4579,13 +4579,13 @@ namespace ME3TweaksModManager
         private void RunShaderMergeForTarget(GameTarget target)
         {
             ShowRunAndDone((updateUIString) => GlobalShaderMerge.RunShaderMerge(target, true),
-                "Merging global shaders",
-                "Merged global shaders",
+                M3L.GetString(M3L.string_mergingGlobalShaders),
+                M3L.GetString(M3L.string_mergedGlobalShaders),
                 null,
                 x =>
                 {
                     if (x != null)
-                        M3L.ShowDialog(this, $"Error merging global shaders: {x.Message}", M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorMergingGlobalShadersXMessage, x.Message), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
                 });
         }
 
@@ -5063,3 +5063,4 @@ namespace ME3TweaksModManager
         }
     }
 }
+ 
