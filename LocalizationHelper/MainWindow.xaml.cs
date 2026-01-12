@@ -590,6 +590,13 @@ namespace LocalizationHelper
                     var newStr = match.ToString().TrimStart('$').Trim('"');
                     if (newStr.Length > 1)
                     {
+                        // Skip whitespace-only strings (e.g., "\n", "\r\n", "\t", etc.)
+                        var unescapedStr = System.Text.RegularExpressions.Regex.Unescape(newStr);
+                        if (string.IsNullOrWhiteSpace(unescapedStr))
+                        {
+                            continue;
+                        }
+
                         if (newStr.Contains("\\n")) xmlPreserve = true;
 
                         strname += toCamelCase(newStr);
