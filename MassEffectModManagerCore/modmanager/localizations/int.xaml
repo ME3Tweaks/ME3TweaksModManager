@@ -3032,7 +3032,9 @@
     <!-- MEMMod -->
     <system:String x:Key="string_textureExportsNotListedInThisMemFile">[texture exports not listed in this .mem file]</system:String>
     <system:String x:Key="string_textureModsMustBeImportedBeforeUse">Texture mods must be imported before they can be used</system:String>
-
+    <system:String x:Key="string_listTruncatedTo100Entries">(list truncated to 100 entries)</system:String>
+    <!-- Undercase cause this appears after 100 entries show up in a list -->
+    
     <!-- M3HeadMorph -->
     <system:String x:Key="string_interp_valueMustBeIntegerGreaterThanZero">{0} value must be an integer greater than 0.</system:String>
     <!-- 0={Parameter name} -->

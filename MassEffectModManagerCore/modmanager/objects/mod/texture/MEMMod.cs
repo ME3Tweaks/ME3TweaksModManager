@@ -148,7 +148,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             {
                 // Written this way for localizer
                 exportList += "\n... " // do not localize
-                    + "(list truncated to 100 entries)";
+                    + M3L.GetString(M3L.string_listTruncatedTo100Entries);
 
             }
             return M3L.GetString(M3L.string_interp_textureModModifiesExportsX, exportList);

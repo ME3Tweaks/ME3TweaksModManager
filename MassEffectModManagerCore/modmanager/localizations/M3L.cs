@@ -2257,6 +2257,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_im3v_nonExistentImageReference = "string_interp_im3v_nonExistentImageReference";
 		public const string string_textureExportsNotListedInThisMemFile = "string_textureExportsNotListedInThisMemFile";
 		public const string string_textureModsMustBeImportedBeforeUse = "string_textureModsMustBeImportedBeforeUse";
+		public const string string_listTruncatedTo100Entries = "string_listTruncatedTo100Entries";
 		public const string string_interp_valueMustBeIntegerGreaterThanZero = "string_interp_valueMustBeIntegerGreaterThanZero";
 		public const string string_interp_headmorphsCannotDependOnIncludedDLC = "string_interp_headmorphsCannotDependOnIncludedDLC";
 		public const string string_textureLibrary = "string_textureLibrary";
