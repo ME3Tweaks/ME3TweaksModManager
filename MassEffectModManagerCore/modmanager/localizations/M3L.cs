@@ -8,7 +8,8 @@ namespace ME3TweaksModManager.modmanager.localizations
     [Localizable(false)]
     public static partial class M3L
     {
-		public const string string_AvailableMods = "string_AvailableMods";
+        public const string string_deployment_bannerImageInvalidAspectRatio = "string_deployment_bannerImageInvalidAspectRatio";
+        public const string string_AvailableMods = "string_AvailableMods";
 		public const string string_Language = "string_Language";
 		public const string string_Actions = "string_Actions";
 		public const string string_CreateaME3modonModMaker = "string_CreateaME3modonModMaker";

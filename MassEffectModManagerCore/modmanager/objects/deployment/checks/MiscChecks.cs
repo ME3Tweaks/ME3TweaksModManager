@@ -598,6 +598,34 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
             #endregion
 
+            #region Banner Image is valid
+            // Check banner image aspect ratio
+            if (!string.IsNullOrWhiteSpace(item.ModToValidateAgainst.BannerImageName))
+            {
+                try
+                {
+                    var bitmap = item.ModToValidateAgainst.LoadModImageAsset(item.ModToValidateAgainst.BannerImageName);
+                    if (bitmap != null)
+                    {
+                        var aspectRatio = (double)bitmap.Width / bitmap.Height;
+                        var aspectRatioDiff = Mod.RequiredBannerAspectRatio - aspectRatio;
+
+                        if (Math.Abs(aspectRatioDiff) > Mod.RequiredAspectRatioTolerance)
+                        {
+                            item.AddBlockingError(M3L.GetString(M3L.string_deployment_bannerImageInvalidAspectRatio,
+                                item.ModToValidateAgainst.BannerImageName,
+                                bitmap.Width,
+                                bitmap.Height));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Warning($@"Error checking banner image aspect ratio: {ex.Message}");
+                }
+            }
+            #endregion
+
             // End of check
             if (!item.HasAnyMessages())
             {
