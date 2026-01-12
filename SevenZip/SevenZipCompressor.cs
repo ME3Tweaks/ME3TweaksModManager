@@ -916,7 +916,8 @@ namespace SevenZip
                 if (isOnSameVolume)
                 {
                     File.Move(tempName, _archiveName);
-                } else
+                }
+                else
                 {
                     void internalProgressCallback(long done, long total)
                     {
@@ -1436,8 +1437,8 @@ namespace SevenZip
         /// <param name="archiveName">The archive file name.</param>
         /// <param name="password">The archive password.</param>
         public void CompressFileDictionary(
-            IDictionary<string, string> fileDictionary, string archiveName, string password = "", 
-            
+            IDictionary<string, string> fileDictionary, string archiveName, string password = "",
+
             // ME3TWEAKS ADDITION
             Action<ESevenZipOperation, object, object> operationCallback = null
             )
