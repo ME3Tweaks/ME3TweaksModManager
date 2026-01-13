@@ -70,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         up.DownloadFlow = md;
                         up.DownloadFlow.DownloadStateChanged += up.OnDownloadStateChanged;
-                        up.DownloadButtonText = "Updating";
+                        up.DownloadButtonText = M3L.GetString(M3L.string_updating);
                         found = true;
                         break;
                     }
@@ -124,7 +124,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (NexusModsUtilities.UserInfo?.IsPremium == true)
             {
-                nmui.UIStatusString = "Initializing";
+                nmui.UIStatusString = M3L.GetString(M3L.string_initializing);
                 nmui.UpdateInProgress = true;
                 var fileId = await NexusModsUtilities.GetMainFileForMod(nmui.GetNexusDomain(), nmui.NexusModsId);
                 if (fileId != null)
@@ -132,10 +132,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // Fire as nxm link
                     string nxmlink = $@"nxm://{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}/files/{fileId}";
                     var modDownload = DownloadManager.AddNXMDownload(nxmlink);
-     
+
                     if (modDownload.DownloadState == EModDownloadState.FAILED)
                     {
-                        nmui.MarkUpdateFailed("Initialization failed");
+                        nmui.MarkUpdateFailed(M3L.GetString(M3L.string_initializationFailed));
                         return false;
                     }
                     return true;
@@ -143,7 +143,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 // Could not find file. We are not in progress.
                 M3Log.Warning($@"Could not generate download link for file: {nmui.mod.ModName}, domain: {nmui.GetNexusDomain()}, modId: {nmui.NexusModsId}");
-                nmui.MarkUpdateFailed("Download unavailable");
+                nmui.MarkUpdateFailed(M3L.GetString(M3L.string_downloadUnavailable));
             }
 
             return false;
@@ -367,7 +367,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         private void ClearCompleted()
         {
-            var itemsToRemove = UpdatableMods.Where(x=> !x.CanUpdate).ToList();
+            var itemsToRemove = UpdatableMods.Where(x => !x.CanUpdate).ToList();
 
             /// Nexus mods don't get added to updatedMods in other ways, so we need to do it here
             updatedMods.AddRange(itemsToRemove.OfType<NexusModUpdateInfo>().Select(x => x.mod));

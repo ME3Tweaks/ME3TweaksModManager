@@ -47,11 +47,10 @@
                 Padding="7,4"
                 HorizontalAlignment="Left"
                 Margin="0,5,0,5" />
-
-            <Button 
+            <Button
                 DockPanel.Dock="Left"
-                Content="Clear completed"
-                ToolTip="Clears completed updates from the list"
+                Content="{DynamicResource string_clearCompleted}"
+                ToolTip="{DynamicResource string_tooltip_clearCompleted}"
                 Command="{Binding ClearCompletedCommand}"
                 Visibility="{Binding ShowClearCompletedButton, Converter={StaticResource BoolToVisibilityConverter}}"
                 Padding="7,4"
@@ -139,7 +138,7 @@
                         </Grid>
                         <usercontrols:TextShorteningToggle
                             Text="{Binding changelog}"
-                            CollapsedMaxHeight="80"/>
+                            CollapsedMaxHeight="80" />
                         <Expander
                             x:Name="ftl_Expander"
                             Header="{Binding FilesToDownloadUIString}"
@@ -355,7 +354,7 @@
                             Grid.Row="5"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
-                            CollapsedMaxHeight="80"/>
+                            CollapsedMaxHeight="80" />
                     </Grid>
                     <DataTemplate.Triggers>
                         <Trigger

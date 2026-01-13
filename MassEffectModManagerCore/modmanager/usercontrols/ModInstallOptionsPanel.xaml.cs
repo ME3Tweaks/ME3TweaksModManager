@@ -448,7 +448,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (sender is AlternateOption ao && data is DataEventArgs args && args.Data is bool newState)
             {
-                Debug.WriteLine("===================");
+                Debug.WriteLine(@"===================");
                 var altsToUpdate = findOptionsDependentOn(ao);
 
                 if (altsToUpdate.Any())

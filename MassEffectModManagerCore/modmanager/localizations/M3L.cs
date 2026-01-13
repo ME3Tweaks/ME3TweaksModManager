@@ -1603,6 +1603,12 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_calculatingUpdateDeltaXY = "string_interp_calculatingUpdateDeltaXY";
 		public const string string_inRestoreMode = "string_inRestoreMode";
 		public const string string_updateFailed = "string_updateFailed";
+		public const string string_updating = "string_updating";
+		public const string string_initializing = "string_initializing";
+		public const string string_initializationFailed = "string_initializationFailed";
+		public const string string_downloadUnavailable = "string_downloadUnavailable";
+		public const string string_tooltip_clearCompleted = "string_tooltip_clearCompleted";
+		public const string string_clearCompleted = "string_clearCompleted";
 		public const string string_interp_appliesToX = "string_interp_appliesToX";
 		public const string string_interp_partOfX = "string_interp_partOfX";
 		public const string string_interp_versionX = "string_interp_versionX";
@@ -2051,7 +2057,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_downloadComplete = "string_downloadComplete";
 		public const string string_canceled = "string_canceled";
 		public const string string_modDownloader = "string_modDownloader";
-		public const string string_initializing = "string_initializing";
 		public const string string_cancelDownload = "string_cancelDownload";
 		public const string string_downloadError = "string_downloadError";
 		public const string string_interp_nexusModNotCompatible = "string_interp_nexusModNotCompatible";

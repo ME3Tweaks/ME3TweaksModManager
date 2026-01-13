@@ -2120,6 +2120,12 @@
     <system:String x:Key="string_inRestoreMode">In restore mode</system:String>
     <!-- Shown when a mod that failed to load is forced into checking for updates. This is called 'restore mode' and will always return an update if possible -->
     <system:String x:Key="string_updateFailed">Update failed</system:String>
+    <system:String x:Key="string_updating">Updating</system:String>
+    <system:String x:Key="string_initializing">Initializing</system:String>
+    <system:String x:Key="string_initializationFailed">Initialization failed</system:String>
+    <system:String x:Key="string_downloadUnavailable">Download unavailable</system:String>
+    <system:String x:Key="string_tooltip_clearCompleted">Clears completed updates from the list</system:String>
+    <system:String x:Key="string_clearCompleted">Clear completed</system:String>
 
     <!-- Mixin Class-->
     <system:String x:Key="string_interp_appliesToX">Applies to file {0}</system:String>
@@ -2717,7 +2723,6 @@
 
     <!-- Mod Downloader -->
     <system:String x:Key="string_modDownloader">Download Manager</system:String>
-    <system:String x:Key="string_initializing">Initializing</system:String>
     <system:String x:Key="string_cancelDownload">Cancel download</system:String>
     <system:String x:Key="string_downloadError">Download error</system:String>
     <system:String x:Key="string_interp_nexusModNotCompatible">{0} is not compatible with ME3Tweaks Mod Manager. If this is a texture mod, install it with ALOT Installer.</system:String>
