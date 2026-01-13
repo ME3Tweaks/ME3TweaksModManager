@@ -748,7 +748,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public bool AskToClose()
         {
-            if (M3L.ShowDialog(this, "Close without generating the mod?", "Application closing", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            if (M3L.ShowDialog(this, M3L.GetString(M3L.string_closeWithoutGeneratingTheModQuestion), M3L.GetString(M3L.string_applicationClosing), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
             {
                 Close();
                 return true;

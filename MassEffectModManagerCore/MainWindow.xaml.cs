@@ -3630,6 +3630,15 @@ namespace ME3TweaksModManager
             Dispatcher.InvokeAsync(HandleMainWindowClosing, DispatcherPriority.Normal);
         }
 
+        /// <summary>
+        /// Handles the logic for closing the main application window, including user confirmation, cleanup checks, and
+        /// cancellation of pending operations as needed.
+        /// </summary>
+        /// <remarks>This method coordinates the shutdown process by checking for user overrides, ongoing
+        /// background operations, and open windows that may block closure. It prompts the user for confirmation if
+        /// critical tasks are in progress and ensures that all necessary cleanup is performed before the application
+        /// exits. If the Shift key is held during the close request, the application will close immediately, bypassing
+        /// standard cleanup checks.</remarks>
         private void HandleMainWindowClosing()
         {
             if (Keyboard.IsKeyDown(Key.LeftShift))

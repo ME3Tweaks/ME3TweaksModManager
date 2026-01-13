@@ -2019,6 +2019,7 @@
     <system:String x:Key="string_modNameCannotStartWithSlash">Mod name cannot start with /</system:String>
     <system:String x:Key="string_sk_modNameTooLong">Mod name cannot be longer than 50 characters, or it will not reliably fit on user filesystems</system:String>
     <system:String x:Key="string_sk_modFoldernameTooLong">Mod foldername cannot be longer than 25 characters, or it will not reliably fit on user filesystems</system:String>
+    <system:String x:Key="string_closeWithoutGeneratingTheModQuestion">Close without generating the mod?</system:String>
 
     <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>

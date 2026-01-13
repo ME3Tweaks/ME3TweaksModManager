@@ -1536,6 +1536,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_modNameCannotStartWithSlash = "string_modNameCannotStartWithSlash";
 		public const string string_sk_modNameTooLong = "string_sk_modNameTooLong";
 		public const string string_sk_modFoldernameTooLong = "string_sk_modFoldernameTooLong";
+		public const string string_closeWithoutGeneratingTheModQuestion = "string_closeWithoutGeneratingTheModQuestion";
 		public const string string_dialogCouldNotSetDataToClipboard = "string_dialogCouldNotSetDataToClipboard";
 		public const string string_errorCopyingDataToClipboard = "string_errorCopyingDataToClipboard";
 		public const string string_copyItemsToClipboard = "string_copyItemsToClipboard";
