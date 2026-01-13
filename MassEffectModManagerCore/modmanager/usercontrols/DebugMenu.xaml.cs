@@ -12,12 +12,14 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.windows;
 using SevenZip;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
+    [Localizable(false)]
     public static class DebugMenu
     {
         public static void RouteDebugCall(string sender, MainWindow window)
