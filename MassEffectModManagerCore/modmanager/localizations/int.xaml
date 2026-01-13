@@ -3124,4 +3124,8 @@
     <!-- Log Viewer -->
     <system:String x:Key="string_title_logViewer">ME3Tweaks Mod Manager Log Viewer</system:String>
 
+    <!-- Text Shortening Toggle -->
+    <system:String x:Key="string_showLess">Show less</system:String>
+    <system:String x:Key="string_showMore">Show more</system:String>
+
 </ResourceDictionary>

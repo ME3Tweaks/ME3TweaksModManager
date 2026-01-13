@@ -1,3 +1,4 @@
+using ME3TweaksModManager.modmanager.localizations;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,8 +13,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         #region Dependency Properties
 
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
-            nameof(Text), 
-            typeof(string), 
+            nameof(Text),
+            typeof(string),
             typeof(TextShorteningToggle),
             new PropertyMetadata(string.Empty, OnTextChanged));
 
@@ -57,9 +58,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public double CurrentMaxHeight => IsExpanded ? double.PositiveInfinity : CollapsedMaxHeight;
 
-        public string ExpandButtonText => IsExpanded 
-            ? "Show less"
-            : "Show more";
+        public string ExpandButtonText => IsExpanded
+            ? M3L.GetString(M3L.string_showLess)
+            : M3L.GetString(M3L.string_showMore);
 
         private bool _showExpandButton;
         public bool ShowExpandButton
@@ -136,7 +137,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             DisplayTextBlock.Measure(new Size(ActualWidth, double.PositiveInfinity));
             var desiredHeight = DisplayTextBlock.DesiredSize.Height;
-            
+
             ShowExpandButton = DisplayTextBlock.ActualHeight > CollapsedMaxHeight;
         }
 

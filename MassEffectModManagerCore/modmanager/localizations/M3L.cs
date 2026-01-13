@@ -2307,5 +2307,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_m3zaMissingTlkOptionKey = "string_interp_m3zaMissingTlkOptionKey";
 		public const string string_interp_errorRestoringFromBackupX = "string_interp_errorRestoringFromBackupX";
 		public const string string_title_logViewer = "string_title_logViewer";
+		public const string string_showLess = "string_showLess";
+		public const string string_showMore = "string_showMore";
 	}
 }
