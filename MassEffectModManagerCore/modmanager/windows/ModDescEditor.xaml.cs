@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
@@ -246,7 +245,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public bool IsLocalizationMod { get; set; }
         public bool AskToClose()
         {
-            if (M3L.ShowDialog(this, "Close without saving changes?", "Application closing", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            if (M3L.ShowDialog(this, M3L.GetString(M3L.string_closeWithoutSavingChangesQuestion), M3L.GetString(M3L.string_applicationClosing), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
             {
                 Close();
                 return true;
