@@ -1,9 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.DownloadManagerPanel" 
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.DownloadManagerPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
@@ -21,7 +20,6 @@
             FontWeight="Bold"
             TextAlignment="Center"
             DockPanel.Dock="Top" />
-
         <Button
             Content="{DynamicResource string_close}"
             DockPanel.Dock="Bottom"
@@ -35,29 +33,32 @@
         <ItemsControl
             ItemsSource="{Binding Downloads}">
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type objects:NexusModDownload}">
-                    <DockPanel Margin="0,5,0,3">
-                        <DockPanel DockPanel.Dock="Top">
+                <DataTemplate
+                    DataType="{x:Type objects:NexusModDownload}">
+                    <DockPanel
+                        Margin="0,5,0,3">
+                        <DockPanel
+                            DockPanel.Dock="Top">
                             <StackPanel
-                            Visibility="{Binding DownloadState, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter='MIN_QUEUED', Mode=OneWay}"
-                            DockPanel.Dock="Left">
+                                Visibility="{Binding DownloadState, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter='MIN_QUEUED', Mode=OneWay}"
+                                DockPanel.Dock="Left">
                                 <TextBlock
-                                Text="{Binding ModFile.Name}"
-                                FontWeight="Bold" />
+                                    Text="{Binding ModFile.Name}"
+                                    FontWeight="Bold" />
                                 <TextBlock
-                                Text="{Binding Status}"/>
+                                    Text="{Binding Status}" />
                             </StackPanel>
                             <StackPanel
-                            Visibility="{Binding DownloadState, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter='MAX_INITIALIZING', Mode=OneWay}"
-                            DockPanel.Dock="Left">
+                                Visibility="{Binding DownloadState, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter='MAX_INITIALIZING', Mode=OneWay}"
+                                DockPanel.Dock="Left">
                                 <TextBlock
-                                Text="{DynamicResource string_initializing}"
-                                FontWeight="Bold" />
+                                    Text="{DynamicResource string_initializing}"
+                                    FontWeight="Bold" />
                                 <TextBlock
-                                Text="{DynamicResource string_pleaseWait}"/>
+                                    Text="{DynamicResource string_pleaseWait}" />
                             </StackPanel>
                             <Button
-                                Content="Import"
+                                Content="{DynamicResource string_import}"
                                 DockPanel.Dock="Right"
                                 FontSize="10"
                                 Height="20"
@@ -65,17 +66,15 @@
                                 VerticalAlignment="Bottom"
                                 Margin="0,0,0,2"
                                 Visibility="{Binding CanImport, Converter={StaticResource BoolToVisibilityConverter}}"
-                                Command="{Binding BeginImportCommand, 
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:DownloadManagerPanel}}}"
-                                CommandParameter="{Binding}"/>
+                                Command="{Binding BeginImportCommand,                                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:DownloadManagerPanel}}}"
+                                CommandParameter="{Binding}" />
                         </DockPanel>
                         <ProgressBar
                             Height="7"
                             IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}"
                             Value="{Binding ProgressValue, Mode=OneWay}"
                             Maximum="{Binding ProgressMaximum, Mode=OneWay}"
-                            extensions:ProgressBarExtension.IsProgressAnimationEnabled="{Binding IsDownloadActive}"/>
-
+                            extensions:ProgressBarExtension.IsProgressAnimationEnabled="{Binding IsDownloadActive}" />
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
