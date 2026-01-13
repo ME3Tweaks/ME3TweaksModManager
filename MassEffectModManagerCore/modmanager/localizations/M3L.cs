@@ -2161,6 +2161,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_cannotDownloadMEMCannotProceed = "string_dialog_cannotDownloadMEMCannotProceed";
 		public const string string_inventoryingGameStateBeforeTextureInstall = "string_inventoryingGameStateBeforeTextureInstall";
 		public const string string_inventoryingGameStateAfterTextureInstall = "string_inventoryingGameStateAfterTextureInstall";
+		public const string string_dialog_unableToWriteMFL = "string_dialog_unableToWriteMFL";
 		public const string string_launchOptionSelector = "string_launchOptionSelector";
 		public const string string_selectLaunchOption = "string_selectLaunchOption";
 		public const string string_createNewLaunchOption = "string_createNewLaunchOption";

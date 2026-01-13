@@ -2889,8 +2889,10 @@
     <system:String x:Key="string_dialog_cannotDownloadMEMCannotProceed">Could not download MassEffectModderNoGui - texture installation cannot proceed. See Mod Manager logs for more information.</system:String>
     <system:String x:Key="string_inventoryingGameStateBeforeTextureInstall">Inventorying game state before texture install</system:String>
     <system:String x:Key="string_inventoryingGameStateAfterTextureInstall">Inventorying game state after texture install</system:String>
+    <system:String x:Key="string_dialog_unableToWriteMFL">Unable to set the list of files for MEM to install: {0}. Aborting installation of textures.</system:String>
+    <!-- 0={Error message} -->
 
-<!-- Launch Option Selector Dialog -->
+    <!-- Launch Option Selector Dialog -->
     <system:String x:Key="string_launchOptionSelector">Launch Option Selector</system:String>
     <system:String x:Key="string_selectLaunchOption">Select launch option</system:String>
     <system:String x:Key="string_createNewLaunchOption">Create new launch option</system:String>

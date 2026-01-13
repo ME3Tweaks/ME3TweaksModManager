@@ -89,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     M3Log.Exception(e, @"Error deleting MFL file for MEM: ");
                     AbortInstall = true;
-                    M3L.ShowDialog(Window.GetWindow(this), $"Unable to set the list of files for MEM to install: {e.Message}. Aborting installation of textures.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialog_unableToWriteMFL, e.Message), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
