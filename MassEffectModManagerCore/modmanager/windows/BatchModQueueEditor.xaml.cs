@@ -753,8 +753,8 @@ namespace ME3TweaksModManager.modmanager.windows
                 return;
             }
 
-            
-            BusyContent = "Saving install group...";
+
+            BusyContent = M3L.GetString(M3L.string_savingInstallGroup);
             IsBusy = true;
 
             // This could technically throw an error...
@@ -762,11 +762,12 @@ namespace ME3TweaksModManager.modmanager.windows
             try
             {
                 result = await SaveModern();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 IsBusy = false;
-                M3Log.Exception(e, "Error saving install group");
-                M3L.ShowDialog(this, $"Error saving install group: {e.Message}", "Error saving install group", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3Log.Exception(e, @"Error saving install group:");
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorSavingInstallGroup) + $@": {e.Message}", M3L.GetString(M3L.string_interp_errorSavingInstallGroup), MessageBoxButton.OK, MessageBoxImage.Error);
                 result = false;
             }
 
@@ -782,7 +783,7 @@ namespace ME3TweaksModManager.modmanager.windows
             }
             IsBusy = false;
         }
-        
+
         /// <summary>
         /// Applies the listed progress info
         /// </summary>
@@ -830,7 +831,7 @@ namespace ME3TweaksModManager.modmanager.windows
             var destExists = File.Exists(queueSavePath);
             if (destExists && Path.GetFileName(queueSavePath) != InitialFileName) // If InitialFileName is null this will indicate new group saving over existing rather than a rename
             {
-                var sContinue = Application.Current.Dispatcher.Invoke(() => { 
+                var sContinue = Application.Current.Dispatcher.Invoke(() => {
                     var continueRes = M3L.ShowDialog(this,
                                         M3L.GetString(M3L.string_interp_existingInstallGroupFile, queue.ModName),
                                         M3L.GetString(M3L.string_fileAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -845,13 +846,13 @@ namespace ME3TweaksModManager.modmanager.windows
 
             // Hashing big files can take time, so we background thread this with a dialog over the top
             SavedPath = await queue.Save(true, progressDelegate: onProgress);
-            
+
             // File name was changed
             if (InitialFileName != null && !Path.GetFileName(queueSavePath).CaseInsensitiveEquals(InitialFileName))
             {
                 File.Delete(Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), InitialFileName));
             }
-            
+
             return true;
         }
 
@@ -1043,7 +1044,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public bool AskToClose()
         {
-            if (M3L.ShowDialog(this, "Close without saving changes?", "Application closing", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            if (M3L.ShowDialog(this, M3L.GetString(M3L.string_closeWithoutSavingChangesQuestion), M3L.GetString(M3L.string_applicationClosing), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
             {
                 Close();
                 return true;

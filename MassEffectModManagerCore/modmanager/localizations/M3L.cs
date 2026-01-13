@@ -1661,6 +1661,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_bqissue_minimumVersionNotFound = "string_interp_bqissue_minimumVersionNotFound";
 		public const string string_withMinimumVersion = "string_withMinimumVersion";
 		public const string string_tooltip_addMemFilesFromFilesystem = "string_tooltip_addMemFilesFromFilesystem";
+		public const string string_savingInstallGroup = "string_savingInstallGroup";
+		public const string string_interp_errorSavingInstallGroup = "string_interp_errorSavingInstallGroup";
+		public const string string_errorSavingInstallGroup = "string_errorSavingInstallGroup";
+		public const string string_closeWithoutSavingChangesQuestion = "string_closeWithoutSavingChangesQuestion";
+		public const string string_applicationClosing = "string_applicationClosing";
 		public const string string_selectDestinationLocation = "string_selectDestinationLocation";
 		public const string string_packageFile = "string_packageFile";
 		public const string string_interp_fileFetchedAndWrittenToX = "string_interp_fileFetchedAndWrittenToX";

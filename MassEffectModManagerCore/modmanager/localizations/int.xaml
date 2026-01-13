@@ -2191,6 +2191,12 @@
     <system:String x:Key="string_withMinimumVersion">with minimum version</system:String>
     <!-- Can be appended mid string -->
     <system:String x:Key="string_tooltip_addMemFilesFromFilesystem">Add .mem files from filesystem</system:String>
+    <system:String x:Key="string_savingInstallGroup">Saving install group...</system:String>
+    <system:String x:Key="string_interp_errorSavingInstallGroup">Error saving install group</system:String>
+    <!-- Used as both title of dialog and with : [error message] suffix in the dialog content -->
+    <system:String x:Key="string_errorSavingInstallGroup">Error saving install group</system:String>
+    <system:String x:Key="string_closeWithoutSavingChangesQuestion">Close without saving changes?</system:String>
+    <system:String x:Key="string_applicationClosing">Application closing</system:String>
 
     <!-- Backup File Fetcher (Devs only) -->
     <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
