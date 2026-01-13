@@ -841,6 +841,13 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_mergeModFeatureLevelIncompatible = "string_interp_mergeModFeatureLevelIncompatible";
 		public const string string_interp_mergeModFailedToLoadUnknownFeatureLevel = "string_interp_mergeModFailedToLoadUnknownFeatureLevel";
 		public const string string_deployment_bannerImageInvalidAspectRatio = "string_deployment_bannerImageInvalidAspectRatio";
+		public const string string_deployment_inconsistentForcedExport = "string_deployment_inconsistentForcedExport";
+		public const string string_deployment_missingRequiredBTM = "string_deployment_missingRequiredBTM";
+		public const string string_deployment_unableToParsePrecompiledBTPX = "string_deployment_unableToParsePrecompiledBTPX";
+		public const string string_deployment_foundM3toWithPrecompileBTP = "string_deployment_foundM3toWithPrecompileBTP";
+		public const string string_deployment_incorrectGameForBTP = "string_deployment_incorrectGameForBTP";
+		public const string string_deployment_invalidSourcePackageReferenceForBTP = "string_deployment_invalidSourcePackageReferenceForBTP";
+		public const string string_deployment_cannotShipDLCOverridesOfMerge2DATargets = "string_deployment_cannotShipDLCOverridesOfMerge2DATargets";
 		public const string string_deployment_tlkIssueLangPackageNotFound = "string_deployment_tlkIssueLangPackageNotFound";
 		public const string string_deployment_tlkIssueLangPackageWrongNumTLKExports = "string_deployment_tlkIssueLangPackageWrongNumTLKExports";
 		public const string string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount = "string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount";

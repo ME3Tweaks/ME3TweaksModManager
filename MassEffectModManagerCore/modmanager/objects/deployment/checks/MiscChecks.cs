@@ -317,7 +317,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 var badLeaves = PackageDiags.GetBadForcedExportLeaves(package);
                 if (badLeaves.Any())
                 {
-                    item.AddBlockingError($"{p} has inconsistent ForcedExport flag usage that must be fixed before deployment. Use the experiments in Legendary Explorer's package editor to find and correct this issue.", badLeaves[0].Entry);
+                    item.AddBlockingError(M3L.GetString(M3L.string_deployment_inconsistentForcedExport, p), badLeaves[0].Entry);
                 }
                 #endregion
             }
@@ -346,7 +346,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     var btmPath = Path.Combine(dir, M3CTextureOverrideMerge.BTP_METADATA_FILENAME);
                     if (!File.Exists(btmPath))
                     {
-                        item.AddBlockingError($"Mod ships precompiled texture override file but is missing required metadata file {M3CTextureOverrideMerge.BTP_METADATA_FILENAME} next to it");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_missingRequiredBTM, M3CTextureOverrideMerge.BTP_METADATA_FILENAME));
                         continue;
                     }
 
@@ -360,7 +360,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     catch (Exception e)
                     {
                         M3Log.Error($@"Error reading BTP file: {e.Message}");
-                        item.AddBlockingError($"Unable to parse precompiled BTP: {e.Message}");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_unableToParsePrecompiledBTPX, e.Message));
                         continue;
                     }
 
@@ -376,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             if (usingPrecompiledBTP && m3toFiles.Count > 0)
             {
-                item.AddSignificantIssue("This mod is using a precompiled BTP file; the included .m3to files will not be used and should be removed");
+                item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_foundM3toWithPrecompileBTP));
             }
 
             // Check m3to files' file references
@@ -390,7 +390,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     var tom = JsonConvert.DeserializeObject<TextureOverrideManifest>(File.ReadAllText(fPath));
                     if (tom.Game != item.ModToValidateAgainst.Game)
                     {
-                        item.AddBlockingError($"Included texture override manfiest file {m3toRel} is for the wrong game: {tom.Game}");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_incorrectGameForBTP, m3toRel, tom.Game));
                         continue;
                     }
 
@@ -400,7 +400,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         var fileName = Path.GetFileName(sp);
                         if (!packageMap.ContainsKey(fileName))
                         {
-                            item.AddBlockingError($"Included texture override manifest file {m3toRel} references source package '{sp}' which is not referenced by the mod and will never be able able to be compiled");
+                            item.AddBlockingError(M3L.GetString(M3L.string_deployment_invalidSourcePackageReferenceForBTP, m3toRel, sp));
                             continue;
                         }
                     }
@@ -590,7 +590,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     {
                         if (fif.CaseInsensitiveEquals(mergeName) && installableFile.DetermineDLCNameFromPath() != null)
                         {
-                            item.AddBlockingError($"Cannot ship DLC override of Bio2DA merge target {fif}, use merge mods and Bio2DA merge instead");
+                            item.AddBlockingError(M3L.GetString(M3L.string_deployment_cannotShipDLCOverridesOfMerge2DATargets, fif));
                             break;
                         }
                     }

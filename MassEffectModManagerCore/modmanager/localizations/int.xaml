@@ -1028,7 +1028,20 @@
     <system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">MergeMod {0} failed to load. It may not compatible with cmmver {1}</system:String>
     <!-- 0={filepath} 1={floating point number (cmmver)} -->
     <system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">Banner image '{0}' has an invalid aspect ratio. The banner image must have an aspect ratio of approximately 580x47 (12.34:1). The current image is {1}x{2}.</system:String>
-    
+    <system:String x:Key="string_deployment_inconsistentForcedExport">{0} has inconsistent ForcedExport flag usage that must be fixed before deployment. Use the experiments in Legendary Explorer's package editor to find and correct this issue.</system:String>
+    <!-- 0={Package file path} -->
+    <system:String x:Key="string_deployment_missingRequiredBTM">Mod ships precompiled texture override file but is missing required metadata file {0} next to it</system:String>
+    <!-- 0={BTP_METADATA_FILENAME} -->
+    <system:String x:Key="string_deployment_unableToParsePrecompiledBTPX">Unable to parse precompiled BTP: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_deployment_foundM3toWithPrecompileBTP">This mod is using a precompiled BTP file; the included .m3to files will not be used and should be removed</system:String>
+    <system:String x:Key="string_deployment_incorrectGameForBTP">Included texture override manfiest file {0} is for the wrong game: {1}</system:String>
+    <!-- 0={Relative file path} 1={Game} -->
+    <system:String x:Key="string_deployment_invalidSourcePackageReferenceForBTP">Included texture override manifest file {0} references source package '{1}' which is not referenced by the mod and will never be able able to be compiled</system:String>
+    <!-- 0={Relative file path} 1={Filename} -->
+    <system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">Cannot ship DLC override of Bio2DA merge target {0}, use merge mods and Bio2DA merge instead</system:String>
+    <!-- 0={Filename} -->
+
     <!-- Language checks -->
     <system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Localized TLK package {0} was not found. Users who play the game with their language/voiceover set to {1} ({2}) will have blank strings from this mod. See the Mod Manager documentation for more information.</system:String>
     <!-- 0={TLK package filename} 1={language.FileCode} 2={language.HumanDescription} -->
