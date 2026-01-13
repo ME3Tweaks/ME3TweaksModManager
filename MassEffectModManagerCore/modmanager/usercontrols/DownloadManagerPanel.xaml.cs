@@ -33,8 +33,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             // Setup location text.
             DownloadLocationText = Settings.ModDownloadCacheFolder == null
-                ? "Downloads will automatically be deleted when Mod Manager closes. Mods imported into the library will be unaffected. You can change this in the application settings  ."
-                : $"Downloaded files are saved to the following location, which can be changed in the settings:\n{Settings.ModDownloadCacheFolder}";
+                ? M3L.GetString(M3L.string_dlmgr_subTempCache)
+                : M3L.GetString(M3L.string_dlmgr_subPermCache, Settings.ModDownloadCacheFolder);
 
         }
 
@@ -72,8 +72,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(CloseWrapper);
-            BeginImportCommand = new RelayCommand(StartModImport, 
-                x=> x is ModDownload md && md.CanImport);
+            BeginImportCommand = new RelayCommand(StartModImport,
+                x => x is ModDownload md && md.CanImport);
         }
 
         private void StartModImport(object obj)

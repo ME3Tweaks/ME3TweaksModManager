@@ -3096,6 +3096,9 @@
     <system:String x:Key="string_importQueued">Import queued</system:String>
     <system:String x:Key="string_importingMods">Importing mods</system:String>
     <system:String x:Key="string_importComplete">Import complete</system:String>
+    <system:String x:Key="string_dlmgr_subTempCache">Downloads will automatically be deleted when Mod Manager closes. Mods imported into the library will be unaffected. You can change this in the application settings  .</system:String>
+    <system:String xml:space="preserve" x:Key="string_dlmgr_subPermCache">Downloaded files are saved to the following location, which can be changed in the settings:\n{0}</system:String>
+    <!-- 0={Folder path} -->
 
     <!-- Merge Mod Loader -->
     <system:String x:Key="string_dialog_mergeModFeatureLevel1">Is the mergemod you are compiling going to be used in a mod that targets ModDesc 8.2 or lower?</system:String>

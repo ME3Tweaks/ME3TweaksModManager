@@ -1026,6 +1026,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_saveFile = "string_saveFile";
 		public const string string_description_saveFile = "string_description_saveFile";
 		public const string string_selectSaveFile = "string_selectSaveFile";
+		public const string string_extendedDiagnostics = "string_extendedDiagnostics";
+		public const string string_desc_extendedDiagnostics = "string_desc_extendedDiagnostics";
+		public const string string_tooltip_extendedDiagnostics = "string_tooltip_extendedDiagnostics";
+		public const string string_checkbox_extendedDiagnostics = "string_checkbox_extendedDiagnostics";
 		public const string string_importModsFromArchiveFile = "string_importModsFromArchiveFile";
 		public const string string_importMods = "string_importMods";
 		public const string string_compressPackages = "string_compressPackages";
@@ -2288,6 +2292,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_importQueued = "string_importQueued";
 		public const string string_importingMods = "string_importingMods";
 		public const string string_importComplete = "string_importComplete";
+		public const string string_dlmgr_subTempCache = "string_dlmgr_subTempCache";
+		public const string string_dlmgr_subPermCache = "string_dlmgr_subPermCache";
 		public const string string_dialog_mergeModFeatureLevel1 = "string_dialog_mergeModFeatureLevel1";
 		public const string string_useEnhancedFeaturesQuestion = "string_useEnhancedFeaturesQuestion";
 		public const string string_dialog_unsupportedMergemodVersionMayBeTooNew = "string_dialog_unsupportedMergemodVersionMayBeTooNew";
@@ -2295,5 +2301,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_tooNewM3ZAFile = "string_interp_tooNewM3ZAFile";
 		public const string string_interp_m3zaMissingTlkOptionKey = "string_interp_m3zaMissingTlkOptionKey";
 		public const string string_interp_errorRestoringFromBackupX = "string_interp_errorRestoringFromBackupX";
+		public const string string_title_logViewer = "string_title_logViewer";
 	}
 }
