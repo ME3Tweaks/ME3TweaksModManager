@@ -3151,4 +3151,20 @@
     <system:String x:Key="string_showLess">Show less</system:String>
     <system:String x:Key="string_showMore">Show more</system:String>
 
+    <!-- Drag and Drop -->
+    <system:String x:Key="string_dialog_couldNotfindFXC">Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.</system:String>
+    <!-- FXC is the shader compiler that is used by DirectX for DX11 shaders -->
+    <system:String x:Key="string_fXCNotFound">FXC not found</system:String>
+    <system:String x:Key="string_compilingShaders">Compiling shaders</system:String>
+    <system:String x:Key="string_compiledShaders">Compiled shaders</system:String>
+    <system:String x:Key="string_selectMetadataFile">Select metadata file</system:String>
+    <system:String x:Key="string_selectOutputFolder">Select output folder</system:String>
+    <system:String x:Key="string_extractingTexturesFromBTP">Extracting textures from BTP</system:String>
+    <system:String x:Key="string_finishedExtractingTextures">Finished extracting textures</system:String>
+    <system:String x:Key="string_errorExtractingTexturesFromBTP">Error extracting textures from BTP</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_errorExtractingTexturesFromBTP">An error occurred while rebuilding source files from the BTP:\n{0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorExtractingBTP">Error extracting BTP</system:String>
+    <system:String x:Key="string_binaryTextureMetadataFile">Binary Texture Metadata file</system:String>
+    <!-- Used in file filter dialog, it appears as Binary Texture Metadata file|*.btm. This is the file associated with the Binary Texture Package .btp and has info about how to rebuild the source files -->
 </ResourceDictionary>

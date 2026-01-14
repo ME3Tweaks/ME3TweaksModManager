@@ -587,14 +587,14 @@ namespace ME3TweaksModManager
                 {
                     M3Log.Warning(@"Could not find fxc - install a Windows SDK that contains FXC");
                     M3L.ShowDialog(this,
-                        "Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.",
-                        "FXC not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.GetString(M3L.string_dialog_couldNotfindFXC),
+                        M3L.GetString(M3L.string_fXCNotFound), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 var task = BackgroundTaskEngine.SubmitBackgroundJob(@"ShaderCompile",
-                    "Compiling shaders",
-                    "Compiled shaders");
+                    M3L.GetString(M3L.string_compilingShaders),
+                    M3L.GetString(M3L.string_compiledShaders));
 
                 await Task.Run(async () =>
                 {
@@ -602,7 +602,7 @@ namespace ME3TweaksModManager
                     {
                         int percent = (int)Math.Round(done * 100.0f / total);
                         BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task,
-                            $"Compiling shaders" + $@" {percent}%");
+                            M3L.GetString(M3L.string_compilingShaders) + $@" {percent}%");
                     }
 
                     int total = files.Length;
@@ -616,7 +616,7 @@ namespace ME3TweaksModManager
                         var cmd = Cli.Wrap(fxc)
                             .WithArguments($@"/T {typeParam} /Fo ""{outPath}"" ""{f}""")
                             .WithValidation(CommandResultValidation.None);
-                        
+
                         await foreach (var cmdEvent in cmd.ListenAsync())
                         {
                             switch (cmdEvent)
@@ -665,8 +665,8 @@ namespace ME3TweaksModManager
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog()
                 {
-                    Title = "Select metadata file",
-                    Filter = "Binary Texture Metadata file|*.btm",
+                    Title = M3L.GetString(M3L.string_selectMetadataFile),
+                    Filter = M3L.GetString(M3L.string_binaryTextureMetadataFile) + @"|*.btm",
                     InitialDirectory = directory,
                     // CustomPlaces = MEDirectories.CustomPlaces // Todo: Maybe make this from targets?
                 };
@@ -684,19 +684,19 @@ namespace ME3TweaksModManager
             var openFolderDialog = new OpenFolderDialog()
             {
                 InitialDirectory = directory,
-                Title = "Select output folder"
+                Title = M3L.GetString(M3L.string_selectOutputFolder)
             };
 
             if (openFolderDialog.ShowDialog() != true)
                 return;
             var outputFolder = openFolderDialog.FolderName;
             var task = BackgroundTaskEngine.SubmitBackgroundJob(@"BTPExtract",
-                "Extracting textures from BTP",
-                "Finished extracting textures");
+                M3L.GetString(M3L.string_extractingTexturesFromBTP),
+                M3L.GetString(M3L.string_finishedExtractingTextures));
 
             void OnUpdate(ProgressInfo _pi)
             {
-                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, "Extracting textures from BTP" + $@" {_pi.Value:F2}%");
+                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, M3L.GetString(M3L.string_extractingTexturesFromBTP) + $@" {_pi.Value:F2}%");
             }
             var pi = new ProgressInfo();
             pi.OnUpdate = OnUpdate;
@@ -712,9 +712,9 @@ namespace ME3TweaksModManager
                 {
                     // Error, set message then submit it so bottom left text doesn't wait for the dialog to close.
                     M3Log.Exception(x.Exception, @"Error extracting textures from BTP:");
-                    task.FinishedUIText = "Error extracting textures from BTP";
+                    task.FinishedUIText = M3L.GetString(M3L.string_errorExtractingTexturesFromBTP);
                     BackgroundTaskEngine.SubmitJobCompletion(task);
-                    M3L.ShowDialog(this, $"An error occurred while rebuilding source files from the BTP:\n{x.Exception.Message}", "Error extracting BTP", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_errorExtractingTexturesFromBTP, x.Exception.Message), M3L.GetString(M3L.string_errorExtractingBTP), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {

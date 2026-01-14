@@ -2324,5 +2324,17 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_title_logViewer = "string_title_logViewer";
 		public const string string_showLess = "string_showLess";
 		public const string string_showMore = "string_showMore";
+		public const string string_dialog_couldNotfindFXC = "string_dialog_couldNotfindFXC";
+		public const string string_fXCNotFound = "string_fXCNotFound";
+		public const string string_compilingShaders = "string_compilingShaders";
+		public const string string_compiledShaders = "string_compiledShaders";
+		public const string string_selectMetadataFile = "string_selectMetadataFile";
+		public const string string_selectOutputFolder = "string_selectOutputFolder";
+		public const string string_extractingTexturesFromBTP = "string_extractingTexturesFromBTP";
+		public const string string_finishedExtractingTextures = "string_finishedExtractingTextures";
+		public const string string_errorExtractingTexturesFromBTP = "string_errorExtractingTexturesFromBTP";
+		public const string string_dialog_errorExtractingTexturesFromBTP = "string_dialog_errorExtractingTexturesFromBTP";
+		public const string string_errorExtractingBTP = "string_errorExtractingBTP";
+		public const string string_binaryTextureMetadataFile = "string_binaryTextureMetadataFile";
 	}
 }
