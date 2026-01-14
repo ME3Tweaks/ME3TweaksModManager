@@ -90,54 +90,6 @@ namespace ME3TweaksModManager.modmanager
         }
 
         /// <summary>
-        /// Windows API function to retrieve disk space information.
-        /// </summary>
-        /// <param name="lpDirectoryName">A directory on the disk.</param>
-        /// <param name="lpFreeBytesAvailable">The total number of free bytes available to the user.</param>
-        /// <param name="lpTotalNumberOfBytes">The total number of bytes on the disk.</param>
-        /// <param name="lpTotalNumberOfFreeBytes">The total number of free bytes on the disk.</param>
-        /// <returns>True if the function succeeds, false otherwise.</returns>
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-            out ulong lpFreeBytesAvailable,
-            out ulong lpTotalNumberOfBytes,
-            out ulong lpTotalNumberOfFreeBytes);
-
-        /// <summary>
-        /// Gets the free space available on the drive containing the specified folder.
-        /// </summary>
-        /// <param name="folderName">The folder path on the drive to check.</param>
-        /// <param name="freespace">Output parameter that receives the number of free bytes.</param>
-        /// <returns>True if the operation succeeded, false otherwise.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when folderName is null or empty.</exception>
-        public static bool DriveFreeBytes(string folderName, out ulong freespace)
-        {
-            freespace = 0;
-            if (string.IsNullOrEmpty(folderName))
-            {
-                throw new ArgumentNullException(nameof(folderName));
-            }
-
-            if (!folderName.EndsWith("\\"))
-            {
-                folderName += '\\';
-            }
-
-            ulong free = 0, dummy1 = 0, dummy2 = 0;
-
-            if (GetDiskFreeSpaceEx(folderName, out free, out dummy1, out dummy2))
-            {
-                freespace = free;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
         /// Converts a hexadecimal string to a byte array.
         /// </summary>
         /// <param name="hex">The hexadecimal string to convert (without 0x prefix).</param>

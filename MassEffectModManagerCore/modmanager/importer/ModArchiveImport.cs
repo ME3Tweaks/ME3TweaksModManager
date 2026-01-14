@@ -565,7 +565,7 @@ namespace ME3TweaksModManager.modmanager.importer
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods);
-                            M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freeSpace);
+                            MUtilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freeSpace);
                             ErrorCallback?.Invoke(
                                 M3L.GetString(M3L.string_insufficientDiskSpace),
                                 M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)));
@@ -616,7 +616,7 @@ namespace ME3TweaksModManager.modmanager.importer
 
             //get total size requirement
             long requiredDiskSpace = mods.Sum(x => x.SizeRequiredtoExtract);
-            if (M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freespaceBytes))
+            if (MUtilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freespaceBytes))
             {
                 requiredDiskSpace = (long)(requiredDiskSpace * 1.05); // 5% buffer due to swap, other temp things the OS may be doing
                 M3Log.Information($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)}");

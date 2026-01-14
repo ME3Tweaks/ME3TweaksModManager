@@ -624,7 +624,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 }
             }
 
-            M3Utilities.DriveFreeBytes(InstallOptionsPackage.InstallTarget.TargetPath, out var freeSpaceOnTargetDisk);
+            MUtilities.DriveFreeBytes(InstallOptionsPackage.InstallTarget.TargetPath, out var freeSpaceOnTargetDisk);
             requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.1); //+10% for some overhead
             M3Log.Information($@"Mod requires {FileSize.FormatSize(requiredSpaceToInstall)} of disk space to install. We have {FileSize.FormatSize(freeSpaceOnTargetDisk)} available");
             if (requiredSpaceToInstall > (long)freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
