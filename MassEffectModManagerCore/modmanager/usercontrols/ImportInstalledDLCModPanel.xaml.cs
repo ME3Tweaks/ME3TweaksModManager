@@ -62,7 +62,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             //Check free space.
             var sourceDir = Path.Combine(M3Directories.GetDLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
             var library = M3LoadedMods.GetModDirectoryForGame(SelectedTarget.Game);
-            if (M3Utilities.DriveFreeBytes(library, out var freeBytes))
+            if (MUtilities.DriveFreeBytes(library, out var freeBytes))
             {
                 //Check enough space
                 var sourceSize = M3Utilities.GetSizeOfDirectory(sourceDir);
