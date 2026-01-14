@@ -37,13 +37,6 @@ steps: # Steps begin following this
   inputs:
     packageType: 'sdk'
     version: '10.0.x' 
-    
-# Required as LEC dual targets
-#- task: UseDotNet@2
-#  displayName: Install .NET 7.0 SDK
-#  inputs:
-#    packageType: 'sdk'
-#   version: '7.0.x' 
 
 - task: DotNetCoreCLI@2
   displayName: Build M3
@@ -74,7 +67,7 @@ steps: # Steps begin following this
     reportgenerator -reports:ME3TweaksModManager/MassEffectModManagerCore.Tests/**/*.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines;Cobertura
   displayName: Create code coverage report
 
-- task: PublishCodeCoverageResults@1
+- task: PublishCodeCoverageResults@2
   displayName: Publish code coverage
   inputs:
     codeCoverageTool: Cobertura
