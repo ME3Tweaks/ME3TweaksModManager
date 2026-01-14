@@ -2098,12 +2098,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     var asiList = StringStructParser.GetParenthesisSplitValues(asiModsList);
                     foreach (var asiStruct in asiList)
                     {
-                        M3ASIVersion.Parse(this, asiStruct);
+                        var asi = M3ASIVersion.Parse(this, asiStruct);
                         if (LoadFailedReason != null)
                         {
                             // ASI struct failed to parse
                             return;
                         }
+                        ASIModsToInstall.Add(asi);
                     }
                 }
             }
