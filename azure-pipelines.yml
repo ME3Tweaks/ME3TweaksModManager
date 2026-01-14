@@ -6,7 +6,7 @@
 trigger:
 - M3Core
 - ModManager-Next
-- MergeMigration
+- backport-92
 
 pool:
   vmImage: 'windows-2022'
