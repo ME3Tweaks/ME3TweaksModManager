@@ -1604,7 +1604,9 @@ namespace ME3TweaksModManager
                         {
                             if (queue.ASIModsToInstall.Any())
                             {
-                                ShowRunAndDone((updateUIString) => InstallBatchASIs(target, queue), M3L.GetString(M3L.string_installingASIMods),
+                                ShowRunAndDone(
+                                    (config) => InstallBatchASIs(target, queue),
+                                    M3L.GetString(M3L.string_installingASIMods),
                                     M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
                             }
                             else
@@ -2289,8 +2291,8 @@ namespace ME3TweaksModManager
                 foreach (var v in result.TargetsToSquadmateMergeSync)
                 {
                     ShowRunAndDone(
-                        (updateUIString) =>
-                            SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v], updateUIString),
+                        (config) =>
+                            SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v], config.UpdateTitle),
                         LC.GetString(LC.string_synchronizingSquadmateOutfits),
                         M3L.GetString(M3L.string_synchronizedSquadmateOutfits),
                         null);
@@ -2299,7 +2301,7 @@ namespace ME3TweaksModManager
                 foreach (var v in result.TargetsToEmailMergeSync)
                 {
                     ShowRunAndDone(
-                        (updateUIString) => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v], updateUIString),
+                        (config) => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v], config.UpdateTitle),
                         M3L.GetString(M3L.string_synchronizingEmails),
                         M3L.GetString(M3L.string_synchronizedEmails),
                         null);
@@ -2374,7 +2376,7 @@ namespace ME3TweaksModManager
             });
         }
 
-        private void ShowRunAndDone(Func<Action<string>, object> action, string startStr, string endStr, Action finishAction = null, Action<Exception> errorOccurred = null)
+        private void ShowRunAndDone(Func<RunAndDoneConfig, object> action, string startStr, string endStr, Action finishAction = null, Action<Exception> errorOccurred = null)
         {
             var runAndDone = new RunAndDonePanel(action, startStr, endStr);
             runAndDone.Close += (a, b) =>
@@ -4574,7 +4576,7 @@ namespace ME3TweaksModManager
                 return;
             }
 
-            ShowRunAndDone((updateUIString) => Bio2DAMerge.RunBio2DAMerge(target),
+            ShowRunAndDone((config) => Bio2DAMerge.RunBio2DAMerge(target),
                 M3L.GetString(M3L.string_merging2DATables),
                 M3L.GetString(M3L.string_merged2DATables),
                 null,
@@ -4587,7 +4589,7 @@ namespace ME3TweaksModManager
 
         private void RunShaderMergeForTarget(GameTarget target)
         {
-            ShowRunAndDone((updateUIString) => GlobalShaderMerge.RunShaderMerge(target, true),
+            ShowRunAndDone((config) => GlobalShaderMerge.RunShaderMerge(target, true),
                 M3L.GetString(M3L.string_mergingGlobalShaders),
                 M3L.GetString(M3L.string_mergedGlobalShaders),
                 null,
