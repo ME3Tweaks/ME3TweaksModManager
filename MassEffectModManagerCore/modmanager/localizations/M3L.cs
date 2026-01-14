@@ -623,6 +623,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_trackingMergemodChanges = "string_trackingMergemodChanges";
 		public const string string_tooltip_optionNotApplicable = "string_tooltip_optionNotApplicable";
 		public const string string_tooltip_optionForceApplied = "string_tooltip_optionForceApplied";
+		public const string string_textureOverrideMergeFailed = "string_textureOverrideMergeFailed";
 		public const string string_welcomeTo = "string_welcomeTo";
 		public const string string_selectYourLanguage = "string_selectYourLanguage";
 		public const string string_howToChangeLanguage = "string_howToChangeLanguage";

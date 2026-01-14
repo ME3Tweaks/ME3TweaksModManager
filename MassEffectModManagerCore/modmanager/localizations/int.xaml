@@ -707,6 +707,7 @@
     <!-- M3 is inventorying files for changes, hence 'tracking' them -->
     <system:String x:Key="string_tooltip_optionNotApplicable">Based on conditions set by the mod developer, this option is not applicable based on your game's current setup</system:String>
     <system:String x:Key="string_tooltip_optionForceApplied">Based on conditions set by the mod developer, this option must be applied based on your game's current setup</system:String>
+    <system:String x:Key="string_textureOverrideMergeFailed">Texture override merge failed</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_welcomeTo">Welcome to</system:String>

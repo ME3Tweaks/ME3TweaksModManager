@@ -327,7 +327,7 @@ namespace ME3TweaksModManager.modmanager.installer
             {
                 M3Log.Information(@"RCW mod: Beginning RCW mod subinstaller");
                 InstallAttachedRCWMod();
-                
+
                 // Consistent logging
                 if (InstallationResult.Result == EModInstallerResult.INSTALL_SUCCESSFUL)
                 {
@@ -1111,7 +1111,7 @@ namespace ME3TweaksModManager.modmanager.installer
 
             // We check for 9.2 or higher here to force mods to update to 9.2 to use this feature,
             // this ensures the developer is aware changes have been made.
-            if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_2 
+            if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_2
                 && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
             {
                 void onMergeUpdate(ProgressInfo pi)
@@ -1139,7 +1139,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         // An error occurred during merge
                         InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_BTP_BUILD_FAILED;
                         InstallationResult.ErrorMessage = mergeError;
-                        InstallationResult.ErrorTitle = "Texture override merge failed";
+                        InstallationResult.ErrorTitle = M3L.GetString(M3L.string_textureOverrideMergeFailed);
                         InstallationResult.ErrorImage = MessageBoxImage.Error;
                         return;
                     }
@@ -1208,7 +1208,7 @@ namespace ME3TweaksModManager.modmanager.installer
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE3)
             {
                 ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
-            } 
+            }
 
             // ModDesc 9: Install mod-requested ASI mods
             foreach (var asiMod in InstallOptionsPackage.ModBeingInstalled.ASIModsToInstall)
