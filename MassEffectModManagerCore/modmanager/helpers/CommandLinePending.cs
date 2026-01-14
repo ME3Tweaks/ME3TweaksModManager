@@ -62,11 +62,6 @@
         public static string PendingMergeModCompileManifest;
 
         /// <summary>
-        /// Disable workarounds for Wine
-        /// </summary>
-        public static bool PendingDisableWineWorkarounds;
-
-        /// <summary>
         /// Sets PendingGame to null if there are no items in the pending system that depend on it
         /// </summary>
         public static void ClearGameDependencies()
