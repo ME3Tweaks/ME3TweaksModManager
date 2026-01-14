@@ -27,20 +27,20 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("SaveTimeStamp")]
+    [OriginalName(@"SaveTimeStamp")]
     public class SaveTimeStamp : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("SecondsSinceMidnight")]
+        [OriginalName(@"SecondsSinceMidnight")]
         private int _SecondsSinceMidnight;
 
-        [OriginalName("Day")]
+        [OriginalName(@"Day")]
         private int _Day;
 
-        [OriginalName("Month")]
+        [OriginalName(@"Month")]
         private int _Month;
 
-        [OriginalName("Year")]
+        [OriginalName(@"Year")]
         private int _Year;
         #endregion
 
@@ -54,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public override string ToString()
         {
-            return string.Format("{0}/{1}/{2} {3}:{3:D2}",
+            return string.Format(@"{0}/{1}/{2} {3}:{3:D2}",
                                  this.Day,
                                  this.Month,
                                  this.Year,
@@ -71,7 +71,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._SecondsSinceMidnight)
                 {
                     this._SecondsSinceMidnight = value;
-                    this.NotifyPropertyChanged("SecondsSinceMidnight");
+                    this.NotifyPropertyChanged(@"SecondsSinceMidnight");
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Day)
                 {
                     this._Day = value;
-                    this.NotifyPropertyChanged("Day");
+                    this.NotifyPropertyChanged(@"Day");
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Month)
                 {
                     this._Month = value;
-                    this.NotifyPropertyChanged("Month");
+                    this.NotifyPropertyChanged(@"Month");
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Year)
                 {
                     this._Year = value;
-                    this.NotifyPropertyChanged("Year");
+                    this.NotifyPropertyChanged(@"Year");
                 }
             }
         }

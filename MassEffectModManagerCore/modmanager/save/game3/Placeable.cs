@@ -27,17 +27,17 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("PlaceableSaveRecord")]
+    [OriginalName(@"PlaceableSaveRecord")]
     public class Placeable : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("PlaceableGUID")]
+        [OriginalName(@"PlaceableGUID")]
         private Guid _Guid;
 
-        [OriginalName("IsDestroyed")]
+        [OriginalName(@"IsDestroyed")]
         private byte _IsDestroyed;
 
-        [OriginalName("IsDeactivated")]
+        [OriginalName(@"IsDeactivated")]
         private byte _IsDeactivated;
         #endregion
 
@@ -57,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Guid)
                 {
                     this._Guid = value;
-                    this.NotifyPropertyChanged("Guid");
+                    this.NotifyPropertyChanged(@"Guid");
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != (this._IsDestroyed != 0))
                 {
                     this._IsDestroyed = value == true ? (byte)1 : (byte)0;
-                    this.NotifyPropertyChanged("IsDestroyed");
+                    this.NotifyPropertyChanged(@"IsDestroyed");
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != (this._IsDeactivated != 0))
                 {
                     this._IsDeactivated = value == true ? (byte)1 : (byte)0;
-                    this.NotifyPropertyChanged("IsDeactivated");
+                    this.NotifyPropertyChanged(@"IsDeactivated");
                 }
             }
         }

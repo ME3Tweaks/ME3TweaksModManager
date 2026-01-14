@@ -54,112 +54,112 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         public uint Checksum; // CRC32 of save data (from start) to before CRC32 value
 
         [UnrealFieldOffset(0x054)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Debug Name")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Debug Name")]
         public string DebugName;
 
         [UnrealFieldOffset(0x07C)]
-        [UnrealFieldCategory("1. Information")]
-        [UnrealFieldDisplayName("Seconds Played")]
+        [UnrealFieldCategory(@"1. Information")]
+        [UnrealFieldDisplayName(@"Seconds Played")]
         public float SecondsPlayed;
 
         [UnrealFieldOffset(0x090)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Disc")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Disc")]
         public int Disc;
 
         [UnrealFieldOffset(0x094)]
-        [UnrealFieldCategory("3. Location")]
-        [UnrealFieldDisplayName("Base Level Name")]
+        [UnrealFieldCategory(@"3. Location")]
+        [UnrealFieldDisplayName(@"Base Level Name")]
         public string BaseLevelName;
         public string Proxy_BaseLevelName => BaseLevelName;
 
         [UnrealFieldOffset(0x0A0)]
-        [UnrealFieldCategory("1. Information")]
-        [UnrealFieldDisplayName("Difficulty")]
+        [UnrealFieldCategory(@"1. Information")]
+        [UnrealFieldDisplayName(@"Difficulty")]
         public Save.DifficultyOptions Difficulty;
 
         [UnrealFieldOffset(0x0A4)]
-        [UnrealFieldCategory("4. Plot")]
-        [UnrealFieldDisplayName("End Game State")]
+        [UnrealFieldCategory(@"4. Plot")]
+        [UnrealFieldDisplayName(@"End Game State")]
         public Save.EndGameType EndGameState;
 
         [UnrealFieldOffset(0x080)]
-        [UnrealFieldCategory("1. Information")]
-        [UnrealFieldDisplayName("Time Stamp")]
+        [UnrealFieldCategory(@"1. Information")]
+        [UnrealFieldDisplayName(@"Time Stamp")]
         public Save.SaveTimeStamp TimeStamp;
         public DateTime Proxy_TimeStamp => TimeStamp.ToDate();
 
         [UnrealFieldOffset(0x0A8)]
-        [UnrealFieldCategory("3. Location")]
-        [UnrealFieldDisplayName("Position")]
+        [UnrealFieldCategory(@"3. Location")]
+        [UnrealFieldDisplayName(@"Position")]
         public Save.Vector SaveLocation;
 
         [UnrealFieldOffset(0x0B4)]
-        [UnrealFieldCategory("3. Location")]
-        [UnrealFieldDisplayName("Rotation")]
+        [UnrealFieldCategory(@"3. Location")]
+        [UnrealFieldDisplayName(@"Rotation")]
         public Save.Rotator SaveRotation;
 
         [UnrealFieldOffset(0x344)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Current Loading Tip")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Current Loading Tip")]
         public int CurrentLoadingTip;
 
         [UnrealFieldOffset(0x0C0)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Levels")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Levels")]
         public List<Save.Level> LevelRecords;
 
         [UnrealFieldOffset(0x0CC)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Streaming")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Streaming")]
         public List<Save.StreamingState> StreamingRecords;
 
         [UnrealFieldOffset(0x0D8)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Kismet")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Kismet")]
         public List<Save.KismetBool> KismetRecords;
 
         [UnrealFieldOffset(0x0E4)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Doors")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Doors")]
         public List<Save.Door> DoorRecords;
 
         [UnrealFieldOffset(0x0F0)]
-        [UnrealFieldCategory("5. Other")]
-        [UnrealFieldDisplayName("Pawns")]
+        [UnrealFieldCategory(@"5. Other")]
+        [UnrealFieldDisplayName(@"Pawns")]
         public List<Guid> PawnRecords;
 
         [UnrealFieldOffset(0x0FC)]
-        [UnrealFieldCategory("2. Squad")]
-        [UnrealFieldDisplayName("Player")]
+        [UnrealFieldCategory(@"2. Squad")]
+        [UnrealFieldDisplayName(@"Player")]
         public Save.Player PlayerRecord;
 
         public IPlayerRecord Proxy_PlayerRecord => PlayerRecord;
 
         [UnrealFieldOffset(0x2B0)]
-        [UnrealFieldCategory("2. Squad")]
-        [UnrealFieldDisplayName("Henchmen")]
+        [UnrealFieldCategory(@"2. Squad")]
+        [UnrealFieldDisplayName(@"Henchmen")]
         public List<Save.Henchman> HenchmanRecords;
 
         [UnrealFieldOffset(0x2C8)]
-        [UnrealFieldCategory("4. Plot")]
-        [UnrealFieldDisplayName("ME2 Plot Table")]
+        [UnrealFieldCategory(@"4. Plot")]
+        [UnrealFieldDisplayName(@"ME2 Plot Table")]
         public Save.PlotTable PlotRecord;
 
         [UnrealFieldOffset(0x320)]
-        [UnrealFieldCategory("4. Plot")]
-        [UnrealFieldDisplayName("ME1 Plot Table")]
+        [UnrealFieldCategory(@"4. Plot")]
+        [UnrealFieldDisplayName(@"ME1 Plot Table")]
         public Save.ME1PlotTable ME1PlotRecord;
 
         [UnrealFieldOffset(0x2BC)]
-        [UnrealFieldCategory("4. Plot")]
-        [UnrealFieldDisplayName("Galaxy Map")]
+        [UnrealFieldCategory(@"4. Plot")]
+        [UnrealFieldDisplayName(@"Galaxy Map")]
         public Save.GalaxyMap GalaxyMapRecord;
 
         [UnrealFieldOffset(0x03C)]
-        [UnrealFieldCategory("1. Information")]
-        [UnrealFieldDisplayName("Dependent DLC")]
+        [UnrealFieldCategory(@"1. Information")]
+        [UnrealFieldDisplayName(@"Dependent DLC")]
         public List<Save.DependentDLC> DependentDLC;
 
         public void Serialize(IUnrealStream stream)
@@ -206,7 +206,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
                 save.FileName = fileName;
 
                 var sgName = Path.GetFileNameWithoutExtension(fileName);
-                if (sgName.StartsWith("Save_"))
+                if (sgName.StartsWith(@"Save_"))
                 {
                     // Parse number
                     var numStr = sgName.Substring(sgName.IndexOf("_") + 1);
@@ -216,15 +216,15 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
                         save.SaveGameType = ESFXSaveGameType.SaveGameType_Manual;
                     }
                 }
-                else if (sgName.StartsWith("AutoSave"))
+                else if (sgName.StartsWith(@"AutoSave"))
                 {
                     save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
                 }
-                else if (sgName.StartsWith("ChapterSave"))
+                else if (sgName.StartsWith(@"ChapterSave"))
                 {
                     save.SaveGameType = ESFXSaveGameType.SaveGameType_Chapter;
                 }
-                else if (sgName.StartsWith("QuickSave"))
+                else if (sgName.StartsWith(@"QuickSave"))
                 {
                     save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
                 }
@@ -239,7 +239,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
                 // sanity check, cos if we read a strange crc it'll break anyway
                 if (input.Position != input.Length - 4)
                 {
-                    throw new FormatException("bad checksum position");
+                    throw new FormatException(@"bad checksum position");
                 }
 
                 save.Checksum = input.ReadUInt32();
@@ -248,7 +248,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             // did we consume the entire save file?
             if (input.Position != input.Length)
             {
-                throw new FormatException("did not consume entire file");
+                throw new FormatException(@"did not consume entire file");
             }
 
             return save;

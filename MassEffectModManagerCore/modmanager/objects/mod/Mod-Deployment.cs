@@ -254,7 +254,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 var folders = custDlcJob.CustomDLCFolderMapping.Values.Select(x => x).ToList();
                 folders.AddRange(custDlcJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
                     .Select(x => x.DestinationDLCFolder));
-                return folders;
+                return folders.Distinct().ToList();
             }
 
             return new List<string>();

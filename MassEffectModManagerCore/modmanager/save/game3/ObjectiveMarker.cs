@@ -26,23 +26,23 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("ObjectiveMarkerSaveRecord")]
+    [OriginalName(@"ObjectiveMarkerSaveRecord")]
     public class ObjectiveMarker : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("MarkerOwnerPath")]
+        [OriginalName(@"MarkerOwnerPath")]
         private string _MarkerOwnerPath;
 
-        [OriginalName("MarkerOffset")]
+        [OriginalName(@"MarkerOffset")]
         private Vector _MarkerOffset;
 
-        [OriginalName("MarkerLabel")]
+        [OriginalName(@"MarkerLabel")]
         private int _MarkerLabel;
 
-        [OriginalName("BoneToAttachTo")]
+        [OriginalName(@"BoneToAttachTo")]
         private string _BoneToAttachTo;
 
-        [OriginalName("MarkerIconType")]
+        [OriginalName(@"MarkerIconType")]
         private ObjectiveMarkerIconType _MarkerIconType;
         #endregion
 
@@ -64,7 +64,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MarkerOwnerPath)
                 {
                     this._MarkerOwnerPath = value;
-                    this.NotifyPropertyChanged("MarkerOwnerPath");
+                    this.NotifyPropertyChanged(@"MarkerOwnerPath");
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MarkerOffset)
                 {
                     this._MarkerOffset = value;
-                    this.NotifyPropertyChanged("MarkerOffset");
+                    this.NotifyPropertyChanged(@"MarkerOffset");
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MarkerLabel)
                 {
                     this._MarkerLabel = value;
-                    this.NotifyPropertyChanged("MarkerLabel");
+                    this.NotifyPropertyChanged(@"MarkerLabel");
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._BoneToAttachTo)
                 {
                     this._BoneToAttachTo = value;
-                    this.NotifyPropertyChanged("BoneToAttachTo");
+                    this.NotifyPropertyChanged(@"BoneToAttachTo");
                 }
             }
         }
@@ -116,7 +116,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MarkerIconType)
                 {
                     this._MarkerIconType = value;
-                    this.NotifyPropertyChanged("MarkerIconType");
+                    this.NotifyPropertyChanged(@"MarkerIconType");
                 }
             }
         }

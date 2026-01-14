@@ -560,32 +560,32 @@ namespace ME3TweaksModManager
         {
             try
             {
-                var fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") + @"x86\fxc.exe";
+                var fxc = Environment.GetEnvironmentVariable(@"WindowsSdkVerBinPath") + @"x86\fxc.exe";
                 if (!File.Exists(fxc))
                 {
-                    fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") +
-                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
+                    fxc = Environment.GetEnvironmentVariable(@"WindowsSdkVerBinPath") +
+                          Environment.GetEnvironmentVariable(@"WindowsSDKVersion") + @"x86\fxc.exe";
                 }
 
                 if (!File.Exists(fxc))
                 {
-                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir") + @"bin\" +
-                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
+                    fxc = Environment.GetEnvironmentVariable(@"WindowsSdkDir") + @"bin\" +
+                          Environment.GetEnvironmentVariable(@"WindowsSDKVersion") + @"x86\fxc.exe";
                 }
 
                 if (!File.Exists(fxc))
                 {
-                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir_80") + @"bin\x86\fxc.exe";
+                    fxc = Environment.GetEnvironmentVariable(@"WindowsSdkDir_80") + @"bin\x86\fxc.exe";
                 }
 
                 if (!File.Exists(fxc))
                 {
-                    fxc = Environment.GetEnvironmentVariable("DXSDK_DIR") + @"Utilities\bin\x86\fxc.exe";
+                    fxc = Environment.GetEnvironmentVariable(@"DXSDK_DIR") + @"Utilities\bin\x86\fxc.exe";
                 }
 
                 if (!File.Exists(fxc))
                 {
-                    M3Log.Warning("Could not find fxc - install a Windows SDK that contains FXC");
+                    M3Log.Warning(@"Could not find fxc - install a Windows SDK that contains FXC");
                     M3L.ShowDialog(this,
                         "Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.",
                         "FXC not found", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -602,16 +602,16 @@ namespace ME3TweaksModManager
                     {
                         int percent = (int)Math.Round(done * 100.0f / total);
                         BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task,
-                            $"Compiling shaders {percent}%");
+                            $"Compiling shaders" + $@" {percent}%");
                     }
 
                     int total = files.Length;
                     int done = 0;
                     foreach (var f in files)
                     {
-                        var isPixelShader = f.Contains("PixelShader",
+                        var isPixelShader = f.Contains(@"PixelShader",
                             StringComparison.OrdinalIgnoreCase);
-                        var typeParam = isPixelShader ? "ps_5_0" : "vs_5_0";
+                        var typeParam = isPixelShader ? @"ps_5_0" : @"vs_5_0";
                         var outPath = Path.Combine(Directory.GetParent(f).FullName, Path.GetFileNameWithoutExtension(f) + @".m3gs");
                         var cmd = Cli.Wrap(fxc)
                             .WithArguments($@"/T {typeParam} /Fo ""{outPath}"" ""{f}""")

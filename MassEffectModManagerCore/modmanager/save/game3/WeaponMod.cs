@@ -27,14 +27,14 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("WeaponModSaveRecord")]
+    [OriginalName(@"WeaponModSaveRecord")]
     public class WeaponMod : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("WeaponModClassNames")]
+        [OriginalName(@"WeaponModClassNames")]
         private string _WeaponClassName;
 
-        [OriginalName("WeaponClassName")]
+        [OriginalName(@"WeaponClassName")]
         private List<string> _WeaponModClassNames = new List<string>();
         #endregion
 
@@ -53,13 +53,13 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._WeaponClassName)
                 {
                     this._WeaponClassName = value;
-                    this.NotifyPropertyChanged("WeaponClassName");
+                    this.NotifyPropertyChanged(@"WeaponClassName");
                 }
             }
         }
 
         [Editor(
-            "System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+            @"System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
             , typeof(System.Drawing.Design.UITypeEditor))]
         public List<string> WeaponModClassNames
         {
@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._WeaponModClassNames)
                 {
                     this._WeaponModClassNames = value;
-                    this.NotifyPropertyChanged("WeaponModClassNames");
+                    this.NotifyPropertyChanged(@"WeaponModClassNames");
                 }
             }
         }

@@ -27,20 +27,20 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("LevelTreasureSaveRecord")]
+    [OriginalName(@"LevelTreasureSaveRecord")]
     public class LevelTreasure : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("LevelName")]
+        [OriginalName(@"LevelName")]
         private string _LevelName;
 
-        [OriginalName("nCredits")]
+        [OriginalName(@"nCredits")]
         private int _Credits;
 
-        [OriginalName("nXP")]
+        [OriginalName(@"nXP")]
         private int _XP;
 
-        [OriginalName("Items")]
+        [OriginalName(@"Items")]
         private List<string> _Items = new List<string>();
         #endregion
 
@@ -61,7 +61,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._LevelName)
                 {
                     this._LevelName = value;
-                    this.NotifyPropertyChanged("LevelName");
+                    this.NotifyPropertyChanged(@"LevelName");
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Credits)
                 {
                     this._Credits = value;
-                    this.NotifyPropertyChanged("Credits");
+                    this.NotifyPropertyChanged(@"Credits");
                 }
             }
         }
@@ -87,13 +87,13 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._XP)
                 {
                     this._XP = value;
-                    this.NotifyPropertyChanged("XP");
+                    this.NotifyPropertyChanged(@"XP");
                 }
             }
         }
 
         [Editor(
-            "System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+            @"System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
             , typeof(System.Drawing.Design.UITypeEditor))]
         public List<string> Items
         {
@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Items)
                 {
                     this._Items = value;
-                    this.NotifyPropertyChanged("Items");
+                    this.NotifyPropertyChanged(@"Items");
                 }
             }
         }

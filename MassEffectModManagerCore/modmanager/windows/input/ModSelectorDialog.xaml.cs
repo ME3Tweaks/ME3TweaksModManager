@@ -1,13 +1,10 @@
 ﻿using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
-using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace ME3TweaksModManager.modmanager.windows
 {

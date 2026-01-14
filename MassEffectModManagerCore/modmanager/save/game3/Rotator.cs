@@ -41,7 +41,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}, {2}",
+            return string.Format(@"{0}, {1}, {2}",
                                  this._Pitch,
                                  this._Yaw,
                                  this._Roll);
@@ -56,7 +56,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Pitch)
                 {
                     this._Pitch = value;
-                    this.NotifyPropertyChanged("Pitch");
+                    this.NotifyPropertyChanged(@"Pitch");
                 }
             }
         }
@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Yaw)
                 {
                     this._Yaw = value;
-                    this.NotifyPropertyChanged("Yaw");
+                    this.NotifyPropertyChanged(@"Yaw");
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Roll)
                 {
                     this._Roll = value;
-                    this.NotifyPropertyChanged("Roll");
+                    this.NotifyPropertyChanged(@"Roll");
                 }
             }
         }

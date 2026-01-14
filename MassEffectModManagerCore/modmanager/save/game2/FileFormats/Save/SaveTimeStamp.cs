@@ -6,16 +6,16 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public partial class SaveTimeStamp : IUnrealSerializable
     {
-        [UnrealFieldDisplayName("Seconds Since Midnight")]
+        [UnrealFieldDisplayName(@"Seconds Since Midnight")]
         public int SecondsSinceMidnight;
 
-        [UnrealFieldDisplayName("Day")]
+        [UnrealFieldDisplayName(@"Day")]
         public int Day;
 
-        [UnrealFieldDisplayName("Month")]
+        [UnrealFieldDisplayName(@"Month")]
         public int Month;
 
-        [UnrealFieldDisplayName("Year")]
+        [UnrealFieldDisplayName(@"Year")]
         public int Year;
 
         public void Serialize(IUnrealStream stream)
@@ -28,7 +28,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 
         public override string ToString()
         {
-            return String.Format("{0}/{1}/{2} {3}:{4:D2}",
+            return String.Format(@"{0}/{1}/{2} {3}:{4:D2}",
                 this.Day,
                 this.Month,
                 this.Year,

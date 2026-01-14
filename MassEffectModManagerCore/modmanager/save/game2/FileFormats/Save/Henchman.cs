@@ -7,27 +7,27 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
     public partial class Henchman : IUnrealSerializable
     {
         [UnrealFieldOffset(0x00)]
-        [UnrealFieldDisplayName("Tag")]
+        [UnrealFieldDisplayName(@"Tag")]
         public string Tag;
 
         [UnrealFieldOffset(0x0C)]
-        [UnrealFieldDisplayName("Powers")]
+        [UnrealFieldDisplayName(@"Powers")]
         public List<Power> Powers;
 
         [UnrealFieldOffset(0x18)]
-        [UnrealFieldDisplayName("Level")]
+        [UnrealFieldDisplayName(@"Level")]
         public int CharacterLevel;
 
         [UnrealFieldOffset(0x1C)]
-        [UnrealFieldDisplayName("Talent Points")]
+        [UnrealFieldDisplayName(@"Talent Points")]
         public int TalentPoints;
 
         [UnrealFieldOffset(0x20)]
-        [UnrealFieldDisplayName("Loadout")]
+        [UnrealFieldDisplayName(@"Loadout")]
         public Loadout LoadoutWeapons;
 
         [UnrealFieldOffset(0x68)]
-        [UnrealFieldDisplayName("Mapped Power")]
+        [UnrealFieldDisplayName(@"Mapped Power")]
         public string MappedPower; // +68
 
         public void Serialize(IUnrealStream stream)

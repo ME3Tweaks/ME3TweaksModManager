@@ -16,10 +16,10 @@ namespace ME3TweaksModManager.modmanager.save.game2.Components
         public static List<PlayerOrigin> GetOrigins()
         {
             List<PlayerOrigin> origins = new List<PlayerOrigin>();
-            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.None, "None"));
-            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.Colonist, "Colonist"));
-            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.Earthborn, "Earthborn"));
-            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.Spacer, "Spacer"));
+            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.None, @"None"));
+            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.Colonist, @"Colonist"));
+            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.Earthborn, @"Earthborn"));
+            origins.Add(new PlayerOrigin(FileFormats.Save.OriginType.Spacer, @"Spacer"));
             return origins;
         }
     }

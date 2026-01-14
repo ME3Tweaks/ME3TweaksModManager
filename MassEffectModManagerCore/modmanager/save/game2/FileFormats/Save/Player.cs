@@ -9,8 +9,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
     public partial class Player : IUnrealSerializable, IPlayerRecord
     {
         [UnrealFieldOffset(0x000)]
-        [UnrealFieldCategory("Player")]
-        [UnrealFieldDisplayName("Is Female")]
+        [UnrealFieldCategory(@"Player")]
+        [UnrealFieldDisplayName(@"Is Female")]
         public bool IsFemale;
         public bool Proxy_IsFemale
         {
@@ -19,23 +19,23 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
         }
 
         [UnrealFieldOffset(0x004)]
-        [UnrealFieldCategory("Statistics")]
-        [UnrealFieldDisplayName("Class Name")]
+        [UnrealFieldCategory(@"Statistics")]
+        [UnrealFieldDisplayName(@"Class Name")]
         public string PlayerClassName;
 
         [UnrealFieldOffset(0x018)]
-        [UnrealFieldCategory("Statistics")]
-        [UnrealFieldDisplayName("Level")]
+        [UnrealFieldCategory(@"Statistics")]
+        [UnrealFieldDisplayName(@"Level")]
         public int Level;
 
         [UnrealFieldOffset(0x01C)]
-        [UnrealFieldCategory("Statistics")]
-        [UnrealFieldDisplayName("Current XP")]
+        [UnrealFieldCategory(@"Statistics")]
+        [UnrealFieldDisplayName(@"Current XP")]
         public float CurrentXP;
 
         [UnrealFieldOffset(0x020)]
-        [UnrealFieldCategory("Player")]
-        [UnrealFieldDisplayName("First Name")]
+        [UnrealFieldCategory(@"Player")]
+        [UnrealFieldDisplayName(@"First Name")]
         public string FirstName;
         public string Proxy_FirstName
         {
@@ -44,115 +44,115 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
         }
 
         [UnrealFieldOffset(0x02C)]
-        [UnrealFieldCategory("Player")]
-        [UnrealFieldDisplayName("Last Name")]
-        [UnrealFieldDescription("String ID of last name. Not actually used.")]
+        [UnrealFieldCategory(@"Player")]
+        [UnrealFieldDisplayName(@"Last Name")]
+        [UnrealFieldDescription(@"String ID of last name. Not actually used.")]
         public int LastName;
 
         [UnrealFieldOffset(0x030)]
-        [UnrealFieldCategory("Statistics")]
-        [UnrealFieldDisplayName("Origin")]
+        [UnrealFieldCategory(@"Statistics")]
+        [UnrealFieldDisplayName(@"Origin")]
         public OriginType Origin;
 
         [UnrealFieldOffset(0x031)]
-        [UnrealFieldCategory("Statistics")]
-        [UnrealFieldDisplayName("Notoriety")]
+        [UnrealFieldCategory(@"Statistics")]
+        [UnrealFieldDisplayName(@"Notoriety")]
         public NotorietyType Notoriety;
 
         [UnrealFieldOffset(0x034)]
-        [UnrealFieldCategory("Statistics")]
-        [UnrealFieldDisplayName("Talent Points")]
+        [UnrealFieldCategory(@"Statistics")]
+        [UnrealFieldDisplayName(@"Talent Points")]
         public int TalentPoints;
 
         [UnrealFieldOffset(0x038)]
-        [UnrealFieldCategory("Powers")]
-        [UnrealFieldDisplayName("Mapped Power #1")]
+        [UnrealFieldCategory(@"Powers")]
+        [UnrealFieldDisplayName(@"Mapped Power #1")]
         public string MappedPower1;
 
         [UnrealFieldOffset(0x044)]
-        [UnrealFieldCategory("Powers")]
-        [UnrealFieldDisplayName("Mapped Power #2")]
+        [UnrealFieldCategory(@"Powers")]
+        [UnrealFieldDisplayName(@"Mapped Power #2")]
         public string MappedPower2;
 
         [UnrealFieldOffset(0x058)]
-        [UnrealFieldCategory("Powers")]
-        [UnrealFieldDisplayName("Mapped Power #3")]
+        [UnrealFieldCategory(@"Powers")]
+        [UnrealFieldDisplayName(@"Mapped Power #3")]
         public string MappedPower3;
 
         [UnrealFieldOffset(0x05C)]
-        [UnrealFieldCategory("Player")]
-        [UnrealFieldDisplayName("Appearance")]
+        [UnrealFieldCategory(@"Player")]
+        [UnrealFieldDisplayName(@"Appearance")]
         public Appearance Appearance;
 
         [UnrealFieldOffset(0x11C)]
-        [UnrealFieldCategory("Powers")]
-        [UnrealFieldDisplayName("Powers")]
+        [UnrealFieldCategory(@"Powers")]
+        [UnrealFieldDisplayName(@"Powers")]
         public List<Power> Powers;
 
         [UnrealFieldOffset(0x128)]
-        [UnrealFieldCategory("Inventory")]
-        [UnrealFieldDisplayName("Weapons")]
+        [UnrealFieldCategory(@"Inventory")]
+        [UnrealFieldDisplayName(@"Weapons")]
         public List<Weapon> Weapons;
 
         [UnrealFieldOffset(0x134)]
-        [UnrealFieldCategory("Inventory")]
-        [UnrealFieldDisplayName("Loadout")]
+        [UnrealFieldCategory(@"Inventory")]
+        [UnrealFieldDisplayName(@"Loadout")]
         public Loadout LoadoutWeapons;
 
         [UnrealFieldOffset(0x17C)]
-        [UnrealFieldCategory("Other")]
-        [UnrealFieldDisplayName("HotKeys")]
+        [UnrealFieldCategory(@"Other")]
+        [UnrealFieldDisplayName(@"HotKeys")]
         public List<HotKey> HotKeys;
 
         [UnrealFieldOffset(0x188)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Credits")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Credits")]
         public int Credits;
 
         [UnrealFieldOffset(0x18C)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Medigel")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Medigel")]
         public int Medigel;
 
         [UnrealFieldOffset(0x190)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Element Zero")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Element Zero")]
         public int Eezo;
 
         [UnrealFieldOffset(0x194)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Iridium")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Iridium")]
         public int Iridium;
 
         [UnrealFieldOffset(0x198)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Palladium")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Palladium")]
         public int Palladium;
 
         [UnrealFieldOffset(0x19C)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Platinum")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Platinum")]
         public int Platinum;
 
         [UnrealFieldOffset(0x1A0)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Probes")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Probes")]
         public int Probes;
 
         [UnrealFieldOffset(0x1A4)]
-        [UnrealFieldCategory("Resources")]
-        [UnrealFieldDisplayName("Current Fuel")]
+        [UnrealFieldCategory(@"Resources")]
+        [UnrealFieldDisplayName(@"Current Fuel")]
         public float CurrentFuel;
 
         [UnrealFieldOffset(0x1A8)]
-        [UnrealFieldCategory("Player")]
-        [UnrealFieldDisplayName("Face Code")]
+        [UnrealFieldCategory(@"Player")]
+        [UnrealFieldDisplayName(@"Face Code")]
         public string FaceCode;
 
         [UnrealFieldOffset(0x014)]
-        [UnrealFieldCategory("Statistics")]
-        [UnrealFieldDisplayName("Class Friendly Name")]
-        [UnrealFieldDescription("String ID of the player's class.")]
+        [UnrealFieldCategory(@"Statistics")]
+        [UnrealFieldDisplayName(@"Class Friendly Name")]
+        [UnrealFieldDescription(@"String ID of the player's class.")]
         public int ClassFriendlyName;
 
         public void Serialize(IUnrealStream stream)

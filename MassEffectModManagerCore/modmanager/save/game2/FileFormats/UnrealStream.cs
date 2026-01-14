@@ -9,7 +9,7 @@ using LegendaryExplorerCore.Packages;
 
 namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
-    [DebuggerDisplay("UnrealStream | Position 0x{Stream.Position.ToString(\"X8\")} Length 0x{Stream.Length.ToString(\"X8\")}")]
+    [DebuggerDisplay(@"UnrealStream | Position 0x{Stream.Position.ToString(""X8"")} Length 0x{Stream.Length.ToString(""X8"")}")]
     public class UnrealStream : IUnrealStream
     {
         public Stream Stream { get; }
@@ -123,12 +123,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -145,12 +145,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -167,12 +167,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -189,12 +189,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -211,12 +211,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -233,12 +233,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -255,12 +255,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -277,12 +277,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -300,12 +300,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultValue == null)
             {
-                throw new ArgumentNullException("defaultValue");
+                throw new ArgumentNullException(@"defaultValue");
             }
 
             if (condition(this) == false)
@@ -326,12 +326,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -352,7 +352,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (list == null)
             {
-                throw new ArgumentNullException("list", "serializable list should not be null");
+                throw new ArgumentNullException(@"list", "serializable list should not be null");
             }
 
             this.ReadBasicList(list, r => (byte)r.Stream.ReadByte());
@@ -377,12 +377,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -403,12 +403,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -429,12 +429,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -456,12 +456,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -482,12 +482,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -509,12 +509,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -536,12 +536,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -562,7 +562,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (list == null)
             {
-                throw new ArgumentNullException("list", "serializable list should not be null");
+                throw new ArgumentNullException(@"list", "serializable list should not be null");
             }
 
             if (this.Loading == true)
@@ -596,12 +596,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(@"condition");
             }
 
             if (defaultList == null)
             {
-                throw new ArgumentNullException("defaultList");
+                throw new ArgumentNullException(@"defaultList");
             }
 
             if (condition(this) == false)
@@ -642,7 +642,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Count);
@@ -677,7 +677,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Count);
@@ -712,7 +712,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Count);
@@ -747,7 +747,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Count);
@@ -782,7 +782,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Count);
@@ -817,7 +817,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Count);
@@ -833,7 +833,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             if (array == null)
             {
                 if (!Loading)
-                    throw new ArgumentNullException("array", "serializable array should not be null");
+                    throw new ArgumentNullException(@"array", "serializable array should not be null");
 
                 if (numElements == -1)
                     numElements = Stream.ReadInt32();
@@ -847,7 +847,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             if (array == null)
             {
                 if (!Loading)
-                    throw new ArgumentNullException("array", "serializable array should not be null");
+                    throw new ArgumentNullException(@"array", "serializable array should not be null");
 
                 if (numElements == -1)
                     numElements = Stream.ReadInt32();
@@ -862,7 +862,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             if (array == null)
             {
                 if (!Loading)
-                    throw new ArgumentNullException("array", "serializable array should not be null");
+                    throw new ArgumentNullException(@"array", "serializable array should not be null");
 
                 if (numElements == -1)
                     numElements = Stream.ReadInt32();
@@ -877,7 +877,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             if (array == null)
             {
                 if (!Loading)
-                    throw new ArgumentNullException("array", "serializable array should not be null");
+                    throw new ArgumentNullException(@"array", "serializable array should not be null");
 
                 if (numElements == -1)
                     numElements = Stream.ReadInt32();
@@ -892,7 +892,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             if (array == null)
             {
                 if (!Loading)
-                    throw new ArgumentNullException("array", "serializable array should not be null");
+                    throw new ArgumentNullException(@"array", "serializable array should not be null");
 
                 if (numElements == -1)
                     numElements = Stream.ReadInt32();
@@ -907,7 +907,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             if (array == null)
             {
                 if (!Loading)
-                    throw new ArgumentNullException("array", "serializable array should not be null");
+                    throw new ArgumentNullException(@"array", "serializable array should not be null");
 
                 if (numElements == -1)
                     numElements = Stream.ReadInt32();
@@ -965,7 +965,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 uint count = ((uint)values.Count + 31) / 32;
@@ -993,7 +993,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
         {
             if (this.Loading == false && value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(@"value");
             }
 
             if (this.Loading == true)
@@ -1031,7 +1031,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Count);
@@ -1069,7 +1069,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
             {
                 if (values == null)
                 {
-                    throw new ArgumentNullException("values");
+                    throw new ArgumentNullException(@"values");
                 }
 
                 this.Stream.WriteInt32(values.Length);

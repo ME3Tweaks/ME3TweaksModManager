@@ -34,7 +34,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         private readonly LocalizedString _DisplayName = new LocalizedString();
 
         public LocalizedDisplayNameAttribute(string propertyName, Type resourceType)
-            : this(propertyName != null ? "[FIX ME] " + propertyName : null, propertyName, resourceType)
+            : this(propertyName != null ? @"[FIX ME] " + propertyName : null, propertyName, resourceType)
         {
         }
 
@@ -43,16 +43,16 @@ namespace ME3TweaksModManager.modmanager.save.game3
         {
             if (resourceType == null)
             {
-                throw new ArgumentNullException("resourceType");
+                throw new ArgumentNullException(@"resourceType");
             }
 
             if (string.IsNullOrEmpty(propertyName) == true)
             {
-                throw new ArgumentNullException("propertyName");
+                throw new ArgumentNullException(@"propertyName");
             }
 
             this._DisplayName.ResourceType = resourceType;
-            this._DisplayName.PropertyName = propertyName + "_DisplayName";
+            this._DisplayName.PropertyName = propertyName + @"_DisplayName";
         }
 
         public override string DisplayName

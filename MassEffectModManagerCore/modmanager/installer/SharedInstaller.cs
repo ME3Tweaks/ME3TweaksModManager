@@ -38,7 +38,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 foreach (var dlc in missingRequiredDLC)
                 {
                     var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName.Key, mod.Game);
-                    dlcText += $"\n - {dlc.ToUIString(info, false)}";
+                    dlcText += $"\n - {dlc.ToUIString(info, false)}"; // do not localize
                 }
 
                 ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 foreach (var dlc in mod.OptionalSingleRequiredDLC)
                 {
                     var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName.Key, mod.Game);
-                    dlcText += $"\n - {dlc.ToUIString(info, false)}";
+                    dlcText += $"\n - {dlc.ToUIString(info, false)}"; // do not localize
                 }
 
                 ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, mod.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);

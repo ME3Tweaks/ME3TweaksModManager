@@ -27,19 +27,19 @@
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {
-    [OriginalName("EOriginType")]
+    [OriginalName(@"EOriginType")]
     public enum OriginType : byte
     {
-        [OriginalName("OriginType_None")]
+        [OriginalName(@"OriginType_None")]
         None = 0,
 
-        [OriginalName("OriginType_Spacer")]
+        [OriginalName(@"OriginType_Spacer")]
         Spacer = 1,
 
-        [OriginalName("OriginType_Colony")]
+        [OriginalName(@"OriginType_Colony")]
         Colony = 2,
 
-        [OriginalName("OriginType_Earthborn")]
+        [OriginalName(@"OriginType_Earthborn")]
         Earthborn = 3,
     }
 }

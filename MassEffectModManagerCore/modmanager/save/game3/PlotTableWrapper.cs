@@ -35,7 +35,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(@"target");
             }
 
             this._Target = target;
@@ -52,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(this._Target.GetFloatVariable(PersuadeMultiplierId), value) == false)
                 {
                     this._Target.SetFloatVariable(PersuadeMultiplierId, value);
-                    this.NotifyPropertyChanged("PersuadeMultiplier");
+                    this.NotifyPropertyChanged(@"PersuadeMultiplier");
                 }
             }
         }
@@ -67,7 +67,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetIntVariable(NewGamePlusCountId) != value)
                 {
                     this._Target.SetIntVariable(NewGamePlusCountId, value);
-                    this.NotifyPropertyChanged("NewGamePlusCount");
+                    this.NotifyPropertyChanged(@"NewGamePlusCount");
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetIntVariable(ParagonPointsId) != value)
                 {
                     this._Target.SetIntVariable(ParagonPointsId, value);
-                    this.NotifyPropertyChanged("ParagonPoints");
+                    this.NotifyPropertyChanged(@"ParagonPoints");
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetIntVariable(RenegadePointsId) != value)
                 {
                     this._Target.SetIntVariable(RenegadePointsId, value);
-                    this.NotifyPropertyChanged("RenegadePoints");
+                    this.NotifyPropertyChanged(@"RenegadePoints");
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetIntVariable(ReputationId) != value)
                 {
                     this._Target.SetIntVariable(ReputationId, value);
-                    this.NotifyPropertyChanged("Reputation");
+                    this.NotifyPropertyChanged(@"Reputation");
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetIntVariable(ExtraMedigelId) != value)
                 {
                     this._Target.SetIntVariable(ExtraMedigelId, value);
-                    this.NotifyPropertyChanged("ExtraMedigel");
+                    this.NotifyPropertyChanged(@"ExtraMedigel");
                 }
             }
         }
@@ -142,7 +142,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetIntVariable(ReputationPointsId) != value)
                 {
                     this._Target.SetIntVariable(ReputationPointsId, value);
-                    this.NotifyPropertyChanged("ReputationPoints");
+                    this.NotifyPropertyChanged(@"ReputationPoints");
                 }
             }
         }
@@ -157,7 +157,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetBoolVariable(IsMe2ImportId) != value)
                 {
                     this._Target.SetBoolVariable(IsMe2ImportId, value);
-                    this.NotifyPropertyChanged("IsMe2Import");
+                    this.NotifyPropertyChanged(@"IsMe2Import");
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetBoolVariable(IsMe1ImportId) != value)
                 {
                     this._Target.SetBoolVariable(IsMe1ImportId, value);
-                    this.NotifyPropertyChanged("IsMe1Import");
+                    this.NotifyPropertyChanged(@"IsMe1Import");
                 }
             }
         }
@@ -187,7 +187,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetBoolVariable(CosmeticSurgeryMe2Id) != value)
                 {
                     this._Target.SetBoolVariable(CosmeticSurgeryMe2Id, value);
-                    this.NotifyPropertyChanged("CosmeticSurgeryMe2");
+                    this.NotifyPropertyChanged(@"CosmeticSurgeryMe2");
                 }
             }
         }
@@ -202,7 +202,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (this._Target.GetBoolVariable(CosmeticSurgeryMe3Id) != value)
                 {
                     this._Target.SetBoolVariable(CosmeticSurgeryMe3Id, value);
-                    this.NotifyPropertyChanged("CosmeticSurgeryMe3");
+                    this.NotifyPropertyChanged(@"CosmeticSurgeryMe3");
                 }
             }
         }

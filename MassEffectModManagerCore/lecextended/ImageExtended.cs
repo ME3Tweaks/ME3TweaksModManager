@@ -9,7 +9,7 @@ namespace ME3TweaksModManager.lecextended
 {
     public static class ImageExtended
     {
-        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform(@"windows")]
         public static Bitmap convertRawToBitmapARGB(byte[] src, int w, int h, PixelFormat format, bool clearAlpha = true)
         {
             byte[] tmpData = Image.convertRawToARGB(src, ref w, ref h, format, clearAlpha);

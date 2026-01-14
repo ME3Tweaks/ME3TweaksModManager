@@ -16,10 +16,10 @@ namespace ME3TweaksModManager.modmanager.save.game2.Components
         public static List<PlayerNotoriety> GetNotorieties()
         {
             List<PlayerNotoriety> notorieties = new List<PlayerNotoriety>();
-            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.None, "None"));
-            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.Ruthless, "Ruthless"));
-            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.Survivor, "Sole Survivor"));
-            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.Warhero, "War Hero"));
+            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.None, @"None"));
+            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.Ruthless, @"Ruthless"));
+            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.Survivor, @"Sole Survivor"));
+            notorieties.Add(new PlayerNotoriety(FileFormats.Save.NotorietyType.Warhero, @"War Hero"));
             return notorieties;
         }
     }

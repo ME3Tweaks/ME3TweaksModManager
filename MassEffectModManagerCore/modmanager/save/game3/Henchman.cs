@@ -27,35 +27,35 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("HenchmanSaveRecord")]
+    [OriginalName(@"HenchmanSaveRecord")]
     public class Henchman : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("Tag")]
+        [OriginalName(@"Tag")]
         private string _Tag;
 
-        [OriginalName("Powers")]
+        [OriginalName(@"Powers")]
         private List<Power> _Powers = new List<Power>();
 
-        [OriginalName("CharacterLevel")]
+        [OriginalName(@"CharacterLevel")]
         private int _CharacterLevel;
 
-        [OriginalName("TalentPoints")]
+        [OriginalName(@"TalentPoints")]
         private int _TalentPoints;
 
-        [OriginalName("LoadoutWeapons")]
+        [OriginalName(@"LoadoutWeapons")]
         private Loadout _LoadoutWeapons = new Loadout();
 
-        [OriginalName("MappedPower")]
+        [OriginalName(@"MappedPower")]
         private string _MappedPower;
 
-        [OriginalName("WeaponMods")]
+        [OriginalName(@"WeaponMods")]
         private List<WeaponMod> _WeaponMods = new List<WeaponMod>();
 
-        [OriginalName("Grenades")]
+        [OriginalName(@"Grenades")]
         private int _Grenades;
 
-        [OriginalName("Weapons")]
+        [OriginalName(@"Weapons")]
         private List<Weapon> _Weapons = new List<Weapon>();
         #endregion
 
@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Tag)
                 {
                     this._Tag = value;
-                    this.NotifyPropertyChanged("Tag");
+                    this.NotifyPropertyChanged(@"Tag");
                 }
             }
         }
@@ -94,7 +94,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Powers)
                 {
                     this._Powers = value;
-                    this.NotifyPropertyChanged("Powers");
+                    this.NotifyPropertyChanged(@"Powers");
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CharacterLevel)
                 {
                     this._CharacterLevel = value;
-                    this.NotifyPropertyChanged("CharacterLevel");
+                    this.NotifyPropertyChanged(@"CharacterLevel");
                 }
             }
         }
@@ -120,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._TalentPoints)
                 {
                     this._TalentPoints = value;
-                    this.NotifyPropertyChanged("TalentPoints");
+                    this.NotifyPropertyChanged(@"TalentPoints");
                 }
             }
         }
@@ -133,7 +133,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._LoadoutWeapons)
                 {
                     this._LoadoutWeapons = value;
-                    this.NotifyPropertyChanged("LoadoutWeapons");
+                    this.NotifyPropertyChanged(@"LoadoutWeapons");
                 }
             }
         }
@@ -146,7 +146,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MappedPower)
                 {
                     this._MappedPower = value;
-                    this.NotifyPropertyChanged("MappedPower");
+                    this.NotifyPropertyChanged(@"MappedPower");
                 }
             }
         }
@@ -159,7 +159,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._WeaponMods)
                 {
                     this._WeaponMods = value;
-                    this.NotifyPropertyChanged("WeaponMods");
+                    this.NotifyPropertyChanged(@"WeaponMods");
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Grenades)
                 {
                     this._Grenades = value;
-                    this.NotifyPropertyChanged("Grenades");
+                    this.NotifyPropertyChanged(@"Grenades");
                 }
             }
         }
@@ -185,7 +185,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Weapons)
                 {
                     this._Weapons = value;
-                    this.NotifyPropertyChanged("Weapons");
+                    this.NotifyPropertyChanged(@"Weapons");
                 }
             }
         }

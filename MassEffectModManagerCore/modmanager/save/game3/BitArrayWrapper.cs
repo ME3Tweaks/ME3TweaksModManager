@@ -38,7 +38,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "target cannot be null");
+                throw new ArgumentNullException(@"target", @"target cannot be null");
             }
 
             this.Target = target;
@@ -56,7 +56,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         {
             if ((value is bool) == false)
             {
-                throw new ArgumentException("value");
+                throw new ArgumentException(@"value");
             }
 
             var index = this.Target.Length;
@@ -84,7 +84,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         {
             if ((value is bool) == false)
             {
-                throw new ArgumentException("value");
+                throw new ArgumentException(@"value");
             }
 
             if (index >= this.Target.Length)
@@ -139,7 +139,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
             {
                 if ((value is bool) == false)
                 {
-                    throw new ArgumentException("value");
+                    throw new ArgumentException(@"value");
                 }
 
                 this.Target[index] = (bool)value;
