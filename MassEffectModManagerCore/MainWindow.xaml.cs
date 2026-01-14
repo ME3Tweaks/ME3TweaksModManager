@@ -3003,7 +3003,7 @@ namespace ME3TweaksModManager
             // Todo: localize Wine message
             if (App.WineDetected)
             {
-                var message = @"Seems like you're trying to run ME3Tweaks Mod Manager under Linux or MacOS, " +
+                var message = @"You're trying to run ME3Tweaks Mod Manager under Linux or MacOS, " +
                     @"please note that this is unsupported and you will not receive official support.";
 #if DEBUG
                 if (App.WineDetectedVersion != null)
@@ -3012,7 +3012,7 @@ namespace ME3TweaksModManager
                     message += $"\nKernel: {App.WineHostKernelName} {App.WineHostKernelVersion}";
                 }
 #endif
-                MessageBoxResult result = M3L.ShowDialog(this, message, @"Wine detected", MessageBoxButton.OK);
+                M3L.ShowDialog(this, message, @"Wine detected", MessageBoxButton.OK);
             }
             else
             {

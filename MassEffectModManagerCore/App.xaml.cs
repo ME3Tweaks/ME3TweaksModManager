@@ -237,9 +237,9 @@ namespace ME3TweaksModManager
                         {
                             CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
                         }
-                        if (parsedCommandLineArgs.Value.DisableWineWorkarouds)
+                        if (parsedCommandLineArgs.Value.DisableWineWorkarounds)
                         {
-                            CommandLinePending.PendingDisableWineWorkarouds = parsedCommandLineArgs.Value.DisableWineWorkarouds;
+                            CommandLinePending.PendingDisableWineWorkarounds = parsedCommandLineArgs.Value.DisableWineWorkarounds;
                             // Override WineDetected
                             WineDetected = false;
                             M3Log.Warning(@"Wine Workarounds Disabled");
@@ -284,8 +284,8 @@ namespace ME3TweaksModManager
                     M3Log.Information(@"Wine detected, running under Linux or MacOS");
                     if (WineDetectedVersion != null)
                     {
-                        M3Log.Information(@"Wine version: " + WineDetectedVersion.ToString());
-                        M3Log.Information($"Host Kernel: {WineHostKernelName} {WineHostKernelVersion.ToString()}");
+                        M3Log.Information(@"Wine version: " + WineDetectedVersion);
+                        M3Log.Information($"Host Kernel: {WineHostKernelName} {WineHostKernelVersion}");
                     }
                 }
 
@@ -842,6 +842,6 @@ namespace ME3TweaksModManager
         public double FeatureLevel { get; set; }
 
         [Option(@"disablewineworkarounds", HelpText = "Disables Wine workarounds if Wine is detected. Used for Wine development.")]
-        public bool DisableWineWorkarouds { get; set; }
+        public bool DisableWineWorkarounds { get; set; }
     }
 }

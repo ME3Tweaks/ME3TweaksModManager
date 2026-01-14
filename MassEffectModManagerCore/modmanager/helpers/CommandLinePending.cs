@@ -64,7 +64,7 @@
         /// <summary>
         /// Disable workarounds for Wine
         /// </summary>
-        public static bool PendingDisableWineWorkarouds;
+        public static bool PendingDisableWineWorkarounds;
 
         /// <summary>
         /// Sets PendingGame to null if there are no items in the pending system that depend on it
