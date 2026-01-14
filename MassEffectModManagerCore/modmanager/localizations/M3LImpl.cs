@@ -219,7 +219,7 @@ namespace ME3TweaksModManager.modmanager.localizations
             catch (Exception e)
             {
                 M3Log.Error($@"Error fetching string with key {resourceKey}: {e.ToString()}.");
-                TelemetryInterposer.TrackError(e, new Dictionary<string, string> { { "String key", resourceKey } });
+                TelemetryInterposer.TrackError(e, new Dictionary<string, string> { { @"String key", resourceKey } });
                 return $@"Error fetching string with key {resourceKey}: {e.ToString()}! Please report this to Mgamerz";
             }
         }
