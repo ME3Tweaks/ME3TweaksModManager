@@ -156,7 +156,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
             if (File.Exists(mdPath))
             {
                 DuplicatingIni ini = DuplicatingIni.LoadIni(mdPath);
-                var moddescVerEntry = ini[@"ModManager"][@"cmmver"];
+                var moddescVerEntry = ini[Mod.MODDESC_HEADERKEY_MODMANAGER][Mod.MODDESC_DESCRIPTOR_MODMANAGER_CMMVER];
                 if (moddescVerEntry.HasValue && double.TryParse(moddescVerEntry.Value, out var mdVer))
                 {
                     return mdVer >= ModDescConsts.MODDESC_VERSION_9_0 ? 2 : 1;
