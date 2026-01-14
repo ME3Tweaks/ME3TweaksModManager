@@ -16,6 +16,7 @@ namespace ME3TweaksModManager.Tests
     [TestClass]
     public class ExperimentsTest
     {
+#if FALSE
         // Do not run this on azure
 #if DEBUG
         [TestMethod]
@@ -36,10 +37,8 @@ namespace ME3TweaksModManager.Tests
             {
                 Debug.WriteLine(specialFile);
             }
-
-
         }
+#endif
+#endif
     }
 }
-
-#endif

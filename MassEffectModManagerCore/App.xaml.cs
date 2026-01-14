@@ -116,7 +116,7 @@ namespace ME3TweaksModManager
 
         public App() : base()
         {
-            ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
+            SetExecutableLocation();
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
@@ -752,6 +752,15 @@ namespace ME3TweaksModManager
             var nothing2 = FileSize.GibiByte;
         }
 #endif
+
+        /// <summary>
+        /// Sets the location of the executable for this process. This is used by test cases
+        /// to fake paths.
+        /// </summary>
+        public static void SetExecutableLocation()
+        {
+            ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
+        }
     }
 
     class CLIOptions
