@@ -3000,16 +3000,34 @@ namespace ME3TweaksModManager
             // MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
 #endif
 
-            if (!App.IsOperatingSystemSupported())
+            // Todo: localize Wine message
+            if (App.WineDetected)
             {
-                string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
-                M3Log.Error(@"This operating system is not supported.");
-                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList),
-                    M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
+                var message = @"Seems like you're trying to run ME3Tweaks Mod Manager under Linux or MacOS, " +
+                    @"please note that this is unsupported and you will not receive official support.";
+#if DEBUG
+                if (App.WineDetectedVersion != null)
+                {
+                    message += $"\n\nWine version: {App.WineDetectedVersion}";
+                    message += $"\nKernel: {App.WineHostKernelName} {App.WineHostKernelVersion}";
+                }
+#endif
+                MessageBoxResult result = M3L.ShowDialog(this, message, @"Wine detected", MessageBoxButton.OK);
             }
             else
             {
-                // Unimplemented last crash dialog code removed 03/28/2025
+
+                if (!App.IsOperatingSystemSupported())
+                {
+                    string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
+                    M3Log.Error(@"This operating system is not supported.");
+                    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList),
+                        M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    // Unimplemented last crash dialog code removed 03/28/2025
+                }
             }
 
             // Run on background thread as we don't need the result of this

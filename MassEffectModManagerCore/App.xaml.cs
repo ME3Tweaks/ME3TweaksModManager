@@ -91,6 +91,11 @@ namespace ME3TweaksModManager
             @"Windows 11 24H2"
         };
 
+        public static bool WineDetected;
+        public static Version WineDetectedVersion;
+        public static string WineHostKernelName;
+        public static Version WineHostKernelVersion;
+
         /// <summary>
         /// If telemetry has been flushed after checking if it is enabled.
         /// </summary>
@@ -128,6 +133,14 @@ namespace ME3TweaksModManager
 
             // We use our own implementation of this as we store data in ProgramData.
             MCoreFilesystem.GetAppDataFolder = M3Filesystem.GetAppDataFolder; // Do not change
+            
+            WineDetected = MUtilities.IsWineDetected();
+            if (WineDetected) {
+                WineDetectedVersion = MUtilities.WineGetVersion();
+                MUtilities.WineGetHostVersion(out string HostKernelName, out Version HostKernelVersion);
+                WineHostKernelName = HostKernelName;
+                WineHostKernelVersion = HostKernelVersion;
+            }
 
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
             try
@@ -224,6 +237,13 @@ namespace ME3TweaksModManager
                         {
                             CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
                         }
+                        if (parsedCommandLineArgs.Value.DisableWineWorkarouds)
+                        {
+                            CommandLinePending.PendingDisableWineWorkarouds = parsedCommandLineArgs.Value.DisableWineWorkarouds;
+                            // Override WineDetected
+                            WineDetected = false;
+                            M3Log.Warning(@"Wine Workarounds Disabled");
+                        }
                     }
                     else
                     {
@@ -259,6 +279,16 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Running as " + Environment.UserName);
                 M3Log.Information(@"Executable location: " + ExecutableLocation);
                 M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
+                if (WineDetected)
+                {
+                    M3Log.Information(@"Wine detected, running under Linux or MacOS");
+                    if (WineDetectedVersion != null)
+                    {
+                        M3Log.Information(@"Wine version: " + WineDetectedVersion.ToString());
+                        M3Log.Information($"Host Kernel: {WineHostKernelName} {WineHostKernelVersion.ToString()}");
+                    }
+                }
+
 
                 //Get build date
                 BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });
@@ -810,5 +840,8 @@ namespace ME3TweaksModManager
 
         [Option(@"featurelevel", HelpText = "Indicates the feature level a command line operation uses")]
         public double FeatureLevel { get; set; }
+
+        [Option(@"disablewineworkarounds", HelpText = "Disables Wine workarounds if Wine is detected. Used for Wine development.")]
+        public bool DisableWineWorkarouds { get; set; }
     }
 }
