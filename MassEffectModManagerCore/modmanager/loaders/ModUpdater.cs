@@ -166,10 +166,6 @@ namespace ME3TweaksModManager.modmanager.loaders
         public static List<ModUpdateInfo> CheckForModUpdatesAgainstNexusAPI(List<Mod> updatableMods)
         {
             BackgroundTask bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"NexusModCheckForUpdates", M3L.GetString(M3L.string_checkingModsForUpdates), M3L.GetString(M3L.string_modUpdateCheckCompleted));
-            void updateCheckProgressCallback(string newStr)
-            {
-                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, newStr);
-            }
 
             M3Log.Information($@"Checking {updatableMods.Count} non-whitelisted mods for updates.");
             if (Settings.LogModUpdater)

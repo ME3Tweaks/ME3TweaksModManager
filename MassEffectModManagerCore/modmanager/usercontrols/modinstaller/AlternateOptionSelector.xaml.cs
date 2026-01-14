@@ -56,11 +56,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
             }
         }
 
-        /// <summary>
-        /// The last time the dropdown was closed. This is so if you click on the dropdown while it is open, it won't open until a few ms later to prevent re-opening as it is mousedown vs mouseup.
-        /// </summary>
-        private DateTime LastCloseTime;
-
         public AlternateOptionSelector()
         {
             InitializeComponent();

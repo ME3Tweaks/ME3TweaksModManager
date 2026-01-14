@@ -85,7 +85,6 @@ namespace ME3TweaksModManager.modmanager.importer
             var me2mods = new List<ArchiveFileInfo>(); //ME2 RCW Mods
             var textureModEntries = new List<ArchiveFileInfo>(); //TPF MEM MOD files
             var batchQueueEntries = new List<ArchiveFileInfo>(); //BIQ2 files (old biq are not supported)
-            bool isAlotFile = false;
             try
             {
                 foreach (var entry in archiveFile.ArchiveFileData)
@@ -94,11 +93,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     {
                         string fname = Path.GetFileName(entry.FileName);
                         var extension = Path.GetExtension(fname);
-                        if (fname.Equals(@"ALOTInstaller.exe", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            isAlotFile = true;
-                        }
-                        else if (fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
+                        if (fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
                         {
                             moddesciniEntries.Add(entry);
                         }

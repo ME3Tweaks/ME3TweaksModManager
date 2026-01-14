@@ -104,7 +104,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return SelectedBatchQueue != null && App.IsDebug;
         }
 
-        private void DuplicateGroup()
+        private async void DuplicateGroup()
         {
             if (SelectedBatchQueue == null) return;
 
@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (!File.Exists(destPath))
                     {
                         SelectedBatchQueue.ModName = result;
-                        SelectedBatchQueue.Save(false, destPath);
+                        await SelectedBatchQueue.Save(false, destPath);
                         parseBatchFiles(destPath);
                     }
                     else

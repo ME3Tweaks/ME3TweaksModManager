@@ -73,7 +73,6 @@ namespace ME3TweaksModManager.modmanager.objects
                 M3Log.Error($@"Error invoking handler for {domain} domain: {e.Message}");
                 return e.Message;
             }
-            return null;
         }
 
         public static void LoadExternalHandlers()
