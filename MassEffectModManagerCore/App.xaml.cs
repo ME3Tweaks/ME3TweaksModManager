@@ -278,11 +278,10 @@ namespace ME3TweaksModManager
                     M3Log.Information(@"Wine detected, running under Linux or MacOS");
                     if (WineWorkarounds.WineDetectedVersion != null)
                     {
-                        M3Log.Information(@"Wine version: " + WineWorkarounds.WineDetectedVersion);
-                        M3Log.Information($"Host Kernel: {WineWorkarounds.WineHostKernelName} {WineWorkarounds.WineHostKernelVersion}");
+                        M3Log.Information($@"Wine version: {WineWorkarounds.WineDetectedVersion}");
+                        M3Log.Information($@"Host Kernel: {WineWorkarounds.WineHostKernelName} {WineWorkarounds.WineHostKernelVersion}");
                     }
                 }
-
 
                 //Get build date
                 BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });

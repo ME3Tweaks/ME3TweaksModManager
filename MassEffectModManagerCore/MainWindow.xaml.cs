@@ -2982,10 +2982,7 @@ namespace ME3TweaksModManager
         }
 
         //Fody uses this property on weaving
-#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
-
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
@@ -2997,23 +2994,18 @@ namespace ME3TweaksModManager
             }
 
             DPIScaling.SetScalingFactor(this);
-#if PRERELEASE
-            // MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
-            // MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
-#endif
-            // Todo: localize Wine message
             if (WineWorkarounds.WineDetected)
             {
-                var message = @"You're trying to run ME3Tweaks Mod Manager under Linux or MacOS, " +
-                    @"please note that this is unsupported and you will not receive official support.";
+                var message = M3L.GetString(M3L.string_dialog_wineDetected);
 #if DEBUG
                 if (WineWorkarounds.WineDetectedVersion != null)
                 {
-                    message += $"\n\nWine version: {WineWorkarounds.WineDetectedVersion}";
-                    message += $"\nKernel: {WineWorkarounds.WineHostKernelName} {WineWorkarounds.WineHostKernelVersion}";
+                    // Localization disabled on these strings as it's debug only
+                    message += $"\n\nWine version: {WineWorkarounds.WineDetectedVersion}"; // do not localize
+                    message += $"\nKernel: {WineWorkarounds.WineHostKernelName} {WineWorkarounds.WineHostKernelVersion}"; // do not localize
                 }
 #endif
-                M3L.ShowDialog(this, message, @"Wine detected", MessageBoxButton.OK);
+                M3L.ShowDialog(this, message, M3L.GetString(M3L.string_wineDetected), MessageBoxButton.OK);
             }
             else
             {
@@ -3021,9 +3013,9 @@ namespace ME3TweaksModManager
                 if (!App.IsOperatingSystemSupported())
                 {
                     string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
-                    M3Log.Error(@"This operating system is not supported.");
+                    M3Log.Warning(@"This operating system is not supported");
                     M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList),
-                        M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
@@ -5091,4 +5083,3 @@ namespace ME3TweaksModManager
         }
     }
 }
- 

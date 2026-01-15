@@ -548,6 +548,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_showBasegameFileIdentificationServiceViewer = "string_showBasegameFileIdentificationServiceViewer";
 		public const string string_triggerBTPBuildOnModFolderInstalled = "string_triggerBTPBuildOnModFolderInstalled";
 		public const string string_showTestDialog = "string_showTestDialog";
+		public const string string_wineDetected = "string_wineDetected";
+		public const string string_dialog_wineDetected = "string_dialog_wineDetected";
 		public const string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public const string string_preparingToInstall = "string_preparingToInstall";
 		public const string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";

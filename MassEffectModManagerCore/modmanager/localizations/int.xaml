@@ -605,6 +605,9 @@
     <system:String x:Key="string_showBasegameFileIdentificationServiceViewer">Show Basegame File Identification Service Viewer</system:String>
     <system:String x:Key="string_triggerBTPBuildOnModFolderInstalled">Trigger BTP build on mod folder (installed)</system:String>
     <system:String x:Key="string_showTestDialog">Show test dialog</system:String>
+    <system:String x:Key="string_wineDetected">Wine detected</system:String>
+    <!-- Wine is a noun, it is 'Wine Is Not an Emulator'. It is for running Windows apps on Linux -->
+    <system:String x:Key="string_dialog_wineDetected">It appears ME3Tweaks Mod Manager is running under Linux or MacOS, please note that this is unsupported and you will not receive official support.</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
