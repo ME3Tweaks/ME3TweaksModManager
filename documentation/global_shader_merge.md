@@ -23,7 +23,7 @@ shader cache.
 To edit shaders, see the basic shader editing guide on the LEX Wiki [to be written]. Shader edits should be saved in .hlsl files.
 
 ### Compiling shaders
-To compile shaders with M3, you must have the https://learn.microsoft.com/en-us/windows/apps/windows-sdk/ installed [provide guide on which options to pick].
+To compile shaders with M3, you must have the [Windows SDK](https://learn.microsoft.com/en-us/windows/apps/windows-sdk/) installed [provide guide on which options to pick].
 Compiled shader files should have the .m3gs extension.
 
 To target a specific shader in the global shader cache, it must have the following naming standard:
