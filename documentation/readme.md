@@ -1,6 +1,6 @@
 ![Documentation Image](images/documentation_header.png)
 
-This documentation is current as of Build 134.
+This documentation is current as of Build 136.
 
 ME3Tweaks Mod Manager (which will be written as M3 from now on in this document) allows users to organize mods as well as install them into the each game of the Mass Effect Trilogy. It is designed to be friendly for users and powerful for developers - for example, as a developer, you do not need to worry about users not installing the binkw32 bypass or running AutoTOC - M3 takes care of this all in the background for users. You can focus on developing your mods and my program will take care of the user side of things.
 
@@ -27,6 +27,14 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information on how to include headmorphs in your mod
 - [moddesc.ini: Texture mods](texturemods.md)
    - Contains information on how to include .mem texture mods in your mod
+
+Mod Manager includes a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
+
+## Mod Manager merge features
+Merge features in Mod Manager fall into two categories: Target merge and install time merge. Features that merge content changes at install time only are install time merges. Features that merge content when a target merge occurs (after game modifications - disabling DLC, removing mods, installing mods, etc) are target merges.
+
+Target merge features are designed to increase compatibility across mods. Install time merge is designed to allow developers to ship alternate configurations of mods with ease.
+
 - [Merge Mods: Creating an .m3m file](merge_mods.md)
    - Contains information on how to create a merge mod, a format which can update individual exports in common basegame files with few compatibility issues.
 - [Overriding Conditionals with .pmu Files](pmu_files.md)
@@ -43,9 +51,11 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information on using the M3DA feature, which allows LE1 mods to combine their 2DA tables into the basegame, allowing them to override. This allows working around issues with how LE1 accesses 2DAs in ways that can cause buggy game behavior. It also lets other mod developers target your changes
 - [ASI Mods - Native code mods](asimods.md)
    - Contains information about ASI mods
-
+- [M3 Texture Override (M3TO)](texture_overrides.md)
+   - Contains information on how to use the M3TO system - packageless texture edits in Legendary Edition
+- [M3 Global Shader Merge (M3GS)](global_shader_merge.md)
+   - Contains information on how to use the M3GS system - modding for GlobalShaderCache in Legendary Edition
   
-Mod Manager includes a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
 
 ## Why use M3? Why not just use a zip or an exe installer?
 I've dealt with end-users for years and worked with many to help fix issues with problems arising to incorrect installation of mods. It is very easy to think like a developer and say well you just do X Y and Z, in that order. Many end users simply don't read or _do not understand_ what developers have written because a lot of documentation is written by people who assume that end users are familiar with the modding scene.
