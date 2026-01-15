@@ -70,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.textures
                 .Concat(M3LoadedMods.GetAllM3ManagedMEMs(MEGame.LE2))
                 .Concat(M3LoadedMods.GetAllM3ManagedMEMs(MEGame.LE3)).OfType<IDisplayableMod>().ToList();
 
-            var msd = new ModSelectorDialog(_window, modsToShow, "Select .mem", "Select a .mem file to convert.", "Convert");
+            var msd = new ModSelectorDialog(_window, modsToShow, M3L.GetString(M3L.string_selectMem), M3L.GetString(M3L.string_selectAMemFileToConvert), M3L.GetString(M3L.string_convert));
 
             if (msd.ShowDialog() is null or false)
                 return false; // Cancelled
@@ -80,11 +80,11 @@ namespace ME3TweaksModManager.modmanager.textures
                 return false; // Should not happen
 
             // Now pick target mod
-            var modTarget = new ModSelectorDialog(_window, 
+            var modTarget = new ModSelectorDialog(_window,
                 M3LoadedMods.GetModsForGame(modBeingConverted.Game)
                 .Where(x => x.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_2)
                 .OfType<IDisplayableMod>()
-                .ToList(), "Select target mod", "Select target mod to convert MEM mod into.", "Select");
+                .ToList(), M3L.GetString(M3L.string_selectTargetMod), M3L.GetString(M3L.string_selectTargetModToConvertMEMModInto), M3L.GetString(M3L.string_select));
             if (modTarget.ShowDialog() is null or false)
                 return false; // Cancelled
 
@@ -96,7 +96,7 @@ namespace ME3TweaksModManager.modmanager.textures
             var dlcFolders = targetMod.GetAllPossibleCustomDLCFolders();
             if (dlcFolders.Count != 1)
             {
-                M3L.ShowDialog(_window, $"The selected mod must install a single DLC mod folder. The selected target mod installs {dlcFolders.Count}.", "Incompatible mod selected",
+                M3L.ShowDialog(_window, M3L.GetString(M3L.string_interp_selectedModMoreThanOneDLCFolder, dlcFolders.Count), M3L.GetString(M3L.string_incompatibleModSelected),
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -105,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.textures
             // Verify it exists
             if (!Directory.Exists(targetCookedPath))
             {
-                M3L.ShowDialog(_window, $"The selected mod does not have a CookedPCConsole folder at the expected location: {targetCookedPath}. Cannot continue.", "Incompatible mod selected",
+                M3L.ShowDialog(_window, M3L.GetString(M3L.string_interp_modMissingCookedPCConsole, targetCookedPath), M3L.GetString(M3L.string_incompatibleModSelected),
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -123,13 +123,13 @@ namespace ME3TweaksModManager.modmanager.textures
             target = _window.GetCurrentTarget(modBeingConverted.Game);
 
             // This is real complicated
-            var shouldRestore = M3L.ShowDialog(_window, $"{modBeingConverted.Game.ToGameName()} will be restored to vanilla to install the texture mod. A texture override version will then be built from the changes made to the installation.\n\nIf this .mem targets custom textures added by mods, you should create a Batch Install Group that includes a restore, the mods that have the target textures, and this .mem file, and then select Skip Restore.",
+            var shouldRestore = M3L.ShowDialog(_window, M3L.GetString(M3L.string_dialog_memConvertRestore, modBeingConverted.Game.ToGameName()),
                      M3L.GetString(M3L.string_gameRestoreRequested),
                      MessageBoxButton.YesNoCancel,
                      MessageBoxImage.Warning,
                      MessageBoxResult.Cancel,
                      M3L.GetString(M3L.string_restore),
-                     "Skip restore");
+                     M3L.GetString(M3L.string_skipRestore));
 
             if (shouldRestore == MessageBoxResult.Cancel)
                 return; // Total cancellation.
@@ -160,13 +160,13 @@ namespace ME3TweaksModManager.modmanager.textures
         {
             // Install MEM file
             var yn = M3L.ShowDialog(_window,
-                "Perform texture install?\n\nIf you don't have them already installed, you need to perform this or conversion will do nothing.",
-                "MEM to ME3TO converter",
+                M3L.GetString(M3L.string_dialog_memConvert_performTextureInstall),
+                TOOL_NAME,
                 MessageBoxButton.YesNoCancel,
                 MessageBoxImage.Question,
                 MessageBoxResult.Yes,
-                "Install textures",
-                "Skip install");
+                M3L.GetString(M3L.string_installTextures),
+                M3L.GetString(M3L.string_skipInstall));
 
             if (yn == MessageBoxResult.Yes)
             {
@@ -179,8 +179,8 @@ namespace ME3TweaksModManager.modmanager.textures
                         // Next up we build the mod...
                         Task.Run(() =>
                         {
-                            M3Log.Information(@"Waiting 4 seconds for panel results to be processed...");
-                            Thread.Sleep(4000);
+                            M3Log.Information(@"Waiting a moment for panel results to be processed...");
+                            Thread.Sleep(2000);
                         }).ContinueWithOnUIThread(x =>
                         {
                             ConvertInstallationToOverride();
@@ -207,7 +207,7 @@ namespace ME3TweaksModManager.modmanager.textures
         /// <returns>Base TFC name, no extension.</returns>
         private static string GetNewTFCName(string tfcFile, string dlcName)
         {
-            var name = $"Textures_{dlcName}";
+            var name = $@"Textures_{dlcName}";
 
             var tfcBaseName = Path.GetFileNameWithoutExtension(tfcFile);
             var indexStr = tfcBaseName[^4..];
@@ -229,7 +229,7 @@ namespace ME3TweaksModManager.modmanager.textures
         /// <summary>
         /// Represents the UI prefix string used for the MEM to M3TO converter.
         /// </summary>
-        private static string TOOL_NAME = "MEM to M3TO converter";
+        private static string TOOL_NAME = M3L.GetString(M3L.string_MEMToM3TOConverter);
 
         /// <summary>
         /// Destination mod
@@ -291,7 +291,7 @@ namespace ME3TweaksModManager.modmanager.textures
 
         private void ConvertInstallationToOverride()
         {
-            var panel = new RunAndDonePanel(DoConversion, "Converting .mem to M3TO", "Conversion completed");
+            var panel = new RunAndDonePanel(DoConversion, M3L.GetString(M3L.string_convertingMemToM3TO), M3L.GetString(M3L.string_conversionCompleted));
             panel.Close += (sender, args) =>
             {
                 _window.ReleaseBusyControl();
@@ -299,7 +299,7 @@ namespace ME3TweaksModManager.modmanager.textures
                 {
                     M3Log.Exception(panel.Result.Error, @"Error converting MEM file: ");
                     Debugger.Break();
-                    M3L.ShowDialog(MainWindow.Instance, $"An error occurred while converting the .mem to M3TO format:\n{panel.Result.Error.Message}\n\nYou can find more detailed information in the application log.", "Error converting .mem", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(MainWindow.Instance, M3L.GetString(M3L.string_interp_memConvertError, panel.Result.Error.Message), M3L.GetString(M3L.string_errorConvertingMem), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             };
             _window.ShowBusyControl(panel);
@@ -342,8 +342,8 @@ namespace ME3TweaksModManager.modmanager.textures
                     return; // Do not process
                 }
 
-                config.UpdateAction($"Finding modified textures {done}/{total}");
-                var package = MEPackageHandler.UnsafePartialLoad(pack.Value, x => !x.IsDefaultObject && x.IsA("Texture2D"));
+                config.UpdateAction(M3L.GetString(M3L.string_interp_findingModifiedTextures) + $@" {done}/{total}");
+                var package = MEPackageHandler.UnsafePartialLoad(pack.Value, x => !x.IsDefaultObject && x.IsA(@"Texture2D"));
                 bool copied = false;
                 foreach (var tex in package.Exports.Where(x => x.IsDataLoaded()))
                 {
@@ -448,7 +448,7 @@ namespace ME3TweaksModManager.modmanager.textures
                 }
                 done++;
 
-                config.UpdateAction($"Generating M3TO" + $@" {done}/{total}" + "\n" + cPackage.FileNameNoExtension);
+                config.UpdateAction(M3L.GetString(M3L.string_interp_generatingM3TO) + $@" {done}/{total}" + "\n" + cPackage.FileNameNoExtension);
                 foreach (var tex in cPackage.Exports.Where(x => x.IsA(@"Texture2D")).ToList())
                 {
                     // Find package in buildPackage
@@ -491,7 +491,7 @@ namespace ME3TweaksModManager.modmanager.textures
             foreach (var tfcFile in tfcFiles)
             {
                 done++;
-                config.UpdateAction($"Moving TFC files" + $@" {done}/{total}");
+                config.UpdateAction(M3L.GetString(M3L.string_interp_movingTFCFiles) + $@" {done}/{total}");
 
                 // Update TFC header guid
                 var newBaseName = GetNewTFCName(tfcFile, dlcName);
@@ -600,7 +600,7 @@ namespace ME3TweaksModManager.modmanager.textures
             var asiModsSection = ini.GetOrAddSection(Mod.MODDESC_HEADERKEY_ASIMODS);
             mod.ASIModsToInstall.Add(new M3ASIVersion() { ASIGroupID = asiId });
 
-            var value = $@"({string.Join(',', mod.ASIModsToInstall.Select(x=>x.ToStruct()))})";
+            var value = $@"({string.Join(',', mod.ASIModsToInstall.Select(x => x.ToStruct()))})";
             var iniValue = asiModsSection[Mod.MODDESC_DESCRIPTOR_ASI_ASIMODSTOINSTALL];
             iniValue.Value = value;
             File.WriteAllText(mod.ModDescPath, ini.ToString());
@@ -609,7 +609,7 @@ namespace ME3TweaksModManager.modmanager.textures
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    M3L.ShowDialog(MainWindow.Instance, "Conversion complete. Ensure you verify the results of the conversion.", TOOL_NAME);
+                    M3L.ShowDialog(MainWindow.Instance, M3L.GetString(M3L.string_dialog_memConvertComplete), TOOL_NAME);
                 });
             }
 

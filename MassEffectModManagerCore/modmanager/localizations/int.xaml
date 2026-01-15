@@ -3170,4 +3170,34 @@
     <system:String x:Key="string_errorExtractingBTP">Error extracting BTP</system:String>
     <system:String x:Key="string_binaryTextureMetadataFile">Binary Texture Metadata file</system:String>
     <!-- Used in file filter dialog, it appears as Binary Texture Metadata file|*.btm. This is the file associated with the Binary Texture Package .btp and has info about how to rebuild the source files -->
+
+    <!-- MEM to M3TO Converter -->
+    <system:String x:Key="string_selectMem">Select .mem</system:String>
+    <system:String x:Key="string_selectAMemFileToConvert">Select a .mem file to convert.</system:String>
+    <system:String x:Key="string_convert">Convert</system:String>
+    <system:String x:Key="string_selectTargetMod">Select target mod</system:String>
+    <system:String x:Key="string_selectTargetModToConvertMEMModInto">Select target mod to convert MEM mod into.</system:String>
+    <system:String x:Key="string_select">Select</system:String>
+    <system:String x:Key="string_installTextures">Install textures</system:String>
+    <system:String x:Key="string_skipInstall">Skip install</system:String>
+    <system:String x:Key="string_convertingMemToM3TO">Converting .mem to M3TO</system:String>
+    <system:String x:Key="string_conversionCompleted">Conversion completed</system:String>
+    <system:String x:Key="string_incompatibleModSelected">Incompatible mod selected</system:String>
+    <system:String x:Key="string_skipRestore">Skip restore</system:String>
+    <system:String x:Key="string_MEMToM3TOConverter">MEM to M3TO converter</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_memConvert_performTextureInstall">Perform texture install?\n\nIf you don't have them already installed, you need to perform this or conversion will do nothing.</system:String>
+    <system:String x:Key="string_errorConvertingMem">Error converting .mem</system:String>
+    <system:String x:Key="string_interp_findingModifiedTextures">Finding modified textures</system:String>
+    <system:String x:Key="string_interp_generatingM3TO">Generating M3TO</system:String>
+    <system:String x:Key="string_interp_movingTFCFiles">Moving TFC files</system:String>
+    <system:String x:Key="string_dialog_memConvertComplete">Conversion complete. Ensure you verify the results of the conversion.</system:String>
+    <system:String x:Key="string_interp_selectedModMoreThanOneDLCFolder">The selected mod must install a single DLC mod folder. The selected target mod installs {0}.</system:String>
+    <!-- 0={Number} -->
+    <system:String x:Key="string_interp_modMissingCookedPCConsole">The selected mod does not have a CookedPCConsole folder at the expected location: {0}. Cannot continue.</system:String>
+    <!-- 0={Folder path} -->
+    <system:String xml:space="preserve" x:Key="string_dialog_memConvertRestore">{0} will be restored to vanilla to install the texture mod. A texture override version will then be built from the changes made to the installation.\n\nIf this .mem targets custom textures added by mods, you should create a Batch Install Group that includes a restore, the mods that have the target textures, and this .mem file, and then select Skip Restore.</system:String>
+    <!-- 0={Game name} -->
+    <system:String xml:space="preserve" x:Key="string_interp_memConvertError">An error occurred while converting the .mem to M3TO format:\n{0}\n\nYou can find more detailed information in the application log.</system:String>
+    <!-- 0={Error message} -->
+
 </ResourceDictionary>

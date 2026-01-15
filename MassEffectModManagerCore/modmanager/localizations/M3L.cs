@@ -2338,5 +2338,28 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_errorExtractingTexturesFromBTP = "string_dialog_errorExtractingTexturesFromBTP";
 		public const string string_errorExtractingBTP = "string_errorExtractingBTP";
 		public const string string_binaryTextureMetadataFile = "string_binaryTextureMetadataFile";
+		public const string string_selectMem = "string_selectMem";
+		public const string string_selectAMemFileToConvert = "string_selectAMemFileToConvert";
+		public const string string_convert = "string_convert";
+		public const string string_selectTargetMod = "string_selectTargetMod";
+		public const string string_selectTargetModToConvertMEMModInto = "string_selectTargetModToConvertMEMModInto";
+		public const string string_select = "string_select";
+		public const string string_installTextures = "string_installTextures";
+		public const string string_skipInstall = "string_skipInstall";
+		public const string string_convertingMemToM3TO = "string_convertingMemToM3TO";
+		public const string string_conversionCompleted = "string_conversionCompleted";
+		public const string string_incompatibleModSelected = "string_incompatibleModSelected";
+		public const string string_skipRestore = "string_skipRestore";
+		public const string string_MEMToM3TOConverter = "string_MEMToM3TOConverter";
+		public const string string_dialog_memConvert_performTextureInstall = "string_dialog_memConvert_performTextureInstall";
+		public const string string_errorConvertingMem = "string_errorConvertingMem";
+		public const string string_interp_findingModifiedTextures = "string_interp_findingModifiedTextures";
+		public const string string_interp_generatingM3TO = "string_interp_generatingM3TO";
+		public const string string_interp_movingTFCFiles = "string_interp_movingTFCFiles";
+		public const string string_dialog_memConvertComplete = "string_dialog_memConvertComplete";
+		public const string string_interp_selectedModMoreThanOneDLCFolder = "string_interp_selectedModMoreThanOneDLCFolder";
+		public const string string_interp_modMissingCookedPCConsole = "string_interp_modMissingCookedPCConsole";
+		public const string string_dialog_memConvertRestore = "string_dialog_memConvertRestore";
+		public const string string_interp_memConvertError = "string_interp_memConvertError";
 	}
 }
