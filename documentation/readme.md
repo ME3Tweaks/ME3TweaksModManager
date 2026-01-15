@@ -43,7 +43,10 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information on using the M3DA feature, which allows LE1 mods to combine their 2DA tables into the basegame, allowing them to override. This allows working around issues with how LE1 accesses 2DAs in ways that can cause buggy game behavior. It also lets other mod developers target your changes
 - [ASI Mods - Native code mods](asimods.md)
    - Contains information about ASI mods
-
+- [M3 Texture Override (M3TO)](texture_overrides.md)
+   - Contains information on how to use the M3TO system - packageless texture edits in Legendary Edition
+- [M3 Global Shader Merge (M3GS)](global_shader_merge.md)
+   - Contains information on how to use the M3GS system - modding for GlobalShaderCache in Legendary Edition
   
 Mod Manager includes a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
 
