@@ -141,12 +141,6 @@ namespace ME3TweaksModManager
         public bool LE1ASILoaderInstalled { get; set; }
         public bool LE2ASILoaderInstalled { get; set; }
         public bool LE3ASILoaderInstalled { get; set; }
-
-        public bool ME1NexusEndorsed { get; set; }
-        public bool ME2NexusEndorsed { get; set; }
-        public bool ME3NexusEndorsed { get; set; }
-        public bool LENexusEndorsed { get; set; }
-
         public string VisitWebsiteText { get; set; }
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
@@ -303,8 +297,6 @@ namespace ME3TweaksModManager
 
         }
 
-        public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-
         private int oldFailedBindableCount = 0;
 
         public string NoModSelectedText => InternalNoModSelectedText(false);
@@ -339,11 +331,6 @@ namespace ME3TweaksModManager
         /// Text for the 'X mods failed to load'
         /// </summary>
         public string FailedModsString { get; set; }
-
-        /// <summary>
-        /// The string shown at the top left of the main window for the NexusMods status
-        /// </summary>
-        public string NexusLoginInfoString { get; set; } // BLANK TO START = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
         /// The current coalesce-d panel result that is pending handling
@@ -556,97 +543,6 @@ namespace ME3TweaksModManager
         }
 
         /// <summary>
-        /// Updates the Nexus Login status
-        /// </summary>
-        /// <param name="languageUpdateOnly">If we should only update the language text instead of a full update of API keys</param>
-        public async Task RefreshNexusStatus(bool languageUpdateOnly = false)
-        {
-            if (NexusModsUtilities.HasAPIKey)
-            {
-                if (!languageUpdateOnly)
-                {
-                    var loggedIn = await AuthToNexusMods();
-                    if (loggedIn == null)
-                    {
-                        M3Log.Error(
-                            @"Error authorizing to NexusMods, did not get response from server or issue occurred while checking credentials. Setting not authorized");
-                        SetNexusNotAuthorizedUI();
-                    }
-                }
-
-                if (NexusModsUtilities.UserInfo != null)
-                {
-                    //prevent resetting ui to not authorized
-                    NexusLoginInfoString = NexusModsUtilities.UserInfo.Name;
-                    return;
-                }
-            }
-
-            SetNexusNotAuthorizedUI();
-        }
-
-        private void SetNexusNotAuthorizedUI()
-        {
-            NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
-            ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = LENexusEndorsed = false;
-            EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-        }
-
-        private async Task<User> AuthToNexusMods(bool languageUpdateOnly = false)
-        {
-            if (languageUpdateOnly)
-            {
-                if (NexusModsUtilities.UserInfo != null)
-                {
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed || LENexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                }
-                else
-                {
-                    EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                }
-
-                return null;
-            }
-
-            M3Log.Information(@"Authenticating to NexusMods...");
-            var userInfo = await NexusModsUtilities.AuthToNexusMods();
-            if (userInfo != null)
-            {
-                M3Log.Information(@"Authenticated to NexusMods");
-
-                //ME1
-                var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149);
-                ME1NexusEndorsed = me1Status ?? false;
-
-                //ME2
-                var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248);
-                ME2NexusEndorsed = me2Status ?? false;
-
-                //ME3
-                var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect3", 373);
-                ME3NexusEndorsed = me3Status ?? false;
-
-                //LE
-                var leStatus = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffectlegendaryedition", 2);
-                LENexusEndorsed = leStatus ?? false;
-
-                EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed || LENexusEndorsed)
-                    ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                    : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-            }
-            else
-            {
-                M3Log.Information(
-                    @"Did not authenticate to NexusMods. May not be logged in or there was network issue");
-                EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-            }
-
-            return userInfo;
-        }
-
-        /// <summary>
         /// Sets up listeners for the 'mod failed to load' text, public property changed listeners
         /// </summary>
         private void AttachListeners()
@@ -824,11 +720,8 @@ namespace ME3TweaksModManager
         public RelayCommand CompileCoalescedCommand { get; set; }
         public RelayCommand DecompileCoalescedCommand { get; set; }
         public ICommand ConsoleKeyKeybinderCommand { get; set; }
-        public ICommand LoginToNexusCommand { get; set; }
-        public GenericCommand EndorseSelectedModCommand { get; set; }
         public ICommand CreateTestArchiveCommand { get; set; }
         public ICommand LaunchIniModderCommand { get; set; }
-        public ICommand EndorseM3OnNexusCommand { get; set; }
         public ICommand DownloadModMakerModCommand { get; set; }
         public ICommand UpdaterServiceCommand { get; set; }
         public ICommand UpdaterServiceSettingsCommand { get; set; }
@@ -878,11 +771,8 @@ namespace ME3TweaksModManager
             AutoTOCCommand = new RelayCommand(RunAutoTOCOnGame, CanAutoTOC);
             RunTargetMergeCommand = new RelayCommand(RunTargetMerge); // All games have at least one merge feature
             ConsoleKeyKeybinderCommand = new GenericCommand(OpenConsoleKeyKeybinder, CanOpenConsoleKeyKeybinder);
-            LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
-            EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
-            EndorseM3OnNexusCommand = new GenericCommand(EndorseM3, CanEndorseM3);
             DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
             UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
             UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
@@ -916,6 +806,7 @@ namespace ME3TweaksModManager
             StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame());
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
             ConvertMEMToTOCommand = new GenericCommand(ConvertMEMToTextureOverride, () => M3LoadedMods.Instance.ModsLoaded);
+            LoadNexusCommands();
         }
 
         private void OpenDownloadManager()
@@ -1820,50 +1711,6 @@ namespace ME3TweaksModManager
             return true;
         }
 
-        private bool CanEndorseM3()
-        {
-            return NexusModsUtilities.UserInfo != null && (!ME1NexusEndorsed && !ME2NexusEndorsed && !ME3NexusEndorsed);
-        }
-
-        private void EndorseM3()
-        {
-            if (!ME1NexusEndorsed)
-            {
-                M3Log.Information(@"Endorsing M3 (ME1)");
-                NexusModsUtilities.EndorseFile(@"masseffect", true, 149, (newStatus) =>
-                {
-                    ME1NexusEndorsed = newStatus;
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                });
-            }
-
-            if (!ME2NexusEndorsed)
-            {
-                M3Log.Information(@"Endorsing M3 (ME2)");
-                NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, (newStatus) =>
-                {
-                    ME2NexusEndorsed = newStatus;
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                });
-            }
-
-            if (!ME3NexusEndorsed)
-            {
-                M3Log.Information(@"Endorsing M3 (ME3)");
-                NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, (newStatus) =>
-                {
-                    ME3NexusEndorsed = newStatus;
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                });
-            }
-        }
-
         private void OpenMEIM()
         {
             new ME1IniModder().Show();
@@ -1877,76 +1724,6 @@ namespace ME3TweaksModManager
             var testArchiveGenerator = new TestArchiveGenerator(SelectedMod);
             testArchiveGenerator.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(testArchiveGenerator);
-        }
-
-        private void EndorseWrapper()
-        {
-            if (SelectedMod.IsEndorsed)
-            {
-                var unendorseresult = M3L.ShowDialog(this,
-                    M3L.GetString(M3L.string_interp_unendorseMod, SelectedMod.ModName),
-                    M3L.GetString(M3L.string_confirmUnendorsement), MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (unendorseresult == MessageBoxResult.Yes)
-                {
-                    UnendorseMod();
-                }
-            }
-            else
-            {
-                EndorseMod();
-            }
-        }
-
-        private bool CanEndorseMod() => NexusModsUtilities.HasAPIKey && SelectedMod != null &&
-                                        SelectedMod.NexusModID > 0 && SelectedMod.CanEndorse && !IsEndorsingMod;
-
-        private void EndorseMod()
-        {
-            if (SelectedMod != null)
-            {
-                M3Log.Information(@"Endorsing mod: " + SelectedMod.ModName);
-                CurrentModEndorsementStatus = M3L.GetString(M3L.string_endorsing);
-                IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, true);
-            }
-        }
-
-        private void UnendorseMod()
-        {
-            if (SelectedMod != null)
-            {
-                M3Log.Information(@"Unendorsing mod: " + SelectedMod.ModName);
-                CurrentModEndorsementStatus = M3L.GetString(M3L.string_unendorsing);
-                IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, false);
-            }
-        }
-
-        private void EndorsementCallback(Mod m, bool isModNowEndorsed, string endorsementFailedMessage)
-        {
-            IsEndorsingMod = false;
-            if (SelectedMod == m)
-            {
-                UpdatedEndorsementString();
-            }
-
-            if (endorsementFailedMessage != null)
-            {
-                M3L.ShowDialog(this, endorsementFailedMessage, M3L.GetString(M3L.string_couldNotEndorseFile),
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private bool CanShowNexusPanel()
-        {
-            return true; //might make some condition later.
-        }
-
-        private void ShowNexusPanel()
-        {
-            var nexusModsLoginPane = new NexusModsLogin();
-            nexusModsLoginPane.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(nexusModsLoginPane);
         }
 
         public bool HasAtLeastOneTarget() => InstallationTargets.Any();
@@ -3508,56 +3285,8 @@ namespace ME3TweaksModManager
                     ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName)
                     : "";
 
-                if (NexusModsUtilities.HasAPIKey)
-                {
-                    if (SelectedMod.NexusModID > 0)
-                    {
-                        if (SelectedMod.IsOwnMod)
-                        {
-                            CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseOwnMod);
-                        }
-                        else
-                        {
-                            CurrentModEndorsementStatus = M3L.GetString(M3L.string_gettingEndorsementStatus);
-
-                            var endorsed = await SelectedMod.GetEndorsementStatus();
-                            if (endorsed != null)
-                            {
-                                if (SelectedMod != null)
-                                {
-                                    //mod might have changed since we did BG thread wait.
-                                    if (SelectedMod.CanEndorse)
-                                    {
-                                        UpdatedEndorsementString();
-                                    }
-                                    else
-                                    {
-                                        CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseMod);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // null = self mod
-                                CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseOwnMod);
-
-                            }
-                        }
-
-                        CommandManager.InvalidateRequerySuggested();
-                    }
-                    else
-                    {
-                        CurrentModEndorsementStatus =
-                            $@"{M3L.GetString(M3L.string_cannotEndorseMod)} ({M3L.GetString(M3L.string_notLinkedToNexusMods)})";
-                    }
-                }
-                else
-                {
-                    CurrentModEndorsementStatus =
-                        $@"{M3L.GetString(M3L.string_cannotEndorseMod)} ({M3L.GetString(M3L.string_notAuthenticated)})";
-                }
-                //CurrentDescriptionText = newSelectedMod.DisplayedModDescription;
+                // Do not await
+                UpdateModEndorsementStatus();
             }
             else
             {
@@ -3568,22 +3297,6 @@ namespace ME3TweaksModManager
 
             CanApplyMod(); // This sets the text. Good design MG
         }
-
-        private void UpdatedEndorsementString()
-        {
-            if (SelectedMod != null)
-            {
-                if (SelectedMod.IsEndorsed)
-                {
-                    CurrentModEndorsementStatus = M3L.GetString(M3L.string_modEndorsed);
-                }
-                else
-                {
-                    CurrentModEndorsementStatus = M3L.GetString(M3L.string_endorseMod);
-                }
-            }
-        }
-
         private void SetWebsitePanelVisibility(bool open)
         {
             if (open != WebsitePanelStatus)
@@ -4412,10 +4125,6 @@ namespace ME3TweaksModManager
             logUploaderUI.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(logUploaderUI);
         }
-
-
-        public string CurrentModEndorsementStatus { get; private set; } = M3L.GetString(M3L.string_endorseMod);
-        public bool IsEndorsingMod { get; private set; }
 
         public bool CanOpenMEIM()
         {
