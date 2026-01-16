@@ -685,6 +685,7 @@ namespace ME3TweaksModManager
         public ICommand Binkw32Command { get; set; }
         public ICommand StartGameCommand { get; set; }
         public ICommand ShowInstallationInformationCommand { get; set; }
+        public ICommand ManageCachedTargetsCommand { get; set; }
         public ICommand BackupCommand { get; set; }
         public ICommand DeployModCommand { get; set; }
         public ICommand DeleteModFromLibraryCommand { get; set; }
@@ -732,6 +733,7 @@ namespace ME3TweaksModManager
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
             ShowInstallationInformationCommand = new GenericCommand(ShowInstallInfoPanel, CanShowInstallInfo);
+            ManageCachedTargetsCommand = new GenericCommand(ShowCachedTargetsPanel);
             BackupCommand = new GenericCommand(ShowBackupPanel, ContentCheckNotInProgress);
             RestoreCommand = new GenericCommand(ShowRestorePanel, ContentCheckNotInProgress);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, IsModSelectedInDevMode);
@@ -1800,6 +1802,20 @@ namespace ME3TweaksModManager
             var installationInformation = new InstallationInformation(InstallationTargets.ToList(), SelectedGameTarget);
             installationInformation.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(installationInformation);
+        }
+
+        private void ShowCachedTargetsPanel()
+        {
+            var cachedTargetsPanel = new CachedTargetsPanel();
+            cachedTargetsPanel.Close += (a, b) => 
+            { 
+                if (cachedTargetsPanel.Result.ReloadTargets)
+                {
+                    PopulateTargets(SelectedGameTarget);
+                }
+                ReleaseBusyControl(); 
+            };
+            ShowBusyControl(cachedTargetsPanel);
         }
 
         /// <summary>

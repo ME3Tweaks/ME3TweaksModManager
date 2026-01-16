@@ -1,0 +1,189 @@
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.CachedTargetsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    MinWidth="700"
+    MinHeight="480"
+    MaxWidth="1000">
+    <UserControl.Resources>
+        <converters:GameToImageIconConverter x:Key="GameToImageIconConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <DockPanel>
+        <DockPanel
+            DockPanel.Dock="Bottom"
+            Margin="0,5,0,0">
+            <Button
+                DockPanel.Dock="Right"
+                MinWidth="70"
+                Content="Close"
+                Margin="5,0,0,0"
+                Click="Close_Clicked"
+                Padding="7,4" />
+            <Button
+                DockPanel.Dock="Right"
+                MinWidth="70"
+                Content="Reload Target"
+                Margin="5,0,0,0"
+                Command="{Binding ReloadTargetCommand}"
+                Padding="7,4" />
+            <Button
+                DockPanel.Dock="Right"
+                MinWidth="70"
+                Content="Remove from Cache"
+                Margin="5,0,0,0"
+                Command="{Binding RemoveTargetCommand}"
+                Padding="7,4" />
+        </DockPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="7" />
+                <ColumnDefinition Width="350" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="7" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="3" />
+            </Grid.RowDefinitions>
+            <!-- Header Panel -->
+            <TextBlock
+                Text="Manage Cached Targets"
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                FontWeight="Bold"
+                FontSize="20"
+                TextAlignment="Center" />
+            <TextBlock
+                Text="View and manage game targets stored in the cache"
+                Grid.Row="2"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                TextAlignment="Center"
+                Margin="0,5,0,0" />
+            <Separator
+                Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="5"
+                Margin="0,5" />
+            <DockPanel
+                Grid.Row="4"
+                Grid.Column="1">
+                <TextBlock
+                    DockPanel.Dock="Top"
+                    Text="Cached Targets"
+                    FontWeight="Bold"
+                    Margin="0,0,0,5" />
+                <ListBox
+                    Name="TargetsList_ListBox"
+                    ItemsSource="{Binding CachedTargets}"
+                    SelectedItem="{Binding SelectedTarget}"
+                    BorderThickness="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image
+                                    Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="0,0,5,0" />
+                                <TextBlock Text="{Binding Game}" Width="80" />
+                                <TextBlock 
+                                    Text="✓" 
+                                    Foreground="Green" 
+                                    FontWeight="Bold"
+                                    Margin="5,0"
+                                    Visibility="{Binding IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <TextBlock 
+                                    Text="✗" 
+                                    Foreground="Red" 
+                                    FontWeight="Bold"
+                                    Margin="5,0"
+                                    Visibility="{Binding IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+            <GridSplitter
+                Grid.Row="4"
+                Grid.Column="2"
+                HorizontalAlignment="Stretch" />
+            <DockPanel
+                Grid.Row="4"
+                Grid.Column="3">
+                <TextBlock
+                    DockPanel.Dock="Top"
+                    Text="Target Information"
+                    FontWeight="Bold"
+                    Margin="0,0,0,5" />
+                <ScrollViewer 
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="5">
+                        <TextBlock 
+                            Text="Game:" 
+                            FontWeight="Bold"
+                            Margin="0,0,0,3" />
+                        <TextBlock 
+                            Text="{Binding SelectedTarget.Game}"
+                            Margin="0,0,0,10" />
+                        
+                        <TextBlock 
+                            Text="Path:" 
+                            FontWeight="Bold"
+                            Margin="0,0,0,3" />
+                        <TextBlock 
+                            Text="{Binding SelectedTarget.TargetPath}"
+                            TextWrapping="Wrap"
+                            Margin="0,0,0,10" />
+                        
+                        <TextBlock 
+                            Text="Status:" 
+                            FontWeight="Bold"
+                            Margin="0,0,0,3" />
+                        <TextBlock 
+                            Text="Valid"
+                            Foreground="Green"
+                            Margin="0,0,0,10"
+                            Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <TextBlock 
+                            Text="Invalid"
+                            Foreground="Red"
+                            Margin="0,0,0,10"
+                            Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
+                        
+                        <TextBlock 
+                            Text="Failure Reason:" 
+                            FontWeight="Bold"
+                            Margin="0,0,0,3"
+                            Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
+                        <TextBox 
+                            Text="{Binding SelectedTarget.FailureReason, Mode=OneWay}"
+                            TextWrapping="Wrap"
+                            IsReadOnly="True"
+                            IsReadOnlyCaretVisible="False"
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                            Margin="0,0,0,10"
+                            Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</usercontrols:MMBusyPanelBase>

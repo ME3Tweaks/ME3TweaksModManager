@@ -13,6 +13,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
 using Microsoft.Win32;
 
 namespace ME3TweaksModManager.modmanager
@@ -827,6 +828,18 @@ namespace ME3TweaksModManager.modmanager
         /// <returns>A list of validated game targets loaded from the cache.</returns>
         internal static List<GameTargetWPF> GetCachedTargets(MEGame game, List<GameTargetWPF> existingTargets = null)
         {
+            return GetCachedTargetsInternal(game, existingTargets, null);
+        }
+
+        /// <summary>
+        /// Gets cached targets for a specific game, optionally tracking failures
+        /// </summary>
+        /// <param name="game">The game to get cached targets for</param>
+        /// <param name="existingTargets">Targets to exclude from loading</param>
+        /// <param name="failedTargets">Optional list to populate with failed targets</param>
+        /// <returns>List of valid targets</returns>
+        internal static List<GameTargetWPF> GetCachedTargetsInternal(MEGame game, List<GameTargetWPF> existingTargets, List<TargetCacheInfo> failedTargets)
+        {
             var cacheFile = M3Filesystem.GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
@@ -850,11 +863,13 @@ namespace ME3TweaksModManager.modmanager
                         else
                         {
                             M3Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
+                            failedTargets?.Add(new TargetCacheInfo(game, gameDir, false, failureReason, null));
                         }
                     }
                     else
                     {
                         M3Log.Warning($@"Cached target directory does not exist, skipping: {gameDir}");
+                        failedTargets?.Add(new TargetCacheInfo(game, gameDir, false, "Directory does not exist", null));
                     }
                 }
 
@@ -864,6 +879,47 @@ namespace ME3TweaksModManager.modmanager
             {
                 return new List<GameTargetWPF>();
             }
+        }
+
+        /// <summary>
+        /// Gets all cached target information for all games, including failed targets
+        /// </summary>
+        /// <returns>List of all cached target information</returns>
+        internal static List<TargetCacheInfo> GetAllCachedTargetInfo()
+        {
+            var allTargetInfo = new List<TargetCacheInfo>();
+            
+            foreach (MEGame game in Enum.GetValues(typeof(MEGame)))
+            {
+                if (game == MEGame.Unknown) continue;
+                
+                var cacheFile = M3Filesystem.GetCachedTargetsFile(game);
+                if (File.Exists(cacheFile))
+                {
+                    foreach (var gameDir in M3Utilities.WriteSafeReadAllLines(cacheFile))
+                    {
+                        if (Directory.Exists(gameDir))
+                        {
+                            var target = new GameTargetWPF(game, gameDir, false);
+                            var failureReason = target.ValidateTarget();
+                            if (failureReason == null)
+                            {
+                                allTargetInfo.Add(new TargetCacheInfo(game, gameDir, true, null, target));
+                            }
+                            else
+                            {
+                                allTargetInfo.Add(new TargetCacheInfo(game, gameDir, false, failureReason, null));
+                            }
+                        }
+                        else
+                        {
+                            allTargetInfo.Add(new TargetCacheInfo(game, gameDir, false, "Directory does not exist", null));
+                        }
+                    }
+                }
+            }
+            
+            return allTargetInfo;
         }
 
         /// <summary>
@@ -943,6 +999,26 @@ namespace ME3TweaksModManager.modmanager
             if (numRemoved > 0)
             {
                 M3Log.Information("Removed " + numRemoved + " targets matching name " + path);
+                File.WriteAllLines(cachefile, savedTargets);
+            }
+        }
+
+        /// <summary>
+        /// Removes a cached target by game and path
+        /// </summary>
+        /// <param name="game">The game the target belongs to</param>
+        /// <param name="targetPath">The path to the target to remove</param>
+        internal static void RemoveCachedTarget(MEGame game, string targetPath)
+        {
+            var cachefile = M3Filesystem.GetCachedTargetsFile(game);
+            if (!File.Exists(cachefile)) return; //can't do anything.
+            var savedTargets = M3Utilities.WriteSafeReadAllLines(cachefile).ToList();
+            var path = Path.GetFullPath(targetPath); //standardize
+
+            int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
+            if (numRemoved > 0)
+            {
+                M3Log.Information("Removed " + numRemoved + " cached targets matching path " + path);
                 File.WriteAllLines(cachefile, savedTargets);
             }
         }
