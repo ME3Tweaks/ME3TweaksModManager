@@ -1,14 +1,9 @@
 ﻿#if DEBUG
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using ME3TweaksModManager.modmanager.helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ME3TweaksModManager.Tests
@@ -16,11 +11,8 @@ namespace ME3TweaksModManager.Tests
     [TestClass]
     public class ExperimentsTest
     {
-#if FALSE
         // Do not run this on azure
-#if DEBUG
         [TestMethod]
-#endif
         public void RunExperimentTest()
         {
             GlobalTest.Init();
@@ -38,7 +30,6 @@ namespace ME3TweaksModManager.Tests
                 Debug.WriteLine(specialFile);
             }
         }
-#endif
-#endif
     }
 }
+#endif
