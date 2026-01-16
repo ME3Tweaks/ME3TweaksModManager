@@ -11,7 +11,6 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.usercontrols;
 using System.Windows;
 using System.Windows.Input;
-using static JetBrains.FormatRipper.FileExplorer.FileTypeExplorer;
 
 namespace ME3TweaksModManager
 {
