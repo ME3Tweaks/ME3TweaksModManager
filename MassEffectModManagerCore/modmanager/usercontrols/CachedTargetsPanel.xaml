@@ -7,7 +7,7 @@
     mc:Ignorable="d"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:fa5="http://schemas.fontawesome.com/icons/"
     d:DesignHeight="450"
     d:DesignWidth="800"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -102,17 +102,17 @@
                                     Width="16"
                                     Height="16"
                                     Margin="0,0,5,0" />
-                                <TextBlock Text="{Binding Game}" Width="80" />
-                                <TextBlock 
-                                    Text="✓" 
-                                    Foreground="Green" 
-                                    FontWeight="Bold"
+                                <TextBlock Text="{Binding Game, Converter={StaticResource MEGameToGameNameConverter}}" Width="200" />
+                                <fa5:ImageAwesome
+                                    Icon="Regular_CheckCircle"
+                                    Height="16"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.SuccessBrush}}"
                                     Margin="5,0"
                                     Visibility="{Binding IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                <TextBlock 
-                                    Text="✗" 
-                                    Foreground="Red" 
-                                    FontWeight="Bold"
+                                <fa5:ImageAwesome
+                                    Icon="Solid_Times"
+                                    Height="16"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}"
                                     Margin="5,0"
                                     Visibility="{Binding IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
                             </StackPanel>
@@ -159,12 +159,12 @@
                             Margin="0,0,0,3" />
                         <TextBlock 
                             Text="Valid"
-                            Foreground="Green"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.SuccessBrush}}"
                             Margin="0,0,0,10"
                             Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
                         <TextBlock 
                             Text="Invalid"
-                            Foreground="Red"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}"
                             Margin="0,0,0,10"
                             Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
                         

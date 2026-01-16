@@ -40,7 +40,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanRemoveTarget()
         {
-            return SelectedTarget != null;
+            if (SelectedTarget == null) return false;
+            if (SelectedTarget.Target != null)
+            {
+                return !SelectedTarget.Target.RegistryActive;
+            }
+            return true;
         }
 
         private void ReloadTarget()
@@ -78,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             else
             {
                 // Directory still doesn't exist
-                var newTargetInfo = new TargetCacheInfo(game, path, false, "Directory does not exist", null);
+                var newTargetInfo = new TargetCacheInfo(game, path, false, "Invalid target: Directory does not exist", null);
                 CachedTargets.Insert(position, newTargetInfo);
                 SelectedTarget = newTargetInfo;
             }
@@ -119,7 +124,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            InitializeComponent();
+            // Initialization is always done right before panel becomes visible
+            // because we don't want binding to occur before then.
+            InitializeComponent(); 
             LoadCachedTargets();
         }
 
