@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.Restore;
 using ME3TweaksModManager.modmanager.helpers;
@@ -15,6 +16,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class AutoGameRestorePanel : MMBusyPanelBase
     {
+        public string RestoringText => $"Restoring {_target.Game.ToGameName()}";
         public int Percent { get; private set; }
 
         /// <summary>
