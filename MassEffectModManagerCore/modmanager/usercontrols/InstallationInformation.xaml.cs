@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         private void RemoveTarget()
         {
-            M3Utilities.RemoveCachedTarget(SelectedTarget);
+            M3TargetCache.RemoveCachedTarget(SelectedTarget);
             Result.ReloadTargets = true;
             ClosePanel();
         }

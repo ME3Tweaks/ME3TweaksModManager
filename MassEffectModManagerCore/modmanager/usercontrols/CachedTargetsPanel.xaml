@@ -37,6 +37,13 @@
                 Command="{Binding ReloadTargetCommand}"
                 Padding="7,4" />
             <Button
+              DockPanel.Dock="Right"
+              MinWidth="70"
+              Content="Restore Target from backup"
+              Margin="5,0,0,0"
+              Command="{Binding RestoreTargetCommand}"
+              Padding="7,4" />
+            <Button
                 DockPanel.Dock="Right"
                 MinWidth="70"
                 Content="Remove from Cache"
@@ -70,7 +77,8 @@
                 FontSize="20"
                 TextAlignment="Center" />
             <TextBlock
-                Text="View and manage game targets stored in the cache"
+                TextWrapping="Wrap"
+                Text="Mod Manager contains a list of game targets it has seen, known as cached targets. Over time, these may become invalid due to changes such as moving or deleting games. Removing invalid targets will improve application startup time."
                 Grid.Row="2"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"

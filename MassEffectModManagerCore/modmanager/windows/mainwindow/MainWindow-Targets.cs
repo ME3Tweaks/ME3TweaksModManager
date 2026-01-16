@@ -58,7 +58,7 @@ namespace ME3TweaksModManager
                     {
                         M3Log.Information(@"Current boot target for ME3: " + target.TargetPath);
                         targets.Add(target);
-                        M3Utilities.AddCachedTarget(target);
+                        M3TargetCache.AddCachedTarget(target);
                     }
                     else
                     {
@@ -74,7 +74,7 @@ namespace ME3TweaksModManager
                     {
                         M3Log.Information(@"Current boot target for ME2: " + target.TargetPath);
                         targets.Add(target);
-                        M3Utilities.AddCachedTarget(target);
+                        M3TargetCache.AddCachedTarget(target);
                         foundMe2Active = true;
                     }
                     else
@@ -91,7 +91,7 @@ namespace ME3TweaksModManager
                     {
                         M3Log.Information(@"Current boot target for ME1: " + target.TargetPath);
                         targets.Add(target);
-                        M3Utilities.AddCachedTarget(target);
+                        M3TargetCache.AddCachedTarget(target);
                         foundMe1Active = true;
                     }
                     else
@@ -118,6 +118,7 @@ namespace ME3TweaksModManager
                             M3Log.Error($@"Current boot target for {game} at {target.TargetPath} is invalid: " +
                                         failureReason);
                         }
+                        M3TargetCache.AddCachedTarget(target);
                     }
 
                     loadLETarget(MEGame.LELauncher, LEDirectory.LauncherPath);
@@ -139,14 +140,15 @@ namespace ME3TweaksModManager
                         if (failureReason == null)
                         {
                             M3Log.Information($@"Found Steam game for {game}: " + target.TargetPath);
-                            // Todo: Figure out how to insert at correct index
                             targets.Add(target);
-                            M3Utilities.AddCachedTarget(target);
                         }
                         else
                         {
                             M3Log.Error($@"Steam version of {game} at {targetPath} is invalid: {failureReason}");
                         }
+                     
+                        // only add if directory exists 
+                        M3TargetCache.AddCachedTarget(target);
                     }
                 }
 
@@ -178,15 +180,15 @@ namespace ME3TweaksModManager
                 }
 
                 M3Log.Information(@"Loading cached targets");
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME3, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME2, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME1, targets));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME3, targets, out _).Select(x=>x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME2, targets, out _).Select(x=>x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME1, targets, out _).Select(x=>x.Target));
 
                 // Load LE cached targets
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE3, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE2, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE1, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LELauncher, targets));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE3, targets, out _).Select(x=>x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE2, targets, out _).Select(x=>x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE1, targets, out _).Select(x=>x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LELauncher, targets, out _).Select(x=>x.Target));
 
                 OrderAndSetTargets(targets, selectedTarget);
             }
@@ -467,7 +469,7 @@ namespace ME3TweaksModManager
                             { @"Supported", pendingTarget.Supported.ToString() }
                         });
 
-                        M3Utilities.AddCachedTarget(pendingTarget);
+                        M3TargetCache.AddCachedTarget(pendingTarget);
                         PopulateTargets(pendingTarget);
                     }
                     else

@@ -171,7 +171,7 @@ namespace ME3TweaksModManager.modmanager.windows
                                 var failureReason = t.ValidateTarget();
                                 if (failureReason == null)
                                 {
-                                    M3Utilities.AddCachedTarget(t);
+                                    M3TargetCache.AddCachedTarget(t);
                                 }
                                 else
                                 {
