@@ -723,5 +723,135 @@ namespace ME3TweaksModManager
                 }
             });
         }
+
+        #region Technically not drag/drop but very similar
+        private void CompileCoalesced(object obj)
+        {
+            if (obj is bool game3)
+            {
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalCompile",
+                    M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
+                OpenFileDialog ofd = new OpenFileDialog()
+                {
+                    Title = M3L.GetString(M3L.string_selectCoalescedManifestFile),
+                };
+                if (game3)
+                {
+                    ofd.Filter = M3L.GetString(M3L.string_game3CoalescedManifest) + @"|*.xml";
+                }
+                else
+                {
+                    ofd.Filter = M3L.GetString(M3L.string_lE1LE2CoalescedManifest) + @"|mele.extractedbin";
+                }
+
+                var result = ofd.ShowDialog(this);
+                if (result.HasValue && result.Value)
+                {
+                    Task.Run(() =>
+                    {
+                        var containingDir = Directory.GetParent(ofd.FileName).FullName;
+                        if (game3)
+                        {
+                            // Game 3
+                            var dest = Path.Combine(containingDir,
+                                Path.GetFileNameWithoutExtension(ofd.FileName) + @".bin");
+                            CoalescedConverter.ConvertToBin(ofd.FileName, dest);
+                            M3Utilities.HighlightInExplorer(dest);
+                        }
+                        else
+                        {
+                            // LE1/LE2
+                            var dest = LECoalescedConverter.GetDestinationPathFromManifest(ofd.FileName);
+                            LECoalescedConverter.Pack(containingDir, dest); // takes the directory
+                            M3Utilities.HighlightInExplorer(dest);
+                        }
+
+                        TelemetryInterposer.TrackEvent(@"Compiled Coalesced (menu)");
+                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                    }).ContinueWithOnUIThread(x =>
+                    {
+                        if (x.Exception != null)
+                        {
+                            M3Log.Exception(x.Exception, @"Error compiling coalesced file:");
+                            task.FinishedUIText = M3L.GetString(M3L.string_errorCompilingCoalescedFile);
+                            BackgroundTaskEngine.SubmitJobCompletion(task);
+                            M3L.ShowDialog(this,
+                                M3L.GetString(M3L.string_interp_errorCompilingCoalescedFile, x.Exception.Message),
+                                M3L.GetString(M3L.string_errorCompiling), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    });
+
+                }
+                else
+                {
+                    task.FinishedUIText = M3L.GetString(M3L.string_abortedCompilingCoalescedFile);
+                    BackgroundTaskEngine.SubmitJobCompletion(task);
+                }
+            }
+        }
+
+        private void DecompileCoalesced(object obj)
+        {
+            if (obj is bool game3)
+            {
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalDecompile",
+                    M3L.GetString(M3L.string_decompilingCoalescedFile),
+                    M3L.GetString(M3L.string_decompiledCoalescedFile));
+                OpenFileDialog ofd = new OpenFileDialog()
+                {
+                    Title = M3L.GetString(M3L.string_selectCoalescedFile),
+                    Filter = @"Coalesced file|*.bin",
+                };
+                if (game3)
+                {
+                    ofd.Title += @" (ME3/LE3)";
+                }
+                else
+                {
+                    ofd.Title += @" (LE1/LE2)";
+                }
+
+                var result = ofd.ShowDialog(this);
+                if (result.HasValue && result.Value)
+                {
+                    Task.Run(() =>
+                    {
+                        var dir = Directory.GetParent(ofd.FileName).FullName;
+                        if (game3)
+                        {
+                            // Game 3
+                            CoalescedConverter.ConvertToXML(ofd.FileName, dir);
+                        }
+                        else
+                        {
+                            // LE1/LE2
+                            LECoalescedConverter.Unpack(ofd.FileName, dir);
+                        }
+
+                        TelemetryInterposer.TrackEvent(@"Decompiled Coalesced (menu)");
+                        M3Utilities.HighlightInExplorer(dir);
+                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                    }).ContinueWithOnUIThread(x =>
+                    {
+                        if (x.Exception != null)
+                        {
+                            M3Log.Exception(x.Exception, @"Error decompiling coalesced file:");
+                            task.FinishedUIText = M3L.GetString(M3L.string_errorDecompilingCoalescedFile);
+                            BackgroundTaskEngine.SubmitJobCompletion(task);
+                            M3L.ShowDialog(this,
+                                M3L.GetString(M3L.string_interp_errorDecompilingCoalescedFile, x.Exception.Message),
+                                M3L.GetString(M3L.string_errorDecompiling), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    });
+
+                }
+                else
+                {
+                    task.FinishedUIText = M3L.GetString(M3L.string_abortedDecompilingCoalescedFile);
+                }
+            }
+        }
+
+        #endregion
     }
 }

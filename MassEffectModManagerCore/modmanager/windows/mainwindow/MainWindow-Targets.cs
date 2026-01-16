@@ -13,6 +13,8 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3TweaksModManager.modmanager.localizations;
 using LegendaryExplorerCore.GameFilesystem;
 using System.ComponentModel;
+using System.Windows;
+using Microsoft.Win32;
 
 namespace ME3TweaksModManager
 {
@@ -25,6 +27,8 @@ namespace ME3TweaksModManager
         /// List of all loaded targets, even ones for different generations
         /// </summary>
         private List<GameTargetWPF> InternalLoadedTargets { get; } = new();
+
+        public GameTargetWPF SelectedGameTarget { get; set; }
 
         /// <summary>
         /// Lock on this object if you want to ensure targets are not repopulating when code is run.
@@ -391,5 +395,107 @@ namespace ME3TweaksModManager
 
             return -3;
         }
+
+        private void AddTarget()
+        {
+            M3Log.Information(@"User is adding new modding target");
+            var ofd = new OpenFileDialog();
+            ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
+            string filter =
+                $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffectLauncher.exe;MassEffect1.exe"; //only partially localizable.
+            ofd.Filter = filter;
+            if (ofd.ShowDialog() == true)
+            {
+                MEGame gameSelected = MEGame.Unknown;
+                var filename = Path.GetFileName(ofd.FileName);
+                M3Log.Information($@"Validating user chosen exe: {filename}");
+                if (filename.Equals(@"MassEffect3.exe", StringComparison.InvariantCultureIgnoreCase))
+                    gameSelected = MEGame.ME3;
+                if (filename.Equals(@"MassEffect2.exe", StringComparison.InvariantCultureIgnoreCase))
+                    gameSelected = MEGame.ME2;
+
+                if (gameSelected != MEGame.Unknown)
+                {
+                    // Check for LE versions
+                    var version = FileVersionInfo.GetVersionInfo(ofd.FileName);
+                    if (version.FileMajorPart >= 2)
+                    {
+                        // LE1 can't be selected this way as it has unique exe name.
+                        if (gameSelected == MEGame.ME2) gameSelected = MEGame.LE2;
+                        if (gameSelected == MEGame.ME3) gameSelected = MEGame.LE3;
+                    }
+                }
+                else
+                {
+                    // Has unique name
+                    if (filename.Equals(@"MassEffect.exe", StringComparison.InvariantCultureIgnoreCase))
+                        gameSelected = MEGame.ME1;
+                    if (filename.Equals(@"MassEffect1.exe", StringComparison.InvariantCultureIgnoreCase))
+                        gameSelected = MEGame.LE1;
+
+                    if (filename.Equals(@"MassEffectLauncher.exe"))
+                    {
+                        var version = FileVersionInfo.GetVersionInfo(ofd.FileName);
+                        if (version.FileMajorPart >= 2)
+                        {
+                            gameSelected = MEGame.LELauncher;
+                        }
+                    }
+                }
+
+                if (gameSelected != MEGame.Unknown)
+                {
+                    string result = Path.GetDirectoryName(ofd.FileName);
+                    if (gameSelected != MEGame.LELauncher)
+                    {
+                        // game root path for ME1/ME2
+                        result = Path.GetDirectoryName(result);
+                    }
+
+                    if (gameSelected.IsLEGame() || gameSelected == MEGame.ME3)
+                        result = Path.GetDirectoryName(result); //up one more because of win32/win64 directory.
+
+                    var pendingTarget = new GameTargetWPF(gameSelected, result, false);
+                    string failureReason = pendingTarget.ValidateTarget();
+
+                    if (failureReason == null)
+                    {
+                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        {
+                            { @"Game", pendingTarget.Game.ToString() },
+                            { @"Result", @"Success" },
+                            { @"Supported", pendingTarget.Supported.ToString() }
+                        });
+
+                        M3Utilities.AddCachedTarget(pendingTarget);
+                        PopulateTargets(pendingTarget);
+                    }
+                    else
+                    {
+                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        {
+                            { @"Game", pendingTarget.Game.ToString() },
+                            { @"Result", @"Failed, " + failureReason },
+                            { @"Supported", pendingTarget.Supported.ToString() }
+                        });
+                        M3Log.Error(@"Could not add target: " + failureReason);
+                        M3L.ShowDialog(this,
+                            M3L.GetString(M3L.string_interp_dialogUnableToAddGameTarget, failureReason),
+                            M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    M3Log.Error($@"Unsupported/unknown game: {ofd.FileName}");
+                }
+            }
+
+            else
+            {
+                M3Log.Information(@"User aborted adding new target");
+            }
+        }
+
     }
 }
