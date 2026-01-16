@@ -328,5 +328,68 @@ namespace ME3TweaksModManager
             // Populate the list of available games, for menus
             MenuAvailableGames.ReplaceAll(InstallationTargets.Where(x => x.Game.IsMEGame()).Select(x => x.Game).Distinct().OrderBy(x => x));
         }
+
+        /// <summary>
+        /// Updates boot target and returns the HRESULT of the update command for registry.
+        /// Returns -3 if no registry update was performed.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private int UpdateBootTarget(GameTargetWPF target)
+        {
+            string exe = @"reg";
+            var args = new List<string>();
+            string regPath = null;
+            switch (target.Game)
+            {
+                case MEGame.ME1:
+                    {
+                        var existingPath = ME1Directory.DefaultGamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect";
+                        }
+                    }
+                    break;
+                case MEGame.ME2:
+                    {
+                        var existingPath = ME2Directory.DefaultGamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 2";
+                        }
+                    }
+
+                    break;
+                case MEGame.ME3:
+                    {
+                        var existingPath = ME3Directory.DefaultGamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 3";
+                        }
+                    }
+                    break;
+            }
+
+            if (regPath != null)
+            {
+                //is set in registry
+                args.Add(@"add");
+                args.Add(regPath);
+                args.Add(@"/v");
+                args.Add(target.Game == MEGame.ME3 ? @"Install Dir" : @"Path");
+                args.Add(@"/t");
+                args.Add(@"REG_SZ");
+                args.Add(@"/d");
+                args.Add($"{target.TargetPath.TrimEnd('\\')}\\\\"); // do not localize
+                                                                    // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
+                args.Add(@"/f");
+
+                return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
+            }
+
+            return -3;
+        }
     }
 }

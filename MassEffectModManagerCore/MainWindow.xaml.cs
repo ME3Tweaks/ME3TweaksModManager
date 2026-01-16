@@ -859,16 +859,7 @@ namespace ME3TweaksModManager
             ld.Show();
         }
 
-        private void SelectSpecificSaveForBoot()
-        {
-            // Select save to install to
-            GameLauncher.SetAutoresumeSave(this, SelectedGameTarget, autoresumeSaveChanged: StartGameWithResume);
-        }
-
-        private void StartGameWithResume()
-        {
-            InternalStartGame(SelectedGameTarget, skipLauncher: true, autoboot: true);
-        }
+        
 
         private void BeginInstallingM3Headmorph()
         {
@@ -1028,16 +1019,6 @@ namespace ME3TweaksModManager
         public void OpenTSE()
         {
             TrilogySaveEditorHelper.OpenTSE(this);
-        }
-
-        private void OpenLaunchOptionSelector()
-        {
-            if (SelectedGameTarget?.Game.IsLEGame() ?? false) // Nice and hard to read
-            {
-                LaunchOptionSelectorDialog losd = new LaunchOptionSelectorDialog(this, SelectedGameTarget.Game);
-                losd.ShowDialog();
-                UpdateSelectedLaunchOption();
-            }
         }
 
         private bool CanInstallMEMFile()
@@ -2247,134 +2228,6 @@ namespace ME3TweaksModManager
         {
             ApplyMod(SelectedMod);
         }
-
-        private void StartGame()
-        {
-            InternalStartGame(SelectedGameTarget);
-        }
-
-        internal void InternalStartGame(GameTargetWPF target, string customArguments = null, bool? skipLauncher = null, bool? autoboot = null)
-        {
-            var game = target.Game.ToGameName();
-            BackgroundTask gameLaunch = BackgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch",
-                M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
-
-            try
-            {
-                Task.Run(() =>
-                {
-                    if (target.Game.IsLEGame())
-                    {
-                        // Validate that the launch option matches the target's game
-                        if (SelectedLaunchOption != null && SelectedLaunchOption.Game != target.Game)
-                        {
-                            M3Log.Warning($@"Launch option game ({SelectedLaunchOption.Game}) does not match target game ({target.Game}). Using default launch option for {target.Game}.");
-                            SelectedLaunchOption = M3LoadedMods.GetDefaultLaunchOptionsPackage(target.Game);
-                        }
-                        GameLauncher.LaunchGame(target, SelectedLaunchOption, skipLauncher, autoboot);
-                    }
-                    else
-                    {
-                        GameLauncher.LaunchGame(target, customArguments);
-                    }
-                })
-                    .ContinueWith(x =>
-                    {
-                        if (x.Exception != null)
-                        {
-                            M3Log.Error($@"There was an error launching the game: {x.Exception.FlattenException()}");
-                        }
-
-                        BackgroundTaskEngine.SubmitJobCompletion(gameLaunch);
-                    });
-            }
-            catch (Exception e)
-            {
-                BackgroundTaskEngine.SubmitJobCompletion(gameLaunch); // This ensures message is cleared out of queue
-                if (e is Win32Exception w32e)
-                {
-                    if (w32e.NativeErrorCode == 1223)
-                    {
-                        //Admin canceled.
-                        return; //we don't care.
-                    }
-                }
-
-                M3Log.Error(@"Error launching game: " + e.Message);
-            }
-
-            M3Telemetry.SubmitScreenResolutionInfo(target);
-        }
-
-        /// <summary>
-        /// Updates boot target and returns the HRESULT of the update command for registry.
-        /// Returns -3 if no registry update was performed.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        private int UpdateBootTarget(GameTargetWPF target)
-        {
-            string exe = @"reg";
-            var args = new List<string>();
-            string regPath = null;
-            switch (target.Game)
-            {
-                case MEGame.ME1:
-                    {
-                        var existingPath = ME1Directory.DefaultGamePath;
-                        if (existingPath != null)
-                        {
-                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect";
-                        }
-                    }
-                    break;
-                case MEGame.ME2:
-                    {
-                        var existingPath = ME2Directory.DefaultGamePath;
-                        if (existingPath != null)
-                        {
-                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 2";
-                        }
-                    }
-
-                    break;
-                case MEGame.ME3:
-                    {
-                        var existingPath = ME3Directory.DefaultGamePath;
-                        if (existingPath != null)
-                        {
-                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 3";
-                        }
-                    }
-                    break;
-            }
-
-            if (regPath != null)
-            {
-                //is set in registry
-                args.Add(@"add");
-                args.Add(regPath);
-                args.Add(@"/v");
-                args.Add(target.Game == MEGame.ME3 ? @"Install Dir" : @"Path");
-                args.Add(@"/t");
-                args.Add(@"REG_SZ");
-                args.Add(@"/d");
-                args.Add($"{target.TargetPath.TrimEnd('\\')}\\\\"); // do not localize
-                                                                    // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
-                args.Add(@"/f");
-
-                return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
-            }
-
-            return -3;
-        }
-
-        private bool CanStartGame()
-        {
-            //Todo: Check if this is origin game and if target will boot
-            return SelectedGameTarget != null && SelectedGameTarget.Selectable /*&& SelectedGameTarget.RegistryActive*/;
-        }
-
         private bool CanToggleBinkw32(object obj)
         {
             if (obj is string str && Enum.TryParse(str, out MEGame game))
@@ -3778,37 +3631,6 @@ namespace ME3TweaksModManager
             exLauncher.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(exLauncher);
         }
-        private void UpdateSelectedLaunchOption()
-        {
-            if (SelectedGameTarget == null)
-                return;
-
-            if (M3LoadedMods.Instance == null || !SelectedGameTarget.Game.IsLEGame())
-            {
-                // Set default option.
-                SelectedLaunchOption = M3LoadedMods.GetDefaultLaunchOptionsPackage(SelectedGameTarget.Game);
-                return;
-            }
-
-            Guid guidToMatch = SelectedGameTarget.Game switch
-            {
-                MEGame.LE1 => Settings.SelectedLE1LaunchOption,
-                MEGame.LE2 => Settings.SelectedLE2LaunchOption,
-                MEGame.LE3 => Settings.SelectedLE3LaunchOption,
-                _ => Guid.Empty,
-            };
-
-            var option = M3LoadedMods.Instance.AllLaunchOptions.FirstOrDefault(x => x.Game == SelectedGameTarget.Game && x.PackageGuid == guidToMatch);
-            if (option != null)
-            {
-                SelectedLaunchOption = option;
-            }
-            else
-            {
-                SelectedLaunchOption = M3LoadedMods.GetDefaultLaunchOptionsPackage(SelectedGameTarget.Game);
-            }
-        }
-
         private void UploadLog_Click(object sender, RoutedEventArgs e)
         {
             ShowLogUploadPanel(null);
