@@ -17,8 +17,6 @@ using System.Xml.XPath;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Octokit;
-using PropertyChanged;
-using Localization = ICSharpCode.AvalonEdit.Search.Localization;
 using Path = System.IO.Path;
 
 namespace LocalizationHelper
@@ -249,7 +247,7 @@ namespace LocalizationHelper
 
                 var dictionaries = new Dictionary<string, string>();
                 string endpoint = $"https://raw.githubusercontent.com/ME3Tweaks/{repo}/{branch}/{branchLocalizationPath}"; //make dynamic, maybe with octokit.
-                WebClient client = new WebClient();
+                using var client = new WebClient();
                 foreach (var lang in GlobalSupportedLanguages.Concat(new[] { "int" }))
                 {
                     PleaseWaitString = $"Fetching {branch} {lang}";
@@ -715,6 +713,11 @@ namespace LocalizationHelper
         public ICommand AddLangCommand { get; set; }
 
         /// <summary>
+        /// Command to check for missing localization strings.
+        /// </summary>
+        public ICommand CheckMissingStringsCommand { get; set; }
+
+        /// <summary>
         /// Initializes all command bindings for the application.
         /// </summary>
         private void LoadCommands()
@@ -728,6 +731,7 @@ namespace LocalizationHelper
             SaveTutorialLocalizationCommand = new GenericCommand(SaveTutorialLocalization, CanAddLang);
             LoadLocalizedHelpMenuCommand = new GenericCommand(LoadLocalizedHelpMenu, CanAddLang);
             SaveLocalizedHelpMenuCommand = new GenericCommand(SaveLocalizedHelpMenu, CanAddLang);
+            CheckMissingStringsCommand = new RelayCommand(CheckMissingStrings, CanSaveLocalization);
         }
 
         /// <summary>
@@ -760,6 +764,74 @@ namespace LocalizationHelper
         private bool CanAddLang()
         {
             return M3LocalizationCategories != null && M3LocalizationCategories.Any() && M3CLocalizationCategories != null && M3CLocalizationCategories.Any();
+        }
+
+        /// <summary>
+        /// Checks the current language against INT to find missing localization strings.
+        /// </summary>
+        /// <param name="obj">Boolean indicating if this is for ME3TweaksCore (true) or ME3TweaksModManager (false).</param>
+        private void CheckMissingStrings(object obj)
+        {
+            if (obj is bool m3core)
+            {
+                if (CurrentLanguage == null)
+                {
+                    MessageBox.Show("Please select a language first.", "No Language Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var categories = m3core ? M3CLocalizationCategories : M3LocalizationCategories;
+                var projectName = m3core ? "ME3TweaksCore" : "ME3Tweaks Mod Manager";
+                
+                var missingStrings = new List<(string category, string key, string englishString)>();
+                
+                foreach (var cat in categories)
+                {
+                    foreach (var str in cat.LocalizedStringsForSection)
+                    {
+                        // Check if the localized string is missing or empty for the current language
+                        if (!str.Localizations.TryGetValue(CurrentLanguage.LangCode, out var localizedValue) || 
+                            string.IsNullOrWhiteSpace(localizedValue))
+                        {
+                            missingStrings.Add((cat.CategoryName, str.key, str.EnglishString));
+                        }
+                    }
+                }
+
+                if (missingStrings.Any())
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine($"Found {missingStrings.Count} missing localization strings in {projectName} for language '{CurrentLanguage.FullName}' ({CurrentLanguage.LangCode}):");
+                    sb.AppendLine();
+                    
+                    int displayCount = Math.Min(3, missingStrings.Count);
+                    for (int i = 0; i < displayCount; i++)
+                    {
+                        var (category, key, englishString) = missingStrings[i];
+                        sb.AppendLine($"Category: {category}");
+                        sb.AppendLine($"  Key: {key}");
+                        sb.AppendLine($"  English: {englishString}");
+                        sb.AppendLine();
+                    }
+
+                    if (missingStrings.Count > 3)
+                    {
+                        sb.AppendLine($"... and {missingStrings.Count - 3} more");
+                    }
+
+                    var result = MessageBox.Show(sb.ToString(), 
+                        "Missing Localization Strings", 
+                        MessageBoxButton.OK, 
+                        MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"All strings in {projectName} are localized for '{CurrentLanguage.FullName}' ({CurrentLanguage.LangCode})!", 
+                        "Complete Localization", 
+                        MessageBoxButton.OK, 
+                        MessageBoxImage.Information);
+                }
+            }
         }
 
         /// <summary>
