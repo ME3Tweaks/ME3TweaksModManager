@@ -83,7 +83,7 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{DynamicResource string_libraries}" Foreground="White" TextAlignment="Center" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"  />
-                <TextBlock Text="* = ME3Tweaks forked version" Grid.Column="0" Foreground="White" Margin="0,0,0,10" TextAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3" />
+                <TextBlock Text="{DynamicResource string_starMeansForked}" Grid.Column="0" Foreground="White" Margin="0,0,0,10" TextAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3" />
                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding Libraries}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type usercontrols:AboutPanel+LibraryCredit}">
