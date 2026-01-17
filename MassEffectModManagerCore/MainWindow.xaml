@@ -565,9 +565,9 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="Manage Cached Targets"
+                        Header="{Binding string_manageCachedTargets}"
                         Command="{Binding ManageCachedTargetsCommand}"
-                        ToolTip="View and manage game targets stored in the cache">
+                        ToolTip="{Binding string_tooltip_manageCachedTargets}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"

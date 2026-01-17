@@ -281,8 +281,6 @@ namespace ME3TweaksModManager
         }
 
         private int oldFailedBindableCount = 0;
-
-        public string NoModSelectedText => InternalNoModSelectedText(false);
         public string NoModSelectedRichText => InternalNoModSelectedText(true);
 
         private string InternalNoModSelectedText(bool richText)
