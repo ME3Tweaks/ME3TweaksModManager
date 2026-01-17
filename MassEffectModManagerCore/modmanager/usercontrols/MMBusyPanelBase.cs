@@ -51,11 +51,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             mainwindow = window as MainWindow;
             window.KeyDown += HandleKeyPress;
             
-            // Lock here as OnPanelVisible() is where targets are likely set.
-            lock (MainWindow.targetRepopulationSyncObj)
-            {
-                OnPanelVisible();
-            }
+            // 01/16/2026: Observed deadlock behavior, so lock is removed
+            // Lock removed - PopulateTargets() already locks this object internally
+            // This prevents deadlock when PopulateTargets is running on background thread
+            // and needs to marshal to UI thread while UI thread is blocked here
+            OnPanelVisible();
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             M3Log.Information($@"Panel closing: {this.GetType().Name}");
 
-            // This is done on the UI thread as it might require UI interaction to release things
+            // This block is run on the UI thread as it might require UI interaction to release things
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Close?.Invoke(this, e);
