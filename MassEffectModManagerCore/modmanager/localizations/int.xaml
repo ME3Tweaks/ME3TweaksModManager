@@ -1039,7 +1039,7 @@
     <system:String x:Key="string_deployment_unableToParsePrecompiledBTPX">Unable to parse precompiled BTP: {0}</system:String>
     <!-- 0={Error message} -->
     <system:String x:Key="string_deployment_foundM3toWithPrecompileBTP">This mod is using a precompiled BTP file; the included .m3to files will not be used and should be removed</system:String>
-    <system:String x:Key="string_deployment_incorrectGameForBTP">Included texture override manfiest file {0} is for the wrong game: {1}</system:String>
+    <system:String x:Key="string_deployment_incorrectGameForBTP">Included texture override manifest file {0} is for the wrong game: {1}</system:String>
     <!-- 0={Relative file path} 1={Game} -->
     <system:String x:Key="string_deployment_invalidSourcePackageReferenceForBTP">Included texture override manifest file {0} references source package '{1}' which is not referenced by the mod and will never be able able to be compiled</system:String>
     <!-- 0={Relative file path} 1={Filename} -->
@@ -3199,5 +3199,37 @@
     <!-- 0={Game name} -->
     <system:String xml:space="preserve" x:Key="string_interp_memConvertError">An error occurred while converting the .mem to M3TO format:\n{0}\n\nYou can find more detailed information in the application log.</system:String>
     <!-- 0={Error message} -->
+    
+    <!-- Cached Target Manager -->
+    <system:String x:Key="string_manageCachedTargets">Manage Cached Targets</system:String>
+    <system:String x:Key="string_desc_manageCachedTargets">Mod Manager contains a list of game targets it has seen, known as cached targets. Over time, these may become invalid due to changes such as moving or deleting games. Removing invalid targets will improve application startup time.</system:String>
+    <system:String x:Key="string_cachedTargets">Cached Targets</system:String>
+    <system:String x:Key="string_targetInformation">Target Information</system:String>
+    <system:String x:Key="string_status">Status:</system:String>
+    <system:String x:Key="string_path">Path:</system:String>
+    <system:String x:Key="string_failureReason">Failure Reason:</system:String>
+    <system:String x:Key="string_reloadTarget">Reload Target</system:String>
+    <system:String x:Key="string_tooltip_reloadTarget">Reloads the selected target to test if it can successfully load</system:String>
+    <system:String x:Key="string_restoreTargetFromBackup">Restore Target from backup</system:String>
+    <system:String x:Key="string_tooltip_restoreTargetFromBackup">Restores the game backup for this game to the target's location</system:String>
+    <system:String x:Key="string_removeFromCache">Remove from Cache</system:String>
+    <system:String x:Key="string_tooltip_removeFromCache">Removes this target from the cache so Mod Manager won't try to automatically load it as a modding target</system:String>
+    <system:String x:Key="string_unlockTarget">Unlock target</system:String>
+    <system:String x:Key="string_tooltip_unlockTarget">Enable this backup target to load by removing the backup protection marker</system:String>
+    <system:String x:Key="string_loadingCachedTargets">Loading cached targets</system:String>
+    <system:String x:Key="string_invalidTargetDirectoryDoesNotExist">Invalid target: Directory does not exist</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_confirmRemoveTarget">Are you sure you want to remove this target from the cache?\n\nGame: {0}\nPath: {1}\n\nThis will not modify any game files.</system:String>
+    <!-- 0={Game} 1={Path} -->
+    <system:String x:Key="string_removeCachedTarget">Remove Cached Target</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_confirmUnlockTarget">Are you sure you want to unlock this target?\n\nGame: {0}\nPath: {1}\n\nThis will remove the backup protection marker (cmm_vanilla) from the game installation, allowing it to be modified. This operation cannot be undone automatically.\n\nDo you want to proceed?</system:String>
+    <!-- 0={Game} 1={Path} -->
+    <system:String x:Key="string_unlockBackupTarget">Unlock Backup Target</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_errorUnlockingTarget">An error occurred while trying to remove the backup marker:\n\n{0}</system:String>
+    <!-- 0={Error Message} -->
+    <system:String x:Key="string_errorUnlockingTarget">Error Unlocking Target</system:String>
+    <system:String x:Key="string_valid">Valid</system:String>
+    <system:String x:Key="string_linkedBackup">Linked backup</system:String>
+    <system:String x:Key="string_unlinkedBackup">Unlinked backup</system:String>
+    <system:String x:Key="string_autodetected">Autodetected</system:String>
 
 </ResourceDictionary>

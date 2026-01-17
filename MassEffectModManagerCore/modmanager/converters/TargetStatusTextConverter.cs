@@ -1,8 +1,9 @@
+﻿using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
 using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
-using ME3TweaksModManager.modmanager.objects;
 
 namespace ME3TweaksModManager.modmanager.converters
 {
@@ -18,21 +19,21 @@ namespace ME3TweaksModManager.modmanager.converters
             if (value is not TargetCacheInfo targetInfo)
                 return string.Empty;
 
-            var statusText = targetInfo.IsValid ? "Valid" : "Invalid";
+            var statusText = targetInfo.IsValid ? M3L.GetString(M3L.string_valid) : M3L.GetString(M3L.string_invalid);
 
             if (targetInfo.IsLinkedBackup)
             {
-                statusText = "Linked backup";
+                statusText = M3L.GetString(M3L.string_linkedBackup);
             }
             else if (targetInfo.IsBackup)
             {
-                statusText = "Unlinked backup";
+                statusText = M3L.GetString(M3L.string_unlinkedBackup);
             }
             else if (targetInfo.Target?.RegistryActive == true)
             {
                 // Append additional flags
-                statusText += @" � ";
-                statusText += "Autodetected";
+                statusText += @" • ";
+                statusText += M3L.GetString(M3L.string_autodetected);
             }
 
             return statusText;

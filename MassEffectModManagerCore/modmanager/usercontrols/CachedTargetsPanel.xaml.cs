@@ -170,7 +170,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             else
             {
                 // Directory still doesn't exist
-                var newTargetInfo = new TargetCacheInfo(game, path, false, "Invalid target: Directory does not exist", null);
+                var newTargetInfo = new TargetCacheInfo(game, path, false, M3L.GetString(M3L.string_invalidTargetDirectoryDoesNotExist), null);
                 CachedTargets.Insert(position, newTargetInfo);
                 SelectedTarget = newTargetInfo;
             }
@@ -208,8 +208,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SelectedTarget == null) return;
 
             var result = M3L.ShowDialog(window,
-                $"Are you sure you want to remove this target from the cache?\n\nGame: {SelectedTarget.Game}\nPath: {SelectedTarget.TargetPath}\n\nThis will not delete any game files.",
-                "Remove Cached Target",
+                M3L.GetString(M3L.string_dialog_confirmRemoveTarget, SelectedTarget.Game, SelectedTarget.TargetPath),
+                M3L.GetString(M3L.string_removeCachedTarget),
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
@@ -269,8 +269,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SelectedTarget == null || !SelectedTarget.IsBackup) return;
 
             var result = M3L.ShowDialog(window,
-                $"Are you sure you want to unlock this target?\n\nGame: {SelectedTarget.Game}\nPath: {SelectedTarget.TargetPath}\n\nThis will remove the backup protection marker (cmm_vanilla) from the game installation, allowing it to be modified. This operation cannot be undone automatically.\n\nDo you want to proceed?",
-                "Unlock Backup Target",
+                M3L.GetString(M3L.string_dialog_confirmUnlockTarget, SelectedTarget.Game, SelectedTarget.TargetPath),
+                M3L.GetString(M3L.string_unlockBackupTarget),
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -278,30 +278,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 try
                 {
-                    var vanillaMarkerPath = Path.Combine(SelectedTarget.TargetPath, "cmm_vanilla");
+                    var vanillaMarkerPath = Path.Combine(SelectedTarget.TargetPath, @"cmm_vanilla");
                     if (File.Exists(vanillaMarkerPath))
                     {
                         File.Delete(vanillaMarkerPath);
                         M3Log.Information($@"Deleted cmm_vanilla marker from {SelectedTarget.TargetPath}");
+                    }
 
-                        // Reload the target to reflect the change
-                        ReloadTarget();
-                    }
-                    else
-                    {
-                        M3L.ShowDialog(window,
-                            $"The cmm_vanilla marker file was not found at the expected location:\n\n{vanillaMarkerPath}",
-                            "Marker Not Found",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                    }
+                    // Reload the target to reflect the change
+                    ReloadTarget();
                 }
                 catch (Exception ex)
                 {
                     M3Log.Error($@"Error removing cmm_vanilla marker: {ex.Message}");
                     M3L.ShowDialog(window,
-                        $"An error occurred while trying to remove the backup marker:\n\n{ex.Message}",
-                        "Error Unlocking Target",
+                        M3L.GetString(M3L.string_dialog_errorUnlockingTarget, ex.Message),
+                        M3L.GetString(M3L.string_errorUnlockingTarget),
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                 }
@@ -334,7 +326,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var currentStates = new Dictionary<string, bool>();
                 foreach (var target in CachedTargets)
                 {
-                    var key = $"{target.Game}|{target.TargetPath}";
+                    var key = $@"{target.Game}|{target.TargetPath}";
                     currentStates[key] = target.IsValid;
                 }
 
@@ -437,7 +429,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 _initialTargetStates = new Dictionary<string, bool>();
                 foreach (var target in CachedTargets)
                 {
-                    var key = $"{target.Game}|{target.TargetPath}";
+                    var key = $@"{target.Game}|{target.TargetPath}";
                     _initialTargetStates[key] = target.IsValid;
                 }
 

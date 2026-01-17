@@ -2361,5 +2361,32 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_modMissingCookedPCConsole = "string_interp_modMissingCookedPCConsole";
 		public const string string_dialog_memConvertRestore = "string_dialog_memConvertRestore";
 		public const string string_interp_memConvertError = "string_interp_memConvertError";
+		public const string string_manageCachedTargets = "string_manageCachedTargets";
+		public const string string_desc_manageCachedTargets = "string_desc_manageCachedTargets";
+		public const string string_cachedTargets = "string_cachedTargets";
+		public const string string_targetInformation = "string_targetInformation";
+		public const string string_status = "string_status";
+		public const string string_path = "string_path";
+		public const string string_failureReason = "string_failureReason";
+		public const string string_reloadTarget = "string_reloadTarget";
+		public const string string_tooltip_reloadTarget = "string_tooltip_reloadTarget";
+		public const string string_restoreTargetFromBackup = "string_restoreTargetFromBackup";
+		public const string string_tooltip_restoreTargetFromBackup = "string_tooltip_restoreTargetFromBackup";
+		public const string string_removeFromCache = "string_removeFromCache";
+		public const string string_tooltip_removeFromCache = "string_tooltip_removeFromCache";
+		public const string string_unlockTarget = "string_unlockTarget";
+		public const string string_tooltip_unlockTarget = "string_tooltip_unlockTarget";
+		public const string string_loadingCachedTargets = "string_loadingCachedTargets";
+		public const string string_invalidTargetDirectoryDoesNotExist = "string_invalidTargetDirectoryDoesNotExist";
+		public const string string_dialog_confirmRemoveTarget = "string_dialog_confirmRemoveTarget";
+		public const string string_removeCachedTarget = "string_removeCachedTarget";
+		public const string string_dialog_confirmUnlockTarget = "string_dialog_confirmUnlockTarget";
+		public const string string_unlockBackupTarget = "string_unlockBackupTarget";
+		public const string string_dialog_errorUnlockingTarget = "string_dialog_errorUnlockingTarget";
+		public const string string_errorUnlockingTarget = "string_errorUnlockingTarget";
+		public const string string_valid = "string_valid";
+		public const string string_linkedBackup = "string_linkedBackup";
+		public const string string_unlinkedBackup = "string_unlinkedBackup";
+		public const string string_autodetected = "string_autodetected";
 	}
 }

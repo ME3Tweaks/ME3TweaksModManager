@@ -8,7 +8,8 @@
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+    xmlns:fa5="http://schemas.fontawesome.com/icons/"
     d:DesignHeight="450"
     d:DesignWidth="800"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -16,10 +17,14 @@
     MinHeight="515"
     MaxWidth="1000">
     <UserControl.Resources>
-        <converters:GameToImageIconConverter x:Key="GameToImageIconConverter" />
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <converters:TargetStatusTextConverter x:Key="TargetStatusTextConverter" />
-        <converters:TargetStatusBrushConverter x:Key="TargetStatusBrushConverter" />
+        <converters:GameToImageIconConverter
+            x:Key="GameToImageIconConverter" />
+        <converters:BoolToVisibilityConverter
+            x:Key="BoolToVisibilityConverter" />
+        <converters:TargetStatusTextConverter
+            x:Key="TargetStatusTextConverter" />
+        <converters:TargetStatusBrushConverter
+            x:Key="TargetStatusBrushConverter" />
     </UserControl.Resources>
     <DockPanel>
         <DockPanel
@@ -29,30 +34,41 @@
                 HorizontalAlignment="Right"
                 DockPanel.Dock="Right"
                 MinWidth="70"
-                Content="Close"
+                Content="{DynamicResource string_close}"
                 Margin="5,0,0,0"
                 Click="Close_Clicked"
                 Padding="7,4" />
         </DockPanel>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="7" />
-                <ColumnDefinition Width="350" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="7" />
+                <ColumnDefinition
+                    Width="7" />
+                <ColumnDefinition
+                    Width="350" />
+                <ColumnDefinition
+                    Width="5" />
+                <ColumnDefinition
+                    Width="*" />
+                <ColumnDefinition
+                    Width="7" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="3" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="3" />
+                <RowDefinition
+                    Height="3" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="*" />
+                <RowDefinition
+                    Height="3" />
             </Grid.RowDefinitions>
             <!-- Header Panel -->
             <TextBlock
-                Text="Manage Cached Targets"
+                Text="{DynamicResource string_manageCachedTargets}"
                 Grid.Row="1"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
@@ -61,7 +77,7 @@
                 TextAlignment="Center" />
             <TextBlock
                 TextWrapping="Wrap"
-                Text="Mod Manager contains a list of game targets it has seen, known as cached targets. Over time, these may become invalid due to changes such as moving or deleting games. Removing invalid targets will improve application startup time."
+                Text="{DynamicResource string_desc_manageCachedTargets}"
                 Grid.Row="2"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
@@ -77,7 +93,7 @@
                 Grid.Column="1">
                 <TextBlock
                     DockPanel.Dock="Top"
-                    Text="Cached Targets"
+                    Text="{DynamicResource string_cachedTargets}"
                     FontWeight="Bold"
                     Margin="0,0,0,5" />
                 <ListBox
@@ -88,11 +104,13 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                                
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition
+                                        Width="Auto" />
+                                    <ColumnDefinition
+                                        Width="*" />
+                                    <ColumnDefinition
+                                        Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Image
                                     Grid.Column="0"
@@ -100,9 +118,9 @@
                                     Width="16"
                                     Height="16"
                                     Margin="0,0,5,0" />
-                                <TextBlock 
+                                <TextBlock
                                     Grid.Column="1"
-                                    Text="{Binding Game, Converter={StaticResource MEGameToGameNameConverter}}"/>
+                                    Text="{Binding Game, Converter={StaticResource MEGameToGameNameConverter}}" />
                                 <fa5:ImageAwesome
                                     Grid.Column="2"
                                     Icon="Regular_CheckCircle"
@@ -121,8 +139,12 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Style
+                            TargetType="ListBoxItem"
+                            BasedOn="{StaticResource ListBoxItemStyle}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Stretch" />
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
@@ -136,68 +158,71 @@
                 Grid.Column="3">
                 <TextBlock
                     DockPanel.Dock="Top"
-                    Text="Target Information"
+                    Text="{DynamicResource string_targetInformation}"
                     FontWeight="Bold"
                     Margin="0,0,0,5" />
-                <ScrollViewer 
+                <ScrollViewer
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Margin="5">
+                    <StackPanel
+                        Margin="5">
                         <!-- Game and Status in two columns -->
-                        <Grid Margin="0,0,0,10">
+                        <Grid
+                            Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="10"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition
+                                    Width="*" />
+                                <ColumnDefinition
+                                    Width="10" />
+                                <ColumnDefinition
+                                    Width="*" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition
+                                    Height="Auto" />
+                                <RowDefinition
+                                    Height="Auto" />
                             </Grid.RowDefinitions>
-                            
                             <!-- Game Column -->
-                            <TextBlock 
+                            <TextBlock
                                 Grid.Column="0"
                                 Grid.Row="0"
-                                Text="Game:" 
+                                Text="{DynamicResource string_game}"
                                 FontWeight="Bold"
                                 Margin="0,0,0,3" />
-                            <TextBlock 
+                            <TextBlock
                                 Grid.Column="0"
                                 Grid.Row="1"
                                 Text="{Binding SelectedTarget.Game}"
                                 VerticalAlignment="Top" />
-                            
                             <!-- Status Column -->
-                            <TextBlock 
+                            <TextBlock
                                 Grid.Column="2"
                                 Grid.Row="0"
-                                Text="Status:" 
+                                Text="{DynamicResource string_status}"
                                 FontWeight="Bold"
                                 Margin="0,0,0,3" />
-                            <TextBlock 
+                            <TextBlock
                                 Grid.Column="2"
                                 Grid.Row="1"
                                 Text="{Binding SelectedTarget, Converter={StaticResource TargetStatusTextConverter}}"
                                 Foreground="{Binding SelectedTarget, Converter={StaticResource TargetStatusBrushConverter}}"
                                 VerticalAlignment="Top" />
                         </Grid>
-                        
-                        <TextBlock 
-                            Text="Path:" 
+                        <TextBlock
+                            Text="{DynamicResource string_path}"
                             FontWeight="Bold"
                             Margin="0,0,0,3" />
-                        <TextBlock 
+                        <TextBlock
                             Text="{Binding SelectedTarget.TargetPath}"
                             TextWrapping="Wrap"
                             Margin="0,0,0,10" />
-                        
-                        <TextBlock 
-                            Text="Failure Reason:" 
+                        <TextBlock
+                            Text="{DynamicResource string_failureReason}"
                             FontWeight="Bold"
                             Margin="0,0,0,3"
                             Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
-                        <TextBox 
+                        <TextBox
                             Text="{Binding SelectedTarget.FailureReason, Mode=OneWay}"
                             TextWrapping="Wrap"
                             IsReadOnly="True"
@@ -205,41 +230,36 @@
                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                             Margin="0,0,0,10"
                             Visibility="{Binding SelectedTarget.IsValid, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Not}" />
-                        
-                        <Separator Margin="0,10,0,10" />
-                        
-                        <TextBlock 
-                            Text="Actions" 
+                        <Separator
+                            Margin="0,10,0,10" />
+                        <TextBlock
+                            Text="{DynamicResource string_Actions}"
                             FontWeight="Bold"
                             Margin="0,0,0,10" />
-                        
                         <Button
-                            ToolTip="Reloads the selected target to test if it can successfully load"
-                            Content="Reload Target"
+                            ToolTip="{DynamicResource string_tooltip_reloadTarget}"
+                            Content="{DynamicResource string_reloadTarget}"
                             Command="{Binding ReloadTargetCommand}"
                             Padding="7,4"
                             Margin="0,0,0,5"
                             HorizontalAlignment="Stretch" />
-                        
                         <Button
-                            ToolTip="Restores the game backup for this game to the target's location"
-                            Content="Restore Target from backup"
+                            ToolTip="{DynamicResource string_tooltip_restoreTargetFromBackup}"
+                            Content="{DynamicResource string_restoreTargetFromBackup}"
                             Command="{Binding RestoreTargetCommand}"
                             Padding="7,4"
                             Margin="0,0,0,5"
                             HorizontalAlignment="Stretch" />
-                        
                         <Button
-                            ToolTip="Removes this target from the cache so Mod Manager won't try to load it as a modding target"
-                            Content="Remove from Cache"
+                            ToolTip="{DynamicResource string_tooltip_removeFromCache}"
+                            Content="{DynamicResource string_removeFromCache}"
                             Command="{Binding RemoveTargetCommand}"
                             Padding="7,4"
                             Margin="0,0,0,5"
                             HorizontalAlignment="Stretch" />
-                        
                         <Button
-                            ToolTip="Enable this backup target to load by removing the backup protection marker"
-                            Content="Unlock target"
+                            ToolTip="{DynamicResource string_tooltip_unlockTarget}"
+                            Content="{DynamicResource string_unlockTarget}"
                             ui:SharedUIBindings.VisibilityToEnabled="True"
                             Command="{Binding UnlockTargetCommand}"
                             Padding="7,4"
@@ -248,7 +268,6 @@
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
-            
             <!-- Loading Indicator Overlay -->
             <Border
                 Grid.Row="1"
@@ -268,7 +287,7 @@
                         Spin="True"
                         HorizontalAlignment="Center" />
                     <TextBlock
-                        Text="Loading cached targets..."
+                        Text="{DynamicResource string_loadingCachedTargets}"
                         FontSize="14"
                         Margin="0,10,0,0"
                         HorizontalAlignment="Center" />
