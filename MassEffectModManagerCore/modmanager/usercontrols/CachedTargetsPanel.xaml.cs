@@ -1,17 +1,15 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Localization;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -25,7 +23,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Tracks if the panel has been initialized to prevent re-initialization when returning from sub-panels
         /// </summary>
         private bool _hasInitialized;
-        
+
         /// <summary>
         /// Stores the initial validity state of all targets (Game|Path -> IsValid) for change detection on close
         /// </summary>
@@ -51,17 +49,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Command to reload an invalid target to check if it has become valid
         /// </summary>
         public ICommand ReloadTargetCommand { get; set; }
-        
+
         /// <summary>
         /// Command to remove a target from the cache
         /// </summary>
         public ICommand RemoveTargetCommand { get; set; }
-        
+
         /// <summary>
         /// Command to restore an invalid target from backup
         /// </summary>
         public ICommand RestoreTargetCommand { get; set; }
-        
+
         /// <summary>
         /// Command to unlock a backup target by removing the cmm_vanilla marker
         /// </summary>
@@ -93,8 +91,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <returns>True if a target is selected, invalid, and has a Target object</returns>
         private bool CanRestoreTarget()
         {
-            return SelectedTarget != null 
-                && !SelectedTarget.IsValid 
+            return SelectedTarget != null
+                && !SelectedTarget.IsValid
                 && !SelectedTarget.IsBackup
                 && BackupService.GetBackupStatus(SelectedTarget.Game)?.BackedUp == true
                 && Directory.Exists(SelectedTarget.TargetPath);
@@ -121,14 +119,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private bool CanUnlockTarget()
         {
             if (SelectedTarget == null || !SelectedTarget.IsBackup) return false;
-            
+
             // Check if this is the registered backup for the game
             var backupPath = BackupService.GetGameBackupPath(SelectedTarget.Game);
             if (backupPath != null && backupPath.Equals(SelectedTarget.TargetPath, StringComparison.InvariantCultureIgnoreCase))
             {
                 return false; // This is the registered backup
             }
-            
+
             return true; // This is a backup but not the registered one
         }
 
@@ -145,21 +143,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var path = SelectedTarget.TargetPath;
 
             CachedTargets.RemoveAt(position);
-
             // Try to reload the target
             if (Directory.Exists(path))
             {
                 var target = new GameTargetWPF(game, path, false);
                 var failureReason = target.ValidateTarget();
-                
+
                 var newTargetInfo = new TargetCacheInfo(
-                    game, 
-                    path, 
-                    failureReason == null, 
-                    failureReason, 
+                    game,
+                    path,
+                    failureReason == null,
+                    failureReason,
                     failureReason == null ? target : null,
                     target.IsBackup);
                 MarkIfActiveTarget(newTargetInfo);
+
                 CachedTargets.Insert(position, newTargetInfo);
                 SelectedTarget = newTargetInfo;
 
@@ -176,6 +174,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 CachedTargets.Insert(position, newTargetInfo);
                 SelectedTarget = newTargetInfo;
             }
+
+            // Update bindings
+            CommandManager.InvalidateRequerySuggested();
         }
 
         /// <summary>
@@ -226,23 +227,37 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         private void RestoreTarget()
         {
-            var target = new GameTargetWPF(SelectedTarget.Game, SelectedTarget.TargetPath, false, skipInit: true);
+            // Specific text for 'Manage Target' is M3 only
+            var restoreString = SelectedTarget.Game.IsOTGame()
+                ? M3L.GetString(M3L.string_entireGameDirectoryWillBeDeletedOT) :
+                  M3L.GetString(M3L.string_entireGameDirectoryWillBeDeletedLE);
 
-            var restorePanel = new AutoGameRestorePanel(target);
-            restorePanel.Close += (sender, args) =>
+            var result = M3L.ShowDialog(window,
+                restoreString,
+                LC.GetString(LC.string_interp_restoringWillDeleteEverythingTitle, SelectedTarget.Game.ToGameName()),
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
             {
-                // When restore panel closes, reload the target
-                if (restorePanel.RestoreSucceeded)
-                {
-                    ReloadTarget();
-                }
-                // can't use var mainwindow as it will not be set yet
-                // due to reference lost in unloaded
-                MainWindow.Instance.ReleaseBusyControl();
-            };
+                var target = new GameTargetWPF(SelectedTarget.Game, SelectedTarget.TargetPath, false, skipInit: true);
 
-            // Show the restore panel, swap immediately to it
-            MainWindow.Instance.ShowBusyControl(restorePanel, true);
+                var restorePanel = new AutoGameRestorePanel(target);
+                restorePanel.Close += (sender, args) =>
+                {
+                    // When restore panel closes, reload the target
+                    if (restorePanel.RestoreSucceeded)
+                    {
+                        ReloadTarget();
+                    }
+                    // can't use var mainwindow as it will not be set yet
+                    // due to reference lost in unloaded
+                    MainWindow.Instance.ReleaseBusyControl();
+                };
+
+                // Show the restore panel, swap immediately to it
+                MainWindow.Instance.ShowBusyControl(restorePanel, true);
+            }
         }
 
         /// <summary>
@@ -268,7 +283,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         File.Delete(vanillaMarkerPath);
                         M3Log.Information($@"Deleted cmm_vanilla marker from {SelectedTarget.TargetPath}");
-                        
+
                         // Reload the target to reflect the change
                         ReloadTarget();
                     }
@@ -366,7 +381,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // because we don't want binding to occur before then.
                 InitializeComponent();
                 IsLoading = true;
-                
+
                 // Run the loading operation on a background thread to prevent UI blocking
                 Task.Run(() =>
                 {
@@ -417,7 +432,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Application.Current.Dispatcher.Invoke(() =>
             {
                 CachedTargets.ReplaceAll(shownTargets);
-                
+
                 // Store initial state for change detection on close
                 _initialTargetStates = new Dictionary<string, bool>();
                 foreach (var target in CachedTargets)
@@ -425,7 +440,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var key = $"{target.Game}|{target.TargetPath}";
                     _initialTargetStates[key] = target.IsValid;
                 }
-                
+
                 if (CachedTargets.Any())
                 {
                     SelectedTarget = CachedTargets.First();
