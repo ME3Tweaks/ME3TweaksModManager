@@ -1930,7 +1930,7 @@
     <!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
     <system:String x:Key="string_enablesSingleinstancingOfAnApplication">Enables single-instancing of an application</system:String>
     <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper for robocopy command in C#</system:String>
-
+    <system:String x:Key="string_starMeansForked">* = ME3Tweaks forked version</system:String>
 
     <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
