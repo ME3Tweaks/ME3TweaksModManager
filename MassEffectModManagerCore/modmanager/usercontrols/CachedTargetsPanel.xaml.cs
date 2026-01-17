@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
@@ -27,6 +30,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Stores the initial validity state of all targets (Game|Path -> IsValid) for change detection on close
         /// </summary>
         private Dictionary<string, bool> _initialTargetStates;
+
+        /// <summary>
+        /// Indicates whether the panel is currently loading cached targets
+        /// </summary>
+        public bool IsLoading { get; private set; }
 
         public CachedTargetsPanel()
         {
@@ -53,6 +61,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Command to restore an invalid target from backup
         /// </summary>
         public ICommand RestoreTargetCommand { get; set; }
+        
+        /// <summary>
+        /// Command to unlock a backup target by removing the cmm_vanilla marker
+        /// </summary>
+        public ICommand UnlockTargetCommand { get; set; }
 
         /// <summary>
         /// Initializes all commands for the panel
@@ -62,6 +75,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             ReloadTargetCommand = new GenericCommand(ReloadTarget, CanReloadTarget);
             RemoveTargetCommand = new GenericCommand(RemoveTarget, CanRemoveTarget);
             RestoreTargetCommand = new GenericCommand(RestoreTarget, CanRestoreTarget);
+            UnlockTargetCommand = new GenericCommand(UnlockTarget, CanUnlockTarget);
         }
 
         /// <summary>
@@ -81,6 +95,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             return SelectedTarget != null 
                 && !SelectedTarget.IsValid 
+                && !SelectedTarget.IsBackup
                 && BackupService.GetBackupStatus(SelectedTarget.Game)?.BackedUp == true
                 && Directory.Exists(SelectedTarget.TargetPath);
         }
@@ -97,6 +112,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return !SelectedTarget.Target.RegistryActive;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Determines if the unlock command can execute. Only backup targets that are not the registered backup can be unlocked.
+        /// </summary>
+        /// <returns>True if target is a backup and not the registered backup for the game</returns>
+        private bool CanUnlockTarget()
+        {
+            if (SelectedTarget == null || !SelectedTarget.IsBackup) return false;
+            
+            // Check if this is the registered backup for the game
+            var backupPath = BackupService.GetGameBackupPath(SelectedTarget.Game);
+            if (backupPath != null && backupPath.Equals(SelectedTarget.TargetPath, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false; // This is the registered backup
+            }
+            
+            return true; // This is a backup but not the registered one
         }
 
         /// <summary>
@@ -124,8 +157,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     path, 
                     failureReason == null, 
                     failureReason, 
-                    failureReason == null ? target : null);
-                
+                    failureReason == null ? target : null,
+                    target.IsBackup);
+                MarkIfActiveTarget(newTargetInfo);
                 CachedTargets.Insert(position, newTargetInfo);
                 SelectedTarget = newTargetInfo;
 
@@ -141,6 +175,26 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var newTargetInfo = new TargetCacheInfo(game, path, false, "Invalid target: Directory does not exist", null);
                 CachedTargets.Insert(position, newTargetInfo);
                 SelectedTarget = newTargetInfo;
+            }
+        }
+
+        /// <summary>
+        /// Marks the given target as RegistryActive if it matches any of the installation targets in the main window.
+        /// This ensures that the target's registry active state is correctly reflected in the UI.
+        /// </summary>
+        /// <param name="newTargetInfo"></param>
+        private void MarkIfActiveTarget(TargetCacheInfo newTargetInfo)
+        {
+            if (newTargetInfo.Target != null && newTargetInfo.IsValid)
+            {
+                foreach (var installationTarget in MainWindow.Instance.InstallationTargets)
+                {
+                    if (installationTarget.TargetPath.Equals(newTargetInfo.TargetPath, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        newTargetInfo.Target.RegistryActive = installationTarget.RegistryActive;
+                        break;
+                    }
+                }
             }
         }
 
@@ -182,10 +236,61 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     ReloadTarget();
                 }
+                // can't use var mainwindow as it will not be set yet
+                // due to reference lost in unloaded
+                MainWindow.Instance.ReleaseBusyControl();
             };
 
             // Show the restore panel, swap immediately to it
-            mainwindow.ShowBusyControl(restorePanel, true);
+            MainWindow.Instance.ShowBusyControl(restorePanel, true);
+        }
+
+        /// <summary>
+        /// Unlocks a backup target by removing the cmm_vanilla marker file after user confirmation.
+        /// Reloads the target after the marker is removed.
+        /// </summary>
+        private void UnlockTarget()
+        {
+            if (SelectedTarget == null || !SelectedTarget.IsBackup) return;
+
+            var result = M3L.ShowDialog(window,
+                $"Are you sure you want to unlock this target?\n\nGame: {SelectedTarget.Game}\nPath: {SelectedTarget.TargetPath}\n\nThis will remove the backup protection marker (cmm_vanilla) from the game installation, allowing it to be modified. This operation cannot be undone automatically.\n\nDo you want to proceed?",
+                "Unlock Backup Target",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    var vanillaMarkerPath = Path.Combine(SelectedTarget.TargetPath, "cmm_vanilla");
+                    if (File.Exists(vanillaMarkerPath))
+                    {
+                        File.Delete(vanillaMarkerPath);
+                        M3Log.Information($@"Deleted cmm_vanilla marker from {SelectedTarget.TargetPath}");
+                        
+                        // Reload the target to reflect the change
+                        ReloadTarget();
+                    }
+                    else
+                    {
+                        M3L.ShowDialog(window,
+                            $"The cmm_vanilla marker file was not found at the expected location:\n\n{vanillaMarkerPath}",
+                            "Marker Not Found",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Error($@"Error removing cmm_vanilla marker: {ex.Message}");
+                    M3L.ShowDialog(window,
+                        $"An error occurred while trying to remove the backup marker:\n\n{ex.Message}",
+                        "Error Unlocking Target",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            }
         }
 
         /// <summary>
@@ -259,9 +364,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 // Initialization is always done right before panel becomes visible
                 // because we don't want binding to occur before then.
-                InitializeComponent(); 
-                LoadCachedTargets();
-                _hasInitialized = true;
+                InitializeComponent();
+                IsLoading = true;
+                
+                // Run the loading operation on a background thread to prevent UI blocking
+                Task.Run(() =>
+                {
+                    return LoadCachedTargetsAsync();
+                }).ContinueWithOnUIThread(task =>
+                {
+                    IsLoading = false;
+                    _hasInitialized = true;
+                });
             }
             else
             {
@@ -277,10 +391,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <summary>
         /// Loads all cached targets from disk and stores their initial validity states for change detection.
         /// Selects the first target if any are available.
+        /// This method performs data loading on a background thread and UI updates on the UI thread.
         /// </summary>
-        private void LoadCachedTargets()
+        private object LoadCachedTargetsAsync()
         {
-            // Fetch targets, filter to generations
+            // Fetch targets on background thread
             var allTargets = M3TargetCache.GetAllCachedTargetInfo();
             var shownTargets = new List<TargetCacheInfo>();
             if (Settings.GenerationSettingOT)
@@ -291,20 +406,34 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 shownTargets.AddRange(allTargets.Where(x => x.Game.IsLEGame() || x.Game == MEGame.LELauncher));
             }
-            CachedTargets.ReplaceAll(shownTargets);
-            
-            // Store initial state for change detection on close
-            _initialTargetStates = new Dictionary<string, bool>();
-            foreach (var target in CachedTargets)
+
+            // Mark active targets (this uses MainWindow.Instance which should be thread-safe for reading)
+            foreach (var st in shownTargets)
             {
-                var key = $"{target.Game}|{target.TargetPath}";
-                _initialTargetStates[key] = target.IsValid;
+                MarkIfActiveTarget(st);
             }
-            
-            if (CachedTargets.Any())
+
+            // Update UI on the UI thread
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                SelectedTarget = CachedTargets.First();
-            }
+                CachedTargets.ReplaceAll(shownTargets);
+                
+                // Store initial state for change detection on close
+                _initialTargetStates = new Dictionary<string, bool>();
+                foreach (var target in CachedTargets)
+                {
+                    var key = $"{target.Game}|{target.TargetPath}";
+                    _initialTargetStates[key] = target.IsValid;
+                }
+                
+                if (CachedTargets.Any())
+                {
+                    SelectedTarget = CachedTargets.First();
+                }
+            });
+
+            return null;
         }
     }
 }
+

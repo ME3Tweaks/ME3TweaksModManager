@@ -46,7 +46,10 @@ namespace ME3TweaksModManager.modmanager.loaders
                 var cacheFile = M3Filesystem.GetCachedTargetsFile(game);
                 if (File.Exists(cacheFile))
                 {
-                    gameCache.AddRange(M3Utilities.WriteSafeReadAllLines(cacheFile).Distinct());
+                    // 01/16/2026 - Do not read empty lines
+                    gameCache.AddRange(M3Utilities.WriteSafeReadAllLines(cacheFile)
+                                        .Where(x => !string.IsNullOrWhiteSpace(x))
+                                        .Distinct());
                 }
             }
 
@@ -67,12 +70,12 @@ namespace ME3TweaksModManager.modmanager.loaders
                     var failureReason = target.ValidateTarget();
                     if (failureReason == null)
                     {
-                        targets.Add(new TargetCacheInfo(game, gameDir, true, null, target));
+                        targets.Add(new TargetCacheInfo(game, gameDir, true, null, target, target.IsBackup));
                     }
                     else
                     {
                         M3Log.Error($@"Cached target for {target.Game} is invalid: {failureReason}");
-                        failedTargets.Add(new TargetCacheInfo(game, gameDir, false, failureReason, null));
+                        failedTargets.Add(new TargetCacheInfo(game, gameDir, false, failureReason, null, target.IsBackup));
                     }
                 }
                 else

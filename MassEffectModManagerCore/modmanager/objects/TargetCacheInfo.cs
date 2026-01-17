@@ -32,14 +32,31 @@ namespace ME3TweaksModManager.modmanager.objects
         /// The loaded target object (null if failed to load)
         /// </summary>
         public GameTargetWPF Target { get; set; }
+        
+        /// <summary>
+        /// Whether this target is a backup (detected by cmm_vanilla marker)
+        /// </summary>
+        public bool IsBackup { get; set; }
 
-        public TargetCacheInfo(MEGame game, string targetPath, bool isValid, string failureReason, GameTargetWPF target = null)
+        /// <summary>
+        /// If this backup is the one linked to ME3Tweaks Services
+        /// </summary>
+        public bool IsLinkedBackup { get; set; }
+
+        public TargetCacheInfo(MEGame game, string targetPath, bool isValid, string failureReason, GameTargetWPF target = null, bool isBackup = false)
         {
             Game = game;
             TargetPath = targetPath;
             IsValid = isValid;
             FailureReason = failureReason;
             Target = target;
+            IsBackup = isBackup;
+            if (IsBackup)
+            {
+                // Check if this is the registered backup for the game
+                var backupPath = BackupService.GetGameBackupPath(Game);
+                IsLinkedBackup = backupPath != null && backupPath.Equals(TargetPath, StringComparison.InvariantCultureIgnoreCase);
+            }
         }
     }
 }
