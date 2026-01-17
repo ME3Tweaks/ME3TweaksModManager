@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.windows;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -62,7 +63,7 @@ namespace ME3TweaksModManager
         private void RefreshMainUIStrings(string lang, bool startup)
         {
             App.CurrentLanguage = Settings.Language = lang;
-            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(NoModSelectedText)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText)));
             RefreshNexusStatus(true);
             SelectedLaunchOption?.OnLanguageChanged();
             try
