@@ -205,6 +205,7 @@
                             <TextBlock
                                 Grid.Column="2"
                                 Grid.Row="1"
+                                TextWrapping="Wrap"
                                 Text="{Binding SelectedTarget, Converter={StaticResource TargetStatusTextConverter}}"
                                 Foreground="{Binding SelectedTarget, Converter={StaticResource TargetStatusBrushConverter}}"
                                 VerticalAlignment="Top" />
