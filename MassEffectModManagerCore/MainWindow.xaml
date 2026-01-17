@@ -565,9 +565,9 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="{Binding string_manageCachedTargets}"
+                        Header="{DynamicResource string_manageCachedTargets}"
                         Command="{Binding ManageCachedTargetsCommand}"
-                        ToolTip="{Binding string_tooltip_manageCachedTargets}">
+                        ToolTip="{DynamicResource string_tooltip_manageCachedTargets}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
