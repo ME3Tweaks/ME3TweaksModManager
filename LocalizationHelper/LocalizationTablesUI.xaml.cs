@@ -800,6 +800,39 @@ namespace LocalizationHelper
 
                 if (missingStrings.Any())
                 {
+                    // Find and highlight the first missing string before showing the dialog
+                    var firstMissing = missingStrings[0];
+                    var firstCategory = categories.FirstOrDefault(c => c.CategoryName == firstMissing.category);
+                    if (firstCategory != null)
+                    {
+                        // Ensure the correct tab is selected
+                        SelectedTabIndex = m3core ? 1 : 0;
+                        
+                        // Select the category
+                        if (m3core)
+                        {
+                            M3CSelectedCategory = firstCategory;
+                        }
+                        else
+                        {
+                            M3SelectedCategory = firstCategory;
+                        }
+
+                        // Find the specific string in the category
+                        var firstString = firstCategory.LocalizedStringsForSection.FirstOrDefault(s => s.key == firstMissing.key);
+                        if (firstString != null)
+                        {
+                            // Use the find functionality to locate and highlight it
+                            SearchText = firstMissing.key;
+                            
+                            // Delay the find operation to allow UI to update
+                            Dispatcher.InvokeAsync(() =>
+                            {
+                                Find_Clicked(null, null);
+                            }, System.Windows.Threading.DispatcherPriority.Loaded);
+                        }
+                    }
+
                     var sb = new StringBuilder();
                     sb.AppendLine($"Found {missingStrings.Count} missing localization strings in {projectName} for language '{CurrentLanguage.FullName}' ({CurrentLanguage.LangCode}):");
                     sb.AppendLine();
