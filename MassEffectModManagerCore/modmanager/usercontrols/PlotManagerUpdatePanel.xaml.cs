@@ -66,6 +66,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (b.Error != null)
                 {
                     M3Log.Exception(b.Error, @"Error running plot sync:");
+                    M3L.ShowDialog(window, $"An error occurred merging plot manager update files: {b.Error.Message}.\n\nPlot Manager Sync was not run.", "Error syncing Plot Manager", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
                 OnClosing(DataEventArgs.Empty);
             };
