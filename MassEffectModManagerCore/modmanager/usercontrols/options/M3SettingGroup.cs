@@ -19,5 +19,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols.options
         /// The settings in the group
         /// </summary>
         public ObservableCollectionExtended<M3Setting> AllSettings { get; init; }
+        
+        /// <summary>
+        /// If true, this group is only visible when beta mode is enabled
+        /// </summary>
+        public bool RequiresBetaMode { get; internal set; }
     }
 }

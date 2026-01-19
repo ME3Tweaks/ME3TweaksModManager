@@ -472,6 +472,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _showInstalledModsInLibrary, value);
         }
 
+        private static bool _playDialogSounds = true;
+        public static bool PlayDialogSounds
+        {
+            get => _playDialogSounds;
+            set => SetProperty(ref _playDialogSounds, value);
+        }
+
         private static int _maxConcurrentImportOperations;
         public static int MaxConcurrentImportOperations
         {
@@ -541,7 +548,7 @@ namespace ME3TweaksModManager.modmanager
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
             ModDownloadCacheFolder = LoadSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", null);
-
+            PlayDialogSounds = LoadSettingBool(settingsIni, "UI", "PlayDialogSounds", true);
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
             UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
@@ -606,7 +613,6 @@ namespace ME3TweaksModManager.modmanager
 
             // BETA OPTIONS
             ShowInstalledModsInLibrary = LoadSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", false);
-
 
             Loaded = true;
         }
@@ -778,6 +784,7 @@ namespace ME3TweaksModManager.modmanager
                     SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
                     SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
                     SaveSettingBool(settingsIni, "UI", "SkipDarkNet", SkipDarkNet);
+                    SaveSettingBool(settingsIni, "UI", "PlayDialogSounds", PlayDialogSounds);
                     SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
                     SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
                     SaveSettingString(settingsIni, "ModManager", "Language", Language);

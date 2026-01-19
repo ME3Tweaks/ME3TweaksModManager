@@ -49,6 +49,7 @@
             <Button
                 Content="{Binding ButtonString}"
                 Grid.Column="1"
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                 Command="{Binding ButtonClickedCommand}"
                 CommandParameter="{Binding}"/>
         </Grid>

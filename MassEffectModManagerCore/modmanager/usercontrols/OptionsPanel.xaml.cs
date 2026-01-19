@@ -42,11 +42,25 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         new M3BooleanSetting(settingsType, nameof(Settings.BetaMode), M3L.string_optIntoBetaUpdates, M3L.string_tooltip_optIntoBetaUpdates, ChangingBetaSetting),
                         new M3BooleanSetting(settingsType, nameof(Settings.ConfigureNXMHandlerOnBoot), M3L.string_configureNxmHandlerOnBoot, M3L.string_tooltip_configureNxmHandlerOnBoot),
                         new M3BooleanSetting(settingsType, nameof(Settings.DoubleClickModInstall), M3L.string_doubleClickModInLibraryToInstall, M3L.string_description_doubleClickModInLibraryToInstall),
+                        new M3BooleanSetting(settingsType, nameof(Settings.PlayDialogSounds), M3L.string_playDialogSounds, M3L.string_description_playDialogSounds),
+
+                        // Add new settings here
+
 
                         new M3ImageOptionsSetting(M3L.string_applicationTheme,
                             new SingleImageOption(@"/images/lighttheme.png", M3L.string_light, SetLightTheme),
                             new SingleImageOption(@"/images/darktheme.png", M3L.string_dark, SetDarkTheme))
 
+                    ]
+                },
+
+                new M3SettingGroup() 
+                {
+                    GroupName = "Beta mode settings",
+                    GroupDescription = "These settings are available when the application is in Beta mode.",
+                    RequiresBetaMode = true,
+                    AllSettings = [
+                       new M3BooleanSetting(settingsType, nameof(Settings.ShowInstalledModsInLibrary), M3L.string_showModInstallationStatusInLbrary, M3L.string_description_showInstalledModsInLibrary),
                     ]
                 },
 
