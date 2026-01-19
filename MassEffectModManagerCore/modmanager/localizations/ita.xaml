@@ -1338,7 +1338,7 @@
 	<system:String x:Key="string_diagnosticTool_OpenAllPackages">Strumento di diagnostica: Apri tutti i package del gioco di destinazione corrente</system:String>
 	<system:String x:Key="string_tooltip_diagnosticTool_OpenAllPackages">Fa sì che Mod Manager apra tutti i package del gioco corrente e riferisca quali file (se ce ne sono) hanno avuto problemi di apertura. Può rilevare package danneggiati</system:String>
 	<system:String x:Key="string_showModInstallationStatusInLbrary">Impostazione beta: Mostra lo stato di installazione della mod nella libreria</system:String>
-	<system:String x:Key="string_tooltip_notReliableForAllMods">ATTENZIONE: QUESTO NON SARÀ AFFIDABILE PER TUTTE LE MOD</system:String>
+	<system:String x:Key="string_description_showInstalledModsInLibrary">ATTENZIONE: QUESTO NON SARÀ AFFIDABILE PER TUTTE LE MOD</system:String>
 	<system:String x:Key="string_suppressTargetMerges">Impostazione beta SOLO PER LA SESSIONE: Sopprimi i merge dei target</system:String>
 	<system:String x:Key="string_tooltip_suppressTargetMerges">PERICOLO: NON ATTIVARE QUESTA FUNZIONE SE NON SAI COSA SIGNIFICA. ROMPERAI COSE.</system:String>
 	<system:String x:Key="string_runDetermineIfInstalled">Esegui DetermineIfInstalled</system:String>

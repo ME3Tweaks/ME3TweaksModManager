@@ -1297,7 +1297,7 @@
 	<system:String x:Key="string_diagnosticTool_OpenAllPackages">Средство диагностики: Открыть все пакетные файлы из текущей игры</system:String>
 	<system:String x:Key="string_tooltip_diagnosticTool_OpenAllPackages">Заставляет Mod Manager открыть все пакетные файлы из текущей игры и сообщить какие файлы (если есть) имет проблемы с открытием. Может обнаруживать поврежденные пакетные файлы</system:String>
 	<system:String x:Key="string_showModInstallationStatusInLbrary">Beta-параметр: Показать статуст установки мода в библиотеке</system:String>
-	<system:String x:Key="string_tooltip_notReliableForAllMods">ВНИМАНИЕ: ЭТО НЕ ОБЕСПЕЧИВАЕТСЯ ДЛЯ ВСЕХ МОДОВ</system:String>
+	<system:String x:Key="string_description_showInstalledModsInLibrary">ВНИМАНИЕ: ЭТО НЕ ОБЕСПЕЧИВАЕТСЯ ДЛЯ ВСЕХ МОДОВ</system:String>
 	<system:String x:Key="string_suppressTargetMerges">Beta-параметр ТЕКУЩЕЙ СЕССИИ: Подавление целевых merge</system:String>
 	<system:String x:Key="string_tooltip_suppressTargetMerges">ОПАСНОСТЬ: НЕ ВКЛЮЧАЙТЕ ЭТО, ЕСЛИ НЕ ЗНАЕТЕ, ЧТО ЭТО ОЗНАЧАЕТ. ВЫ НАЛОМАЕТЕ ДРОВ</system:String>
 	<system:String x:Key="string_runDetermineIfInstalled">Запустить DetermineIfInstalled</system:String>

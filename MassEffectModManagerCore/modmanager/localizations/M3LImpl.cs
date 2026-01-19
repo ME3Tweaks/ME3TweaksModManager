@@ -80,11 +80,11 @@ namespace ME3TweaksModManager.modmanager.localizations
             var button = translateWpfButton(buttons);
             var messageBox = new MessageBoxModel
             {
-                
                 Text = message,
                 Caption = caption,
                 Icon = translateWpfImage(image),
-                Buttons = MessageBoxButtons.Create(button, buildLabelsArray(button, yesContent, noContent, okContent, cancelContent))
+                Buttons = MessageBoxButtons.Create(button, buildLabelsArray(button, yesContent, noContent, okContent, cancelContent)),
+                IsSoundEnabled = Settings.PlayDialogSounds
             };
 
             messageBox.SetDefaultButton(translateWpfResult(defaultResult));

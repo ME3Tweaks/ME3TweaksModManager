@@ -504,7 +504,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_diagnosticTool_OpenAllPackages = "string_diagnosticTool_OpenAllPackages";
 		public const string string_tooltip_diagnosticTool_OpenAllPackages = "string_tooltip_diagnosticTool_OpenAllPackages";
 		public const string string_showModInstallationStatusInLbrary = "string_showModInstallationStatusInLbrary";
-		public const string string_tooltip_notReliableForAllMods = "string_tooltip_notReliableForAllMods";
+		public const string string_description_showInstalledModsInLibrary = "string_description_showInstalledModsInLibrary";
 		public const string string_suppressTargetMerges = "string_suppressTargetMerges";
 		public const string string_tooltip_suppressTargetMerges = "string_tooltip_suppressTargetMerges";
 		public const string string_runDetermineIfInstalled = "string_runDetermineIfInstalled";
@@ -2125,6 +2125,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_applicationTheme = "string_applicationTheme";
 		public const string string_doubleClickModInLibraryToInstall = "string_doubleClickModInLibraryToInstall";
 		public const string string_description_doubleClickModInLibraryToInstall = "string_description_doubleClickModInLibraryToInstall";
+		public const string string_playDialogSounds = "string_playDialogSounds";
+		public const string string_description_playDialogSounds = "string_description_playDialogSounds";
 		public const string string_nexusModsDownloadFolder = "string_nexusModsDownloadFolder";
 		public const string string_description_nexusModsDownloadFolder = "string_description_nexusModsDownloadFolder";
 		public const string string_defaultTemporaryDownloadCache = "string_defaultTemporaryDownloadCache";

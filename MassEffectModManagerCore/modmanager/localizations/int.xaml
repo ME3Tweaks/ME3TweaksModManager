@@ -548,8 +548,8 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_targetMerge">Target Merge runs all merge operations for all DLC mods, bringing them all in sync.&#10;You shouldn't need to do this manually, Mod Manager will perform it as necessary</system:String>
     <system:String x:Key="string_diagnosticTool_OpenAllPackages">Diagnostic tool: Open all packages from current target game</system:String>
     <system:String x:Key="string_tooltip_diagnosticTool_OpenAllPackages">Makes Mod Manager open all packages from the current game and report which files (if any) had issues being opened. May detect corrupted packages</system:String>
-    <system:String x:Key="string_showModInstallationStatusInLbrary">Beta setting: Show mod installation status in library</system:String>
-    <system:String x:Key="string_tooltip_notReliableForAllMods">WARNING: THIS WILL NOT BE RELIABLE FOR ALL MODS</system:String>
+    <system:String x:Key="string_showModInstallationStatusInLbrary">Show mod installation status in library</system:String>
+    <system:String x:Key="string_description_showInstalledModsInLibrary">Show a checkmark next to mods that can be detected as installed in the current target. NOTE: This is not reliable due to how mods are installed, only DLC mods will be detected as installed.</system:String>
     <system:String x:Key="string_suppressTargetMerges">SESSION ONLY Beta setting: Suppress target merges</system:String>
     <system:String x:Key="string_tooltip_suppressTargetMerges">DANGER: DO NOT TURN THIS ON IF YOU DON'T KNOW WHAT IT MEANS. YOU WILL BREAK THINGS</system:String>
     <system:String x:Key="string_runDetermineIfInstalled">Run DetermineIfInstalled</system:String>
@@ -2835,6 +2835,8 @@
     <system:String x:Key="string_applicationTheme">Application theme</system:String>
     <system:String x:Key="string_doubleClickModInLibraryToInstall">Double click mod in library to install</system:String>
     <system:String x:Key="string_description_doubleClickModInLibraryToInstall">When double-clicking a mod in the mod library list, perform the same action as pressing 'Apply Mod'. If the correct game is not currently the installation target, the current active one will be used. For mods that don't have options this will immediately trigger an installation.</system:String>
+    <system:String x:Key="string_playDialogSounds">Play dialog sounds</system:String>
+    <system:String x:Key="string_description_playDialogSounds">When enabled, Messagebox dialogs will play a sound when they open</system:String>
     <system:String x:Key="string_nexusModsDownloadFolder">NexusMods download folder</system:String>
     <system:String x:Key="string_description_nexusModsDownloadFolder">You can specify a custom location to store downloaded mod archives in. These archives are not necessary to keep once a mod is imported into the mod library. If you don't specify one, a temporary directory is used on the C:\ drive and mod downloads will be deleted every time the application closes.</system:String>
     <system:String x:Key="string_defaultTemporaryDownloadCache">Default: Temporary download cache</system:String>

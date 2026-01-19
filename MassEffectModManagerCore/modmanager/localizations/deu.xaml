@@ -1284,7 +1284,7 @@
 	<system:String x:Key="string_diagnosticTool_OpenAllPackages">Diagnosetool: Alle Pakete des aktuellen Zielspiels öffnen</system:String>
 	<system:String x:Key="string_tooltip_diagnosticTool_OpenAllPackages">Veranlasst den Mod Manager, alle Pakete des aktuellen Spiels zu öffnen und zu melden, bei welchen Dateien (falls vorhanden) Probleme beim Öffnen aufgetreten sind. Erkennt möglicherweise beschädigte Pakete.</system:String>
 	<system:String x:Key="string_showModInstallationStatusInLbrary">Beta-Einstellung: Mod-Installationsstatus in der Bibliothek anzeigen</system:String>
-	<system:String x:Key="string_tooltip_notReliableForAllMods">WARNUNG: DIES IST NICHT FÜR ALLE MODS ZUVERLÄSSIG</system:String>
+	<system:String x:Key="string_description_showInstalledModsInLibrary">WARNUNG: DIES IST NICHT FÜR ALLE MODS ZUVERLÄSSIG</system:String>
 	<system:String x:Key="string_suppressTargetMerges">SITZUNGSGEBUNDENE Beta-Einstellung: Zielzusammenführungen unterdrücken</system:String>
 	<system:String x:Key="string_tooltip_suppressTargetMerges">ACHTUNG: NICHT EINSCHALTEN, WENN OPTION UNKUNDIG IST; KANN ZU SCHÄDEN FÜHREN</system:String>
 	<system:String x:Key="string_runDetermineIfInstalled">Run DetermineIfInstalled</system:String>
