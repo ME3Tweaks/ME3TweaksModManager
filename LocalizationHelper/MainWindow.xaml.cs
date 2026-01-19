@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Data;
 using System.Xml;
 using System.Xml.Linq;
 using ME3TweaksModManager.modmanager.objects;
@@ -39,16 +40,93 @@ namespace LocalizationHelper
         /// </summary>
         private bool LocalizingM3 = true;
 
+        private bool _isScanning;
+        /// <summary>
+        /// Gets or sets whether the application is currently scanning files for localization status.
+        /// </summary>
+        public bool IsScanning
+        {
+            get => _isScanning;
+            set
+            {
+                if (_isScanning != value)
+                {
+                    _isScanning = value;
+                    OnPropertyChanged(nameof(IsScanning));
+                }
+            }
+        }
+
+        private string _scanProgress;
+        /// <summary>
+        /// Gets or sets the current scan progress message.
+        /// </summary>
+        public string ScanProgress
+        {
+            get => _scanProgress;
+            set
+            {
+                if (_scanProgress != value)
+                {
+                    _scanProgress = value;
+                    OnPropertyChanged(nameof(ScanProgress));
+                }
+            }
+        }
+
+        private bool _showOnlyPendingLocalizations;
+        /// <summary>
+        /// Gets or sets whether to filter the list to show only files with pending localizations.
+        /// </summary>
+        public bool ShowOnlyPendingLocalizations
+        {
+            get => _showOnlyPendingLocalizations;
+            set
+            {
+                if (_showOnlyPendingLocalizations != value)
+                {
+                    _showOnlyPendingLocalizations = value;
+                    OnPropertyChanged(nameof(ShowOnlyPendingLocalizations));
+                    OnPropertyChanged(nameof(FilterButtonText));
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the text to display on the filter button based on current filter state.
+        /// </summary>
+        public string FilterButtonText
+        {
+            get => ShowOnlyPendingLocalizations ? "Show All Files" : "Show Only Pending";
+        }
+
+        private ICollectionView _filesView;
+        /// <summary>
+        /// Gets the filtered view of the source files collection.
+        /// </summary>
+        public ICollectionView FilesView
+        {
+            get
+            {
+                if (_filesView == null)
+                {
+                    _filesView = CollectionViewSource.GetDefaultView(SourceFiles);
+                }
+                return _filesView;
+            }
+        }
+
         /// <summary>
         /// Gets the collection of source files available for localization.
         /// Contains relative paths to all C# and XAML files that can be localized.
         /// </summary>
-        public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
+        public ObservableCollectionExtended<LocalizableFileItem> SourceFiles { get; } = new ObservableCollectionExtended<LocalizableFileItem>();
         
         /// <summary>
         /// Gets or sets the currently selected file for localization operations.
         /// </summary>
-        public string SelectedFile { get; set; }
+        public LocalizableFileItem SelectedFile { get; set; }
         
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -57,8 +135,48 @@ namespace LocalizationHelper
         public MainWindow()
         {
             DataContext = this;
-            ReloadData();
             InitializeComponent();
+            Loaded += MainWindow_Loaded;
+        }
+
+        /// <summary>
+        /// Handles the Loaded event of the MainWindow. 
+        /// Initiates the file list loading and scanning process.
+        /// </summary>
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            ReloadData();
+        }
+
+        /// <summary>
+        /// Applies the current filter to the files view.
+        /// </summary>
+        private void ApplyFilter()
+        {
+            if (FilesView != null)
+            {
+                FilesView.Filter = ShowOnlyPendingLocalizations ? FilterPendingLocalizations : null;
+            }
+        }
+
+        /// <summary>
+        /// Filter predicate for showing only files with pending localizations.
+        /// </summary>
+        private bool FilterPendingLocalizations(object item)
+        {
+            if (item is LocalizableFileItem fileItem)
+            {
+                return fileItem.IsScanned && fileItem.HasStringsNeedingLocalization;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Handles the click event for the filter toggle button.
+        /// </summary>
+        private void ToggleFilter_Clicked(object sender, RoutedEventArgs e)
+        {
+            ShowOnlyPendingLocalizations = !ShowOnlyPendingLocalizations;
         }
 
         /// <summary>
@@ -85,69 +203,83 @@ namespace LocalizationHelper
                 var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
                 var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
                 var rootLen = modmanagerroot.Length + 1;
-                //localizable folders
-                var ui = Path.Combine(modmanagerroot, "ui");
-                var mmBase = Path.Combine(modmanagerroot, "modmanager");
-                var deployment = Path.Combine(modmanagerroot, "modmanager", "deployment");
-                var diagnostics = Path.Combine(modmanagerroot, "modmanager", "diagnostics");
-                var exceptions = Path.Combine(modmanagerroot, "modmanager", "exceptions");
-                var importer = Path.Combine(modmanagerroot, "modmanager", "importer");
-                var loaders = Path.Combine(modmanagerroot, "modmanager", "loaders");
-                var meim = Path.Combine(modmanagerroot, "modmanager", "meim");
-                var starterkit = Path.Combine(modmanagerroot, "modmanager", "starterkit");
-                var usercontrols = Path.Combine(modmanagerroot, "modmanager", "usercontrols");
-                var converters = Path.Combine(modmanagerroot, "modmanager", "converters");
-                var windows = Path.Combine(modmanagerroot, "modmanager", "windows");
-                var me3tweaks = Path.Combine(modmanagerroot, "modmanager", "me3tweaks");
-                var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
-                var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
-                var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
-                var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
-                var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
-                var merge = Path.Combine(modmanagerroot, "modmanager", "merge");
-                var save = Path.Combine(modmanagerroot, "modmanager", "save");
-                var headmorph = Path.Combine(modmanagerroot, "modmanager", "headmorph");
 
-                // Top folder only
-                files.AddRange(Directory.EnumerateFiles(mmBase, "*.cs", SearchOption.TopDirectoryOnly).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(ui, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(converters, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                // Contains some non .xaml.cs files
-                files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(usercontrols, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(windows, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(pmu, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                var allCsFiles = Directory.EnumerateFiles(modmanagerroot, "*.cs", SearchOption.AllDirectories);
+                foreach(var csFile in allCsFiles)
+                {
+                    var subStr = csFile.Substring(rootLen);
+                    if (subStr.StartsWith(@"obj\"))
+                        continue;
+                    files.Add(subStr);
+                }
 
-                files.AddRange(Directory.EnumerateFiles(diagnostics, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(exceptions, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(importer, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(loaders, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(meim, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(deployment, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(starterkit, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(headmorph, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                files.AddRange(Directory.EnumerateFiles(merge, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-                
-                // Top folder only
-                files.AddRange(Directory.EnumerateFiles(save, "*.cs", SearchOption.TopDirectoryOnly).Select(x => x.Substring(rootLen)));
- 
-                //these files are not localized
-                files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
-                files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
-                files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
-                // The .cs file is localized
+                if (false)
+                {
 
-                //Special files
-                files.Add("MainWindow.xaml");
-                files.Add("MainWindow.xaml.cs");
-                files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
-                files.Add(Path.Combine(modmanagerroot, "modmanager", "squadmates", "SQMOutfitMerge.cs").Substring(rootLen));
-                //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+                    //localizable folders
+                    var ui = Path.Combine(modmanagerroot, "ui");
+                    var mmBase = Path.Combine(modmanagerroot, "modmanager");
+                    var deployment = Path.Combine(modmanagerroot, "modmanager", "deployment");
+                    var diagnostics = Path.Combine(modmanagerroot, "modmanager", "diagnostics");
+                    var exceptions = Path.Combine(modmanagerroot, "modmanager", "exceptions");
+                    var importer = Path.Combine(modmanagerroot, "modmanager", "importer");
+                    var loaders = Path.Combine(modmanagerroot, "modmanager", "loaders");
+                    var meim = Path.Combine(modmanagerroot, "modmanager", "meim");
+                    var starterkit = Path.Combine(modmanagerroot, "modmanager", "starterkit");
+                    var usercontrols = Path.Combine(modmanagerroot, "modmanager", "usercontrols");
+                    var converters = Path.Combine(modmanagerroot, "modmanager", "converters");
+                    var windows = Path.Combine(modmanagerroot, "modmanager", "windows");
+                    var me3tweaks = Path.Combine(modmanagerroot, "modmanager", "me3tweaks");
+                    var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
+                    var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
+                    var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
+                    var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
+                    var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
+                    var merge = Path.Combine(modmanagerroot, "modmanager", "merge");
+                    var save = Path.Combine(modmanagerroot, "modmanager", "save");
+                    var headmorph = Path.Combine(modmanagerroot, "modmanager", "headmorph");
+
+                    // Top folder only
+                    files.AddRange(Directory.EnumerateFiles(mmBase, "*.cs", SearchOption.TopDirectoryOnly).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(ui, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(converters, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    // Contains some non .xaml.cs files
+                    files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(usercontrols, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(windows, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(pmu, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+
+                    files.AddRange(Directory.EnumerateFiles(diagnostics, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(exceptions, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(importer, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(loaders, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(meim, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(deployment, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(starterkit, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(headmorph, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                    files.AddRange(Directory.EnumerateFiles(merge, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+
+                    // Top folder only
+                    files.AddRange(Directory.EnumerateFiles(save, "*.cs", SearchOption.TopDirectoryOnly).Select(x => x.Substring(rootLen)));
+
+                    //these files are not localized
+                    files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
+                    files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
+                    files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
+                    // The .cs file is localized
+
+                    //Special files
+                    files.Add("MainWindow.xaml");
+                    files.Add("MainWindow.xaml.cs");
+                    files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
+                    files.Add(Path.Combine(modmanagerroot, "modmanager", "squadmates", "SQMOutfitMerge.cs").Substring(rootLen));
+                    //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+                }
 
                 if (true)
                 {
@@ -200,7 +332,173 @@ namespace LocalizationHelper
             }
 
             files.Sort();
-            SourceFiles.ReplaceAll(files);
+            SourceFiles.ReplaceAll(files.Select(f => new LocalizableFileItem { FilePath = f, IsScanned = false }).ToList());
+            
+            // Scan files asynchronously to determine localization status
+            System.Threading.Tasks.Task.Run(() => ScanFilesForLocalizationNeeds());
+        }
+
+        /// <summary>
+        /// Scans all source files to determine if they have strings needing localization.
+        /// Updates the HasStringsNeedingLocalization property for each file.
+        /// </summary>
+        private void ScanFilesForLocalizationNeeds()
+        {
+            try
+            {
+                // Show loading overlay on UI thread
+                Dispatcher.Invoke(() =>
+                {
+                    IsScanning = true;
+                    ScanProgress = "Preparing to scan files...";
+                });
+
+                Debug.WriteLine("Starting file scan...");
+
+                var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
+                var pathRoot = LocalizingM3 ? Path.Combine(solutionroot, "MassEffectModManagerCore") : Path.Combine(solutionroot, "submodules", "ME3TweaksCore");
+
+                Debug.WriteLine($"Solution root: {solutionroot}");
+                Debug.WriteLine($"Path root: {pathRoot}");
+
+                var filesList = SourceFiles.ToList();
+                int totalFiles = filesList.Count;
+                int processedFiles = 0;
+
+                Debug.WriteLine($"Total files to scan: {totalFiles}");
+
+                foreach (var fileItem in filesList)
+                {
+                    try
+                    {
+                        var filePath = Path.Combine(pathRoot, fileItem.FilePath);
+                        if (File.Exists(filePath))
+                        {
+                            bool hasStrings = false;
+
+                            if (filePath.EndsWith(".cs"))
+                            {
+                                hasStrings = CheckCSFileForStrings(filePath);
+                            }
+                            else if (filePath.EndsWith(".xaml"))
+                            {
+                                hasStrings = CheckXamlFileForStrings(filePath);
+                            }
+
+                            // Update on UI thread
+                            Dispatcher.Invoke(() =>
+                            {
+                                fileItem.HasStringsNeedingLocalization = hasStrings;
+                                fileItem.IsScanned = true;
+                            });
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"File not found: {filePath}");
+                            Dispatcher.Invoke(() => fileItem.IsScanned = true);
+                        }
+
+                        processedFiles++;
+
+                        // Update progress every 10 files or on last file
+                        if (processedFiles % 10 == 0 || processedFiles == totalFiles)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                ScanProgress = $"Scanned {processedFiles} of {totalFiles} files...";
+                            });
+                            Debug.WriteLine($"Progress: {processedFiles}/{totalFiles}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error scanning {fileItem.FilePath}: {ex.Message}");
+                        Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                        Dispatcher.Invoke(() => fileItem.IsScanned = true);
+                        processedFiles++;
+                    }
+                }
+
+                Debug.WriteLine("Scan complete!");
+
+                // Hide loading overlay on UI thread
+                Dispatcher.Invoke(() =>
+                {
+                    ScanProgress = "Scan complete!";
+                    IsScanning = false;
+                    // Refresh the view to ensure filter is applied if it was enabled during scan
+                    FilesView?.Refresh();
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"FATAL ERROR in ScanFilesForLocalizationNeeds: {ex.Message}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                // Make sure we hide the loading overlay even if there's an error
+                Dispatcher.Invoke(() =>
+                {
+                    ScanProgress = $"Error during scan: {ex.Message}";
+                    IsScanning = false;
+                    FilesView?.Refresh();
+                });
+            }
+        }
+
+        /// <summary>
+        /// Checks if a C# file has strings that need localization.
+        /// </summary>
+        /// <param name="filePath">The full path to the C# file.</param>
+        /// <returns>True if the file has strings needing localization, false otherwise.</returns>
+        private bool CheckCSFileForStrings(string filePath)
+        {
+            var extractedStrings = ExtractLocalizableStringsFromCS(filePath);
+            return extractedStrings.Count > 0;
+        }
+
+        /// <summary>
+        /// Checks if a XAML file has strings that need localization.
+        /// </summary>
+        /// <param name="filePath">The full path to the XAML file.</param>
+        /// <returns>True if the file has strings needing localization, false otherwise.</returns>
+        private bool CheckXamlFileForStrings(string filePath)
+        {
+            var extractedStrings = ExtractLocalizableStringsFromXaml(filePath);
+            return extractedStrings.Count > 0;
+        }
+
+        /// <summary>
+        /// Rescans the currently selected file to update its localization status.
+        /// This is typically called after M3L keys have been updated to reflect the new state.
+        /// </summary>
+        private void RescanSelectedFile()
+        {
+            if (SelectedFile == null) return;
+
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
+            var pathRoot = LocalizingM3 ? Path.Combine(solutionroot, "MassEffectModManagerCore") : Path.Combine(solutionroot, "submodules", "ME3TweaksCore");
+            var filePath = Path.Combine(pathRoot, SelectedFile.FilePath);
+
+            if (File.Exists(filePath))
+            {
+                bool hasStrings = false;
+
+                if (filePath.EndsWith(".cs"))
+                {
+                    hasStrings = CheckCSFileForStrings(filePath);
+                    // Re-pull the strings to update the UI
+                    PullStringsFromCS(filePath, null);
+                }
+                else if (filePath.EndsWith(".xaml"))
+                {
+                    hasStrings = CheckXamlFileForStrings(filePath);
+                    // Re-pull the strings to update the UI
+                    PullStringsFromXaml(filePath, null);
+                }
+
+                SelectedFile.HasStringsNeedingLocalization = hasStrings;
+                SelectedFile.IsScanned = true;
+            }
         }
 
         /// <summary>
@@ -221,6 +519,7 @@ namespace LocalizationHelper
         /// - Clears the result and strings text boxes
         /// - Determines if the file is C# or XAML
         /// - Calls the appropriate extraction method (PullStringsFromCS or PullStringsFromXaml)
+        /// - Updates the HasStringsNeedingLocalization flag based on the scan results
         /// </remarks>
         public void OnSelectedFileChanged()
         {
@@ -231,7 +530,7 @@ namespace LocalizationHelper
 
             var pathRoot = LocalizingM3 ? Path.Combine(solutionroot, "MassEffectModManagerCore") : Path.Combine(solutionroot, "submodules", "ME3TweaksCore");
 
-            var selectedFilePath = Path.Combine(pathRoot, SelectedFile);
+            var selectedFilePath = Path.Combine(pathRoot, SelectedFile.FilePath);
             if (File.Exists(selectedFilePath))
             {
                 ResultTextBox.Text = "";
@@ -241,12 +540,22 @@ namespace LocalizationHelper
                 {
                     SelectedCS = true;
                     PullStringsFromCS(selectedFilePath, null);
+                    
+                    // Update the HasStringsNeedingLocalization flag based on scan results
+                    bool hasStrings = CheckCSFileForStrings(selectedFilePath);
+                    SelectedFile.HasStringsNeedingLocalization = hasStrings;
+                    SelectedFile.IsScanned = true;
                 }
 
                 if (selectedFilePath.EndsWith(".xaml"))
                 {
                     SelectedXAML = true;
                     PullStringsFromXaml(selectedFilePath, null);
+                    
+                    // Update the HasStringsNeedingLocalization flag based on scan results
+                    bool hasStrings = CheckXamlFileForStrings(selectedFilePath);
+                    SelectedFile.HasStringsNeedingLocalization = hasStrings;
+                    SelectedFile.IsScanned = true;
                 }
             }
         }
@@ -259,27 +568,25 @@ namespace LocalizationHelper
 #pragma warning restore
 
         /// <summary>
-        /// Extracts localizable strings from a XAML file and generates localization keys.
+        /// Raises the PropertyChanged event for the specified property.
         /// </summary>
-        /// <param name="sender">The file path of the XAML file to process.</param>
-        /// <param name="e">Event arguments (unused).</param>
-        /// <remarks>
-        /// Parses the XAML document and examines the following attributes for localization:
-        /// - Title, Header, ToolTip, Content, Text, Watermark, DirectionsText
-        /// 
-        /// Filters out:
-        /// - Strings already using DynamicResource binding (starting with "{")
-        /// - Language names, game names, job headers
-        /// - Non-localizable words and paths
-        /// 
-        /// Generates localization keys in format: string_{camelCaseText} or string_tooltip_{camelCaseText}
-        /// Handles multi-line strings by preserving whitespace with xml:space="preserve" attribute.
-        /// </remarks>
-        private void PullStringsFromXaml(object sender, RoutedEventArgs e)
+        /// <param name="propertyName">The name of the property that changed.</param>
+        protected virtual void OnPropertyChanged(string propertyName)
         {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Extracts localizable strings from a XAML file and returns them as a list.
+        /// </summary>
+        /// <param name="filePath">The file path of the XAML file to process.</param>
+        /// <returns>A list of formatted localization string entries.</returns>
+        private List<string> ExtractLocalizableStringsFromXaml(string filePath)
+        {
+            List<string> result = new List<string>();
             try
             {
-                XDocument doc = XDocument.Parse(File.ReadAllText(sender as string));
+                XDocument doc = XDocument.Parse(File.ReadAllText(filePath));
                 var menuitems = doc.Descendants().ToList();
                 Dictionary<string, string> localizations = new Dictionary<string, string>();
 
@@ -350,23 +657,50 @@ namespace LocalizationHelper
                 }
 
                 //ResultTextBox.Text = doc.ToString();
-                StringBuilder sb = new StringBuilder();
                 foreach (var v in localizations)
                 {
                     var newlines = v.Key.Contains("\n");
                     var text = v.Key.Replace("\r\n", "&#10;").Replace("\n", "&#10;");
-                    sb.AppendLine("\t<system:String" + (newlines ? " xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
-                }
-
-                StringsTextBox.Text = sb.ToString();
-                if (string.IsNullOrEmpty(sb.ToString()))
-                {
-                    StringsTextBox.Text = "No strings needing localized in " + SelectedFile;
+                    result.Add("\t<system:String" + (newlines ? " xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
                 }
             }
             catch (Exception)
             {
 
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Extracts localizable strings from a XAML file and generates localization keys.
+        /// </summary>
+        /// <param name="sender">The file path of the XAML file to process.</param>
+        /// <param name="e">Event arguments (unused).</param>
+        /// <remarks>
+        /// Parses the XAML document and examines the following attributes for localization:
+        /// - Title, Header, ToolTip, Content, Text, Watermark, DirectionsText
+        /// 
+        /// Filters out:
+        /// - Strings already using DynamicResource binding (starting with "{")
+        /// - Language names, game names, job headers
+        /// - Non-localizable words and paths
+        /// 
+        /// Generates localization keys in format: string_{camelCaseText} or string_tooltip_{camelCaseText}
+        /// Handles multi-line strings by preserving whitespace with xml:space="preserve" attribute.
+        /// </remarks>
+        private void PullStringsFromXaml(object sender, RoutedEventArgs e)
+        {
+            var extractedStrings = ExtractLocalizableStringsFromXaml(sender as string);
+            StringBuilder sb = new StringBuilder();
+            foreach (var str in extractedStrings)
+            {
+                sb.AppendLine(str);
+            }
+
+            StringsTextBox.Text = sb.ToString();
+            if (string.IsNullOrEmpty(sb.ToString()))
+            {
+                StringsTextBox.Text = "No strings needing localized in " + SelectedFile.FilePath;
             }
         }
 
@@ -402,8 +736,10 @@ namespace LocalizationHelper
 
             //return;
             //Update all of the other xaml files
-            return; //skip other langauges as it's now handled by localizer tool
+            //return; //skip other langauges as it's now handled by localizer tool
 
+            // Rescan the currently selected file to update its localization status
+            RescanSelectedFile();
         }
 
         /// <summary>
@@ -427,37 +763,15 @@ namespace LocalizationHelper
         }
 
         /// <summary>
-        /// Extracts localizable strings from a C# source file using regular expressions.
-        /// Generates localization keys and identifies string interpolation patterns.
+        /// Extracts localizable strings from a C# source file and returns them as a list.
         /// </summary>
-        /// <param name="sender">The file path of the C# file to process.</param>
-        /// <param name="e">Event arguments (unused).</param>
-        /// <remarks>
-        /// String extraction rules:
-        /// - Uses regex pattern to find all quoted strings: ([$@]*(\".+?\"))
-        /// - Skips strings in comments (after //, except for http://)
-        /// - Skips literal strings (starting with @ or $@)
-        /// - Skips log statements (M3Log or MLog)
-        /// - Skips lines with [DebuggerDisplay] attributes
-        /// - Respects //Localizable(true) and //Localizable(false) directives
-        /// - Can force localization with //force localize comment
-        /// 
-        /// String interpolation handling:
-        /// - Detects interpolated strings (starting with $)
-        /// - Extracts substitution patterns {variable}
-        /// - Replaces with numbered placeholders {0}, {1}, etc.
-        /// - Generates XML comments showing parameter mappings
-        /// 
-        /// Key generation:
-        /// - Regular strings: string_{camelCaseText}
-        /// - Interpolated strings: string_interp_{camelCaseText}
-        /// - Preserves whitespace for strings containing \n
-        /// </remarks>
-        private void PullStringsFromCS(object sender, RoutedEventArgs e)
+        /// <param name="filePath">The file path of the C# file to process.</param>
+        /// <returns>A list of formatted localization string entries.</returns>
+        private List<string> ExtractLocalizableStringsFromCS(string filePath)
         {
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
-            var filelines = File.ReadAllLines(sender as string);
+            var filelines = File.ReadAllLines(filePath);
             HashSet<string> s = new HashSet<string>();
             HashSet<string> origStrForSubsOnly = new HashSet<string>();
             bool sectionIsLocalizable = true;
@@ -615,7 +929,7 @@ namespace LocalizationHelper
                 var protocolIndex = line.IndexOf(@"://");
                 if (line.IndexOf(@" M3Log.") > 0 || line.IndexOf(@" MLog.") > 0)
                 {
-                    Debug.WriteLine($@"Skipping log line at {x}");
+                    // Debug.WriteLine($@"Skipping log line at {x}");
                     continue;
                 }
 
@@ -762,6 +1076,12 @@ namespace LocalizationHelper
                             continue;
                         }
 
+                        // Skip strings that don't contain any alphabetic characters (no localizable text)
+                        if (!unescapedStr.Any(char.IsLetter))
+                        {
+                            continue;
+                        }
+
                         if (newStr.Contains("\\n")) xmlPreserve = true;
 
                         strname += toCamelCase(newStr);
@@ -814,29 +1134,70 @@ namespace LocalizationHelper
                 }
             }
 
-            StringBuilder sb = new StringBuilder();
+            List<string> result = new List<string>();
             foreach (var str in s)
             {
-                sb.AppendLine(str);
+                result.Add(str);
             }
 
             if (origStrForSubsOnly.Count > 0)
             {
-                sb.AppendLine("<!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->");
+                result.Add("<!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->");
             }
 
             foreach (var str in origStrForSubsOnly)
             {
                 //interps
+                result.Add(str);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Extracts localizable strings from a C# source file using regular expressions.
+        /// Generates localization keys and identifies string interpolation patterns.
+        /// </summary>
+        /// <param name="sender">The file path of the C# file to process.</param>
+        /// <param name="e">Event arguments (unused).</param>
+        /// <remarks>
+        /// String extraction rules:
+        /// - Uses regex pattern to find all quoted strings: ([$@]*(\".+?\"))
+        /// - Skips strings in comments (after //, except for http://)
+        /// - Skips literal strings (starting with @ or $@)
+        /// - Skips log statements (M3Log or MLog)
+        /// - Skips lines with [DebuggerDisplay] attributes
+        /// - Respects //Localizable(true) and //Localizable(false) directives
+        /// - Can force localization with //force localize comment
+        /// 
+        /// String interpolation handling:
+        /// - Detects interpolated strings (starting with $)
+        /// - Extracts substitution patterns {variable}
+        /// - Replaces with numbered placeholders {0}, {1}, etc.
+        /// - Generates XML comments showing parameter mappings
+        /// 
+        /// Key generation:
+        /// - Regular strings: string_{camelCaseText}
+        /// - Interpolated strings: string_interp_{camelCaseText}
+        /// - Preserves whitespace for strings containing \n
+        /// </remarks>
+        private void PullStringsFromCS(object sender, RoutedEventArgs e)
+        {
+            var extractedStrings = ExtractLocalizableStringsFromCS(sender as string);
+            StringBuilder sb = new StringBuilder();
+            foreach (var str in extractedStrings)
+            {
                 sb.AppendLine(str);
             }
 
             StringsTextBox.Text = sb.ToString();
             if (string.IsNullOrEmpty(sb.ToString()))
             {
-                StringsTextBox.Text = "No strings needing localized in " + SelectedFile;
+                StringsTextBox.Text = "No strings needing localized in " + SelectedFile.FilePath;
             }
             //Debug.WriteLine("<!-- Subs only -->");
+
+
 
 
         }
@@ -948,7 +1309,7 @@ namespace LocalizationHelper
             Regex r = new Regex(regex);
             StringBuilder sb = new StringBuilder();
 
-            var lines = File.ReadAllLines(Path.Combine(rootFolder, SelectedFile));
+            var lines = File.ReadAllLines(Path.Combine(rootFolder, SelectedFile.FilePath));
             foreach (var line in lines)
             {
                 var newline = line;
@@ -1033,7 +1394,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, SelectedFile);
+            var file = Path.Combine(M3folder, SelectedFile.FilePath);
             string[] attributes = { "Title", "Header", "ToolTip", "Content", "Text", "Watermark", "DirectionsText" };
             try
             {

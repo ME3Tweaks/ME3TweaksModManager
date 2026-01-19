@@ -16,7 +16,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class AutoGameRestorePanel : MMBusyPanelBase
     {
-        public string RestoringText => $"Restoring {_target.Game.ToGameName()}";
+        public string RestoringText => M3L.GetString(M3L.string_interp_restoringX, _target.Game.ToGameName());
         public int Percent { get; private set; }
 
         /// <summary>

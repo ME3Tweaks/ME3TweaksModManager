@@ -34,6 +34,7 @@
 	<system:String x:Key="string_tooltip_runningOnX">In esecuzione su {0}</system:String>
 	<system:String x:Key="string_enablesSingleinstancingOfAnApplication">Permette di avere una singola istanza di una applicazione</system:String>
 	<system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper in C# per il comando robocopy</system:String>
+	<system:String x:Key="string_starMeansForked">* = Versione fork di ME3Tweaks</system:String>
 	<system:String x:Key="string_textureModded">Texture moddata</system:String>
 	<system:String x:Key="string_interp_modNameByAuthorName">{0} di {1}</system:String>
 	<system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">Almeno un DLC Alternativo indicato non specifica un FriendlyName, il quale è richiesto per le mod che richiedono cmmver >= 6.0.</system:String>

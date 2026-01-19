@@ -1,6 +1,8 @@
 ﻿using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Localization;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using Org.BouncyCastle.Asn1.X509;
 using Pathoschild.FluentNexus.Models;
@@ -81,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 else
                 {
                     M3Log.Warning($@"Cached target directory does not exist, skipping: {gameDir}");
-                    failedTargets.Add(new TargetCacheInfo(game, gameDir, false, "Invalid target: Directory does not exist", null));
+                    failedTargets.Add(new TargetCacheInfo(game, gameDir, false, M3L.GetString(M3L.string_invalidTargetDirectoryDoesNotExist), null));
                 }
             }
 

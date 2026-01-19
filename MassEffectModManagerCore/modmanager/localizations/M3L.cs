@@ -1454,6 +1454,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_runningOnX = "string_tooltip_runningOnX";
 		public const string string_enablesSingleinstancingOfAnApplication = "string_enablesSingleinstancingOfAnApplication";
 		public const string string_wrapperForRobocopyCommandInCSharp = "string_wrapperForRobocopyCommandInCSharp";
+		public const string string_starMeansForked = "string_starMeansForked";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
 		public const string string_updateASI = "string_updateASI";
@@ -2083,6 +2084,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_modsAreDownloading = "string_modsAreDownloading";
 		public const string string_modDownloadsComplete = "string_modDownloadsComplete";
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
+		public const string string_dialog_errorMergingPlotManagerFiles = "string_dialog_errorMergingPlotManagerFiles";
+		public const string string_errorSyncingPlotManager = "string_errorSyncingPlotManager";
 		public const string string_mergeModFileDoesNotHaveCorrectMagicHeader = "string_mergeModFileDoesNotHaveCorrectMagicHeader";
 		public const string string_interp_unsupportedMergeModVersionVersionX = "string_interp_unsupportedMergeModVersionVersionX";
 		public const string string_interp_invalidMergeModManifestReason = "string_interp_invalidMergeModManifestReason";
