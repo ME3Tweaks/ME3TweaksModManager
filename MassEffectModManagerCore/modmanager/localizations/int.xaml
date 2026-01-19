@@ -2762,6 +2762,9 @@
     <!-- Plot Manager Sync Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
     <!-- Message that comes up telling user what's happening. Plot Manager is something M3 keeps up to date (as mods override and/or add plot flags) and is used to track plot events -->
+    <system:String xml:space="preserve" x:Key="string_dialog_errorMergingPlotManagerFiles">An error occurred merging plot manager update files: {0}.\n\nPlot Manager Sync was not run.</system:String>
+    <!-- 0={b.Error.Message} -->
+    <system:String x:Key="string_errorSyncingPlotManager">Error syncing Plot Manager</system:String>
 
     <!-- Merge Mods (V1) -->
     <system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Mergemod file does not have correct magic header</system:String>
