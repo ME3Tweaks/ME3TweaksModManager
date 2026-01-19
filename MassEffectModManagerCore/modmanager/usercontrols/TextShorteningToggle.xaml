@@ -25,7 +25,8 @@
                 <Rectangle.OpacityMask>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="Transparent" Offset="0"/>
-                        <GradientStop Color="White" Offset="1"/>
+                        <!-- Opacity Mask must be white -->
+                        <GradientStop Color="White"  Offset="1"/>
                     </LinearGradientBrush>
                 </Rectangle.OpacityMask>
                 <Rectangle.Fill>
@@ -41,7 +42,6 @@
                 Visibility="{Binding ShowExpandButton, RelativeSource={RelativeSource AncestorType={x:Type local:TextShorteningToggle}}, Converter={StaticResource BoolToVisibilityConverter}}"
                 HorizontalAlignment="Left"
                 Margin="0,3,0,0"
-                Padding="7,2"
-                Foreground="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"/>
+                Padding="7,2"/>
     </Grid>
 </UserControl>
