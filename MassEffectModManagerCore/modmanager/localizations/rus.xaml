@@ -34,6 +34,7 @@
 	<system:String x:Key="string_tooltip_runningOnX">Работает на {0}</system:String>
 	<system:String x:Key="string_enablesSingleinstancingOfAnApplication">Включение режима Single Instance для приложения</system:String>
 	<system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Враппер для команды robocopy в C#</system:String>
+	<system:String x:Key="string_starMeansForked">* = Форк-версия ME3Tweaks</system:String>
 	<system:String x:Key="string_textureModded">Текстура модифицирована</system:String>
 	<system:String x:Key="string_interp_modNameByAuthorName">{0} от {1}</system:String>
 	<system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">Как минимум в одном указанном Alternate DLC не задан параметр FriendlyName, который требуется модам, предназначенным для cmmver >= 6.0.</system:String>
@@ -251,6 +252,33 @@
 	<system:String x:Key="string_errorReadingTables">Ошибка чтения таблиц</system:String>
 	<system:String x:Key="string_bio2DASelector">Bio2DA Selector</system:String>
 	<system:String x:Key="string_select2DATablesForBlank">Выберите таблицы 2DA для генерации чистых версий вашего мода.</system:String>
+	<system:String x:Key="string_manageCachedTargets">Управление Кэшированными Целевыми Играми</system:String>
+	<system:String x:Key="string_desc_manageCachedTargets">Mod Manager содержит список ранее обнаруженных целевых игр, известных как кэшированные целевые игры. Со временем он может стать некорректным из-за изменений, таких как перемещение или удаление игр. Удаление некорректных целевых игр ускорит время запуска приложения.</system:String>
+	<system:String x:Key="string_cachedTargets">Кэшированные Целевые Игры</system:String>
+	<system:String x:Key="string_targetInformation">Информация о Целевой Игре</system:String>
+	<system:String x:Key="string_status">Статус:</system:String>
+	<system:String x:Key="string_path">Путь:</system:String>
+	<system:String x:Key="string_failureReason">Причина сбоя:</system:String>
+	<system:String x:Key="string_reloadTarget">Перезагрузка Целевой Игры</system:String>
+	<system:String x:Key="string_tooltip_reloadTarget">Перезагружает выбранную целевую игру для проверки успешности её загрузки</system:String>
+	<system:String x:Key="string_restoreTargetFromBackup">Восстановление Целевой Игры из архива</system:String>
+	<system:String x:Key="string_tooltip_restoreTargetFromBackup">Восстанавливает архив данной игры в папку целевой игры</system:String>
+	<system:String x:Key="string_removeFromCache">Удалить из Кэша</system:String>
+	<system:String x:Key="string_tooltip_removeFromCache">Удаляет данную целевую игру из кэша, чтобы Mod Manager не пытался автоматичеки подгружать ей в качестве объекта для модификации</system:String>
+	<system:String x:Key="string_unlockTarget">Разблокировать целевую игру</system:String>
+	<system:String x:Key="string_tooltip_unlockTarget">Включите загрузку целевой игры данного архива, удалив защитный архивный маркер</system:String>
+	<system:String x:Key="string_loadingCachedTargets">Загрузка кэшированных целевых игр</system:String>
+	<system:String x:Key="string_invalidTargetDirectoryDoesNotExist">Недопустимая целевая игра: Директория не существует</system:String>
+	<system:String x:Key="string_dialog_confirmRemoveTarget" xml:space="preserve">Вы уверены, что хотите удалить данную целевую игру из кэша?\n\nИгра: {0}\nПуть: {1}\n\nЭто не затронет никакие игровые файлы.</system:String>
+	<system:String x:Key="string_removeCachedTarget">Удалить Кэшированную Целевую Игру</system:String>
+	<system:String x:Key="string_dialog_confirmUnlockTarget" xml:space="preserve">Вы уверенны, что хотите разблокированную данную целевую игру?\n\nИгра: {0}\nПуть: {1}\n\nЭто снимет маркер защиты архива (cmm_vanilla) с установки игры, позволяя ей быть модифицированной. Данная операция не может быть отменена автоматически.\n\nВы желаете прододжить?</system:String>
+	<system:String x:Key="string_unlockBackupTarget">Разблокировать Архив Целевой Игры</system:String>
+	<system:String x:Key="string_dialog_errorUnlockingTarget" xml:space="preserve">Возникла ошибка при попытке снять архивный маркер:\n\n{0}</system:String>
+	<system:String x:Key="string_errorUnlockingTarget">Ошибка Разблокировки Целевой Игры</system:String>
+	<system:String x:Key="string_valid">Верно</system:String>
+	<system:String x:Key="string_linkedBackup">Связанный архив</system:String>
+	<system:String x:Key="string_unlinkedBackup">Отвязаный архив</system:String>
+	<system:String x:Key="string_autodetected">Автообнаружение</system:String>
 	<system:String x:Key="string_noItemsSelected">Ничего не выбрано</system:String>
 	<system:String x:Key="string_checkAll">Выбрать все</system:String>
 	<system:String x:Key="string_updatingKeybindsPleaseWait">Обновление привязок клавиш, пожалуйста, подождите</system:String>
@@ -292,6 +320,8 @@
 	<system:String x:Key="string_showBasegameFileIdentificationServiceViewer">Показать Basegame File Identification Service Viewer</system:String>
 	<system:String x:Key="string_triggerBTPBuildOnModFolderInstalled">Запустить сборку BTP для папки мода (установленного)</system:String>
 	<system:String x:Key="string_showTestDialog">Показать тестовый диалон</system:String>
+	<system:String x:Key="string_wineDetected">Обнаружен WINE</system:String>
+	<system:String x:Key="string_dialog_wineDetected">Похоже, ME3Tweaks Mod Manager запущен в Linux или MacOS, пожалуйста, учтите, что такой режим не поддерживается и вы не получите официальную техническую поддержку.</system:String>
 	<system:String x:Key="string_tooltip_multithreadDeployment" xml:space="preserve">Многопоточное сжатие значительно быстрее однопоточного, но требует намного больше памяти.&#10;В случае мода большого размера (>600MB) рекомендуется отключить эту функцию, если у вас менее 16GB доступной памяти.</system:String>
 	<system:String x:Key="string_multiThreadedCompression">Многопоточное сжатие</system:String>
 	<system:String x:Key="string_deploy">Преобразовать в .7z</system:String>
@@ -459,6 +489,18 @@
 	<system:String x:Key="string_importComplete">Импорт завершен</system:String>
 	<system:String x:Key="string_dlmgr_subTempCache">Загрузки будут автоматически удалены при закрытии Mod Manager. Моды, импортированные в библиотеку, не будут затронуты. Вы можете изменить это в настройках приложения.</system:String>
 	<system:String x:Key="string_dlmgr_subPermCache" xml:space="preserve">Загруженные файлы сохраняются по указанному пути, который может быть изменен в настройках:\n{0}</system:String>
+	<system:String x:Key="string_dialog_couldNotfindFXC">Копия fxc.exe не обнаружена. Вам нужно установить Windows SDS, содержащий компилятор D3D11.</system:String>
+	<system:String x:Key="string_fXCNotFound">FXC не найден</system:String>
+	<system:String x:Key="string_compilingShaders">Компиляция шейдеров</system:String>
+	<system:String x:Key="string_compiledShaders">Шейдеры скомпилированы</system:String>
+	<system:String x:Key="string_selectMetadataFile">Выберите файл метаданных</system:String>
+	<system:String x:Key="string_selectOutputFolder">Выберите папку назначения</system:String>
+	<system:String x:Key="string_extractingTexturesFromBTP">Извлечение текстур из BTP</system:String>
+	<system:String x:Key="string_finishedExtractingTextures">Извлечение текстур завершено</system:String>
+	<system:String x:Key="string_errorExtractingTexturesFromBTP">Ошибка извлечения текстур из BTP</system:String>
+	<system:String x:Key="string_dialog_errorExtractingTexturesFromBTP" xml:space="preserve">При пересборке исходных файлов из BTP возникла ошибка:\n{0}</system:String>
+	<system:String x:Key="string_errorExtractingBTP">Ошибка извлечения BTP</system:String>
+	<system:String x:Key="string_binaryTextureMetadataFile">Файл Binary Texture Metadata</system:String>
 	<system:String x:Key="string_overlayDisablerInstalled">Выключатель оверлея установлен</system:String>
 	<system:String x:Key="string_uninstallDisabler">Удалить выключатель</system:String>
 	<system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Установлен другой d3d9.dll, оверлей отключен</system:String>
@@ -1345,6 +1387,29 @@
 	<system:String x:Key="string_dialog_performMe3cmmCleanup">Очистить данные ME3CMM? Это удалит остаточные файлы и папки ME3CMM в директории данных, а также ME3CMM.exe.</system:String>
 	<system:String x:Key="string_performCleanupQuestion">Выполнить очистку?</system:String>
 	<system:String x:Key="string_massEffect3ModManagerMigration">Миграция Mass Effect 3 Mod Manager</system:String>
+	<system:String x:Key="string_selectMem">Выберите .mem</system:String>
+	<system:String x:Key="string_selectAMemFileToConvert">Выберите файл .mem для конвертации</system:String>
+	<system:String x:Key="string_convert">Конвертировать</system:String>
+	<system:String x:Key="string_selectTargetMod">Выберите целевой мод</system:String>
+	<system:String x:Key="string_selectTargetModToConvertMEMModInto">Выберите целевой мод для конвертации MEM-мода.</system:String>
+	<system:String x:Key="string_select">Выбрать</system:String>
+	<system:String x:Key="string_installTextures">Установить текстуры</system:String>
+	<system:String x:Key="string_skipInstall">Пропустить установку</system:String>
+	<system:String x:Key="string_convertingMemToM3TO">Конвертация .mem в M3TO</system:String>
+	<system:String x:Key="string_conversionCompleted">Конвертация завершена</system:String>
+	<system:String x:Key="string_incompatibleModSelected">Выбран несовместимый мод</system:String>
+	<system:String x:Key="string_skipRestore">Пропустить восстановление</system:String>
+	<system:String x:Key="string_MEMToM3TOConverter">Конвертер MEM в M3TO</system:String>
+	<system:String x:Key="string_dialog_memConvert_performTextureInstall" xml:space="preserve">Выполнить установку текстур?\n\nЕсли вы их ещё не установили, вам нужно выполнить это, иначе конвертация ничего не сделает.</system:String>
+	<system:String x:Key="string_errorConvertingMem">Ошибка конвертации .mem</system:String>
+	<system:String x:Key="string_interp_findingModifiedTextures">Поиск модифицированных текстур</system:String>
+	<system:String x:Key="string_interp_generatingM3TO">Генерация M3TO</system:String>
+	<system:String x:Key="string_interp_movingTFCFiles">Перемещение файлов TFC</system:String>
+	<system:String x:Key="string_dialog_memConvertComplete">Конвертация завершена. Удостоверьтесь в корректности результатов конвертации.</system:String>
+	<system:String x:Key="string_interp_selectedModMoreThanOneDLCFolder">Выбранный мод должен устанавливать единственную папку DLC-мода. Выбранный целевой мод устанавливает {0}.</system:String>
+	<system:String x:Key="string_interp_modMissingCookedPCConsole">Выбранный мод не содержит папку CookedPCConsole по ожидаемому пути: {0}. Продолжение невозможно.</system:String>
+	<system:String x:Key="string_dialog_memConvertRestore" xml:space="preserve">{0} будет восстановлен в оригинальное состояние для установки текстурного мода. Версия texture override будет затем пересобрана из изменений, внесенных в установку.\n\nЕсли целью данного .mem являются кастомные текстуры, добавленные модами, вам следует создат Batch Install Group, включающую восстановление, моды, содержащие целевые текстуры и данный .mem файл, а затем выбрать Пропустить Восстановление.</system:String>
+	<system:String x:Key="string_interp_memConvertError" xml:space="preserve">Возникла ошибка при конвертации .mem в формат M3TO:\n{0}\n\nВы можете найти подробную информацию в логах приложения.</system:String>
 	<system:String x:Key="string_mEMVanillaDatabaseViewer">MEM Vanilla Database Viewer</system:String>
 	<system:String x:Key="string_viewInformationInTheVanillaDatabaseUsedForBackupVerification">Просмотр информации из базы данных оригиналов игр для верификации архивов</system:String>
 	<system:String x:Key="string_textureExportsNotListedInThisMemFile">[экспорты текстур, не указанные в данном файле .mem]</system:String>
@@ -1605,6 +1670,7 @@
 	<system:String x:Key="string_trackingMergemodChanges">Отслеживание изменений mergemod</system:String>
 	<system:String x:Key="string_tooltip_optionNotApplicable">Исходя из условий, поставленных разработчиком мода, данная опция не применима в текущей конфигурации вашей игры</system:String>
 	<system:String x:Key="string_tooltip_optionForceApplied">Исходя из условий, поставленных разработчиком мода, данная опция должна быть применена в текущей конфигурации вашей игры</system:String>
+	<system:String x:Key="string_textureOverrideMergeFailed">Ошибка Texture Overide Merge</system:String>
 	<system:String x:Key="string_addSelectedModsToDeployment">Добавить выбранные моды к преобразованию</system:String>
 	<system:String x:Key="string_description_addSelectedModsToDeployment">Выбрать моды для добавления к преобразованию. Вы можете выбрать несколько модов, зажав Control или Shift.</system:String>
 	<system:String x:Key="string_addModsToDeployment">Добавить моды к преобразованию</system:String>
@@ -1984,6 +2050,8 @@
 	<system:String x:Key="string_applicationTheme">Тема оформления</system:String>
 	<system:String x:Key="string_doubleClickModInLibraryToInstall">Установите мод в библиотеку двойным кликом</system:String>
 	<system:String x:Key="string_description_doubleClickModInLibraryToInstall">Двойной клик по моду в библиотеке действует аналогично нажатию 'Применить Мод'. Если соответствующая моду игра не выбрана в качестве целевой, будет использована текущая. Для модов без опций это немедленно запустит установку.</system:String>
+	<system:String x:Key="string_playDialogSounds">Проигрывать звуки диалога</system:String>
+	<system:String x:Key="string_description_playDialogSounds">При включении диалоги Messagebox будут проигрывать звук при окрытии</system:String>
 	<system:String x:Key="string_nexusModsDownloadFolder">Папка загрузки NexusMods</system:String>
 	<system:String x:Key="string_description_nexusModsDownloadFolder">Вы можете выбрать пользовательский путь для хранения загруженных архивов модов. Эти архивы не требуется хранить после импорта мода в библиотеку модов. Если путь не указан, будет использована временная папка на диске C:\ и загруженные файлы модов будут удаляться при закрытии программы.</system:String>
 	<system:String x:Key="string_defaultTemporaryDownloadCache">По умолчанию: Временный кэш загрузки</system:String>
@@ -2004,6 +2072,8 @@
 	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Проверка ссылок в mergemods [{0}/{1}]</system:String>
 	<system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core не может совершить импорт: {0} {1} в {2}</system:String>
 	<system:String x:Key="string_syncingPlotManager">Синхронизация Plot Manager</system:String>
+	<system:String x:Key="string_dialog_errorMergingPlotManagerFiles" xml:space="preserve">Возникла ошибка объединения файлов обновления Plot Manager: {0}.\n\nPlot Manager Sync не был запущен.</system:String>
+	<system:String x:Key="string_errorSyncingPlotManager">Ошибка синхронизации Plot Manager</system:String>
 	<system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Доступно обновление ME3Tweaks Mod Manager.</system:String>
 	<system:String x:Key="string_downloadingUpdate">Загрузка обновления</system:String>
 	<system:String x:Key="string_preparingToApplyUpdate">Подготовка к установке обновления</system:String>
