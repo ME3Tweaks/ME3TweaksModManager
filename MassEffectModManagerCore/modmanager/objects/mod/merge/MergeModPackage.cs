@@ -13,6 +13,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         public string FinalMD5 { get; set; }
         public bool WasSavedOnce { get; set; }
 
+        /// <summary>
+        /// List of applied m3m filenames
+        /// </summary>
+        public List<string> AppliedMergeMods { get; } = new();
+
         public MergeFileTransition(string filename, string originalMD5)
         {
             FileName = FileName;
@@ -41,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         public Mod AssociatedMod { get; init; }
 
         /// <summary>
-        /// Map of each file as it transitions through a merge for the basegame identtification service
+        /// Map of each file as it transitions through a merge for the basegame identification service
         /// </summary>
         public CaseInsensitiveConcurrentDictionary<MergeFileTransition> FileTransitionMap = new();
 

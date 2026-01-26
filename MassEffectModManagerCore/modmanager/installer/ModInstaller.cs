@@ -935,21 +935,34 @@ namespace ME3TweaksModManager.modmanager.installer
 #endif
                 }
 
-                void addBasegameTrackedFile(string originalmd5, string file, string finalMD5 = null)
+                // Add a tracked change from an applied merge mod.
+                void addBasegameTrackedFile(string file, MergeFileTransition transition)
                 {
                     if (file != null)
                     {
                         if (file.Contains(@"BioGame\CookedPC", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            // It's basegame
-                            var mm = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length,
-                                InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, finalMD5);
-                            var existingInfo =
-                                BasegameFileIdentificationService.GetBasegameFileSource(
-                                    InstallOptionsPackage.InstallTarget, file, originalmd5);
-                            var newTextToAppend =
-                                $@"{InstallOptionsPackage.ModBeingInstalled.ModName} {InstallOptionsPackage.ModBeingInstalled.ModVersionString}";
+                            // It's basegame, get the current record (if any)
+                            var mm = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, transition.FinalMD5);
+                            var existingInfo = BasegameFileIdentificationService.GetBasegameFileSource(InstallOptionsPackage.InstallTarget, file, transition.OriginalMD5);
+
+                            // Text to append to the existing info
+                            var newTextToAppend = $@"{InstallOptionsPackage.ModBeingInstalled.ModName} {InstallOptionsPackage.ModBeingInstalled.ModVersionString}";
+
+                            // 01/26/2026 - Add block containing applied m3ms
+                            if (transition.AppliedMergeMods != null && transition.AppliedMergeMods.Any())
+                            {
+                                if (!string.IsNullOrWhiteSpace(newTextToAppend))
+                                {
+                                    newTextToAppend += "\n"; // do not localize
+                                }
+                                newTextToAppend += BasegameFileRecord.CreateBlock(MergeMod1.MERGEMOD_BGFIS_DATA_BLOCK, string.Join(BasegameFileRecord.BLOCK_SEPARATOR, transition.AppliedMergeMods));
+                            }
+
+
+                            // For tracking which mods have modified this file (not reliable)
                             mm.moddeschashes ??= new();
+
                             if (existingInfo != null)
                             {
                                 if (!existingInfo.source.Contains(newTextToAppend))
@@ -959,10 +972,14 @@ namespace ME3TweaksModManager.modmanager.installer
 
                                 mm.moddeschashes.AddRange(existingInfo.moddeschashes);
                             }
+                            else
+                            {
+                                mm.source = newTextToAppend;
+                            }
 
+                            //Set record
                             mm.moddeschashes.Add(InstallOptionsPackage.ModBeingInstalled.ModDescHash);
-                            basegameIdentificationServiceRecords[
-                                Path.GetRelativePath(InstallOptionsPackage.InstallTarget.TargetPath, file)] = mm;
+                            basegameIdentificationServiceRecords[Path.GetRelativePath(InstallOptionsPackage.InstallTarget.TargetPath, file)] = mm;
                         }
                     }
                 }
@@ -996,8 +1013,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         {
                             if (!mmp.MergeModToSavePackageWith.TryGetValue(af, out _))
                             {
-                                mmp.MergeModToSavePackageWith[af] =
-                                    mm; // This merge mod should be the one to save the package.
+                                mmp.MergeModToSavePackageWith[af] = mm; // This merge mod should be the one to save the package.
                             }
                         }
                     }
@@ -1011,7 +1027,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     mmp.FinalizeFileTransitionMap();
                     foreach (var f in mmp.FileTransitionMap.Where(x => x.Value.WasSavedOnce))
                     {
-                        addBasegameTrackedFile(f.Value.OriginalMD5, f.Key, f.Value.FinalMD5);
+                        addBasegameTrackedFile(f.Key, f.Value);
                     }
                 }
 
