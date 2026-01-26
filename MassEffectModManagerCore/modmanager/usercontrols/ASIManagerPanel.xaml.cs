@@ -187,7 +187,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (v is ASIMod asiMod)
             {
-                SelectedASIDescription = asiMod.LatestVersion.Description;
+                SelectedASIDescription = asiMod.LatestVersion.DescriptionFormatted;
                 SelectedASIName = asiMod.LatestVersion.Name;
                 string subtext = M3L.GetString(M3L.string_interp_byXVersionY, asiMod.LatestVersion.Author, asiMod.LatestVersion.Version);
                 subtext += Environment.NewLine;
@@ -212,7 +212,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else if (v is IKnownInstalledASIMod kaim)
             {
-                SelectedASIDescription = kaim.AssociatedManifestItem.Description;
+                SelectedASIDescription = kaim.AssociatedManifestItem.DescriptionFormatted;
                 SelectedASIName = kaim.AssociatedManifestItem.Name;
                 string subtext = M3L.GetString(M3L.string_interp_byXVersionY, kaim.AssociatedManifestItem.Author, kaim.AssociatedManifestItem.Version);
                 subtext += Environment.NewLine;
