@@ -80,18 +80,6 @@ namespace ME3TweaksModManager
         /// </summary>
         public const double HighestSupportedModDesc = 9.2;
 
-        // Hi. If you're reading this, and going to try and argue that this lowest version is arbitrary,
-        // you should try supporting software for free, and see how well supporting every single
-        // version of Windows works out for you.
-        // LTSC is not supported as it is for Enterprises
-        public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.26100"); // Windows 11 24H2
-
-        internal static readonly string[] SupportedOperatingSystemVersions =
-        {
-            @"Windows 11 24H2"
-        };
-
-
         /// <summary>
         /// If telemetry has been flushed after checking if it is enabled.
         /// </summary>
@@ -129,9 +117,10 @@ namespace ME3TweaksModManager
 
             // We use our own implementation of this as we store data in ProgramData.
             MCoreFilesystem.GetAppDataFolder = M3Filesystem.GetAppDataFolder; // Do not change
-            
+
             WineWorkarounds.WineDetected = MUtilities.IsWineDetected();
-            if (WineWorkarounds.WineDetected) {
+            if (WineWorkarounds.WineDetected)
+            {
                 WineWorkarounds.WineDetectedVersion = MUtilities.WineGetVersion();
                 MUtilities.WineGetHostVersion(out string HostKernelName, out Version HostKernelVersion);
                 WineWorkarounds.WineHostKernelName = HostKernelName;
@@ -752,12 +741,6 @@ namespace ME3TweaksModManager
 
             // Clean up single instance
             SingleInstance.Cleanup();
-        }
-
-        public static bool IsOperatingSystemSupported()
-        {
-            OperatingSystem os = Environment.OSVersion;
-            return os.Version >= App.MIN_SUPPORTED_OS;
         }
 
 #if DEBUG

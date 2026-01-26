@@ -285,6 +285,14 @@ namespace ME3TweaksModManager
 
         private string InternalNoModSelectedText(bool richText)
         {
+            if (!M3SupportedOS.hasShownUnsupportedMessage && (true || !M3SupportedOS.IsSupportedOperatingSystem()))
+            {
+                M3SupportedOS.hasShownUnsupportedMessage = true;
+                string osList = string.Join("\n", M3SupportedOS.GetSupportedOperatingSystems().Select(x => $@" - {x.ToMinimumSupportedString()}")); //do not localize
+                var finalString = M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList);
+                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(finalString) + RichTextHelper.GetFooter();
+            }
+
             var retvar = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
             var localizedTip = TipsService.GetTip(App.CurrentLanguage);
             if (localizedTip != null)
@@ -1805,13 +1813,13 @@ namespace ME3TweaksModManager
         private void ShowCachedTargetsPanel()
         {
             var cachedTargetsPanel = new CachedTargetsPanel();
-            cachedTargetsPanel.Close += (a, b) => 
-            { 
+            cachedTargetsPanel.Close += (a, b) =>
+            {
                 if (cachedTargetsPanel.Result.ReloadTargets)
                 {
                     PopulateTargets(SelectedGameTarget);
                 }
-                ReleaseBusyControl(); 
+                ReleaseBusyControl();
             };
             ShowBusyControl(cachedTargetsPanel);
         }
@@ -2177,18 +2185,19 @@ namespace ME3TweaksModManager
             }
             else
             {
-
-                if (!App.IsOperatingSystemSupported())
-                {
-                    string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
-                    M3Log.Warning(@"This operating system is not supported");
-                    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList),
-                        M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else
-                {
-                    // Unimplemented last crash dialog code removed 03/28/2025
-                }
+                // Dialog removed 01/26/2026;
+                // Now forces NoModSelectedText.
+                //if (!App.IsOperatingSystemSupported())
+                //{
+                //    string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
+                //    M3Log.Warning(@"This operating system is not supported");
+                //    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList),
+                //        M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Warning);
+                //}
+                //else
+                //{
+                //    // Unimplemented last crash dialog code removed 03/28/2025
+                //}
             }
 
             // Run on background thread as we don't need the result of this
@@ -2726,6 +2735,7 @@ namespace ME3TweaksModManager
                 Settings.ForcePullContentNextBoot = false; // We have pulled content now
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText))); // Update localized tip shown
+                M3SupportedOS.StartupCompleted = true;
 
                 if (firstStartupCheck)
                 {
