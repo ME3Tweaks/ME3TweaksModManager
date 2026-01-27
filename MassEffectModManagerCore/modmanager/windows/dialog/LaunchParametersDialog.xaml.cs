@@ -80,13 +80,21 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadPackage(LaunchOptionsPackage package)
         {
-            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = LaunchOptionsPackage.GetCustomTitle() };
+            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = LaunchOptionsPackage.GetCustomTitle(Owner) };
             PackageGuid = LaunchPackage.PackageGuid == Guid.Empty ? Guid.NewGuid() : LaunchPackage.PackageGuid; // Keep existing guid if found
             ParameterSetName = LaunchPackage.PackageTitle;
             LoadLanguagesAndOptions();
 
             var chosenLang = LanguageOptions.FirstOrDefault(x => x.LanguageString == LaunchPackage.ChosenLanguage);
-            if (chosenLang != null) chosenLang.UIIsSelected = true;
+            if (chosenLang != null)
+            {
+                chosenLang.UIIsSelected = true;
+                // 01/27/2026 - Must set here or save with no changes will lose it
+                ChosenLanguage = chosenLang.LanguageString;
+            }
+
+            // 01/27/2026 - Must set here or save with no changes will lose it
+            SubtitleSize = LaunchPackage.SubtitleSize;
         }
 
         private void LoadLanguagesAndOptions()

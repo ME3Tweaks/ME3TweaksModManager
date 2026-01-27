@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Windows;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.windows.dialog;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.launcher
@@ -128,6 +130,40 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
         }
 
         public static string GetDefaultTitle() => M3L.GetString(M3L.string_startGame);
-        public static string GetCustomTitle() => M3L.GetString(M3L.string_startGameCustom);
+        public static string GetCustomTitle(Window owner)
+        {
+            var baseStr = M3L.GetString(M3L.string_startGameCustom);
+            if (owner is LaunchOptionSelectorDialog losd)
+            {
+                int i = 1;
+                while (i < 100)
+                {
+                    string testStr = baseStr;
+                    if (i == 1)
+                    {
+                        // Don't change for test
+                    }
+                    else
+                    {
+                        // 'Custom Option)' -> 'Custom Option 2)'
+                        testStr = testStr.Replace(@")", $@" {i})");
+                    }
+
+                    if (losd.AvailableLaunchOptionsPackages.Any(x => x.PackageTitle == testStr))
+                    {
+                        // Existing package was found
+                    }
+                    else
+                    {
+                        // Existing package not found - use this one.
+                        baseStr = testStr;
+                        break;
+                    }
+
+                    i++;
+                }
+            }
+            return baseStr;
+        }
     }
 }
