@@ -285,7 +285,7 @@ namespace ME3TweaksModManager
 
         private string InternalNoModSelectedText(bool richText)
         {
-            if (!M3SupportedOS.hasShownUnsupportedMessage && (true || !M3SupportedOS.IsSupportedOperatingSystem()))
+            if (!M3SupportedOS.hasShownUnsupportedMessage && (!M3SupportedOS.IsSupportedOperatingSystem()))
             {
                 M3SupportedOS.hasShownUnsupportedMessage = true;
                 string osList = string.Join("\n", M3SupportedOS.GetSupportedOperatingSystems().Select(x => $@" - {x.ToMinimumSupportedString()}")); //do not localize
