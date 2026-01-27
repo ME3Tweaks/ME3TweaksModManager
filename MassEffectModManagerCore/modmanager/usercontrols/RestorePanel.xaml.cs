@@ -86,7 +86,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public void OnRestoreTaskFinished()
         {
             if (HandlingShutdownTasks && CanClose())
+            {
                 ClosePanel(); // We have finished tasks
+            }
+            else
+            {
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
     }
 }
