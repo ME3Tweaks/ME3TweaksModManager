@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.Restore;
@@ -8,7 +10,6 @@ using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
-using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ME3TweaksModManager.modmanager.objects
@@ -85,7 +86,7 @@ namespace ME3TweaksModManager.modmanager.objects
 
         public GenericCommand RestoreButtonCommand { get; init; }
 
-        private object syncObj = new object();
+        // private object syncObj = new object();
 
         public GameRestoreWrapper(MEGame game, IEnumerable<GameTargetWPF> availableTargets, MainWindow window, Action restoreCompletedCallback = null)
         {
@@ -210,7 +211,15 @@ namespace ME3TweaksModManager.modmanager.objects
                         }
                     }
 
-                    RestoreCompletedCallback?.Invoke();
+                    // We delay a bit to let UI fully synchronize
+                    // if we don't wait the buttons don't unlock.
+                    Task.Run(() =>
+                    {
+                        Thread.Sleep(300);
+                    }).ContinueWithOnUIThread(x =>
+                    {
+                        RestoreCompletedCallback?.Invoke();
+                    });
                 }
             });
         }
