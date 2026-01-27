@@ -2469,7 +2469,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         foreach (var conditionaldlc in altdlc.ConditionalDLC) // Conditional DLC are not available for COND_MANUAL
                         {
                             var info = TPMIService.GetThirdPartyModInfo(conditionaldlc.DLCFolderName.Key, Game);
-                            autoConfigs.Add(conditionaldlc.ToUIString(info));
+                            autoConfigs.Add(conditionaldlc.ToUIString(info, Settings.DeveloperMode));
                         }
                     }
                     else if (altdlc.Condition == AlternateDLC.AltDLCCondition.COND_MANUAL && altdlc.DLCRequirementsForManual != null && altdlc.DLCRequirementsForManual.Any())
@@ -2477,7 +2477,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         foreach (var manualTrigger in altdlc.DLCRequirementsForManual)
                         {
                             var info = TPMIService.GetThirdPartyModInfo(manualTrigger.DLCFolderName.Key, Game);
-                            autoConfigs.Add(manualTrigger.ToUIString(info));
+                            autoConfigs.Add(manualTrigger.ToUIString(info, Settings.DeveloperMode));
                         }
                     }
                 }
@@ -2486,7 +2486,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     foreach (var conditionaldlc in altfile.ConditionalDLC)
                     {
                         var info = TPMIService.GetThirdPartyModInfo(conditionaldlc.DLCFolderName.Key, Game);
-                        autoConfigs.Add(conditionaldlc.ToUIString(info));
+                        autoConfigs.Add(conditionaldlc.ToUIString(info, Settings.DeveloperMode));
                     }
                 }
             }
