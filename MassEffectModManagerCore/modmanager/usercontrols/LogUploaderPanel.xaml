@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ME3TweaksModManager"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:fa5="http://schemas.fontawesome.com/icons/"
@@ -98,6 +99,8 @@
                         Text="{DynamicResource string_desc_extendedDiagnostics}"
                         TextWrapping="Wrap" />
                     <CheckBox
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}"
+                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
                         Content="{DynamicResource string_checkbox_extendedDiagnostics}"
                         ToolTip="{DynamicResource string_tooltip_extendedDiagnostics}"
                         IsChecked="{Binding AdvancedDiagnostics}"
@@ -126,6 +129,14 @@
                 Text="{DynamicResource string_diagShareTheLink}"
                 TextWrapping="Wrap"
                 Margin="0,5" />
+            <CheckBox
+                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
+                Content="{DynamicResource string_checkbox_useLocalLogViewer}"
+                ToolTip="{DynamicResource string_tooltip_useLocalLogViewer}"
+                IsChecked="{Binding UseLocalLogViewer}"
+                IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+
+
         </StackPanel>
     </DockPanel>
 </usercontrols:MMBusyPanelBase>

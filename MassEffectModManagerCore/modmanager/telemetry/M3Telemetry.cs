@@ -1,12 +1,6 @@
 ﻿using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
-using Pathoschild.FluentNexus.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.telemetry
 {

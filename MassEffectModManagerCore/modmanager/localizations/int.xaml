@@ -1279,6 +1279,9 @@
     <system:String x:Key="string_desc_extendedDiagnostics">Extended diagnostics perform additional checks on your game, but take a significant amount of additional time. Select this if requested by a developer.</system:String>
     <system:String x:Key="string_tooltip_extendedDiagnostics">Check to enable additional diagnostic tests</system:String>
     <system:String x:Key="string_checkbox_extendedDiagnostics">Perform extended diagnostics</system:String>
+    <system:String x:Key="string_tooltip_useLocalLogViewer">View in the local log viewer without uploading</system:String>
+    <system:String x:Key="string_checkbox_useLocalLogViewer">Use local log viewer</system:String>
+    <system:String x:Key="string_viewInLogViewer">View in log viewer</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>

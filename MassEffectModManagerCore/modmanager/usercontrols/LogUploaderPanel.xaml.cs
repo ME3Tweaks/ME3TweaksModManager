@@ -29,6 +29,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// If log upload is in progress
         /// </summary>
         public bool UploadingLog { get; private set; }
+
+        /// <summary>
+        /// If the log should be shown in the local log viewer instead of uploaded
+        /// </summary>
+        public bool UseLocalLogViewer { get; set; }
+
         /// <summary>
         /// The message shown in the UI about what's happening
         /// </summary>
@@ -180,7 +186,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     UpdateTaskbarProgressStateCallback = updateTaskbarProgressStateCallback,
                     UpdateProgressCallback = updateProgressCallback,
                     SelectedSaveFilePath = SelectedSaveFile?.SaveFilePath,
-                    UpdateStatusCallback = updateStatusCallback
+                    UpdateStatusCallback = updateStatusCallback,
+                    UseLocalLogViewer = UseLocalLogViewer
                 };
 
                 b.Result = LogCollector.SubmitDiagnosticLogAsync(package).Result;
@@ -190,14 +197,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 if (b.Error == null && b.Result is LogUploadPackage lup)
                 {
-                    if (lup.Response.StartsWith(@"https"))
+                    if (lup.Response != null && lup.Response.StartsWith(@"https"))
                     {
                         M3Utilities.OpenWebpage(lup.Response);
                     }
                     else
                     {
                         OnClosing(DataEventArgs.Empty);
-                        var res = M3L.ShowDialog(Window.GetWindow(this), lup.Response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        if (!UseLocalLogViewer)
+                        {
+                            var res = M3L.ShowDialog(Window.GetWindow(this), lup.Response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
 
                         // 12/13/2025 - Add local log viewer if ME3Tweaks is down or inaccessible
                         var localLogViewer = new M3LogViewerWindow(lup.FullLogText);
