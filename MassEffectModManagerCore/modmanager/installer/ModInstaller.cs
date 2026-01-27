@@ -952,10 +952,10 @@ namespace ME3TweaksModManager.modmanager.installer
                             // 01/26/2026 - Add block containing applied m3ms
                             if (transition.AppliedMergeMods != null && transition.AppliedMergeMods.Any())
                             {
-                                if (!string.IsNullOrWhiteSpace(newTextToAppend))
-                                {
-                                    newTextToAppend += "\n"; // do not localize
-                                }
+                                //if (!string.IsNullOrWhiteSpace(newTextToAppend))
+                                //{
+                                //    newTextToAppend += "\n"; // do not localize
+                                //st}
                                 newTextToAppend += BasegameFileRecord.CreateBlock(MergeMod1.MERGEMOD_BGFIS_DATA_BLOCK, string.Join(BasegameFileRecord.BLOCK_SEPARATOR, transition.AppliedMergeMods));
                             }
 
