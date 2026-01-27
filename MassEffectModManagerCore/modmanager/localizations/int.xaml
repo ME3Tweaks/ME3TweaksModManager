@@ -3213,6 +3213,7 @@
     
     <!-- Cached Target Manager -->
     <system:String x:Key="string_manageCachedTargets">Manage Cached Targets</system:String>
+    <system:String x:Key="string_tooltip_manageCachedTargets">View what targets Mod Manager attempts to load for editing</system:String>
     <system:String x:Key="string_desc_manageCachedTargets">Mod Manager contains a list of game targets it has seen, known as cached targets. Over time, these may become invalid due to changes such as moving or deleting games. Removing invalid targets will improve application startup time.</system:String>
     <system:String x:Key="string_cachedTargets">Cached Targets</system:String>
     <system:String x:Key="string_targetInformation">Target Information</system:String>
