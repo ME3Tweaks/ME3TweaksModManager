@@ -42,6 +42,9 @@
             Key="F"
             Modifiers="Control"
             Command="{Binding SearchModsCommand}" />
+        <KeyBinding
+            Key="Delete"
+            Command="{Binding DeleteModFromLibraryCommand}" />
     </Window.InputBindings>
     <Window.Resources>
         <Storyboard

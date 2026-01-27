@@ -1474,23 +1474,84 @@ namespace ME3TweaksModManager
 
         private bool CanDeleteModFromLibrary() => SelectedMod != null && !ContentCheckInProgress;
 
-        private void DeleteModFromLibraryWrapper()
+        private async void DeleteModFromLibraryWrapper()
         {
-            DeleteModFromLibrary(SelectedMod);
+            await DeleteModFromLibrary(SelectedMod);
         }
 
-        public bool DeleteModFromLibrary(Mod selectedMod)
+        public async Task<bool> DeleteModFromLibrary(Mod selectedMod)
         {
+            if (selectedMod == null)
+            {
+                return false;
+            }
+
             var confirmationResult = M3L.ShowDialog(this,
                 M3L.GetString(M3L.string_interp_dialogDeleteSelectedModFromLibrary, selectedMod.ModName),
-                M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                MessageBoxResult.Yes);
             if (confirmationResult == MessageBoxResult.Yes)
             {
                 M3Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
-                if (MUtilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
+
+                // Submit background task
+                var deleteTask = BackgroundTaskEngine.SubmitBackgroundJob(
+                    @"ModDelete",
+                    M3L.GetString(M3L.string_interp_deletingModFromLibrary, selectedMod.ModName),
+                    M3L.GetString(M3L.string_interp_deletedModFromLibrary, selectedMod.ModName));
+
+                // Set loading state to disable UI
+                M3LoadedMods.Instance.SetLoadingState(true);
+
+                try
                 {
-                    M3LoadedMods.Instance.RemoveMod(selectedMod);
-                    return true;
+                    // Perform deletion on background thread
+                    bool deletionSuccess = await Task.Run(() => MUtilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath));
+
+                    if (deletionSuccess)
+                    {
+                        M3Log.Information($@"Successfully deleted mod from library: {selectedMod.ModName}");
+                        M3LoadedMods.Instance.RemoveMod(selectedMod);
+                        return true;
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Failed to delete mod from library: {selectedMod.ModName}");
+                        
+                        // Update task completion text to indicate failure
+                        deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
+                        
+                        // Show error dialog
+                        M3L.ShowDialog(this,
+                            M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName),
+                            M3L.GetString(M3L.string_error), 
+                            MessageBoxButton.OK, 
+                            MessageBoxImage.Error);
+                        
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Error($@"Exception occurred while deleting mod from library: {selectedMod.ModName}. {ex.Message}");
+                    
+                    // Update task completion text to indicate failure
+                    deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
+                    
+                    // Show error dialog with exception details
+                    M3L.ShowDialog(this,
+                        $"{M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName)}\n\n{ex.Message}",
+                        M3L.GetString(M3L.string_error), 
+                        MessageBoxButton.OK, 
+                        MessageBoxImage.Error);
+                    
+                    return false;
+                }
+                finally
+                {
+                    // Always restore UI state and complete task
+                    M3LoadedMods.Instance.SetLoadingState(false);
+                    BackgroundTaskEngine.SubmitJobCompletion(deleteTask);
                 }
 
                 //LoadMods();

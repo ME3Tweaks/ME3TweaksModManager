@@ -182,6 +182,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_unendorseMod = "string_interp_unendorseMod";
 		public const string string_interp_unableToModifyBioinputIni = "string_interp_unableToModifyBioinputIni";
 		public const string string_interp_dialogDeleteSelectedModFromLibrary = "string_interp_dialogDeleteSelectedModFromLibrary";
+		public const string string_interp_deletingModFromLibrary = "string_interp_deletingModFromLibrary";
+		public const string string_interp_deletedModFromLibrary = "string_interp_deletedModFromLibrary";
+		public const string string_interp_failedToDeleteModFromLibrary = "string_interp_failedToDeleteModFromLibrary";
 		public const string string_interp_launching = "string_interp_launching";
 		public const string string_interp_launched = "string_interp_launched";
 		public const string string_interp_cannotInstallModGameNotInstalled = "string_interp_cannotInstallModGameNotInstalled";

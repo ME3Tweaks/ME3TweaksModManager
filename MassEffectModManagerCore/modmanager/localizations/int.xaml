@@ -177,6 +177,9 @@
     <system:String x:Key="string_interp_unendorseMod">Unendorse {0}?</system:String>
     <system:String x:Key="string_interp_unableToModifyBioinputIni">Unable to modify BioInput.ini: {0}</system:String>
     <system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">Delete {0} from your mod library? This only deletes the mod from your local Mod Manager library, it does not remove it from any game installations.</system:String>
+    <system:String x:Key="string_interp_deletingModFromLibrary">Deleting {0} from library</system:String>
+    <system:String x:Key="string_interp_deletedModFromLibrary">Deleted {0} from library</system:String>
+    <system:String x:Key="string_interp_failedToDeleteModFromLibrary">Failed to delete {0} from library</system:String>
     <system:String x:Key="string_interp_launching">Launching {0}</system:String>
     <system:String x:Key="string_interp_launched">Launched {0}</system:String>
     <system:String x:Key="string_interp_cannotInstallModGameNotInstalled">Cannot install mod: {0} is not installed.</system:String>
