@@ -90,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
 
-        private void BeginInstallingMod()
+        private async void BeginInstallingMod()
         {
             Installer = new ModInstaller(InstallOptionsPackage);
             Installer.SetPercent = SetPercent;  
@@ -98,11 +98,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Installer.SetPercentVisibility = SetPercentVisibility;
 
             M3Log.Information($@"BeginInstallingMod(): {InstallOptionsPackage.ModBeingInstalled.ModName}");
-            NamedBackgroundWorker bw = new NamedBackgroundWorker($@"ModInstaller-{InstallOptionsPackage.ModBeingInstalled.ModName}");
-            bw.WorkerReportsProgress = true;
-            bw.DoWork += (_,_)=> { Installer.InstallMod(); };
-            bw.RunWorkerCompleted += ModInstallationCompleted;
-            bw.RunWorkerAsync();
+            
+            Exception error = null;
+            try
+            {
+                await Installer.InstallMod();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+            
+            ModInstallationCompleted(error);
         }
 
         private void SetPercent(int percent)
@@ -126,17 +133,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             PercentVisibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void ModInstallationCompleted(Exception error)
         {
             SystemSleepManager.AllowSleep(); // We can go back to sleep again.
 
             var installerResult = Installer.InstallationResult;
-            if (e.Error != null)
+            if (error != null)
             {
                 M3Log.Error(@"An error occurred during mod installation.");
-                M3Log.Error(App.FlattenException(e.Error));
+                M3Log.Error(App.FlattenException(error));
                 installerResult.Result = EModInstallerResult.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER; // Set result code for telemetry
-                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorOccuredDuringInstallation, App.FlattenException(e.Error)), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorOccuredDuringInstallation, App.FlattenException(error)), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
@@ -168,16 +175,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_appAboutToCrashYouFoundBug), M3L.GetString(M3L.string_appCrash), MessageBoxButton.OK, MessageBoxImage.Error);
                     M3Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
                     // End bug message
-                    if (e.Result == null)
-                    {
-                        M3Log.Fatal(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
-                        throw new Exception(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
-                    }
-                    else
-                    {
-                        M3Log.Fatal(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
-                        throw new Exception(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
-                    }
+                    M3Log.Fatal(@"Mod installer did not have result code. This should be caught and handled, but it wasn't!");
+                    throw new Exception(@"Mod installer did not have result code. This should be caught and handled, but it wasn't!");
                 }
             }
 
