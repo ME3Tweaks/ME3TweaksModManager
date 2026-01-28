@@ -1,8 +1,11 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.usercontrols.options;
 using ME3TweaksModManager.ui;
 #if WITH_APPCENTER
@@ -19,6 +22,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class OptionsPanel : MMBusyPanelBase
     {
+        private bool optingIntoBetaFlowActive;
+
         public OptionsPanel()
         {
             LoadCommands();
@@ -54,7 +59,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     ]
                 },
 
-                new M3SettingGroup() 
+                new M3SettingGroup()
                 {
                     GroupName = "Beta mode settings",
                     GroupDescription = "These settings are available when the application is in Beta mode.",
@@ -93,16 +98,36 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         }
 
+
         private bool ChangingBetaSetting()
         {
             // Did the setting just change as they opted in?
             if (Settings.BetaMode)
             {
+                optingIntoBetaFlowActive = true;
+
                 var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_optingIntoBeta),
                     M3L.GetString(M3L.string_enablingBetaMode), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     Settings.BetaMode = false; //turn back off.
+                }
+                optingIntoBetaFlowActive = false;
+            }
+            else if (!optingIntoBetaFlowActive)
+            {
+                var result = M3L.ShowDialog(mainwindow, 
+                    "Downgrade Mod Manager to the current stable version?",
+                    "Disabling Beta mode",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Information,
+                    MessageBoxResult.No);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Task.Run(() =>
+                    {
+                        M3UpdateCheck.DowngradeToStable();
+                    });
                 }
             }
 

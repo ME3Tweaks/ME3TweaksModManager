@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using ME3TweaksCore.Helpers;
-using ME3TweaksModManager.modmanager.localizations;
+﻿using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.usercontrols;
+using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
@@ -15,17 +10,24 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
         private static int declineCountSkipsRemaining = 0;
 
+        public static bool ForceStableDowngrade { get; private set; }
+
         public static void SetUpdateDeclined()
         {
             declineCountSkipsRemaining = 6; // We will skip the next 6 manifest refreshes
         }
 
-        public static void CheckManifestForUpdates(MainWindow window)
+        /// <summary>
+        /// Checks if the manifest has an update for the program. If so, shows the update panel.
+        /// </summary>
+        /// <param name="window">Window to show update panel on</param>
+        /// <returns>True if update found, false otherwise.</returns>
+        public static bool CheckManifestForUpdates(MainWindow window)
         {
             if (declineCountSkipsRemaining > 0)
             {
                 declineCountSkipsRemaining--;
-                return; // We don't check for updates if the decline count is still above zero
+                return false; // We don't check for updates if the decline count is still above zero
                 // This is how many times manifest has refreshed since the user declined since we don't want to spam
                 // user with update prompts, but we want more server refreshes
             }
@@ -34,24 +36,38 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             if (window.HasAnyQueuedPanelsOfType(typeof(ProgramUpdateNotification)))
             {
                 M3Log.Information(@"Program update notification panel is visible or queued; not showing again on periodic refresh");
-                return;
+                return false;
             }
 
 
             if (ServerManifest.TryGetInt(ServerManifest.M3_LATEST_BUILD_NUMBER, out var latestServerBuildNumer))
             {
-                if (latestServerBuildNumer > App.BuildNumber)
+                var isDowngrading = ForceStableDowngrade && latestServerBuildNumer < App.BuildNumber;
+                if (latestServerBuildNumer > App.BuildNumber || isDowngrading)
                 {
-                    M3Log.Information(@"Found update for Mod Manager: Build " + latestServerBuildNumer);
+                    if (isDowngrading)
+                    {
+                        M3Log.Information(@"Found stable downgrade for Mod Manager: Build " + latestServerBuildNumer);
+                    }
+                    else
+                    {
+                        M3Log.Information(@"Found update for Mod Manager: Build " + latestServerBuildNumer);
+                    }
 
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         var updateAvailableDialog = new ProgramUpdateNotification();
+                        if (isDowngrading)
+                        {
+                            updateAvailableDialog.UpdateMessage = "This will downgrade Mod Manager to the current stable release.";
+                        }
                         updateAvailableDialog.Close += (sender, args) => { window.ReleaseBusyControl(); };
                         window.ShowBusyControl(updateAvailableDialog, true);
                     });
+                    return true;
                 }
 #if !DEBUG
+                // Same-version patch update
                 else if (latestServerBuildNumer == App.BuildNumber)
                 {
                     if (ServerManifest.TryGetString(ServerManifest.M3_BUILD_RERELEASE_MD5, out var md5) && !string.IsNullOrWhiteSpace(md5))
@@ -69,16 +85,51 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                                     updateAvailableDialog.Close += (sender, args) => { window.ReleaseBusyControl(); };
                                     window.ShowBusyControl(updateAvailableDialog, true);
                                 });
+                                return true;
                             }
                         }
                     }
                 }
-#endif
+#endif  
                 else
                 {
                     M3Log.Information(@"Mod Manager is up to date");
                 }
+             
             }
+         
+            // No update found
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// Runs on a background thread.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        internal static void DowngradeToStable()
+        {
+            declineCountSkipsRemaining = 0;
+            ForceStableDowngrade = true;
+            ServerManifest.FetchOnlineStartupManifest(false, performTouchup: false);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var hasUpdate = CheckManifestForUpdates(MainWindow.Instance);
+                ForceStableDowngrade = false;
+
+                if (!hasUpdate)
+                {
+                    M3L.ShowDialog(MainWindow.Instance, $"{App.AppVersionHR} is the current stable build. No downgrade is necessary.", "Downgrade check");
+                }
+            });
+        }
+
+#if DEBUG
+        void ForceReferences()
+        {
+            // This forces a reference to keep it in the file
+            M3L.GetString(M3L.string_ok);
+#endif
         }
     }
 }
