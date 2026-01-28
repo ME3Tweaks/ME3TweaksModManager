@@ -116,11 +116,12 @@
                             <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right"/>
                             <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" TextWrapping="Wrap" />
                         </DockPanel>
-                        <ListBox Grid.Row="3" BorderThickness="1" 
+                        <ListBox 
+                                 Grid.Row="3" BorderThickness="1" 
                                  ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" 
                                  ItemsSource="{Binding DisplayedASIMods}" 
                                  HorizontalContentAlignment="Stretch" 
-                                 SelectedItem="{Binding SelectedASI}"
+                                 SelectedItem="{Binding SelectedASI, Mode=OneWay}"
                                  SelectionChanged="ASIManagerLists_SelectedChanged">
                         </ListBox>
                     </Grid>

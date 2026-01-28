@@ -1,25 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.NativeMods.Interfaces;
-using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.NativeMods;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
-using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
-using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -40,6 +35,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ObservableCollectionExtended<ASIGameWPF> Games { get; } = new();
 
 
+        private void OnInstallInProgressChanged()
+        {
+            // Keep UI look up to date
+            M3Utilities.RefreshBindings();
+        }
 
         /// <summary>
         /// This ASI Manager is a feature ported from ME3CMM and maintains synchronization with Mass Effect 3 Mod Manager's code for 
@@ -86,7 +86,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void InstallUninstallASI()
+        private async void InstallUninstallASI()
         {
             if (SelectedASIObject is IInstalledASIMod instASI)
             {
@@ -101,7 +101,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     else
                     {
-                        internalInstallASI(kam.AssociatedManifestItem.OwningMod.LatestVersionIncludingHidden);
+                        // Await task on background thread 
+                        await Task.Run(() => internalInstallASI(kam.AssociatedManifestItem.OwningMod.LatestVersionIncludingHidden));
                     }
                 }
                 else
@@ -113,38 +114,57 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else if (SelectedASIObject is ASIMod asi)
             {
-                internalInstallASI(asi.LatestVersion);
+                // Await task on background thread 
+                await Task.Run(() => internalInstallASI(asi.LatestVersion));
             }
         }
 
-        private void internalInstallASI(ASIModVersion asi)
+        private async Task internalInstallASI(ASIModVersion asi)
         {
+            var originalSelectedObject = SelectedASIObject;
             InstallInProgress = true;
             var target = Games.First(x => x.Game == asi.Game);
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ASIInstallWorker");
-            nbw.DoWork += (a, b) =>
+            try
             {
-                b.Result = ASIManager.InstallASIToTarget(asi, target.CurrentGameTarget);
-            };
-            nbw.RunWorkerCompleted += (a, b) =>
+                // We don't read the result cause we don't really care
+                await Task.Run(() => ASIManager.InstallASIToTarget(asi, target.CurrentGameTarget));
+            }
+            catch (Exception ex)
+            {
+                M3Log.Error($@"Exception installing ASI: {ex.Message}");
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    M3L.ShowDialog(mainwindow, $"An error occurred installing the ASI: {ex.Message}", "M3L.GetString(M3L.string_errorDeletingASI)", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
+            }
+            finally
             {
                 InstallInProgress = false;
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception installing ASI: {b.Error.Message}");
-                    M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccuredDeletingTheASI, b.Error.Message), M3L.GetString(M3L.string_errorDeletingASI), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
                 RefreshASIStates(asi.Game);
+                SelectASI(originalSelectedObject);
                 UpdateSelectionTexts(SelectedASIObject);
-                CommandManager.InvalidateRequerySuggested();
-            };
-            InstallInProgress = true;
-            nbw.RunWorkerAsync();
+                M3Utilities.RefreshBindings();
+            }
+        }
+
+        private void SelectASI(object obj)
+        {
+            // When uninstalling it's okay to not reselect it
+            if (obj is ASIMod am)
+            {
+                // ASI should be going to the installed state
+                var asiGame = Games.FirstOrDefault(x => x.Game == am.Game);
+                if (asiGame != null) {
+                    asiGame.SelectedASI = asiGame.DisplayedASIMods.OfType<IKnownInstalledASIMod>().FirstOrDefault(x => x.AssociatedManifestItem.OwningMod.UpdateGroupId == am.UpdateGroupId);
+                    SelectedASIObject = asiGame.SelectedASI;
+                }
+            }
         }
 
         private bool CanInstallASI()
         {
             if (SelectedASIObject == null) return false;
+            if (InstallInProgress) return false;
             if (SelectedASIObject is ASIMod am)
             {
                 return !MUtilities.IsGameRunning(am.Game) && (Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false);
@@ -224,7 +244,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         InstallButtonText = M3L.GetString(M3L.string_updateASI);
                     }
                     else
-                    { 
+                    {
                         // Not managed by M3 UI
                         subtext += M3L.GetString(M3L.string_installedOutdated);
                         InstallButtonText = M3L.GetString(M3L.string_uninstallASI);

@@ -147,7 +147,7 @@ namespace ME3TweaksModManager
         /// </summary>
         /// <param name="args">Command line arguments passed</param>
         /// <returns>True if window should be brought to the foreground, false otherwise</returns>
-        internal bool HandleInstanceArguments(string[] args)
+        internal async Task<bool> HandleInstanceArguments(string[] args)
         {
             // Fix pass through in debug mode which uses a .dll arg
             if (args.Any() && args[0].EndsWith(@".dll"))
@@ -179,7 +179,7 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingMergeModCompileManifest = parsedCommandLineArgs.Value.MergeModManifestToCompile;
                 if (parsedCommandLineArgs.Value.FeatureLevel > 0)
                     CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
-                return handleInitialPending();
+                return await handleInitialPending();
             }
 
             return false;
@@ -1185,7 +1185,7 @@ namespace ME3TweaksModManager
                             if (queue.ASIModsToInstall.Any())
                             {
                                 ShowRunAndDone(
-                                    (config) => InstallBatchASIs(target, queue),
+                                    (config) => InstallBatchASIs(target, queue).Result,
                                     M3L.GetString(M3L.string_installingASIMods),
                                     M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
                             }
@@ -1306,7 +1306,7 @@ namespace ME3TweaksModManager
 
         }
 
-        private void FinishBatchInstall(BatchLibraryInstallQueue queue)
+        private async void FinishBatchInstall(BatchLibraryInstallQueue queue)
         {
             // 11/18/2023 - batch installer with ASI mods was not clearing out queue
             // This should force merges to occur.
@@ -1321,19 +1321,21 @@ namespace ME3TweaksModManager
                 if (shouldSave)
                 {
                     M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
-                    queue.Save(true); // Commit the result
+                    // This should be pretty fast since it doesn't have to hash. So we don't run this
+                    // async.
+                    queue.Save(true).Wait(); // Commit the result
                 }
             }
         }
 
-        private string InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
+        private async Task<string> InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
         {
             string result = null;
             foreach (var asi in queue.ASIModsToInstall)
             {
                 if (asi.IsAvailableForInstall())
                 {
-                    ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
+                    await ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
                 }
                 else
                 {
@@ -2824,7 +2826,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            bw.RunWorkerCompleted += async (a, b) =>
             {
                 if (b.Error != null)
                 {
@@ -2836,7 +2838,7 @@ namespace ME3TweaksModManager
                 if (firstStartupCheck)
                 {
                     M3Utilities.WriteExeLocation();
-                    handleInitialPending();
+                    await handleInitialPending();
                 }
 
                 if (Settings.GenerationSettingOT)
@@ -2877,7 +2879,7 @@ namespace ME3TweaksModManager
         /// First time handling pending when app initially boots.
         /// </summary>
         /// <returns>If the main window should be brought to the foreground or not.</returns>
-        private bool handleInitialPending()
+        private async Task<bool> handleInitialPending()
         {
             bool shouldBringToFG = false;
 
@@ -2948,7 +2950,10 @@ namespace ME3TweaksModManager
                         GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
                         if (t != null)
                         {
-                            if (ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, CommandLinePending.PendingInstallASIVersion, includeHiddenASIs: true))
+                            CurrentOperationText = $"Installing ASI mod";
+                            var result = await ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, CommandLinePending.PendingInstallASIVersion, includeHiddenASIs: true);
+
+                            if (result)
                             {
                                 CurrentOperationText = M3L.GetString(M3L.string_installedASIModByCommandLineRequest);
                             }
