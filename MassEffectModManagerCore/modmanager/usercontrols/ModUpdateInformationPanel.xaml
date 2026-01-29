@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     xmlns:me3Tweaks="clr-namespace:ME3TweaksModManager.modmanager.me3tweaks"
