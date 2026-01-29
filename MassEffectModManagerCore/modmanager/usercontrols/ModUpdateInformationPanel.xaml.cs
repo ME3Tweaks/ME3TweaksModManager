@@ -35,6 +35,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private List<Mod> updatedMods = new();
         private bool RefreshContentsOnVisible = false;
         public bool OperationInProgress { get; set; }
+        public bool IsNexusPremiumUser => NexusModsUtilities.UserInfo?.IsPremium == true;
 
         public ModUpdateInformationPanel(List<M3OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
@@ -110,9 +111,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (ui is M3OnlineContent.NexusModUpdateInfo nmui)
                 {
-                    var usedInAppDownloader = await AttemptQueueNexusModDownload(nmui);
-                    if (!usedInAppDownloader)
+                    // Check if we should auto-download and import
+                    if (Settings.AutoImportModUpdates && NexusModsUtilities.UserInfo?.IsPremium == true)
                     {
+                        var usedInAppDownloader = await AttemptQueueNexusModDownload(nmui);
+                        if (!usedInAppDownloader)
+                        {
+                            var url = $@"https://nexusmods.com/{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}?tab=files";
+                            M3Utilities.OpenWebpage(url);
+                        }
+                    }
+                    else
+                    {
+                        // Open webpage for non-premium users or if auto-import is disabled
                         var url = $@"https://nexusmods.com/{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}?tab=files";
                         M3Utilities.OpenWebpage(url);
                     }
@@ -402,6 +413,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         // 03/21/2025 - Show all download button if we are in beta mode.
         public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || NexusModsUtilities.UserInfo?.IsPremium == true));
+
+        /// <summary>
+        /// If the clear completed button should be shown at all to the user
+        /// </summary>
+        public bool ShowClearCompletedButton => UpdatableMods.Any(x => !x.CanUpdate);
 
         private void DownloadAll()
         {

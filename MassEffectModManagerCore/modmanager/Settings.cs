@@ -486,6 +486,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _maxConcurrentImportOperations, value);
         }
 
+        private static bool _autoImportModUpdates = true;
+        public static bool AutoImportModUpdates
+        {
+            get => _autoImportModUpdates;
+            set => SetProperty(ref _autoImportModUpdates, value);
+        }
+
         #region SESSION ONLY SETTINGS - DO NOT SAVE OR LOAD THESE
         private static bool _sessionOnly_ShowWhichModsCanCheckForUpdates;
 
@@ -610,6 +617,7 @@ namespace ME3TweaksModManager.modmanager
 
             // Downloads Manager
             MaxConcurrentImportOperations = LoadSettingInt(settingsIni, "ModManager", "MaxConcurrentImportOperations", 3);
+            AutoImportModUpdates = LoadSettingBool(settingsIni, "ModManager", "AutoImportModUpdates", true);
 
             // BETA OPTIONS
             ShowInstalledModsInLibrary = LoadSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", false);
@@ -853,6 +861,7 @@ namespace ME3TweaksModManager.modmanager
 
                     // Download Manager
                     SaveSettingInt(settingsIni, "ModManager", "MaxConcurrentImportOperations", MaxConcurrentImportOperations);
+                    SaveSettingBool(settingsIni, "ModManager", "AutoImportModUpdates", AutoImportModUpdates);
 
                     File.WriteAllText(SettingsPath, settingsIni.ToString());
                     return SettingsSaveResult.SAVED;

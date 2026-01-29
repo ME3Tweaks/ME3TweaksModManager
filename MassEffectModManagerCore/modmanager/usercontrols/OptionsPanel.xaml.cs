@@ -59,6 +59,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     ]
                 },
 
+                // Beta mode settings
                 new M3SettingGroup()
                 {
                     GroupName = M3L.GetString(M3L.string_betaModeSettings),
@@ -69,6 +70,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     ]
                 },
 
+                // Legendary Edition options
                 new M3SettingGroup()
                 {
                     GroupName = M3L.GetString(M3L.string_legendaryEditionOptions),
@@ -80,6 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     ]
                 },
 
+                // Logging options
                 new M3SettingGroup()
                 {
                     GroupName = M3L.GetString(M3L.string_Logging),
@@ -94,8 +97,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     ]
                 }
             ];
-
-
         }
 
 
