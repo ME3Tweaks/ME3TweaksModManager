@@ -84,6 +84,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
+        private void OnDownloadStateChanged(object sender, EventArgs e)
+        {
+            if (sender is ModDownload md)
+            {
+                if (md.DownloadState is EModDownloadState.QUEUED)
+                {
+                    // This panel sets this to false for performance.
+                    md.ProgressIndeterminate = false;
+                }
+                else if (md.DownloadState is EModDownloadState.FINISHED or EModDownloadState.FAILED)
+                {
+                    TriggerPropertyChangedFor(nameof(ShowClearCompletedButton));
+                    md.DownloadStateChanged -= OnDownloadStateChanged;
+                }
+            }
+        }
+
         private bool CanApplyUpdateToMod(object obj)
         {
             if (obj is M3OnlineContent.ModUpdateInfo ui)
@@ -149,6 +166,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         nmui.MarkUpdateFailed(M3L.GetString(M3L.string_initializationFailed));
                         return false;
                     }
+                    
+                    // Using in-app downloader.
+                    modDownload.DownloadStateChanged += OnDownloadStateChanged;
                     return true;
                 }
 
@@ -380,6 +400,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             var itemsToRemove = UpdatableMods.Where(x => !x.CanUpdate).ToList();
 
+            foreach (var up in itemsToRemove.OfType<M3OnlineContent.NexusModUpdateInfo>())
+            {
+                if (up.DownloadFlow != null)
+                {
+                    up.DownloadFlow.DownloadStateChanged -= OnDownloadStateChanged;
+                }
+            }
+
             /// Nexus mods don't get added to updatedMods in other ways, so we need to do it here
             updatedMods.AddRange(itemsToRemove.OfType<NexusModUpdateInfo>().Select(x => x.mod));
 
@@ -421,6 +449,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void DownloadAll()
         {
+            TriggerPropertyChangedFor(nameof(ShowClearCompletedButton));
             var updates = UpdatableMods.Where(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || x.mod.NexusModID != 0)).ToList();
             OperationInProgress = true;
             CommandManager.InvalidateRequerySuggested();
@@ -539,6 +568,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         protected override void OnClosing(DataEventArgs e)
         {
             DownloadManager.OnDownloadMetadataLoaded -= AssociateModDownload;
+
+            foreach (var up in UpdatableMods.OfType<M3OnlineContent.NexusModUpdateInfo>())
+            {
+                if (up.DownloadFlow != null)
+                {
+                    up.DownloadFlow.DownloadStateChanged -= OnDownloadStateChanged;
+                }
+            }
             base.OnClosing(e);
         }
     }
