@@ -3,13 +3,12 @@
 # LE1 Bio2DA Merge
 Starting with ME3Tweaks Mod Manager 9.0, 2DA tables shipped in DLC mods can be automatically merged into the basegame versions. This works around issues in the Bio2DANumberedRows system, where rows could not be relaibly overwritten due to changes in how 2DA tables work - either in the PS3 port of ME1 or the Legendary Edition upgrade. The issue lies in how the row is accessed; some methods properly will find the overwritten row, other accessors will not. The LE1 2DA merge feature simply bypasses the need to overwrite 2DA rows in autoload by directly overwriting them in the basegame 2DAs.
 
-## WARNING
-
-The LE1 2DA Merge feature is on by default, so that mods that use it will work. For this feature to work, every merge will reset all basegame 2DAs to their original values, then apply the changes. If you try your work directly in basegame, it is liable to be overwritten. Be careful!
+>[!CAUTION]
+>The LE1 2DA Merge feature is on by default, so that mods that use it will work. For this feature to work, every time target merge occurs, Mod Manager will reset all basegame 2DAs to their original data, then apply the changes. If you are directly editing the Basegame 2DAs, it is liable to be overwritten. Be careful!
 
 
 ## How to use 2DA merge
-ME3Tweaks Mod Manager will automatically scan DLC mods for `.m3da` files, and merge them in mount-order, then alphabetically per DLC. `.m3da` files are just renamed `.json` files that describe changes to make; you can ship multiple `.m3da` files in your DLC folder using the alternates system to provide customizable 2DA overrides, similar to LE1 Config Merge. This merge takes place within the `Target Merge` feature of Mod Manager, which occurs as necessary, such as after a mod install, after enabling/disabling/removing DLC mods, etc. You can manually trigger it in the Tools menu during development.
+ME3Tweaks Mod Manager will automatically scan DLC mods for `.m3da` files, and merge them in mount-order, alphabetically per DLC. `.m3da` files are just renamed `.json` files that describe changes to make; you can ship multiple `.m3da` files in your DLC folder using the alternates system to provide customizable 2DA overrides, similar to LE1 Config Merge. This merge takes place within the `Target Merge` feature of Mod Manager, which occurs when necessary, such as after a mod install, after enabling/disabling/removing DLC mods, etc. You can manually trigger it in the Tools menu during development.
 
 ![image](https://github.com/ME3Tweaks/ME3TweaksModManager/assets/2738836/097bf9c9-181f-4a1d-9706-4aa611703b3c)
 
