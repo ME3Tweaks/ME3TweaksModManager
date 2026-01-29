@@ -578,7 +578,7 @@
     <!-- 0={Error message} -->
     <system:String x:Key="string_dialog_exitWhileDownloading">There are currently mods downloading. Are you sure you want to quit?</system:String>
     <system:String x:Key="string_downloadsInProgress">Downloads in progress</system:String>
-    <system:String x:Key="string_dialog_exitWhileImporting">There are currently mods importing into the library. Please wait until they are finished as aborting import may leave a library mods in a broken state.</system:String>
+    <system:String x:Key="string_dialog_exitWhileImporting">There are currently mods importing into the library. Please wait until they are finished as aborting import may leave library mods in a broken state.</system:String>
     <system:String x:Key="string_modsCurrentlyImporting">Mods currently importing</system:String>
     <system:String x:Key="string_mergingGlobalShaders">Merging global shaders</system:String>
     <system:String x:Key="string_mergedGlobalShaders">Merged global shaders</system:String>
@@ -3145,7 +3145,7 @@
     <system:String x:Key="string_importQueued">Import queued</system:String>
     <system:String x:Key="string_importingMods">Importing mods</system:String>
     <system:String x:Key="string_importComplete">Import complete</system:String>
-    <system:String x:Key="string_dlmgr_subTempCache">Downloads will automatically be deleted when Mod Manager closes. Mods imported into the library will be unaffected. You can change this in the application settings  .</system:String>
+    <system:String x:Key="string_dlmgr_subTempCache">Downloads will automatically be deleted when Mod Manager closes. Mods imported into the library will be unaffected. You can change this in the application settings.</system:String>
     <system:String xml:space="preserve" x:Key="string_dlmgr_subPermCache">Downloaded files are saved to the following location, which can be changed in the settings:\n{0}</system:String>
     <!-- 0={Folder path} -->
 
