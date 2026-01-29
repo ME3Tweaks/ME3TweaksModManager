@@ -177,6 +177,8 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             if (sender is ModDownload item)
             {
                 M3Log.Information($@"ModDownload '{item.FileName ?? item.CreateDownloadKey()}' state changed to {item.DownloadState}");
+                PrintDownloadManagerToConsole();
+
                 if (item.DownloadState == EModDownloadState.QUEUED)
                 {
                     // Download has initialized and is now queued for download.
@@ -187,6 +189,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 }
 
                 // Attempt to a new start download, as states have changed.
+                // Attempt when our state has just changed to one of the following:
                 if (item.DownloadState is EModDownloadState.QUEUED or EModDownloadState.FINISHED or EModDownloadState.FAILED)
                 {
                     TryStartDownload();
@@ -344,12 +347,14 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 var queue = Downloads.Where(x => x.Value.DownloadState == EModDownloadState.QUEUED).ToList();
                 if (queue.Count == 0)
                 {
-                    M3Log.Information($"No downloads to start. DownloadManager count: {Downloads.Count}");
+                    M3Log.Information($"No downloads to start.");
                     return; // Nothing to do
                 }
 
                 // Enforce cap on number of downloads / imports we can concurrently run.
-                var currentDownloadCount = Downloads.Count(x => x.Value.IsDownloadActive || x.Value.DownloadState == EModDownloadState.DOWNLOADCOMPLETE); // We also count download complete cause its about to conduct import
+                // We also count download complete cause its about to conduct import
+                // Importing counts as it uses significant resources.
+                var currentDownloadCount = Downloads.Count(x => x.Value.IsDownloadActive || x.Value.DownloadState is EModDownloadState.DOWNLOADCOMPLETE or EModDownloadState.IMPORTING);
 
                 M3Log.Information($"TryStartDownload() - Current active download count: {currentDownloadCount}");
                 foreach (var dl in queue)
@@ -357,7 +362,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     if (currentDownloadCount > Settings.MaxConcurrentImportOperations)
                     {
                         // Cannot exceed download count.
-                        M3Log.Information($"TryStartDownload() - We are at max concurrent download limit ({Settings.MaxConcurrentImportOperations}), cannot start a new download");
+                        M3Log.Information($"TryStartDownload() - We are at max concurrent import operations limit ({Settings.MaxConcurrentImportOperations}), cannot start a new download");
                         return;
                     }
 
@@ -369,6 +374,17 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
             M3Log.Information("TryStartDownload() - Unlock");
 
+        }
+
+        [Conditional(@"DEBUG")]
+        private static void PrintDownloadManagerToConsole()
+        {
+            Debug.WriteLine(@":::DownloadManager:::");
+            Debug.WriteLine($@"::{Downloads.Count} current items");
+            foreach(var dl in Downloads)
+            {
+                Debug.WriteLine($":{dl.Value.DownloadState}\t{dl.Value.FileName}"); // do not localize
+            }
         }
 
         private static void DownloadError(object sender, string e)
@@ -426,12 +442,16 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         {
             DisassociateDownload(downloadedMod);
 
-            // Duplicates are never in the dictionary, so just try to remove by key
-            var key = downloadedMod.CreateDownloadKey();
-            if (Downloads.TryRemove(key, out _))
+            // If it's a duplicate we don't want to remove the existing key
+            // or that will mess up the download queue
+            if (!downloadedMod.IsDuplicate)
             {
-                M3Log.Information($@"Download was removed: {key}");
-                OnDownloadRemoved?.Invoke(downloadedMod, EventArgs.Empty);
+                var key = downloadedMod.CreateDownloadKey();
+                if (Downloads.TryRemove(key, out _))
+                {
+                    M3Log.Information($@"DownloadManager::Download was removed: {key} {downloadedMod.FileName}");
+                    OnDownloadRemoved?.Invoke(downloadedMod, EventArgs.Empty);
+                }
             }
         }
 
