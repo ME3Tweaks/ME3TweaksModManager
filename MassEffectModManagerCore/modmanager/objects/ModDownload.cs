@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksCore.Objects;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -526,7 +527,13 @@ namespace ME3TweaksModManager.modmanager.objects
                         {
                             // Todo: If verification fails, should we let user try to continue anyways?
 
-                            var hash = MUtilities.CalculateHash(DownloadedStream);
+                            ProgressMaximum = 100;
+                            void onProgress(ProgressInfo pi)
+                            {
+                                ProgressValue = (long) pi.Value;
+                                ProgressIndeterminate = false;
+                            }
+                            var hash = MUtilities.CalculateHash(DownloadedStream, progressDelegate: onProgress);
                             var matchingHashedFiles = NexusModsUtilities.MD5Search(ProtocolLink.Domain, hash);
                             if (matchingHashedFiles.All(x => x.Mod.ModID != ProtocolLink.ModId))
                             {
