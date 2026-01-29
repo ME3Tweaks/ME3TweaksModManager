@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
 using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
-using Microsoft.AppCenter.Crashes;
 using SevenZip;
 using SevenZip.EventArguments;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
@@ -127,7 +119,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
                     if (referencedFiles.Contains(relativedName))
                     {
-                        M3Log.Information(@"Adding file to extraction list: " + info.FileName);
+                        M3Log.Information(@"Adding file to extraction list: " + info.FileName, Settings.LogModInstallation);
                         fileIndicesToExtract.Add(info.Index);
                         filePathsToExtractTESTONLY.Add(relativedName);
                     }
@@ -142,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             archive.Progressing += archiveExtractionProgress;
             string outputFilePathMapping(ArchiveFileInfo entryInfo)
             {
-                M3Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
+                M3Log.Information(@"Mapping extraction target for " + entryInfo.FileName, Settings.LogModInstallation);
 
                 string entryPath = entryInfo.FileName;
                 if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
