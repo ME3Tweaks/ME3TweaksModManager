@@ -26,6 +26,7 @@
         </Grid.RowDefinitions>
         <!--<TextBox Grid.RowSpan="2" Grid.ColumnSpan="2" Name="SourceTextbox" TextWrapping="Wrap" AcceptsReturn="True"/>-->
         <DockPanel Grid.RowSpan="2" Grid.ColumnSpan="2">
+            <TextBlock DockPanel.Dock="Top" Text="{Binding TotalStringsNeedingLocalization}" FontWeight="Bold" Margin="5" TextAlignment="Center"/>
             <Button DockPanel.Dock="Bottom" Content="{Binding FilterButtonText}" Click="ToggleFilter_Clicked" Margin="0,5,0,0" Padding="5"/>
             <ListBox Name="SourceFile" ItemsSource="{Binding FilesView}" SelectedItem="{Binding SelectedFile}">
                 <ListBox.ItemTemplate>
