@@ -134,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 M3Log.Error($@"Exception installing ASI: {ex.Message}");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    M3L.ShowDialog(mainwindow, $"An error occurred installing the ASI: {ex.Message}", "M3L.GetString(M3L.string_errorDeletingASI)", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccurredInstallingTheASI, ex.Message), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
                 });
             }
             finally
@@ -154,7 +154,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 // ASI should be going to the installed state
                 var asiGame = Games.FirstOrDefault(x => x.Game == am.Game);
-                if (asiGame != null) {
+                if (asiGame != null)
+                {
                     asiGame.SelectedASI = asiGame.DisplayedASIMods.OfType<IKnownInstalledASIMod>().FirstOrDefault(x => x.AssociatedManifestItem.OwningMod.UpdateGroupId == am.UpdateGroupId);
                     SelectedASIObject = asiGame.SelectedASI;
                 }
@@ -312,6 +313,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     index++;
                 }
+                Debug.WriteLine("Hello");
 
             }
 

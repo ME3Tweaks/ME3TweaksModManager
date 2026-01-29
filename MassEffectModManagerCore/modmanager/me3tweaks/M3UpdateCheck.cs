@@ -59,7 +59,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                         var updateAvailableDialog = new ProgramUpdateNotification();
                         if (isDowngrading)
                         {
-                            updateAvailableDialog.UpdateMessage = "This will downgrade Mod Manager to the current stable release.";
+                            updateAvailableDialog.UpdateMessage = M3L.GetString(M3L.string_desc_downgrade);
                         }
                         updateAvailableDialog.Close += (sender, args) => { window.ReleaseBusyControl(); };
                         window.ShowBusyControl(updateAvailableDialog, true);
@@ -95,18 +95,13 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 {
                     M3Log.Information(@"Mod Manager is up to date");
                 }
-             
+
             }
-         
+
             // No update found
             return false;
         }
 
-        /// <summary>
-        /// 
-        /// Runs on a background thread.
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
         internal static void DowngradeToStable()
         {
             declineCountSkipsRemaining = 0;
@@ -119,7 +114,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
                 if (!hasUpdate)
                 {
-                    M3L.ShowDialog(MainWindow.Instance, $"{App.AppVersionHR} is the current stable build. No downgrade is necessary.", "Downgrade check");
+                    M3L.ShowDialog(MainWindow.Instance, M3L.GetString(M3L.string_interp_noDowngradeAvailable, App.AppVersionHR), M3L.GetString(M3L.string_title_downgradeCheck));
                 }
             });
         }

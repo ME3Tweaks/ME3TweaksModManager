@@ -1519,34 +1519,34 @@ namespace ME3TweaksModManager
                     else
                     {
                         M3Log.Error($@"Failed to delete mod from library: {selectedMod.ModName}");
-                        
+
                         // Update task completion text to indicate failure
                         deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
-                        
+
                         // Show error dialog
                         M3L.ShowDialog(this,
                             M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName),
-                            M3L.GetString(M3L.string_error), 
-                            MessageBoxButton.OK, 
+                            M3L.GetString(M3L.string_error),
+                            MessageBoxButton.OK,
                             MessageBoxImage.Error);
-                        
+
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
                     M3Log.Error($@"Exception occurred while deleting mod from library: {selectedMod.ModName}. {ex.Message}");
-                    
+
                     // Update task completion text to indicate failure
                     deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
-                    
+
                     // Show error dialog with exception details
                     M3L.ShowDialog(this,
-                        $"{M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName)}\n\n{ex.Message}",
-                        M3L.GetString(M3L.string_error), 
-                        MessageBoxButton.OK, 
+                        $@"{M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName)}\n\n{ex.Message}",
+                        M3L.GetString(M3L.string_error),
+                        MessageBoxButton.OK,
                         MessageBoxImage.Error);
-                    
+
                     return false;
                 }
                 finally
@@ -2950,7 +2950,7 @@ namespace ME3TweaksModManager
                         GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
                         if (t != null)
                         {
-                            CurrentOperationText = $"Installing ASI mod";
+                            CurrentOperationText = M3L.GetString(M3L.string_interp_installingASIMod);
                             var result = await ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, CommandLinePending.PendingInstallASIVersion, includeHiddenASIs: true);
 
                             if (result)

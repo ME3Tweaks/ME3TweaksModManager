@@ -61,8 +61,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 new M3SettingGroup()
                 {
-                    GroupName = "Beta mode settings",
-                    GroupDescription = "These settings are available when the application is in Beta mode.",
+                    GroupName = M3L.GetString(M3L.string_betaModeSettings),
+                    GroupDescription = M3L.GetString(M3L.string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode),
                     RequiresBetaMode = true,
                     AllSettings = [
                        new M3BooleanSetting(settingsType, nameof(Settings.ShowInstalledModsInLibrary), M3L.string_showModInstallationStatusInLbrary, M3L.string_description_showInstalledModsInLibrary),
@@ -116,9 +116,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else if (!optingIntoBetaFlowActive)
             {
-                var result = M3L.ShowDialog(mainwindow, 
-                    "Downgrade Mod Manager to the current stable version?",
-                    "Disabling Beta mode",
+                var result = M3L.ShowDialog(mainwindow,
+                    M3L.GetString(M3L.string_downgradeModManagerToTheCurrentStableVersionQuestion),
+                    M3L.GetString(M3L.string_disablingBetaMode),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Information,
                     MessageBoxResult.No);

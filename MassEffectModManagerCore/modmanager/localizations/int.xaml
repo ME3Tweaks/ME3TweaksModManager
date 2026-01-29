@@ -584,7 +584,8 @@
     <system:String x:Key="string_mergedGlobalShaders">Merged global shaders</system:String>
     <system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Error merging global shaders: {0}</system:String>
     <!-- 0={Error message} -->
-    
+    <system:String x:Key="string_interp_installingASIMod">Installing ASI mod</system:String>
+
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
@@ -1960,6 +1961,8 @@
     <system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">An error occurred deleting the ASI: {0}</system:String>
     <!-- 0={Error Message} -->
     <system:String x:Key="string_errorDeletingASI">Error deleting ASI</system:String>
+    <system:String x:Key="string_interp_anErrorOccurredInstallingTheASI">An error occurred installing the ASI: {0}</system:String>
+    <!-- 0={Exception message} -->
 
     <!-- Starter Kit Window-->
     <system:String x:Key="string_title_starterkit">DLC Mod Starter Kit Generator</system:String>
@@ -2863,6 +2866,10 @@
     <system:String x:Key="string_logAllFilesCopiedDuringRestore">Log all files copied during restore</system:String>
     <system:String x:Key="string_description_logOptionLotsa">This will generate a large amount of logs. Only turn this on if requested.</system:String>
     <system:String x:Key="string_localLibraryWatermark">Default: Local instance library ('mods' folder)</system:String>
+    <system:String x:Key="string_betaModeSettings">Beta mode settings</system:String>
+    <system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">These settings are available when the application is in Beta mode.</system:String>
+    <system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Downgrade Mod Manager to the current stable version?</system:String>
+    <system:String x:Key="string_disablingBetaMode">Disabling Beta mode</system:String>
 
     <!-- Check Box Combo Box Control -->
     <system:String x:Key="string_noItemsSelected">No items selected</system:String>
@@ -3243,5 +3250,17 @@
     <system:String x:Key="string_linkedBackup">Linked backup</system:String>
     <system:String x:Key="string_unlinkedBackup">Unlinked backup</system:String>
     <system:String x:Key="string_autodetected">Autodetected</system:String>
+
+    <!-- M3 Update Check -->
+    <system:String x:Key="string_desc_downgrade">This will downgrade Mod Manager to the current stable release.</system:String>
+    <system:String x:Key="string_interp_noDowngradeAvailable">{0} is the current stable build. No downgrade is necessary.</system:String>
+    <!-- 0={ME3Tweaks Mod Manager 9.2 Build 136 (example)} -->
+    <system:String x:Key="string_title_downgradeCheck">Downgrade check</system:String>
+    <!-- Title of dialog showing no downgrade available -->
+
+    <!-- M3 Supported OS -->
+    <system:String x:Key="string_interp_nameOrNewer">{0} or newer</system:String>
+    <!-- 0={[OS version like Windows 11 24H2] or newer} -->
+
 
 </ResourceDictionary>
