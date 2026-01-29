@@ -1,4 +1,6 @@
 ﻿
+using ME3TweaksModManager.modmanager.localizations;
+
 namespace ME3TweaksModManager.modmanager.objects
 {
     public class M3SupportedOS
@@ -51,8 +53,8 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             return [
                 // Windows 10 22H2 - until October 2026
-                new M3SupportedOS() { Name = "Windows 10 22H2", MajorVersion = 10, BuildNumber = 19045, FixedVersion = true },
-                new M3SupportedOS() { Name = "Windows 11 24H2", MajorVersion = 10, BuildNumber = 26100, FixedVersion = false },
+                new M3SupportedOS() { Name = @"Windows 10 22H2", MajorVersion = 10, BuildNumber = 19045, FixedVersion = true },
+                new M3SupportedOS() { Name = @"Windows 11 24H2", MajorVersion = 10, BuildNumber = 26100, FixedVersion = false },
             ];
         }
 
@@ -61,7 +63,7 @@ namespace ME3TweaksModManager.modmanager.objects
             OperatingSystem os = Environment.OSVersion;
 
             var supportedOSes = GetSupportedOperatingSystems();
-            
+
             foreach (var supportedOS in supportedOSes)
             {
                 if (os.Version.Major > supportedOS.MajorVersion)
@@ -107,7 +109,7 @@ namespace ME3TweaksModManager.modmanager.objects
             }
             else
             {
-                return $"{Name} or newer";
+                return M3L.GetString(M3L.string_interp_nameOrNewer, Name);
             }
         }
     }

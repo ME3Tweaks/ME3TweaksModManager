@@ -10,11 +10,28 @@ namespace LocalizationHelper
     {
         private bool _hasStringsNeedingLocalization;
         private bool _isScanned;
+        private int _stringCount;
 
         /// <summary>
         /// Gets or sets the relative path of the source file.
         /// </summary>
         public string FilePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of strings needing localization in this file.
+        /// </summary>
+        public int StringCount
+        {
+            get => _stringCount;
+            set
+            {
+                if (_stringCount != value)
+                {
+                    _stringCount = value;
+                    OnPropertyChanged(nameof(StringCount));
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets whether this file has strings that need localization.

@@ -148,11 +148,21 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// </summary>
         public Action<Mod> SelectModCallback { get; set; }
 
+
         /// <summary>
         /// If mods are currently loading
         /// </summary>
         public bool IsLoadingMods { get; private set; } =
             true; // This makes the spinner activate while program is starting up.
+
+        /// <summary>
+        /// Sets the loading state for the mod library, which controls UI availability
+        /// </summary>
+        /// <param name="isLoading">True to indicate mods are loading and disable UI, false to enable UI</param>
+        public void SetLoadingState(bool isLoading)
+        {
+            IsLoadingMods = isLoading;
+        }
 
         /// <summary>
         /// If the mod library has completed the first load

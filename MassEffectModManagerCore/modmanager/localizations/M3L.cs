@@ -182,6 +182,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_unendorseMod = "string_interp_unendorseMod";
 		public const string string_interp_unableToModifyBioinputIni = "string_interp_unableToModifyBioinputIni";
 		public const string string_interp_dialogDeleteSelectedModFromLibrary = "string_interp_dialogDeleteSelectedModFromLibrary";
+		public const string string_interp_deletingModFromLibrary = "string_interp_deletingModFromLibrary";
+		public const string string_interp_deletedModFromLibrary = "string_interp_deletedModFromLibrary";
+		public const string string_interp_failedToDeleteModFromLibrary = "string_interp_failedToDeleteModFromLibrary";
 		public const string string_interp_launching = "string_interp_launching";
 		public const string string_interp_launched = "string_interp_launched";
 		public const string string_interp_cannotInstallModGameNotInstalled = "string_interp_cannotInstallModGameNotInstalled";
@@ -530,6 +533,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_mergingGlobalShaders = "string_mergingGlobalShaders";
 		public const string string_mergedGlobalShaders = "string_mergedGlobalShaders";
 		public const string string_interp_errorMergingGlobalShadersXMessage = "string_interp_errorMergingGlobalShadersXMessage";
+		public const string string_interp_installingASIMod = "string_interp_installingASIMod";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -1040,6 +1044,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_desc_extendedDiagnostics = "string_desc_extendedDiagnostics";
 		public const string string_tooltip_extendedDiagnostics = "string_tooltip_extendedDiagnostics";
 		public const string string_checkbox_extendedDiagnostics = "string_checkbox_extendedDiagnostics";
+		public const string string_tooltip_useLocalLogViewer = "string_tooltip_useLocalLogViewer";
+		public const string string_checkbox_useLocalLogViewer = "string_checkbox_useLocalLogViewer";
+		public const string string_viewInLogViewer = "string_viewInLogViewer";
 		public const string string_importModsFromArchiveFile = "string_importModsFromArchiveFile";
 		public const string string_importMods = "string_importMods";
 		public const string string_compressPackages = "string_compressPackages";
@@ -1474,6 +1481,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_viewSourceCode = "string_viewSourceCode";
 		public const string string_interp_anErrorOccuredDeletingTheASI = "string_interp_anErrorOccuredDeletingTheASI";
 		public const string string_errorDeletingASI = "string_errorDeletingASI";
+		public const string string_interp_anErrorOccurredInstallingTheASI = "string_interp_anErrorOccurredInstallingTheASI";
 		public const string string_title_starterkit = "string_title_starterkit";
 		public const string string_newDLCModInformation = "string_newDLCModInformation";
 		public const string string_modName = "string_modName";
@@ -2147,6 +2155,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_logAllFilesCopiedDuringRestore = "string_logAllFilesCopiedDuringRestore";
 		public const string string_description_logOptionLotsa = "string_description_logOptionLotsa";
 		public const string string_localLibraryWatermark = "string_localLibraryWatermark";
+		public const string string_betaModeSettings = "string_betaModeSettings";
+		public const string string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode = "string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode";
+		public const string string_downgradeModManagerToTheCurrentStableVersionQuestion = "string_downgradeModManagerToTheCurrentStableVersionQuestion";
+		public const string string_disablingBetaMode = "string_disablingBetaMode";
 		public const string string_noItemsSelected = "string_noItemsSelected";
 		public const string string_synchronizedSquadmateOutfits = "string_synchronizedSquadmateOutfits";
 		public const string string_synchronizingSquadmateOutfitFiles = "string_synchronizingSquadmateOutfitFiles";
@@ -2367,6 +2379,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_memConvertRestore = "string_dialog_memConvertRestore";
 		public const string string_interp_memConvertError = "string_interp_memConvertError";
 		public const string string_manageCachedTargets = "string_manageCachedTargets";
+		public const string string_tooltip_manageCachedTargets = "string_tooltip_manageCachedTargets";
 		public const string string_desc_manageCachedTargets = "string_desc_manageCachedTargets";
 		public const string string_cachedTargets = "string_cachedTargets";
 		public const string string_targetInformation = "string_targetInformation";
@@ -2393,5 +2406,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_linkedBackup = "string_linkedBackup";
 		public const string string_unlinkedBackup = "string_unlinkedBackup";
 		public const string string_autodetected = "string_autodetected";
+		public const string string_desc_downgrade = "string_desc_downgrade";
+		public const string string_interp_noDowngradeAvailable = "string_interp_noDowngradeAvailable";
+		public const string string_title_downgradeCheck = "string_title_downgradeCheck";
+		public const string string_interp_nameOrNewer = "string_interp_nameOrNewer";
 	}
 }

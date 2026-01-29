@@ -147,7 +147,7 @@ namespace ME3TweaksModManager
         /// </summary>
         /// <param name="args">Command line arguments passed</param>
         /// <returns>True if window should be brought to the foreground, false otherwise</returns>
-        internal bool HandleInstanceArguments(string[] args)
+        internal async Task<bool> HandleInstanceArguments(string[] args)
         {
             // Fix pass through in debug mode which uses a .dll arg
             if (args.Any() && args[0].EndsWith(@".dll"))
@@ -179,7 +179,7 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingMergeModCompileManifest = parsedCommandLineArgs.Value.MergeModManifestToCompile;
                 if (parsedCommandLineArgs.Value.FeatureLevel > 0)
                     CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
-                return handleInitialPending();
+                return await handleInitialPending();
             }
 
             return false;
@@ -285,7 +285,7 @@ namespace ME3TweaksModManager
 
         private string InternalNoModSelectedText(bool richText)
         {
-            if (!M3SupportedOS.hasShownUnsupportedMessage && (true || !M3SupportedOS.IsSupportedOperatingSystem()))
+            if (!M3SupportedOS.hasShownUnsupportedMessage && (!M3SupportedOS.IsSupportedOperatingSystem()))
             {
                 M3SupportedOS.hasShownUnsupportedMessage = true;
                 string osList = string.Join("\n", M3SupportedOS.GetSupportedOperatingSystems().Select(x => $@" - {x.ToMinimumSupportedString()}")); //do not localize
@@ -1185,7 +1185,7 @@ namespace ME3TweaksModManager
                             if (queue.ASIModsToInstall.Any())
                             {
                                 ShowRunAndDone(
-                                    (config) => InstallBatchASIs(target, queue),
+                                    (config) => InstallBatchASIs(target, queue).Result,
                                     M3L.GetString(M3L.string_installingASIMods),
                                     M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
                             }
@@ -1306,7 +1306,7 @@ namespace ME3TweaksModManager
 
         }
 
-        private void FinishBatchInstall(BatchLibraryInstallQueue queue)
+        private async void FinishBatchInstall(BatchLibraryInstallQueue queue)
         {
             // 11/18/2023 - batch installer with ASI mods was not clearing out queue
             // This should force merges to occur.
@@ -1321,19 +1321,21 @@ namespace ME3TweaksModManager
                 if (shouldSave)
                 {
                     M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
-                    queue.Save(true); // Commit the result
+                    // This should be pretty fast since it doesn't have to hash. So we don't run this
+                    // async.
+                    queue.Save(true).Wait(); // Commit the result
                 }
             }
         }
 
-        private string InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
+        private async Task<string> InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
         {
             string result = null;
             foreach (var asi in queue.ASIModsToInstall)
             {
                 if (asi.IsAvailableForInstall())
                 {
-                    ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
+                    await ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
                 }
                 else
                 {
@@ -1474,23 +1476,84 @@ namespace ME3TweaksModManager
 
         private bool CanDeleteModFromLibrary() => SelectedMod != null && !ContentCheckInProgress;
 
-        private void DeleteModFromLibraryWrapper()
+        private async void DeleteModFromLibraryWrapper()
         {
-            DeleteModFromLibrary(SelectedMod);
+            await DeleteModFromLibrary(SelectedMod);
         }
 
-        public bool DeleteModFromLibrary(Mod selectedMod)
+        public async Task<bool> DeleteModFromLibrary(Mod selectedMod)
         {
+            if (selectedMod == null)
+            {
+                return false;
+            }
+
             var confirmationResult = M3L.ShowDialog(this,
                 M3L.GetString(M3L.string_interp_dialogDeleteSelectedModFromLibrary, selectedMod.ModName),
-                M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                MessageBoxResult.Yes);
             if (confirmationResult == MessageBoxResult.Yes)
             {
                 M3Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
-                if (MUtilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
+
+                // Submit background task
+                var deleteTask = BackgroundTaskEngine.SubmitBackgroundJob(
+                    @"ModDelete",
+                    M3L.GetString(M3L.string_interp_deletingModFromLibrary, selectedMod.ModName),
+                    M3L.GetString(M3L.string_interp_deletedModFromLibrary, selectedMod.ModName));
+
+                // Set loading state to disable UI
+                M3LoadedMods.Instance.SetLoadingState(true);
+
+                try
                 {
-                    M3LoadedMods.Instance.RemoveMod(selectedMod);
-                    return true;
+                    // Perform deletion on background thread
+                    bool deletionSuccess = await Task.Run(() => MUtilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath));
+
+                    if (deletionSuccess)
+                    {
+                        M3Log.Information($@"Successfully deleted mod from library: {selectedMod.ModName}");
+                        M3LoadedMods.Instance.RemoveMod(selectedMod);
+                        return true;
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Failed to delete mod from library: {selectedMod.ModName}");
+
+                        // Update task completion text to indicate failure
+                        deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
+
+                        // Show error dialog
+                        M3L.ShowDialog(this,
+                            M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName),
+                            M3L.GetString(M3L.string_error),
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Error($@"Exception occurred while deleting mod from library: {selectedMod.ModName}. {ex.Message}");
+
+                    // Update task completion text to indicate failure
+                    deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
+
+                    // Show error dialog with exception details
+                    M3L.ShowDialog(this,
+                        $@"{M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName)}\n\n{ex.Message}",
+                        M3L.GetString(M3L.string_error),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+
+                    return false;
+                }
+                finally
+                {
+                    // Always restore UI state and complete task
+                    M3LoadedMods.Instance.SetLoadingState(false);
+                    BackgroundTaskEngine.SubmitJobCompletion(deleteTask);
                 }
 
                 //LoadMods();
@@ -2763,7 +2826,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            bw.RunWorkerCompleted += async (a, b) =>
             {
                 if (b.Error != null)
                 {
@@ -2775,7 +2838,7 @@ namespace ME3TweaksModManager
                 if (firstStartupCheck)
                 {
                     M3Utilities.WriteExeLocation();
-                    handleInitialPending();
+                    await handleInitialPending();
                 }
 
                 if (Settings.GenerationSettingOT)
@@ -2816,7 +2879,7 @@ namespace ME3TweaksModManager
         /// First time handling pending when app initially boots.
         /// </summary>
         /// <returns>If the main window should be brought to the foreground or not.</returns>
-        private bool handleInitialPending()
+        private async Task<bool> handleInitialPending()
         {
             bool shouldBringToFG = false;
 
@@ -2887,7 +2950,10 @@ namespace ME3TweaksModManager
                         GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
                         if (t != null)
                         {
-                            if (ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, CommandLinePending.PendingInstallASIVersion, includeHiddenASIs: true))
+                            CurrentOperationText = M3L.GetString(M3L.string_interp_installingASIMod);
+                            var result = await ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, CommandLinePending.PendingInstallASIVersion, includeHiddenASIs: true);
+
+                            if (result)
                             {
                                 CurrentOperationText = M3L.GetString(M3L.string_installedASIModByCommandLineRequest);
                             }

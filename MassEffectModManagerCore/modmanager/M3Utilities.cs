@@ -1,13 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Management;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
-using System.Threading;
-using System.Threading.Tasks;
-using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
@@ -16,6 +7,17 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using Microsoft.Win32;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Management;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace ME3TweaksModManager.modmanager
 {
@@ -1061,6 +1063,29 @@ namespace ME3TweaksModManager.modmanager
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Refreshes UI bindings after a delay (if wait time is not zero). This can be used sparingly to force updates to the UI button states.
+        /// </summary>
+        /// <param name="waitTime">Time in ms to wait before refreshing</param>
+        internal static void RefreshBindings(int waitTime = 150)
+        {
+            if (waitTime == 0)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                });
+            }
+            else
+            {
+                Task.Run(() => Thread.Sleep(waitTime)).ContinueWithOnUIThread(x =>
+                {
+                    // Already on UI thread
+                    CommandManager.InvalidateRequerySuggested();
+                });
+            }
         }
     }
 }

@@ -56,9 +56,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             M3Utilities.OpenWebpage(SelectedMod.ModWebsite);
         }
 
-        private void DeleteMod()
+        private async void DeleteMod()
         {
-            if (mainwindow.DeleteModFromLibrary(SelectedMod))
+            if (await mainwindow.DeleteModFromLibrary(SelectedMod))
             {
                 FailedMods.Remove(SelectedMod);
             }

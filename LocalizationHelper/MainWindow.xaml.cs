@@ -74,6 +74,24 @@ namespace LocalizationHelper
             }
         }
 
+        /// <summary>
+        /// Gets the formatted string displaying the total number of strings needing localization.
+        /// </summary>
+        public string TotalStringsNeedingLocalization
+        {
+            get
+            {
+                var total = SourceFiles.Where(f => f.IsScanned && f.HasStringsNeedingLocalization)
+                                       .Sum(f => f.StringCount);
+                var fileCount = SourceFiles.Count(f => f.IsScanned && f.HasStringsNeedingLocalization);
+                
+                if (total == 0 && fileCount == 0)
+                    return "No strings needing localization";
+                    
+                return $"Total: {total} strings in {fileCount} files need localization";
+            }
+        }
+
         private bool _showOnlyPendingLocalizations;
         /// <summary>
         /// Gets or sets whether to filter the list to show only files with pending localizations.
@@ -375,20 +393,22 @@ namespace LocalizationHelper
                         if (File.Exists(filePath))
                         {
                             bool hasStrings = false;
+                            int stringCount = 0;
 
                             if (filePath.EndsWith(".cs"))
                             {
-                                hasStrings = CheckCSFileForStrings(filePath);
+                                hasStrings = CheckCSFileForStrings(filePath, out stringCount);
                             }
                             else if (filePath.EndsWith(".xaml"))
                             {
-                                hasStrings = CheckXamlFileForStrings(filePath);
+                                hasStrings = CheckXamlFileForStrings(filePath, out stringCount);
                             }
 
                             // Update on UI thread
                             Dispatcher.Invoke(() =>
                             {
                                 fileItem.HasStringsNeedingLocalization = hasStrings;
+                                fileItem.StringCount = stringCount;
                                 fileItem.IsScanned = true;
                             });
                         }
@@ -406,6 +426,7 @@ namespace LocalizationHelper
                             Dispatcher.Invoke(() =>
                             {
                                 ScanProgress = $"Scanned {processedFiles} of {totalFiles} files...";
+                                OnPropertyChanged(nameof(TotalStringsNeedingLocalization));
                             });
                             Debug.WriteLine($"Progress: {processedFiles}/{totalFiles}");
                         }
@@ -426,6 +447,7 @@ namespace LocalizationHelper
                 {
                     ScanProgress = "Scan complete!";
                     IsScanning = false;
+                    OnPropertyChanged(nameof(TotalStringsNeedingLocalization));
                     // Refresh the view to ensure filter is applied if it was enabled during scan
                     FilesView?.Refresh();
                 });
@@ -440,6 +462,7 @@ namespace LocalizationHelper
                 {
                     ScanProgress = $"Error during scan: {ex.Message}";
                     IsScanning = false;
+                    OnPropertyChanged(nameof(TotalStringsNeedingLocalization));
                     FilesView?.Refresh();
                 });
             }
@@ -457,6 +480,19 @@ namespace LocalizationHelper
         }
 
         /// <summary>
+        /// Checks if a C# file has strings that need localization and returns the count.
+        /// </summary>
+        /// <param name="filePath">The full path to the C# file.</param>
+        /// <param name="stringCount">The number of strings needing localization.</param>
+        /// <returns>True if the file has strings needing localization, false otherwise.</returns>
+        private bool CheckCSFileForStrings(string filePath, out int stringCount)
+        {
+            var extractedStrings = ExtractLocalizableStringsFromCS(filePath);
+            stringCount = extractedStrings.Count;
+            return stringCount > 0;
+        }
+
+        /// <summary>
         /// Checks if a XAML file has strings that need localization.
         /// </summary>
         /// <param name="filePath">The full path to the XAML file.</param>
@@ -465,6 +501,19 @@ namespace LocalizationHelper
         {
             var extractedStrings = ExtractLocalizableStringsFromXaml(filePath);
             return extractedStrings.Count > 0;
+        }
+
+        /// <summary>
+        /// Checks if a XAML file has strings that need localization and returns the count.
+        /// </summary>
+        /// <param name="filePath">The full path to the XAML file.</param>
+        /// <param name="stringCount">The number of strings needing localization.</param>
+        /// <returns>True if the file has strings needing localization, false otherwise.</returns>
+        private bool CheckXamlFileForStrings(string filePath, out int stringCount)
+        {
+            var extractedStrings = ExtractLocalizableStringsFromXaml(filePath);
+            stringCount = extractedStrings.Count;
+            return stringCount > 0;
         }
 
         /// <summary>
@@ -482,22 +531,27 @@ namespace LocalizationHelper
             if (File.Exists(filePath))
             {
                 bool hasStrings = false;
+                int stringCount = 0;
 
                 if (filePath.EndsWith(".cs"))
                 {
-                    hasStrings = CheckCSFileForStrings(filePath);
+                    hasStrings = CheckCSFileForStrings(filePath, out stringCount);
                     // Re-pull the strings to update the UI
                     PullStringsFromCS(filePath, null);
                 }
                 else if (filePath.EndsWith(".xaml"))
                 {
-                    hasStrings = CheckXamlFileForStrings(filePath);
+                    hasStrings = CheckXamlFileForStrings(filePath, out stringCount);
                     // Re-pull the strings to update the UI
                     PullStringsFromXaml(filePath, null);
                 }
 
                 SelectedFile.HasStringsNeedingLocalization = hasStrings;
+                SelectedFile.StringCount = stringCount;
                 SelectedFile.IsScanned = true;
+                
+                // Update the total count display
+                OnPropertyChanged(nameof(TotalStringsNeedingLocalization));
             }
         }
 
@@ -542,8 +596,10 @@ namespace LocalizationHelper
                     PullStringsFromCS(selectedFilePath, null);
                     
                     // Update the HasStringsNeedingLocalization flag based on scan results
-                    bool hasStrings = CheckCSFileForStrings(selectedFilePath);
+                    int stringCount;
+                    bool hasStrings = CheckCSFileForStrings(selectedFilePath, out stringCount);
                     SelectedFile.HasStringsNeedingLocalization = hasStrings;
+                    SelectedFile.StringCount = stringCount;
                     SelectedFile.IsScanned = true;
                 }
 
@@ -553,10 +609,15 @@ namespace LocalizationHelper
                     PullStringsFromXaml(selectedFilePath, null);
                     
                     // Update the HasStringsNeedingLocalization flag based on scan results
-                    bool hasStrings = CheckXamlFileForStrings(selectedFilePath);
+                    int stringCount;
+                    bool hasStrings = CheckXamlFileForStrings(selectedFilePath, out stringCount);
                     SelectedFile.HasStringsNeedingLocalization = hasStrings;
+                    SelectedFile.StringCount = stringCount;
                     SelectedFile.IsScanned = true;
                 }
+                
+                // Update the total count display
+                OnPropertyChanged(nameof(TotalStringsNeedingLocalization));
             }
         }
 

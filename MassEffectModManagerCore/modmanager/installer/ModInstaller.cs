@@ -247,7 +247,7 @@ namespace ME3TweaksModManager.modmanager.installer
         /// <summary>
         /// Performs the mod installation. This is a blocking method.
         /// </summary>
-        public void InstallMod()
+        public async Task InstallMod()
         {
             var sw = Stopwatch.StartNew();
             bool testrun = false; //change to true to test
@@ -1193,7 +1193,7 @@ namespace ME3TweaksModManager.modmanager.installer
             if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME1)
             {
                 M3Log.Information(@"Installing supporting ASI files");
-                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME1_DLC_MOD_ENABLER, @"DLC Mod Enabler", InstallOptionsPackage.InstallTarget); //16 = DLC Mod Enabler
+                await ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME1_DLC_MOD_ENABLER, @"DLC Mod Enabler", InstallOptionsPackage.InstallTarget); //16 = DLC Mod Enabler
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME2)
             {
@@ -1203,27 +1203,27 @@ namespace ME3TweaksModManager.modmanager.installer
             {
                 if (InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_BalanceChangesReplacer, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_BalanceChangesReplacer, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
                 }
 
                 if (InstallOptionsPackage.InstallTarget.Supported)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_AutoTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
-                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_ME3Logger, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_AutoTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_ME3Logger, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
                 }
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE1)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoTOCLE, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoloadEnabler, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoTOCLE, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoloadEnabler, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE2)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE2_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE2_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE3)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             }
 
             // ModDesc 9: Install mod-requested ASI mods
@@ -1232,7 +1232,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 var asiToInstall = ASIManager.GetASIModVersion(InstallOptionsPackage.ModBeingInstalled.Game, asiMod.ASIGroupID, asiMod.Version, includeHidden: M3ASIManager.CanSeeHiddenASIs());
                 if (asiToInstall != null)
                 {
-                    ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
                 }
                 else
                 {

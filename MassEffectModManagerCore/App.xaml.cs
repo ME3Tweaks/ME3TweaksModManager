@@ -89,11 +89,11 @@ namespace ME3TweaksModManager
         {
             // Another exe was launched
             Debug.WriteLine($"Instance args: {string.Join(" ", args)}");
-            Dispatcher?.Invoke(() =>
+            Dispatcher?.Invoke(async () =>
             {
                 if (Current.MainWindow is MainWindow mw)
                 {
-                    if (mw.HandleInstanceArguments(args))
+                    if (await mw.HandleInstanceArguments(args))
                     {
                         // Bring to front
                         mw.Activate();

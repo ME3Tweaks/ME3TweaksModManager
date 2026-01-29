@@ -63,7 +63,7 @@ namespace ME3TweaksModManager.Tests
                             }
 
                             Console.WriteLine($@"Install source variable: {sourceBool}");
-                            Assert.IsTrue(ASIManager.InstallASIToTarget(v, gt, sourceBool),
+                            Assert.IsTrue(ASIManager.InstallASIToTarget(v, gt, sourceBool).Result,
                                 $"Installation of ASI failed: {v.Name}");
                             Assert.HasCount(1, Directory.GetFiles(asiDir),
                                 "The count of files in the ASI directory is not 1 after install of an ASI!");
