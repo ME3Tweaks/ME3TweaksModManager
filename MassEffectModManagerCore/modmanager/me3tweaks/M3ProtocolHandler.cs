@@ -5,6 +5,7 @@ using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows.input;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -45,7 +46,15 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 {
                     uploadTarget = window.InstallationTargets.FirstOrDefault(x => x.Game == game);
                 }
-                window.ShowLogUploadPanel(uploadTarget);
+                if (!window.HasAnyQueuedPanelsOfType(typeof(LogUploaderPanel)))
+                {
+                    M3Log.Information(@"M3ProtocolHandler: Showing log uploader");
+                    window.ShowLogUploadPanel(uploadTarget);
+                }
+                else
+                {
+                    M3Log.Information(@"Log upload panel is already open or queued, not opening another instance.");
+                }
                 return;
             }
 
@@ -63,7 +72,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                         game = Enum<MEGame>.Parse(gameStr);
                     }
 
-                    M3Log.Information($@"Downloading ME3Tweaks diagnostic save: {hash}");
+                    M3Log.Information($@"M3ProtocolHandler: Downloading ME3Tweaks diagnostic save: {hash}");
 
                     var storageLink = $@"https://me3tweaks.com/modmanager/logservice/saves/{hash}.pcsav";
                     var saveName = saveinfo[@"name"];
@@ -180,6 +189,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         /// <summary>
         /// Dictionary of parameters on the protocol link. This is the parsed version of Data.
         /// </summary>
-        public Dictionary<string,string> QueryParams { get; private set; }
+        public Dictionary<string, string> QueryParams { get; private set; }
     }
 }
