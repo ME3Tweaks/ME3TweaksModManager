@@ -118,15 +118,6 @@ namespace ME3TweaksModManager
             // We use our own implementation of this as we store data in ProgramData.
             MCoreFilesystem.GetAppDataFolder = M3Filesystem.GetAppDataFolder; // Do not change
 
-            WineWorkarounds.WineDetected = MUtilities.IsWineDetected();
-            if (WineWorkarounds.WineDetected)
-            {
-                WineWorkarounds.WineDetectedVersion = MUtilities.WineGetVersion();
-                MUtilities.WineGetHostVersion(out string HostKernelName, out Version HostKernelVersion);
-                WineWorkarounds.WineHostKernelName = HostKernelName;
-                WineWorkarounds.WineHostKernelVersion = HostKernelVersion;
-            }
-
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
             try
             {
@@ -251,6 +242,10 @@ namespace ME3TweaksModManager
 
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
+
+                // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
+                WineWorkarounds.Init();
+
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
 
@@ -262,15 +257,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Running as " + Environment.UserName);
                 M3Log.Information(@"Executable location: " + ExecutableLocation);
                 M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
-                if (WineWorkarounds.WineDetected)
-                {
-                    M3Log.Information(@"Wine detected, running under Linux or MacOS");
-                    if (WineWorkarounds.WineDetectedVersion != null)
-                    {
-                        M3Log.Information($@"Wine version: {WineWorkarounds.WineDetectedVersion}");
-                        M3Log.Information($@"Host Kernel: {WineWorkarounds.WineHostKernelName} {WineWorkarounds.WineHostKernelVersion}");
-                    }
-                }
+                WineWorkarounds.LogWineInfo();
 
                 //Get build date
                 BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });
