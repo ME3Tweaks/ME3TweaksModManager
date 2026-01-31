@@ -122,6 +122,7 @@
 	<system:String x:Key="string_viewSourceCode">Mostra il codice sorgente</system:String>
 	<system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">C'è stato un'errore durante l'eliminazione della ASI: {0}</system:String>
 	<system:String x:Key="string_errorDeletingASI">Errore durante l'eliminazione della ASI</system:String>
+	<system:String x:Key="string_interp_anErrorOccurredInstallingTheASI">Errore durante l'installazione della ASI: {0}</system:String>
 	<system:String x:Key="string_interp_errorRestoringFromBackupX">Si è verificato un errore durante il ripristino del backup: {0}</system:String>
 	<system:String x:Key="string_backupsAreShared">I backup sono condivisi tra vari strumenti di modding, tra cui Mass Effect Randomizer, l'ALOT Installer e il Legendary Explorer.</system:String>
 	<system:String x:Key="string_backupsMustBeCreatedFresh">I backup devono essere creati a partire da una copia del gioco fresca e senza modifiche. I backup modificati non sono supportati.</system:String>
@@ -253,6 +254,7 @@
 	<system:String x:Key="string_bio2DASelector">Selettore Bio2DA</system:String>
 	<system:String x:Key="string_select2DATablesForBlank">Seleziona tabelle 2DA per generare versioni vuote della tua mod.</system:String>
 	<system:String x:Key="string_manageCachedTargets">Gestisci Obiettivi in Cache</system:String>
+	<system:String x:Key="string_tooltip_manageCachedTargets">Visualizza l'obiettivo che il Mod Manager cerca di caricare per la modifica</system:String>
 	<system:String x:Key="string_desc_manageCachedTargets">Il Mod manager contiene una lista di giochi obiettivo che ha visto, chiamata obiettivi in cache. Col tempo, questi potrebbero non essere più validi a causa di modifiche come lo spostamento o l'eliminazione dei giochi. Rimuovere obiettivi non più validi migliorerà il tempo di avvio dell'applicazione.</system:String>
 	<system:String x:Key="string_cachedTargets">Obiettivi in Cache</system:String>
 	<system:String x:Key="string_targetInformation">Informazioni sull'Obiettivo</system:String>
@@ -817,6 +819,9 @@
 	<system:String x:Key="string_desc_extendedDiagnostics">Le diagnostiche estese effettuano controlli addizionali sul tuo gioco, ma richiedono molto più tempo. Abilitale se richiesto da uno sviluppatore.</system:String>
 	<system:String x:Key="string_tooltip_extendedDiagnostics">Selezionalo per abilitare test diagnostici addizionali</system:String>
 	<system:String x:Key="string_checkbox_extendedDiagnostics">Esegui diagnostiche estese</system:String>
+	<system:String x:Key="string_tooltip_useLocalLogViewer">Mostra nel visualizzatore di log locale senza caricare</system:String>
+	<system:String x:Key="string_checkbox_useLocalLogViewer">Usa il visualizzatore di log locale</system:String>
+	<system:String x:Key="string_viewInLogViewer">Mostra nel visualizzatore di log</system:String>
 	<system:String x:Key="string_title_logViewer">Visualizzatore dei Log di ME3Tweaks Mod Manager</system:String>
 	<system:String x:Key="string_validation_m3ASIVersionWrongValueCount">I dati M3ASIVersion in moddesc non sono validi. Una struttura M3ASIVersion può contenere al massimo 1 o 2 valori: GroupID e, facoltativamente, Version. Questo ha {0} voci. Dati: {1}</system:String>
 	<system:String x:Key="string_interp_m3ASIVersionMissingKey">I dati M3ASIVersion in moddesc non sono validi. Manca la chiave '{0}'. Dati: {1}</system:String>
@@ -835,6 +840,10 @@
 	<system:String x:Key="string_refreshingME3TweaksServices">Ricaricamento dei servizi di ME3Tweaks in corso</system:String>
 	<system:String x:Key="string_loadedME3TweaksServices">Servizi di ME3Tweaks caricati</system:String>
 	<system:String x:Key="string_refreshedME3TweaksServices">Servizi di ME3Tweaks ricaricati</system:String>
+	<system:String x:Key="string_interp_nameOrNewer">{0} o superiore</system:String>
+	<system:String x:Key="string_desc_downgrade">Farà il downgrade del Mod Manager all'attuale versione stabile.</system:String>
+	<system:String x:Key="string_interp_noDowngradeAvailable">{0} è la build stabile corrente. Non è necessario nessun downgrade.</system:String>
+	<system:String x:Key="string_title_downgradeCheck">Controllo del downgrade</system:String>
 	<system:String x:Key="string_interp_valueMustBeIntegerGreaterThanZero">Il valore {0} deve essere un intero maggiore di 0.</system:String>
 	<system:String x:Key="string_interp_headmorphsCannotDependOnIncludedDLC">Gli headmorphs non possono segnarsi come dipendenti da DLC inclusi nel gioco. Valore non valido: {0}</system:String>
 	<system:String x:Key="string_textureLibrary">Libreria texture</system:String>
@@ -1017,6 +1026,9 @@
 	<system:String x:Key="string_interp_unendorseMod">Disapprova {0}?</system:String>
 	<system:String x:Key="string_interp_unableToModifyBioinputIni">Impossibile modificare BioInput.ini: {0}</system:String>
 	<system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">Eliminare {0} dalla tua libreria delle mod? Questo elimina la mod solamente dalla tua libreria locale del Mod Manager, non la rimuove da nessuna installazione di gioco.</system:String>
+	<system:String x:Key="string_interp_deletingModFromLibrary">Rimozione di {0} dalla libreria in corso</system:String>
+	<system:String x:Key="string_interp_deletedModFromLibrary">{0} rimossa dalla libreria</system:String>
+	<system:String x:Key="string_interp_failedToDeleteModFromLibrary">Impossibile rimuovere {0} dalla libreria</system:String>
 	<system:String x:Key="string_interp_launching">Avvio di {0} in corso</system:String>
 	<system:String x:Key="string_interp_launched">{0} avviato</system:String>
 	<system:String x:Key="string_interp_cannotInstallModGameNotInstalled">Impossibile installare la mod: {0} nn è installato.</system:String>
@@ -1365,6 +1377,7 @@
 	<system:String x:Key="string_mergingGlobalShaders">Merge degli shader globali in corso</system:String>
 	<system:String x:Key="string_mergedGlobalShaders">Merge degli shader globali eseguito</system:String>
 	<system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Errore durante il merge degli shader globali: {0}</system:String>
+	<system:String x:Key="string_interp_installingASIMod">Installazione della Mod ASI in corso</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Il file di configurazione di Mass Effect {0}.ini è mancante. Dovrebbe trovarsi in {1}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">La cartella di configurazione di Mass Effect è mancante. Dovrebbe trovarsi in {0}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect Ini Modder</system:String>
@@ -2050,6 +2063,8 @@
 	<system:String x:Key="string_applicationTheme">Tema dell'applicazione</system:String>
 	<system:String x:Key="string_doubleClickModInLibraryToInstall">Doppio click su una mod nella libreria per installarla</system:String>
 	<system:String x:Key="string_description_doubleClickModInLibraryToInstall">Fare doppio click su una mod nella lista della libreria esegue la stessa azione di 'Applica Mod'. Se il gioco corretto non è l'obiettivo di installazione impostato verrà usato quello attualmente attivo. Per le mod che non hanno opzioni l'installazione parterà immediatamente.</system:String>
+	<system:String x:Key="string_playDialogSounds">Riproduci suoni per i dialog</system:String>
+	<system:String x:Key="string_description_playDialogSounds">Quando è abilitato, i dialog Messagebox riprodurranno un suono all'apertura</system:String>
 	<system:String x:Key="string_nexusModsDownloadFolder">Cartella dei download di NexusMods</system:String>
 	<system:String x:Key="string_description_nexusModsDownloadFolder">Puoi specificare un percorso personalizzato in cui conservare gli archivi scaricati delle mod. Non è necessario mantenere questi archivi una volta che la mod è stata importata nella libreria delle mod. Se non ne indichi uno viene usata una cartella temporanea sul disco C:\ e i download verranno cancellati ogni volta che chiuderai l'applicazione.</system:String>
 	<system:String x:Key="string_defaultTemporaryDownloadCache">Default: Cache dei download temporanea</system:String>
@@ -2067,9 +2082,15 @@
 	<system:String x:Key="string_logAllFilesCopiedDuringRestore">Logga tutti i file copiati durante il ripristino</system:String>
 	<system:String x:Key="string_description_logOptionLotsa">Questa operazione genererà una grande quantità di log. Attivala solo se richiesto.</system:String>
 	<system:String x:Key="string_localLibraryWatermark">Predefinito: libreria dell'istanza locale (cartella 'mods')</system:String>
+	<system:String x:Key="string_betaModeSettings">Impostazioni della Modalità Beta</system:String>
+	<system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">Queste impostazioni sono disponibili quando l'applicazione è in modalità beta</system:String>
+	<system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Vuoi effettuare il downgrade del Mod Manager alla versione stabile corrente?</system:String>
+	<system:String x:Key="string_disablingBetaMode">Disabilitazione della modalità beta in corso</system:String>
 	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Controllo dei riferimenti nelle mergemod [{0}/{1}]</system:String>
 	<system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core non è stato in grado di risolvere l'importazione: {0} {1} in {2}</system:String>
 	<system:String x:Key="string_syncingPlotManager">Sincronizzazione del Plot Manager</system:String>
+	<system:String x:Key="string_dialog_errorMergingPlotManagerFiles" xml:space="preserve">C'è stato un errore durante il merge dei file di aggiornamento del plot manager: {0}.\n\nLa sincronizzazione del Plot Manager non è stata eseguita.</system:String>
+	<system:String x:Key="string_errorSyncingPlotManager">Errore durante la sincronizzazione del Plot Manager</system:String>
 	<system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">È disponibile un aggiornamento di ME3Tweaks Mod Manager.</system:String>
 	<system:String x:Key="string_downloadingUpdate">Scaricamento dell'aggiornamento</system:String>
 	<system:String x:Key="string_preparingToApplyUpdate">Preparazione per l'applicazione dell'aggiornamento</system:String>
