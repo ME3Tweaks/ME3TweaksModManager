@@ -214,12 +214,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <returns></returns>
         private string InternalGetModDescription(bool richText)
         {
-            if (LoadFailedReason != null) 
-            { 
+            if (LoadFailedReason != null)
+            {
                 if (richText)
                 {
                     return RichTextHelper.GetHeader() + LoadFailedReason + RichTextHelper.GetFooter();
-                } 
+                }
                 else
                 {
                     return LoadFailedReason;
@@ -241,11 +241,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (richText)
             {
                 sb.Append(RichTextHelper.GetHeader());
-                sb.AppendLine(RichTextHelper.ConvertUnicode(ModDescription));
-            } else
-            {
-                sb.AppendLine(ModDescription);
             }
+            
+            sb.AppendLine(ModDescription);
             sb.AppendLine(@"=============================");
             //Todo: Automatic configuration
 
@@ -388,7 +386,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 sb.Append(RichTextHelper.GetFooter());
                 var final = sb.ToString();
                 var converted = RichTextHelper.ConvertNewlines(final);
-                return converted;
+                
+                return RichTextHelper.ConvertUnicode(converted);
             }
             else
             {

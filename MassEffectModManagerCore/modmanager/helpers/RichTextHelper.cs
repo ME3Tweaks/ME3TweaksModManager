@@ -52,21 +52,75 @@ namespace ME3TweaksModManager.modmanager.helpers
             return $@"{{{RT_ITALIC}{str}}}";
         }
 
-        internal static string ConvertUnicode(string modDescription)
+        /// <summary>
+        /// This method should convert an input string to a format that can be used in an RTF
+        /// document. Characters that can't be displayed in an RTF document should be encoded into
+        /// unicode.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        internal static string ConvertUnicode(string text)
         {
-            // WIP SUPER INNEFICIENT
-            StringBuilder sb = new StringBuilder();
+            // Fast-path for empty input
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
 
-            for(int i = 0; i < modDescription.Length; i++)
+            // Reserve an estimated capacity to avoid frequent reallocations. Worst-case
+            // each character can expand to something like "\\u-32768?" (~9 chars),
+            // but most text will be ASCII so a smaller multiplier is sufficient.
+
+            // We change size of allocation based on lang;
+            // RUS has a lot more unicode than INT for example
+            int allocMultiplier = 1;
+            switch (Settings.Language)
             {
-                var c = modDescription[i];
-                var codePoint = (int)c;
+                case @"DEU":
+                    allocMultiplier = 2;
+                    break;
+                case @"ITA":
+                    allocMultiplier = 2;
+                    break;
+                case "@RUS":
+                    allocMultiplier = 6;
+                    break;
+            }
 
-                if (codePoint > 0x7f)
+            var sb = new StringBuilder(text.Length * allocMultiplier);
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+
+                // Handle high surrogate followed by low surrogate (valid pair)
+                if (char.IsHighSurrogate(c))
                 {
-                    sb.Append($@"\u{codePoint}?");
-                } else
+                    if (i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
+                    {
+                        short high = (short)c;
+                        short low = (short)text[i + 1];
+                        sb.Append("\\u").Append(high).Append('?');
+                        sb.Append("\\u").Append(low).Append('?');
+                        i++; // consumed low surrogate
+                    }
+                    else
+                    {
+                        // Unmatched high surrogate - emit replacement
+                        sb.Append('?');
+                    }
+                }
+                else if (char.IsLowSurrogate(c))
                 {
+                    // Unmatched low surrogate - emit replacement
+                    sb.Append('?');
+                }
+                else if (c > 0x7f)
+                {
+                    // Non-ASCII BMP character: emit signed 16-bit RTF escape
+                    sb.Append("\\u").Append((short)c).Append('?');
+                }
+                else
+                {
+                    // ASCII character - append directly
                     sb.Append(c);
                 }
             }

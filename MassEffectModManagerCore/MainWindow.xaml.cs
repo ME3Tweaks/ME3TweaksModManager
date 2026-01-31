@@ -290,6 +290,7 @@ namespace ME3TweaksModManager
                 M3SupportedOS.hasShownUnsupportedMessage = true;
                 string osList = string.Join("\n", M3SupportedOS.GetSupportedOperatingSystems().Select(x => $@" - {x.ToMinimumSupportedString()}")); //do not localize
                 var finalString = M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList);
+                finalString = RichTextHelper.ConvertUnicode(finalString);
                 return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(finalString) + RichTextHelper.GetFooter();
             }
 
@@ -303,7 +304,8 @@ namespace ME3TweaksModManager
             if (richText)
             {
                 // This probably doesn't work properly on non english language settings
-                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(retvar) + RichTextHelper.GetFooter();
+                var finalString = RichTextHelper.ConvertUnicode(retvar);
+                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(finalString) + RichTextHelper.GetFooter();
             }
             else
             {
