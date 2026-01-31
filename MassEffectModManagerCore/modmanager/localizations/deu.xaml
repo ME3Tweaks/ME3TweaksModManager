@@ -184,7 +184,7 @@
     <system:String x:Key="string_interp_launched">{0} gestartet</system:String>
     <system:String x:Key="string_interp_cannotInstallModGameNotInstalled">Kann Mod nicht installieren: {0} ist nicht installiert.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialog_installingTextureMod">{0} Dateien können mit ALOT Installer oder Mass Effect Modder (MEM) installiert werden. Beide Programme können über das Werkzeuge-Menü aufgerufen werden.\n\nWARNUNG: Diese Art von Mods verändern Spieldateizeiger (pointers). Daher müssen sie NACH allen anderen DLC-/content Mods installiert werden. Das Installieren von DLC-/content Mods hiernach verursacht verschiedene Probleme im Spiel. Sobald derartige Mods installiert wurden, wird ME3Tweaks Mod Manager die Installation weiterer Mods blockieren, bis das Spiel auf seinen Ursprungszustand zurückgesetzt wurde.</system:String>
-    <system:String x:Key="string_interp_minorUpdateAvailableMessage">Eine Aktualisierung für ME3Tweaks Mod Manager build {0} ist verfügbar. Kleine Aktualisierungen ("minor updates") beseitigen kleine Fehler im Programm und bekommen daher kein vollständiges Re-Release.</system:String>
+    <system:String x:Key="string_interp_minorUpdateAvailableMessage">Eine Aktualisierung für ME3Tweaks Mod Manager build {0} ist verfügbar. Kleine („minor“) Updates beseitigen kleine Fehler im Programm und bekommen daher kein vollständiges Re-Release.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogUnableToCreateModLibraryNoPermissions">Kann den Mod-Bibliotheksordner nicht erstellen: {0}\nWähle einen Ordner, auf den du Schreibzugriff hast.</system:String>
     <system:String x:Key="string_interp_dialogCannotInstallModsWhileGameRunning">Kann Mods nicht installieren, während {0} läuft.</system:String>
     <system:String x:Key="string_interp_failedToInstallMod">Installation von {0} fehlgeschlagen</system:String>
@@ -640,7 +640,7 @@
     <system:String xml:space="preserve" x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nUm {0} zu installieren, müssen die oben genannten Custom DLC-Mods zunächst entfernt werden.\nDu kannst die installierten Custom DLCs verwalten, indem du auf den „Ziel verwalten“ Knopf drückst.</system:String>
     <!-- 0 = Name of mod being installed -->
     <system:String x:Key="string_incompatibleDLCDetected">Inkompatibles DLC erkannt</system:String>
-    <system:String x:Key="string_dialogNoWritePermissions">Dein Benutzeraccount hat keine Schreibrechte im Spielinstallationsordner. Über die Option "Schreibzugriff auf die Spiel-Installationsordner erlauben" im Werkzeuge-Menü kannst du deinem Account den Schreibzugriff erteilen.</system:String>
+    <system:String x:Key="string_dialogNoWritePermissions">Dein Benutzeraccount hat keine Schreibrechte im Spielinstallationsordner. Über die Option „Schreibzugriff auf die Spiel-Installationsordner erlauben“ im Werkzeuge-Menü kannst du deinem Account den Schreibzugriff erteilen.</system:String>
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
     <system:String x:Key="string_cannotWriteToGameDirectory">Kann nicht in den Spielinstallationsordner schreiben</system:String>
     <system:String x:Key="string_requiredContentMissing">Vorausgesetzte Inhalte fehlen</system:String>
@@ -759,7 +759,7 @@
     <system:String x:Key="string_interp_invalidAudioPointerOutsideAFC">Es wurde ein ungültiger Audio-Zeiger gefunden, welcher auf einen Ort außerhalb des Zieldateistreams zeigt: {0} Export {1} {2} zeigt auf Adressabstand {3} in AFC-Datei {4}, aber die AFC-Datei ist nur {5} Bytes lang</system:String>
     <!-- 0=PCC Filepath 1=Export Index # 2=Export Name 3=Audio Offset in Hex 4=AFC Filepath 5=AFC Length -->
     <system:String x:Key="string_verifyURLIsCorrect">Verifiziere die URL:</system:String>
-    <system:String x:Key="string_validation_badUrl">Die Validierung ist aufgrund der Mod-URL fehlgeschlagen. Eine Mod-URL erleichtert es Benutzern, deine Mod nach dem Import online zu finden falls sie Hilfe benötigen. Eine gültige NexusMods-URL zu deiner Mod (oder der NexusCode unter [ModInfo]) wird benötigt, um die NexusMods "Empfehlen"-Funktion zu unterstützen.</system:String>
+    <system:String x:Key="string_validation_badUrl">Die Validierung ist aufgrund der Mod-URL fehlgeschlagen. Eine Mod-URL erleichtert es Benutzern, deine Mod nach dem Import online zu finden falls sie Hilfe benötigen. Eine gültige NexusMods-URL zu deiner Mod (oder der NexusCode unter [ModInfo]) wird benötigt, um die NexusMods „Empfehlen“-Funktion zu unterstützen.</system:String>
     <system:String x:Key="string_modUrlErrorsWereFound">Fehler in der Mod-URL gefunden</system:String>
     <system:String x:Key="string_verifyModDescription">Überprüfe die Mod-Beschreibung</system:String>
     <system:String x:Key="string_sfarFilesCheck">Überprüfung der SFAR-Dateien</system:String>
@@ -801,7 +801,7 @@
     <system:String x:Key="string_interp_couldNotFindReferencedAFC">{0} - {1}: Konnte referenzieren Audiodatei-Cache nicht finden: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=AFC cache name (like wwise_biosnd_end002) -->
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Ungültiger Audio-Zeiger; Zeigt nicht auf RIFF-Header</system:String>
-    <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: Dieser Audioinhalt ist Teil einer Hauptspiel-/DLC-AFC, ist jedoch kein vanilla Audioinhalt. Dieser Audioinhalt wird für Endbenutzer nicht verfügbar sein. Benutze "AFC compactor" in Legendary Explorer um diesen Audioinhalt lokal in eine AFC für diese Mod zu packen.</system:String>
+    <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: Dieser Audioinhalt ist Teil einer Hauptspiel-/DLC-AFC, ist jedoch kein vanilla Audioinhalt. Dieser Audioinhalt wird für Endbenutzer nicht verfügbar sein. Benutze „AFC compactor“ in Legendary Explorer um diesen Audioinhalt lokal in eine AFC für diese Mod zu packen.</system:String>
     <!-- 0 = filepath, 1=export path in-package -->
     <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Fehler beim Validieren einer Audio-Referenz: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
@@ -2014,7 +2014,7 @@
     <system:String x:Key="string_enableDeveloperFeaturesQuestion">Entwicklerfunktionen einschalten?</system:String>
     <system:String x:Key="string_dialog_warnMustBeDeployedForFullFeatures">Mods zeigen eine Warnung an, wenn sie zum Import/zur Installation geöffnet werden, jedoch nicht mit Mod Manager zur Veröffentlichung exportiert wurden. Mods, die neue Bilder-Funktionen benutzen, werden überhaupt nicht geladen, wenn sie nicht mit Mod Manager zur Veröffentlichung exportiert wurden. Wenn du bereit bist, deinen Mod zu veröffentlichen, stelle sicher, dass du im Entwicklermodus bist und ihn über das Mod-Werkzeuge-Menü veröffentlichst.</system:String>
     <system:String x:Key="string_deploymentInfo">Veröffentlichungsinformationen</system:String>
-    <system:String x:Key="string_le3dlcFolderNamesMP">Der Ordnername der DLC-Mod darf aufgrund des Codes im DLC-Loader für LE3 nicht die Groß-/Kleinschreibung beachtende Zeichenfolge "MP" enthalten.</system:String>
+    <system:String x:Key="string_le3dlcFolderNamesMP">Der Ordnername der DLC-Mod darf aufgrund des Codes im DLC-Loader für LE3 nicht die Groß-/Kleinschreibung beachtende Zeichenfolge „MP“ enthalten.</system:String>
     <system:String x:Key="string_features">Funktionen</system:String>
     <system:String x:Key="string_startupFile">Startup-Datei</system:String>
     <system:String x:Key="string_plotManagerData">Plot Manager Daten</system:String>
@@ -2689,7 +2689,7 @@
     <system:String x:Key="string_removeHeadmorphReferencesTaskHeader">Headmorph-Referenzen des task headers entfernen</system:String>
     <system:String x:Key="string_autopopulate">Automatisch ausfüllen</system:String>
     <system:String x:Key="string_addHeadmorphFile">Headmorph-Datei hinzufügen</system:String>
-    <system:String xml:space="preserve" x:Key="string_mde_description_textures">ME3Tweaks Mod Manager kann Texturmods installieren, aber damit Benutzer sie leichter finden können, sollte man sie als Teil von Mods deklarieren. Texturen müssen derzeit über den Stapelinstallierer installiert werden. &#10;Textur-Mod-Dateien (.mem) müssen im Ordner "Textures" im Stammverzeichnis Ihres Mod-Verzeichnisses abgelegt werden.</system:String>
+    <system:String xml:space="preserve" x:Key="string_mde_description_textures">ME3Tweaks Mod Manager kann Texturmods installieren, aber damit Benutzer sie leichter finden können, sollte man sie als Teil von Mods deklarieren. Texturen müssen derzeit über den Stapelinstallierer installiert werden. &#10;Textur-Mod-Dateien (.mem) müssen im Ordner „Textures“ im Stammverzeichnis Ihres Mod-Verzeichnisses abgelegt werden.</system:String>
     <system:String x:Key="string_addTextureModReferencesTaskHeader">Task header für Textur-Mod-Referenzen hinzufügen</system:String>
     <system:String x:Key="string_removeAllTextureModReferencesTaskHeader">Alle Textur-Mod-Referenzen im task header entfernen</system:String>
     <system:String x:Key="string_addTextureMod">Textur Mod hinzufühen</system:String>
@@ -3213,7 +3213,7 @@
     <!-- 0={Number} -->
     <system:String x:Key="string_interp_modMissingCookedPCConsole">Die ausgewählte Mod verfügt nicht über einen CookedPCConsole-Ordner am erwarteten Speicherort: {0}. Vorgang kann nicht fortgesetzt werden.</system:String>
     <!-- 0={Folder path} -->
-    <system:String xml:space="preserve" x:Key="string_dialog_memConvertRestore">{0} wird auf den Vanilla-Zustand zurückgesetzt, um die Textur-Mod zu installieren. Anschließend wird aus den an der Installation vorgenommenen Änderungen eine Texture Override-Version erstellt.\n\nWenn diese .mem-Datei auf benutzerdefinierte Texturen abzielt, die von Mods hinzugefügt wurden, solltest du eine Stapelgruppe erstellen, die eine Wiederherstellung, die Mods mit den Zieltexturen und diese .mem-Datei enthält, und anschließend "Wiederherstellung überspringen" auswählen.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_memConvertRestore">{0} wird auf den Vanilla-Zustand zurückgesetzt, um die Textur-Mod zu installieren. Anschließend wird aus den an der Installation vorgenommenen Änderungen eine Texture Override-Version erstellt.\n\nWenn diese .mem-Datei auf benutzerdefinierte Texturen abzielt, die von Mods hinzugefügt wurden, solltest du eine Stapelgruppe erstellen, die eine Wiederherstellung, die Mods mit den Zieltexturen und diese .mem-Datei enthält, und anschließend „Wiederherstellung überspringen“ auswählen.</system:String>
     <!-- 0={Game name} -->
     <system:String xml:space="preserve" x:Key="string_interp_memConvertError">Beim Konvertieren der .mem in das M3TO-Format ist ein Fehler aufgetreten:\n{0}\n\nWeitere Informationen sind im Anweundungsereignisprotokoll aufzufinden.</system:String>
     <!-- 0={Error message} -->
