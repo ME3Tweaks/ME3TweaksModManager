@@ -1285,7 +1285,7 @@
     <system:String x:Key="string_checkbox_extendedDiagnostics">Erweiterte Diagnostik durchführen</system:String>
     <system:String x:Key="string_tooltip_useLocalLogViewer">Im lokalen Protokollanzeiger anzeigen, ohne hochzuladen</system:String>
     <system:String x:Key="string_checkbox_useLocalLogViewer">Lokalen Protokollanzeiger verwenden</system:String>
-    <system:String x:Key="string_viewInLogViewer">„Im Protokollanzeiger anzeigen</system:String>
+    <system:String x:Key="string_viewInLogViewer">Im Protokollanzeiger anzeigen</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Mods aus Archivdatei importieren</system:String>
@@ -3230,7 +3230,7 @@
     <system:String x:Key="string_reloadTarget">Ziel neu laden</system:String>
     <system:String x:Key="string_tooltip_reloadTarget">Lädt das ausgewählte Ziel neu, um zu testen, ob es erfolgreich geladen werden kann</system:String>
     <system:String x:Key="string_restoreTargetFromBackup">Ziel aus Backup wiederherstellen</system:String>
-    <system:String x:Key="string_tooltip_restoreTargetFromBackup">„Stellt das Spiel-Backup für dieses Spiel am Zielort wieder her</system:String>
+    <system:String x:Key="string_tooltip_restoreTargetFromBackup">Stellt das Spiel-Backup für dieses Spiel am Zielort wieder her</system:String>
     <system:String x:Key="string_removeFromCache">Aus dem Cache entfernen</system:String>
     <system:String x:Key="string_tooltip_removeFromCache">Entfernt dieses Ziel aus dem Cache, damit der Mod Manager es nicht automatisch als Modding-Ziel lädt</system:String>
     <system:String x:Key="string_unlockTarget">Ziel entsperren</system:String>
