@@ -33,7 +33,7 @@
                 DockPanel.Dock="Right"
                 Content="{DynamicResource string_uploadToLogViewer}"
                 Command="{Binding UploadLogCommand}"
-                Width="170"
+                MinWidth="170"
                 HorizontalAlignment="Right"
                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                 Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
@@ -41,7 +41,7 @@
                 DockPanel.Dock="Right"
                 Content="{DynamicResource string_cancel}"
                 Command="{Binding CancelUploadCommand}"
-                Width="100"
+                MinWidth="100"
                 HorizontalAlignment="Left"
                 Margin="5,0" />
             <DockPanel

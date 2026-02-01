@@ -313,8 +313,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     index++;
                 }
-                Debug.WriteLine("Hello");
-
             }
 
             UpdateSelectionTexts(null);
