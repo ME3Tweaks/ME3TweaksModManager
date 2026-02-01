@@ -122,6 +122,7 @@
 	<system:String x:Key="string_viewSourceCode">Посмотреть исходный код</system:String>
 	<system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">Возникла ошибка при удалении ASI: {0}</system:String>
 	<system:String x:Key="string_errorDeletingASI">Ошибка удаления ASI</system:String>
+	<system:String x:Key="string_interp_anErrorOccurredInstallingTheASI">Возникла ошибка при установки ASI: {0}</system:String>
 	<system:String x:Key="string_interp_errorRestoringFromBackupX">Возникла ошибка при восстановлении из архива: {0}</system:String>
 	<system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Mass Effect Randomizer, Legendary Explorer и другие.</system:String>
 	<system:String x:Key="string_backupsMustBeCreatedFresh">Архивы должны создаваться из свежеустановленной, оригинальной копии игры. Модифицированные архивы не поддерживаются.</system:String>
@@ -253,6 +254,7 @@
 	<system:String x:Key="string_bio2DASelector">Bio2DA Selector</system:String>
 	<system:String x:Key="string_select2DATablesForBlank">Выберите таблицы 2DA для генерации чистых версий вашего мода.</system:String>
 	<system:String x:Key="string_manageCachedTargets">Управление Кэшированными Целевыми Играми</system:String>
+	<system:String x:Key="string_tooltip_manageCachedTargets">Просмотр целевых игр, которые Mod Manager пытается загрузить для редактирования</system:String>
 	<system:String x:Key="string_desc_manageCachedTargets">Mod Manager содержит список ранее обнаруженных целевых игр, известных как кэшированные целевые игры. Со временем он может стать некорректным из-за изменений, таких как перемещение или удаление игр. Удаление некорректных целевых игр ускорит время запуска приложения.</system:String>
 	<system:String x:Key="string_cachedTargets">Кэшированные Целевые Игры</system:String>
 	<system:String x:Key="string_targetInformation">Информация о Целевой Игре</system:String>
@@ -838,6 +840,10 @@
 	<system:String x:Key="string_refreshingME3TweaksServices">Обновление служб ME3Tweaks</system:String>
 	<system:String x:Key="string_loadedME3TweaksServices">Загруженные службы ME3Tweaks</system:String>
 	<system:String x:Key="string_refreshedME3TweaksServices">Обновленнные службы ME3Tweaks</system:String>
+	<system:String x:Key="string_interp_nameOrNewer">{0} или новее</system:String>
+	<system:String x:Key="string_desc_downgrade">Это откатит Mod Manager до последней стабильной версии</system:String>
+	<system:String x:Key="string_interp_noDowngradeAvailable">{0} является текущей стабильной сборкой. Откат не требуется.</system:String>
+	<system:String x:Key="string_title_downgradeCheck">Проветка отката</system:String>
 	<system:String x:Key="string_interp_valueMustBeIntegerGreaterThanZero">Значение {0} должно быть целым больше 0.</system:String>
 	<system:String x:Key="string_interp_headmorphsCannotDependOnIncludedDLC">Headmorphs не могут помечать себя зависимым от DLС, включенных в игру. Недопустимое значение: {0}</system:String>
 	<system:String x:Key="string_textureLibrary">Библиотека текстур</system:String>
@@ -1020,6 +1026,9 @@
 	<system:String x:Key="string_interp_unendorseMod">Отозвать Одобрение {0}?</system:String>
 	<system:String x:Key="string_interp_unableToModifyBioinputIni">Невозможно модифицировать BioInput.ini: {0}</system:String>
 	<system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">Удалить {0} из библиотеки модов? Это удалит мод только из локальной библиотеки Mod Manager, но не затронет установленную игру.</system:String>
+	<system:String x:Key="string_interp_deletingModFromLibrary">Удаление {0} из библиотеки</system:String>
+	<system:String x:Key="string_interp_deletedModFromLibrary">{0} удален из библиотеки</system:String>
+	<system:String x:Key="string_interp_failedToDeleteModFromLibrary">Не удалось удалить {0} из библиотеки</system:String>
 	<system:String x:Key="string_interp_launching">{0} запускается.</system:String>
 	<system:String x:Key="string_interp_launched">{0} запущен.</system:String>
 	<system:String x:Key="string_interp_cannotInstallModGameNotInstalled">Невозможно установить мод: {0} не установлен.</system:String>
@@ -1368,6 +1377,7 @@
 	<system:String x:Key="string_mergingGlobalShaders">Объединение глобальных шейдеров</system:String>
 	<system:String x:Key="string_mergedGlobalShaders">Глобальный шейдеры объединены</system:String>
 	<system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Ошибка объединения глобальных шейдеров: {0}</system:String>
+	<system:String x:Key="string_interp_installingASIMod">Установка ASI-мода</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Директория Mass Effect Config отсутствует. Она должна находиться в {0}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Невозможно запустить Mass Effect Ini Modder</system:String>
@@ -2072,6 +2082,10 @@
 	<system:String x:Key="string_logAllFilesCopiedDuringRestore">Логировать все файлы, скопированные при восстановлении</system:String>
 	<system:String x:Key="string_description_logOptionLotsa">Это создаст большое количество логов. Включайте только при необходимости.</system:String>
 	<system:String x:Key="string_localLibraryWatermark">По умолчанию: Локальная библиотек (папка 'mods')</system:String>
+	<system:String x:Key="string_betaModeSettings">Настройки Бета-режима</system:String>
+	<system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">Данные настройки доступны, когда приложение находится в Бета-режиме</system:String>
+	<system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Откатить Mod Manager до текущей стабильной версии?</system:String>
+	<system:String x:Key="string_disablingBetaMode">Отключение Бета-режима</system:String>
 	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Проверка ссылок в mergemods [{0}/{1}]</system:String>
 	<system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core не может совершить импорт: {0} {1} в {2}</system:String>
 	<system:String x:Key="string_syncingPlotManager">Синхронизация Plot Manager</system:String>
