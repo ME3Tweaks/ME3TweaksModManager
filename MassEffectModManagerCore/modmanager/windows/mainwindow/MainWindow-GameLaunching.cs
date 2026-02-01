@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.telemetry;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.windows.dialog;
+using ME3TweaksCore.Services.Symbol;
 
 namespace ME3TweaksModManager
 {
@@ -52,6 +53,8 @@ namespace ME3TweaksModManager
                         }
 
                         BackgroundTaskEngine.SubmitJobCompletion(gameLaunch);
+
+                        SymbolService.ApplySymbols(target);
                     });
             }
             catch (Exception e)
