@@ -80,7 +80,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 case @"ITA":
                     allocMultiplier = 2;
                     break;
-                case "@RUS":
+                case @"RUS":
                     allocMultiplier = 6;
                     break;
             }
@@ -98,8 +98,8 @@ namespace ME3TweaksModManager.modmanager.helpers
                     {
                         short high = (short)c;
                         short low = (short)text[i + 1];
-                        sb.Append("\\u").Append(high).Append('?');
-                        sb.Append("\\u").Append(low).Append('?');
+                        sb.Append("\\u").Append(high).Append('?'); // do not localize
+                        sb.Append("\\u").Append(low).Append('?'); // do not localize
                         i++; // consumed low surrogate
                     }
                     else
@@ -116,7 +116,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 else if (c > 0x7f)
                 {
                     // Non-ASCII BMP character: emit signed 16-bit RTF escape
-                    sb.Append("\\u").Append((short)c).Append('?');
+                    sb.Append("\\u").Append((short)c).Append('?'); // do not localize
                 }
                 else
                 {
