@@ -130,6 +130,7 @@
                 TextWrapping="Wrap"
                 Margin="0,5" />
             <CheckBox
+                Visibility="{x:Static local:App.DebugOnlyVisibility}"
                 BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
                 Content="{DynamicResource string_checkbox_useLocalLogViewer}"
                 ToolTip="{DynamicResource string_tooltip_useLocalLogViewer}"
