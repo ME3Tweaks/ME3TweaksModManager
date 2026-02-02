@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using ME3TweaksCore.Helpers;
@@ -93,22 +94,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private async void BeginInstallingMod()
         {
             Installer = new ModInstaller(InstallOptionsPackage);
-            Installer.SetPercent = SetPercent;  
+            Installer.SetPercent = SetPercent;
             Installer.SetAction = SetAction;
             Installer.SetPercentVisibility = SetPercentVisibility;
 
             M3Log.Information($@"BeginInstallingMod(): {InstallOptionsPackage.ModBeingInstalled.ModName}");
-            
+
             Exception error = null;
             try
             {
-                await Installer.InstallMod();
+                // Contains syncrhonous work so must run on background thread still.
+                await Task.Run(async () => await Installer.InstallMod());
             }
             catch (Exception ex)
             {
                 error = ex;
             }
-            
+
             ModInstallationCompleted(error);
         }
 
