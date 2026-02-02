@@ -196,6 +196,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 UpdateSelectionTexts(e.AddedItems[0]);
                 SelectedASIObject = e.AddedItems[0];
+                if (sender is ListBox lb)
+                {
+                    lb.ScrollIntoView(SelectedASIObject);
+                }
             }
             else
             {
