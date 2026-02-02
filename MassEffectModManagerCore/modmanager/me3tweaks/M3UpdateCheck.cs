@@ -1,4 +1,5 @@
-﻿using ME3TweaksModManager.modmanager.localizations;
+﻿using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.usercontrols;
 using System.Windows;
@@ -124,7 +125,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         {
             // This forces a reference to keep it in the file
             M3L.GetString(M3L.string_ok);
-#endif
+            MUtilities.CalculateHash(@"");
         }
+#endif
     }
 }

@@ -245,7 +245,7 @@ namespace ME3TweaksModManager.modmanager.installer
         }
 
         /// <summary>
-        /// Performs the mod installation. This is a blocking method.
+        /// Performs the mod installation. This is a blocking method and must be run on a background thread or a new task.Run()!
         /// </summary>
         public async Task InstallMod()
         {
