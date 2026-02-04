@@ -1049,6 +1049,8 @@
     <!-- 0={Relative file path} 1={Filename} -->
     <system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">Cannot ship DLC override of Bio2DA merge target {0}, use merge mods and Bio2DA merge instead</system:String>
     <!-- 0={Filename} -->
+    <system:String x:Key="string_deployment_btpHashCheckFailed">BTP appears to be for a different DLC or different game, hash check failed. The BTP must be rebuilt</system:String>
+    <system:String x:Key="string_deployment_invalidBTPMetadata">Included BTP metadata file (BTPMetadata.btm) is invalid, the BTP must be rebuilt</system:String>
 
     <!-- Language checks -->
     <system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Localized TLK package {0} was not found. Users who play the game with their language/voiceover set to {1} ({2}) will have blank strings from this mod. See the Mod Manager documentation for more information.</system:String>
