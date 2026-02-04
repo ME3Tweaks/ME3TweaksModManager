@@ -5,6 +5,7 @@ using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.ME3Tweaks.M3Merge.Bio2DATable;
 using ME3TweaksCore.ME3Tweaks.ModManager;
+using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.localizations;
@@ -635,6 +636,30 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 catch (Exception ex)
                 {
                     M3Log.Warning($@"Error checking banner image aspect ratio: {ex.Message}");
+                }
+            }
+            #endregion
+
+            #region Check if ASIs listed in the mod are available in the ASI manifest
+            if (item.ModToValidateAgainst.ASIModsToInstall.Any())
+            {
+                var asiModsForGame = ASIManager.GetASIModsByGame(item.ModToValidateAgainst.Game);
+                foreach (var asiMod in item.ModToValidateAgainst.ASIModsToInstall)
+                {
+                    var group = asiModsForGame?.FirstOrDefault(x => x.UpdateGroupId == asiMod.ASIGroupID);
+                    if (group == null)
+                    {
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_asiNotFoundInManifest, asiMod.ASIGroupID, item.ModToValidateAgainst.Game));
+                    }
+                    else if (asiMod.Version != null)
+                    {
+                        // Check if the specific version exists
+                        var version = group.Versions.FirstOrDefault(x => x.Version == asiMod.Version);
+                        if (version == null)
+                        {
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_asiVersionNotFoundInManifest, asiMod.ASIGroupID, asiMod.Version, item.ModToValidateAgainst.Game));
+                        }
+                    }
                 }
             }
             #endregion

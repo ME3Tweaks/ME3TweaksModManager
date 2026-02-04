@@ -1036,6 +1036,10 @@
     <system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">MergeMod {0} failed to load. It may not compatible with cmmver {1}</system:String>
     <!-- 0={filepath} 1={floating point number (cmmver)} -->
     <system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">Banner image '{0}' has an invalid aspect ratio. The banner image must have an aspect ratio of approximately 580x47 (12.34:1). The current image is {1}x{2}.</system:String>
+    <system:String x:Key="string_deployment_asiNotFoundInManifest">ASI group ID {0} is not available in the ASI manifest for {1}. This ASI will not install unless it is available in the manifest.</system:String>
+    <!-- 0={ASI Group ID} 1={Game} -->
+    <system:String x:Key="string_deployment_asiVersionNotFoundInManifest">ASI group ID {0} version {1} is not available in the ASI manifest for {2}. This ASI will not install unless it is available in the manifest.</system:String>
+    <!-- 0={ASI Group ID} 1={Version} 2={Game} -->
     <system:String x:Key="string_deployment_inconsistentForcedExport">{0} has inconsistent ForcedExport flag usage that must be fixed before deployment. Use the Forced Export experiments in Legendary Explorer's package editor (Experiments &gt; Mgamerz &gt; Useful for developers) to find and correct this issue.</system:String>
     <!-- 0={Package file path} -->
     <system:String x:Key="string_deployment_missingRequiredBTM">Mod ships precompiled texture override file but is missing required metadata file {0} next to it</system:String>

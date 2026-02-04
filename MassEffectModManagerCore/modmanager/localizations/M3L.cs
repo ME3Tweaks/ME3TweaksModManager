@@ -1428,6 +1428,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_m3ASIVersionNotAnInteger = "string_interp_m3ASIVersionNotAnInteger";
 		public const string string_interp_m3ASIVersionMustBeGTOne = "string_interp_m3ASIVersionMustBeGTOne";
 		public const string string_interp_m3ASIVersionValueMustBeInteger = "string_interp_m3ASIVersionValueMustBeInteger";
+		public const string string_deployment_asiNotFoundInManifest = "string_deployment_asiNotFoundInManifest";
+		public const string string_deployment_asiVersionNotFoundInManifest = "string_deployment_asiVersionNotFoundInManifest";
 		public const string string_interp_noBackupMessage = "string_interp_noBackupMessage";
 		public const string string_backupWarning = "string_backupWarning";
 		public const string string_tooltip_hello = "string_tooltip_hello";
