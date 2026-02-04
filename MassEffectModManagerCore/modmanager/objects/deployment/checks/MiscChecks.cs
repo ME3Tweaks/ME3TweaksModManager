@@ -364,11 +364,24 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         continue;
                     }
 
+                    // Check FNV hash
+                    var testhash = btp.Header.TargetHash;
+                    var hashStr = $@"{item.ModToValidateAgainst.Game}{Path.GetFileName(dir)}";
+                    var expectedhash = FNV1.Compute(hashStr);
+
+                    if (testhash != expectedhash)
+                    {
+                        M3Log.Error($@"BTP appears to be for a different DLC/game, hash check failed. Expected {expectedhash.ToString(@"X8")}, BTP hash is {testhash.ToString(@"X8")}");
+                        item.AddBlockingError("BTP appears to be for a different DLC or different game, hash check failed. The BTP must be rebuilt");
+                        continue;
+                    }
+
+                    // Check metadata file
                     var hash = Crc32.HashToUInt32(File.ReadAllBytes(btmPath));
                     if (btp.Header.MetadataCRC != hash)
                     {
                         MLog.Error($@"Precompiled BTP has a mismatched metadata file! CRC we got: {hash}, CRC we expected: {btp.Header.MetadataCRC}");
-                        item.AddBlockingError($@"Included BTP metadata file (BTPMetadata.btm) is invalid, the BTP must be rebuilt");
+                        item.AddBlockingError("Included BTP metadata file (BTPMetadata.btm) is invalid, the BTP must be rebuilt");
                         continue;
                     }
                 }
