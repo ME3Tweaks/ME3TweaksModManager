@@ -1,5 +1,6 @@
 ﻿using System.Timers;
 using System.Windows;
+using System.Windows.Shell;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
@@ -101,6 +102,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             MEMFilesToInstall = memFilesToInstall;
         }
 
+        // Weaved by PropertyChanged.Fody
+        public void OnPercentDoneChanged()
+        {
+            UpdateTaskbarProgress(PercentDone);
+        }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -389,6 +395,65 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             _keepAwakeTimer?.Dispose();
             _keepAwakeTimer = null;
             SystemSleepManager.AllowSleep();
+
+            // Clear taskbar progress when closing
+            try
+            {
+                var win = Window.GetWindow(this);
+                if (win != null)
+                {
+                    win.Dispatcher.BeginInvoke(() =>
+                    {
+                        if (win.TaskbarItemInfo == null)
+                        {
+                            win.TaskbarItemInfo = new TaskbarItemInfo();
+                        }
+                        win.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+                        win.TaskbarItemInfo.ProgressValue = 0.0;
+                    });
+                }
+            }
+            catch
+            {
+                // Best-effort only
+            }
+        }
+
+        private void UpdateTaskbarProgress(int percent)
+        {
+            try
+            {
+                if (window == null) return;
+
+                // Ensure UI thread usage
+                window.Dispatcher.BeginInvoke(() =>
+                {
+                    if (window.TaskbarItemInfo == null)
+                    {
+                        window.TaskbarItemInfo = new TaskbarItemInfo();
+                    }
+
+                    if (percent <= 0)
+                    {
+                        window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+                        window.TaskbarItemInfo.ProgressValue = 0.0;
+                    }
+                    else if (percent >= 100)
+                    {
+                        window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Paused; // show full completed state
+                        window.TaskbarItemInfo.ProgressValue = 1.0;
+                    }
+                    else
+                    {
+                        window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
+                        window.TaskbarItemInfo.ProgressValue = Math.Max(0.0, Math.Min(1.0, percent / 100.0));
+                    }
+                });
+            }
+            catch
+            {
+                // best-effort only - ignore failures
+            }
         }
 
         private void SetNextStep(string nextStepText)
