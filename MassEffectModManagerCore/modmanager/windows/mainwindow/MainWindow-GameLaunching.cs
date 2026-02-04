@@ -54,7 +54,7 @@ namespace ME3TweaksModManager
 
                         BackgroundTaskEngine.SubmitJobCompletion(gameLaunch);
 
-                        SymbolService.ApplySymbols(target);
+                        // SymbolService.ApplySymbols(target);
                     });
             }
             catch (Exception e)
