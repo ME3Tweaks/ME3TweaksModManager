@@ -2941,6 +2941,16 @@ namespace ME3TweaksModManager
 
                 if (CommandLinePending.PendingInstallASIID > 0 && CommandLinePending.PendingGame != null)
                 {
+                    M3Log.Information($@"ASI installation requested by command line: {CommandLinePending.PendingInstallASIID} to {CommandLinePending.PendingGame}");
+                    if (CommandLinePending.PendingInstallASIVersion > 0)
+                    {
+                        M3Log.Information($@"Requested version: {CommandLinePending.PendingInstallASIVersion}");
+                    }
+                    else
+                    {
+                        M3Log.Information($@"Requested version: Latest");
+                    }
+
                     shouldBringToFG = true;
                     var game = CommandLinePending.PendingGame.Value;
                     if (!game.IsOTGame() && !game.IsLEGame())
@@ -2957,10 +2967,12 @@ namespace ME3TweaksModManager
 
                             if (result)
                             {
+                                M3Log.Information($@"ASI installed successfully (command line request)!");
                                 CurrentOperationText = M3L.GetString(M3L.string_installedASIModByCommandLineRequest);
                             }
                             else
                             {
+                                M3Log.Error($@"ASI failed to install (command line request)!");
                                 CurrentOperationText = M3L.GetString(M3L.string_failedToInstallASIModByCommandLineRequest);
                             }
                         }
