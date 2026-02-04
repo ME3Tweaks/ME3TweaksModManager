@@ -5,6 +5,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Misc.ME3Tweaks;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.Unreal.Classes;
 using LegendaryExplorerCore.Unreal.ObjectInfo;
 using ME3TweaksCore.GameFilesystem;
@@ -373,6 +374,16 @@ namespace ME3TweaksModManager.modmanager.textures
                     if (!isModifiedByMEM)
                         continue; // Nothing to do here.
 
+
+                    bool shouldCopyTfc = false;
+                    var texBin = ObjectBinary.From<UTexture2D>(tex);
+                    if (texBin.Mips.Any(x => !x.IsEmpty && x.IsLocallyStored))
+                    {
+                        // If it has external mips we should copy the tfc.
+                        shouldCopyTfc = true;
+                    }
+
+
                     // It's a texture modded texture
                     // Copy package if not copied already.
                     if (!copied)
@@ -399,7 +410,7 @@ namespace ME3TweaksModManager.modmanager.textures
 
                             lock (sync)
                             {
-                                if (!File.Exists(dest))
+                                if (shouldCopyTfc && !File.Exists(dest))
                                 {
                                     M3Log.Information($@"Copying MEM TFC {tfcPath} to staging");
                                     File.Copy(tfcPath, dest);
@@ -501,8 +512,7 @@ namespace ME3TweaksModManager.modmanager.textures
                     // Write guid at start of tfc
                     fs.WriteGuid(newGuid);
                 }
-
-
+                    
                 var newName = GetNewTFCName(tfcFile, dlcName) + @".tfc";
                 var dest = Path.Combine(stagingDir, newName);
                 if (File.Exists(dest))
