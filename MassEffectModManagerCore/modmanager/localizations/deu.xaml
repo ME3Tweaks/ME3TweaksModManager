@@ -1036,6 +1036,10 @@
     <system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">MergeMod {0} konnte nicht geladen werden. Es ist möglicherweise nicht kompatibel mit cmmver {1}</system:String>
     <!-- 0={filepath} 1={floating point number (cmmver)} -->
     <system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">Das Bannerbild '{0}' hat ein ungültiges Seitenverhältnis. Es muss ein Seitenverhältnis von etwa 580x47 (12,34:1) haben. Das aktuelle Bild hat die Abmessungen {1}x{2}.</system:String>
+    <system:String x:Key="string_deployment_asiNotFoundInManifest">Die ASI-Gruppen-ID {0} ist im ASI-Manifest für {1} nicht verfügbar. Diese ASI kann nur installiert werden, wenn sie im Manifest vorhanden ist.</system:String>
+    <!-- 0={ASI Group ID} 1={Game} -->
+    <system:String x:Key="string_deployment_asiVersionNotFoundInManifest">Die ASI-Gruppen-ID {0}, Version {1}, ist im ASI-Manifest für {2} nicht verfügbar. Diese ASI kann nur installiert werden, wenn sie im Manifest vorhanden ist.</system:String>
+    <!-- 0={ASI Group ID} 1={Version} 2={Game} -->
     <system:String x:Key="string_deployment_inconsistentForcedExport">{0} weist eine inkonsistente Verwendung des ForcedExport-Flags auf, die vor der Bereitstellung behoben werden muss. Verwende die Forced-Export-Experimente im Package Editor von Legendary Explorer (Experiments &gt; Mgamerz &gt; Useful for developers), um dieses Problem zu finden und zu beheben.</system:String>
     <!-- 0={Package file path} -->
     <system:String x:Key="string_deployment_missingRequiredBTM">Die Mod liefert eine vorkompilierte Texture Override-Datei mit, jedoch fehlt die erforderliche Metadatendatei {0} daneben.</system:String>
@@ -1049,6 +1053,8 @@
     <!-- 0={Relative file path} 1={Filename} -->
     <system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">DLC-Überschreibung des Bio2DA-Merge-Ziels {0} kann nicht veröffentlicht werden. Verwende stattdessen Merge-Mods und Bio2DA Merge.</system:String>
     <!-- 0={Filename} -->
+    <system:String x:Key="string_deployment_btpHashCheckFailed">BTP scheint zu einem anderen DLC oder einem anderen Spiel zu gehören; die Hash-Prüfung ist fehlgeschlagen. Die BTP muss neu erstellt werden.</system:String>
+    <system:String x:Key="string_deployment_invalidBTPMetadata">Die enthaltene BTP-Metadatendatei (BTPMetadata.btm) ist ungültig, die BTP muss neu erstellt werden.</system:String>
 
     <!-- Language checks -->
     <system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Lokalisiertes TLK-Package {0} wurde nicht gefunden. Benutzer, die das Spiel mit Spracheinstellung/Tonausgabe auf {1} ({2}) spielen, werden leere Zeichenketten von diesem Mod sehen. Siehe die Mod Manager Dokumentation für mehr Informationen.</system:String>
