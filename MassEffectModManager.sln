@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11304.174 d18.0
+VisualStudioVersion = 18.1.11304.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZip", "SevenZip\SevenZip.csproj", "{B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5}"
 EndProject
@@ -53,6 +53,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoboSharp", "submodules\ME3TweaksCore\ME3TweaksCore\submodules\RoboSharp\RoboSharp\RoboSharp.csproj", "{0F185503-4AE1-46AB-9598-5EC8D4193CE9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticodeExaminer", "submodules\ME3TweaksCore\ME3TweaksCore\submodules\AuthenticodeExaminer\src\AuthenticodeExaminer\AuthenticodeExaminer.csproj", "{264A5AE8-7DF0-427D-8590-C33BE1FD79B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModManagerDeployTool", "submodules\ModManagerDeployTool\ModManagerDeployTool\ModManagerDeployTool.csproj", "{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -599,6 +601,34 @@ Global
 		{264A5AE8-7DF0-427D-8590-C33BE1FD79B8}.WinRelease|Any CPU.Build.0 = Release|Any CPU
 		{264A5AE8-7DF0-427D-8590-C33BE1FD79B8}.WinRelease|x64.ActiveCfg = Release|Any CPU
 		{264A5AE8-7DF0-427D-8590-C33BE1FD79B8}.WinRelease|x64.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Debug|x64.Build.0 = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.DebugNoAC|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.DebugNoAC|Any CPU.Build.0 = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.DebugNoAC|x64.ActiveCfg = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.DebugNoAC|x64.Build.0 = Debug|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Release|x64.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.Release|x64.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureRelease|Any CPU.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureRelease|x64.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureRelease|x64.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureTest|Any CPU.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureTest|Any CPU.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureTest|x64.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinAzureTest|x64.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinDebug|Any CPU.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinDebug|Any CPU.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinDebug|x64.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinDebug|x64.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinRelease|Any CPU.Build.0 = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinRelease|x64.ActiveCfg = Release|Any CPU
+		{E6027F7E-D143-2A1C-1A7A-1ABCA9C6E1B2}.WinRelease|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
