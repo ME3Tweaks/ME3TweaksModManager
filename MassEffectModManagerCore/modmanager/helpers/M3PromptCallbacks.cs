@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.windows;
+using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using LegendaryExplorerCore.Packages;
-using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.windows;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
@@ -185,15 +186,30 @@ namespace ME3TweaksModManager.modmanager.helpers
             Application.Current.Dispatcher.Invoke(() =>
             {
                 // Not sure if this has to be synced
-                CommonOpenFileDialog ofd = new CommonOpenFileDialog()
+                if (WineWorkarounds.WineDetected)
                 {
-                    Title = dialogTitle,
-                    IsFolderPicker = true,
-                    EnsurePathExists = true
-                };
-                if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                    var ofd = new OpenFolderDialog
+                    {
+                        ValidateNames = true,
+                        Title = dialogTitle
+                    };
+                    if (ofd.ShowDialog() == true)
+                    {
+                        selectedPath = ofd.FolderName;
+                    }
+                }
+                else
                 {
-                    selectedPath = ofd.FileName;
+                    CommonOpenFileDialog ofd = new CommonOpenFileDialog
+                    {
+                        Title = dialogTitle,
+                        IsFolderPicker = true,
+                        EnsurePathExists = true
+                    };
+                    if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                    {
+                        selectedPath = ofd.FileName;
+                    }
                 }
             });
             return selectedPath;
