@@ -33,6 +33,7 @@ steps: # Steps begin following this
 
 - powershell: |
     git submodule update --init --recursive --depth 1
+  workingDirectory: $(Build.SourcesDirectory)
   displayName: Clone submodules (ignore errors)
   continueOnError: true
   
