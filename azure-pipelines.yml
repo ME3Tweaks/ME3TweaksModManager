@@ -33,7 +33,7 @@ steps: # Steps begin following this
 
 - powershell: |
     cd ME3TweaksModManager
-    git submodule update --init --recursive --depth 1
+  git -c submodule.submodules/ModManagerDeployTool.update=none submodule update --init --recursive --depth 1
   workingDirectory: $(Build.SourcesDirectory)
   displayName: Clone submodules (ignore errors)
   continueOnError: true
