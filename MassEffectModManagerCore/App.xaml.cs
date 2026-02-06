@@ -289,19 +289,19 @@ namespace ME3TweaksModManager
 
                 if (!WineWorkarounds.WineDetected)
                 {
-                try
-                {
-                    var avs = M3Utilities.GetListOfInstalledAV();
-                    M3Log.Information(@"Detected the following antivirus products:");
-                    foreach (var av in avs)
+                    try
                     {
-                        M3Log.Information(" - " + av);
+                        var avs = M3Utilities.GetListOfInstalledAV();
+                        M3Log.Information(@"Detected the following antivirus products:");
+                        foreach (var av in avs)
+                        {
+                            M3Log.Information(" - " + av);
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
-                }
+                    catch (Exception e)
+                    {
+                        M3Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
+                    }
                 }
 
                 //Build 104 changed location of settings from AppData to ProgramData.
