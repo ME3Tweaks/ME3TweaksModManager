@@ -287,6 +287,8 @@ namespace ME3TweaksModManager
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                     new FrameworkPropertyMetadata(true));
 
+                if (!WineWorkarounds.WineDetected)
+                {
                 try
                 {
                     var avs = M3Utilities.GetListOfInstalledAV();
@@ -299,6 +301,7 @@ namespace ME3TweaksModManager
                 catch (Exception e)
                 {
                     M3Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
+                }
                 }
 
                 //Build 104 changed location of settings from AppData to ProgramData.
