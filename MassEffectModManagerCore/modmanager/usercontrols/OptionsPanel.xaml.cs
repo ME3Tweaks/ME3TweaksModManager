@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
@@ -11,6 +12,8 @@ using ME3TweaksModManager.ui;
 #if WITH_APPCENTER
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.Win32;
+
 #endif
 using Microsoft.WindowsAPICodePack.Dialogs;
 
@@ -234,15 +237,30 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
-                    CommonOpenFileDialog m = new CommonOpenFileDialog
+                    if (WineWorkarounds.WineDetected)
                     {
-                        IsFolderPicker = true,
-                        EnsurePathExists = true,
-                        Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
-                    };
-                    if (m.ShowDialog(window) == CommonFileDialogResult.Ok)
+                        var m = new OpenFolderDialog
+                        {
+                            ValidateNames = true,
+                            Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
+                        };
+                        if (m.ShowDialog(window) == true)
+                        {
+                            Settings.ModDownloadCacheFolder = m.FolderName;
+                        }
+                    }
+                    else
                     {
-                        Settings.ModDownloadCacheFolder = m.FileName;
+                        CommonOpenFileDialog m = new CommonOpenFileDialog
+                        {
+                            IsFolderPicker = true,
+                            EnsurePathExists = true,
+                            Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
+                        };
+                        if (m.ShowDialog(window) == CommonFileDialogResult.Ok)
+                        {
+                            Settings.ModDownloadCacheFolder = m.FileName;
+                        }
                     }
                 }
 

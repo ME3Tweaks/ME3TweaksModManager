@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using System.ComponentModel;
@@ -622,21 +623,42 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (libraryType == MessageBoxResult.Yes)
             {
                 // Shared
-                CommonOpenFileDialog m = new CommonOpenFileDialog
+                if (WineWorkarounds.WineDetected)
                 {
-                    IsFolderPicker = true,
-                    EnsurePathExists = true,
-                    Title = M3L.GetString(M3L.string_selectModLibraryFolder)
-                };
-                if (m.ShowDialog(centeringWindow) == CommonFileDialogResult.Ok)
-                {
-                    Settings.ModLibraryPath = m.FileName;
-                    if (loadModsAfterSelecting)
+                    var m = new OpenFolderDialog
                     {
-                        Instance.LoadMods();
-                    }
+                        ValidateNames = true,
+                        Title = M3L.GetString(M3L.string_selectModLibraryFolder)
+                    };
+                    if (m.ShowDialog(centeringWindow) == true)
+                    {
+                        Settings.ModLibraryPath = m.FolderName;
+                        if (loadModsAfterSelecting)
+                        {
+                            Instance.LoadMods();
+                        }
 
-                    return true;
+                        return true;
+                    }
+                }
+                else
+                {
+                    CommonOpenFileDialog m = new CommonOpenFileDialog
+                    {
+                        IsFolderPicker = true,
+                        EnsurePathExists = true,
+                        Title = M3L.GetString(M3L.string_selectModLibraryFolder)
+                    };
+                    if (m.ShowDialog(centeringWindow) == CommonFileDialogResult.Ok)
+                    {
+                        Settings.ModLibraryPath = m.FileName;
+                        if (loadModsAfterSelecting)
+                        {
+                            Instance.LoadMods();
+                        }
+
+                        return true;
+                    }
                 }
             }
 

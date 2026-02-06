@@ -10,6 +10,7 @@ using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ME3TweaksModManager.modmanager.objects
@@ -128,15 +129,30 @@ namespace ME3TweaksModManager.modmanager.objects
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         // Not sure if this has to be synced
-                        CommonOpenFileDialog ofd = new CommonOpenFileDialog()
+                        if (WineWorkarounds.WineDetected)
                         {
-                            Title = M3L.GetString(M3L.string_selectNewRestoreDestination),
-                            IsFolderPicker = true,
-                            EnsurePathExists = true
-                        };
-                        if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                            var ofd = new OpenFolderDialog
+                            {
+                                ValidateNames = true,
+                                Title = M3L.GetString(M3L.string_selectNewRestoreDestination)
+                            };
+                            if (ofd.ShowDialog() == true)
+                            {
+                                selectedPath = ofd.FolderName;
+                            }
+                        }
+                        else
                         {
-                            selectedPath = ofd.FileName;
+                            CommonOpenFileDialog ofd = new CommonOpenFileDialog()
+                            {
+                                Title = M3L.GetString(M3L.string_selectNewRestoreDestination),
+                                IsFolderPicker = true,
+                                EnsurePathExists = true
+                            };
+                            if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                            {
+                                selectedPath = ofd.FileName;
+                            }
                         }
                     });
                     return selectedPath;
