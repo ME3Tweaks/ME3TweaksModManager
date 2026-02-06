@@ -32,6 +32,7 @@ steps: # Steps begin following this
   fetchDepth: 1 # Only fetch the latest commit (faster)
 
 - powershell: |
+    cd ME3TweaksModManager
     git submodule update --init --recursive --depth 1
   workingDirectory: $(Build.SourcesDirectory)
   displayName: Clone submodules (ignore errors)
