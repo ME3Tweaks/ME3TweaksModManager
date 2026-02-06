@@ -23,8 +23,7 @@ shader cache.
 To edit shaders, see the basic [shader editing guide on the LEX Wiki](https://github.com/ME3Tweaks/LegendaryExplorer/wiki/Shader-Editing). Shader edits should be saved in .hlsl files.
 
 ### Compiling shaders
-To compile shaders with M3, you must have the [Windows SDK](https://learn.microsoft.com/en-us/windows/apps/windows-sdk/) installed [provide guide on which options to pick].
-Compiled shader files should have the .m3gs extension.
+To compile shaders with M3, you must have the [Windows SDK](https://learn.microsoft.com/en-us/windows/apps/windows-sdk/) installed. Drag and drop the .hlsl files onto the interface to compile them with `fxc.exe` from the SDK. Compiled shader files for shader merge need to have the extension `.m3gs`.
 
 To target a specific shader in the global shader cache, it must have the following naming standard:
 
