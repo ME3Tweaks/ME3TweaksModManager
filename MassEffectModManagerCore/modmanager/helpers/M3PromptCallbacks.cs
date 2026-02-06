@@ -1,5 +1,4 @@
-﻿using LegendaryExplorerCore.Packages;
-using ME3TweaksCore.Helpers;
+﻿using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.windows;
 using Microsoft.Win32;
