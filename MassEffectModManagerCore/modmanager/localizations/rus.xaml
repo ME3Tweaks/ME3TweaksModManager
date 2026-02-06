@@ -1489,6 +1489,8 @@
 	<system:String x:Key="string_interp_mergeModFeatureLevelIncompatible">MergeMod {0} был скопилирован на уровне функций V {1}, что требует cmmver минимум {2}. Необходимо перекомпилировать файл mergemod.</system:String>
 	<system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">Ошибка загрузки MergeMod {0}. Он может быть несовместим с cmmver {1}</system:String>
 	<system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">Изображение баннера '{0}' имеет недопустимое соотношение сторон. Соотношение сторон изображения баннера должно быть около 580x47 (12.34:1). Текущее изображение - {1}x{2}</system:String>
+	<system:String x:Key="string_deployment_asiNotFoundInManifest">ASI Group ID {0} недоступен в манифесте ASI для {1}. Данный ASI не будет установлен, пока не станет доступным в манифесте.</system:String>
+	<system:String x:Key="string_deployment_asiVersionNotFoundInManifest">ASI Group ID {0} версии {1} недоступен в манифесте ASI для {2}. Данный ASI не будет установлен, пока не станет доступным в манифесте.</system:String>
 	<system:String x:Key="string_deployment_inconsistentForcedExport">{0} содержит несогласованное использование флаша ForceExport, что должно быть устранено до преобразования. Используйте эксперименты в редакторе пакетных файлов Legendary Explorer, чтобы найти и устранить проблему.</system:String>
 	<system:String x:Key="string_deployment_missingRequiredBTM">Мод включает прекомпилированный файл texture override, но не содержит необходимого файла метаданных {0} рядом с ним</system:String>
 	<system:String x:Key="string_deployment_unableToParsePrecompiledBTPX">Парсинг прекомпилированного BTP невозможен: {0}</system:String>
@@ -1496,6 +1498,8 @@
 	<system:String x:Key="string_deployment_incorrectGameForBTP">Включенный файл манифеста texture overrirde {0} предназначен для другой игры: {1}</system:String>
 	<system:String x:Key="string_deployment_invalidSourcePackageReferenceForBTP">Включенный файл манифеста texture override '{0}' ссылается на исходный пакетный файл '{1}' и никогда не сможет быть скомпилирован</system:String>
 	<system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">Невозможно включить DLC-override цели Bio2DA-merge {0}, используйте merge-моды и Bio2DA merge вместо этого</system:String>
+	<system:String x:Key="string_deployment_btpHashCheckFailed">BTP, вероятно, предназначен для другого DLC или другой игры, проверка хэша не удалась. Требуется пересборка BTP</system:String>
+	<system:String x:Key="string_deployment_invalidBTPMetadata">Включенный файл метаданных BTP (BTPMetadata.btm) недопустим, требуется пересборка BTP</system:String>
 	<system:String x:Key="string_interp_appliesToX">Применяется к файлу {0}</system:String>
 	<system:String x:Key="string_interp_partOfX">Часть {0}</system:String>
 	<system:String x:Key="string_interp_versionX">Версия {0}</system:String>
