@@ -89,11 +89,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // Original Trilogy Options
                  new M3SettingGroup()
                 {
-                    GroupName = "Original Trilogy Settings",
-                    GroupDescription = "These options only apply when modding the Original Trilogy.",
+                    GroupName = M3L.GetString(M3L.string_originalTrilogySettings),
+                    GroupDescription = M3L.GetString(M3L.string_description_originalTrilogySettings),
                     VisibilityDelegate = () => Settings.GenerationSettingOT,
                     AllSettings = [
-                        new M3BooleanSetting(settingsType, nameof(Settings.PreferCompressingPackages), "Prefer compressing packages on import", "Package files in the original trilogy were modded and distributed uncompressed. Turning this option on will compress them on import, saving disk space, at the cost of additional import time."),
+                        new M3BooleanSetting(settingsType, nameof(Settings.PreferCompressingPackages), M3L.GetString(M3L.string_preferCompressingPackages), M3L.GetString(M3L.string_description_preferCompressingPackages)),
                         new M3BooleanSetting(settingsType, nameof(Settings.AutoUpdateLODs4K), M3L.string_autoUpdateLODs4K, M3L.string_tooltip_autoLods4K),
                         new M3BooleanSetting(settingsType, nameof(Settings.AutoUpdateLODs2K), M3L.string_autoUpdateLODs2K, M3L.string_tooltip_autoLods2K),
                     ]
@@ -334,7 +334,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void RefreshVisibilities()
         {
-            foreach(var setting in SettingGroups)
+            foreach (var setting in SettingGroups)
             {
                 setting.RefreshVisibility();
             }

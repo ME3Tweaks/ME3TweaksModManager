@@ -2876,6 +2876,10 @@
     <system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">These settings are available when the application is in Beta mode.</system:String>
     <system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Downgrade Mod Manager to the current stable version?</system:String>
     <system:String x:Key="string_disablingBetaMode">Disabling Beta mode</system:String>
+    <system:String x:Key="string_originalTrilogySettings">Original Trilogy Settings</system:String>
+    <system:String x:Key="string_description_originalTrilogySettings">These options only apply when modding the Original Trilogy.</system:String>
+    <system:String x:Key="string_preferCompressingPackages">Prefer compressing packages on import</system:String>
+    <system:String x:Key="string_description_preferCompressingPackages">Package files in the original trilogy were modded and distributed uncompressed. Turning this option on will compress them on import, saving disk space, at the cost of additional import time.</system:String>
 
     <!-- Check Box Combo Box Control -->
     <system:String x:Key="string_noItemsSelected">No items selected</system:String>

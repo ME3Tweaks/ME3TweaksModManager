@@ -848,6 +848,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_mergeModFeatureLevelIncompatible = "string_interp_mergeModFeatureLevelIncompatible";
 		public const string string_interp_mergeModFailedToLoadUnknownFeatureLevel = "string_interp_mergeModFailedToLoadUnknownFeatureLevel";
 		public const string string_deployment_bannerImageInvalidAspectRatio = "string_deployment_bannerImageInvalidAspectRatio";
+		public const string string_deployment_asiNotFoundInManifest = "string_deployment_asiNotFoundInManifest";
+		public const string string_deployment_asiVersionNotFoundInManifest = "string_deployment_asiVersionNotFoundInManifest";
 		public const string string_deployment_inconsistentForcedExport = "string_deployment_inconsistentForcedExport";
 		public const string string_deployment_missingRequiredBTM = "string_deployment_missingRequiredBTM";
 		public const string string_deployment_unableToParsePrecompiledBTPX = "string_deployment_unableToParsePrecompiledBTPX";
@@ -1428,8 +1430,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_m3ASIVersionNotAnInteger = "string_interp_m3ASIVersionNotAnInteger";
 		public const string string_interp_m3ASIVersionMustBeGTOne = "string_interp_m3ASIVersionMustBeGTOne";
 		public const string string_interp_m3ASIVersionValueMustBeInteger = "string_interp_m3ASIVersionValueMustBeInteger";
-		public const string string_deployment_asiNotFoundInManifest = "string_deployment_asiNotFoundInManifest";
-		public const string string_deployment_asiVersionNotFoundInManifest = "string_deployment_asiVersionNotFoundInManifest";
 		public const string string_interp_noBackupMessage = "string_interp_noBackupMessage";
 		public const string string_backupWarning = "string_backupWarning";
 		public const string string_tooltip_hello = "string_tooltip_hello";
@@ -2163,6 +2163,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode = "string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode";
 		public const string string_downgradeModManagerToTheCurrentStableVersionQuestion = "string_downgradeModManagerToTheCurrentStableVersionQuestion";
 		public const string string_disablingBetaMode = "string_disablingBetaMode";
+		public const string string_originalTrilogySettings = "string_originalTrilogySettings";
+		public const string string_description_originalTrilogySettings = "string_description_originalTrilogySettings";
+		public const string string_preferCompressingPackages = "string_preferCompressingPackages";
+		public const string string_description_preferCompressingPackages = "string_description_preferCompressingPackages";
 		public const string string_noItemsSelected = "string_noItemsSelected";
 		public const string string_synchronizedSquadmateOutfits = "string_synchronizedSquadmateOutfits";
 		public const string string_synchronizingSquadmateOutfitFiles = "string_synchronizingSquadmateOutfitFiles";
