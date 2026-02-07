@@ -32,16 +32,11 @@
                             <GroupBox.Style>
                                 <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
                                     <Setter Property="Padding" Value="6, 0"/>
-                                    <Setter Property="Visibility" Value="Visible"/>
                                     <Style.Triggers>
-                                        <!-- Hide if RequiresBetaMode is true but BetaMode is false -->
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding RequiresBetaMode}" Value="True"/>
-                                                <Condition Binding="{Binding Path=(modmanager:Settings.BetaMode)}" Value="False"/>
-                                            </MultiDataTrigger.Conditions>
+                                        <!-- Hide entire group if its visibility delegate returns false -->
+                                        <DataTrigger Binding="{Binding IsVisible}" Value="False">
                                             <Setter Property="Visibility" Value="Collapsed"/>
-                                        </MultiDataTrigger>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </GroupBox.Style>

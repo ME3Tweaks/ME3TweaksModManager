@@ -67,7 +67,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     GroupName = M3L.GetString(M3L.string_betaModeSettings),
                     GroupDescription = M3L.GetString(M3L.string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode),
-                    RequiresBetaMode = true,
+                    VisibilityDelegate = () => Settings.BetaMode,
                     AllSettings = [
                        new M3BooleanSetting(settingsType, nameof(Settings.ShowInstalledModsInLibrary), M3L.string_showModInstallationStatusInLbrary, M3L.string_description_showInstalledModsInLibrary),
                     ]
@@ -78,10 +78,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     GroupName = M3L.GetString(M3L.string_legendaryEditionOptions),
                     GroupDescription = M3L.GetString(M3L.string_description_leOptions),
+                    VisibilityDelegate = () => Settings.GenerationSettingLE,
                     AllSettings = [
                         new M3BooleanSetting(settingsType, nameof(Settings.SkipLELauncher), M3L.string_launcherAutobootSelectedGame, M3L.string_description_autobootLE),
                         new M3BooleanSetting(settingsType, nameof(Settings.EnableLE1CoalescedMerge), M3L.string_lE1EnableCoalescedMerge, M3L.string_description_le1CoalescedMergeOption),
                         new M3BooleanSetting(settingsType, nameof(Settings.EnableLE12DAMerge), M3L.string_LE1Enable2DAMerge, M3L.string_description_LE1Enable2DAMerge),
+                    ]
+                },
+
+                // Original Trilogy Options
+                 new M3SettingGroup()
+                {
+                    GroupName = "Original Trilogy Settings",
+                    GroupDescription = "These options only apply when modding the Original Trilogy.",
+                    VisibilityDelegate = () => Settings.GenerationSettingOT,
+                    AllSettings = [
+                        new M3BooleanSetting(settingsType, nameof(Settings.PreferCompressingPackages), "Prefer compressing packages on import", "Package files in the original trilogy were modded and distributed uncompressed. Turning this option on will compress them on import, saving disk space, at the cost of additional import time."),
+                        new M3BooleanSetting(settingsType, nameof(Settings.AutoUpdateLODs4K), M3L.string_autoUpdateLODs4K, M3L.string_tooltip_autoLods4K),
+                        new M3BooleanSetting(settingsType, nameof(Settings.AutoUpdateLODs2K), M3L.string_autoUpdateLODs2K, M3L.string_tooltip_autoLods2K),
                     ]
                 },
 
@@ -134,7 +148,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     });
                 }
             }
-
             return true;
         }
 
@@ -278,9 +291,25 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
+        protected override void OnClosing(DataEventArgs args)
+        {
+            Settings.StaticPropertyChanged -= Settings_PropertyChanged;
+            base.OnClosing(args);
+        }
+
         public override void OnPanelVisible()
         {
             InitializeComponent();
+            Settings.StaticPropertyChanged += Settings_PropertyChanged;
+        }
+
+        private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            // Refresh visibility when settings that affect group visibility change
+            if (e.PropertyName == nameof(Settings.BetaMode))
+            {
+                RefreshVisibilities();
+            }
         }
 
         private void SetDarkTheme()
@@ -300,6 +329,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Settings.DarkTheme = !Settings.DarkTheme;
                 //Settings.Save();
                 mainwindow.SetTheme(false);
+            }
+        }
+
+        private void RefreshVisibilities()
+        {
+            foreach(var setting in SettingGroups)
+            {
+                setting.RefreshVisibility();
             }
         }
     }
