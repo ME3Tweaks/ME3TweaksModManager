@@ -1378,6 +1378,14 @@
 	<system:String x:Key="string_mergedGlobalShaders">Merge degli shader globali eseguito</system:String>
 	<system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Errore durante il merge degli shader globali: {0}</system:String>
 	<system:String x:Key="string_interp_installingASIMod">Installazione della Mod ASI in corso</system:String>
+	<system:String x:Key="string_dialog_msvcVersionMissing">Le Mod ASI richiedono l'installazione di Microsoft Visual C++ Redistributable x64 14.50 o superiore. Le Mod ASI sono necessarie per il corretto funzionamento del modding della Legendary Edition.</system:String>
+	<system:String x:Key="string_mSVCPPRequired">MSVC++ richiesto</system:String>
+	<system:String x:Key="string_installForMe">Installa per me</system:String>
+	<system:String x:Key="string_installManually">Installa manualmente</system:String>
+	<system:String x:Key="string_doNotInstall">Non installare</system:String>
+	<system:String x:Key="string_dialog_msvcManualDirections">Installa il file eseguibile scaricato</system:String>
+	<system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Microsoft Visual C++ Redistributable installato</system:String>
+	<system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Impossibile installare Microsoft Visual C++ Redistributable</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Il file di configurazione di Mass Effect {0}.ini è mancante. Dovrebbe trovarsi in {1}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">La cartella di configurazione di Mass Effect è mancante. Dovrebbe trovarsi in {0}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect Ini Modder</system:String>
@@ -2090,6 +2098,10 @@
 	<system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">Queste impostazioni sono disponibili quando l'applicazione è in modalità beta</system:String>
 	<system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Vuoi effettuare il downgrade del Mod Manager alla versione stabile corrente?</system:String>
 	<system:String x:Key="string_disablingBetaMode">Disabilitazione della modalità beta in corso</system:String>
+	<system:String x:Key="string_originalTrilogySettings">Impostazioni della Trilogia Originale</system:String>
+	<system:String x:Key="string_description_originalTrilogySettings">Queste impostazioni vengono applicate solo quando si modda la Trilogia Originale.</system:String>
+	<system:String x:Key="string_preferCompressingPackages">Preferisci la compressione dei package all'importazione</system:String>
+	<system:String x:Key="string_description_preferCompressingPackages">I file package nella trilogia originale erano moddati e distribuiti senza compressione. Abilitare questa impostazione li farà comprimere all'importazione, risparmiando spazio su disco al costo di un tempo di importazione più lungo.</system:String>
 	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Controllo dei riferimenti nelle mergemod [{0}/{1}]</system:String>
 	<system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core non è stato in grado di risolvere l'importazione: {0} {1} in {2}</system:String>
 	<system:String x:Key="string_syncingPlotManager">Sincronizzazione del Plot Manager</system:String>
