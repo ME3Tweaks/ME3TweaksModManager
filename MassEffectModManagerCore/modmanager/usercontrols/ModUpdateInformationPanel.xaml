@@ -59,15 +59,20 @@
                 Margin="5,5,0,5" />
             <CheckBox
                 DockPanel.Dock="Left"
-                Content="Use in-app updater*"
+                Content="{DynamicResource string_useInappUpdater}"
                 IsChecked="{Binding Path=(modmanager:Settings.AutoImportModUpdates)}"
                 IsEnabled="{Binding IsNexusPremiumUser}"
                 VerticalAlignment="Center"
                 Margin="10,5,0,5">
                 <CheckBox.ToolTip>
-                    <TextBlock TextWrapping="Wrap" MaxWidth="400">
-                        <Run Text="NexusMods Premium users only: Clicking update will download and automatically import the mod to the library."/><LineBreak/>
-                        <Run Text="Turn this off if this causes issues or is undesirable."/>
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        MaxWidth="400">
+            <Run
+                            Text="{DynamicResource string_tooltip_useInAppUpdater}" />
+            <LineBreak />
+            <Run
+                            Text="{DynamicResource string_tooltip_turnOffIfUndesirable}" />
                     </TextBlock>
                 </CheckBox.ToolTip>
             </CheckBox>

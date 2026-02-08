@@ -593,7 +593,9 @@
     <system:String x:Key="string_dialog_msvcManualDirections">Install the downloaded executable file to install the latest version of Microsoft Visual C++ 14. Click OK when done to continue.</system:String>
     <system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Installed Microsoft Visual C++ Redistributable</system:String>
     <system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Failed to install Microsoft Visual C++ Redistributable</system:String>
-
+    <system:String x:Key="string_testMicrosoftVisualC++Installer">Test Microsoft Visual C++ Installer</system:String>
+    <!-- This is in the Debug Menu -->
+    
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
@@ -1405,7 +1407,9 @@
     <system:String  x:Key="string_downloadAll">Download all</system:String>
     <system:String x:Key="string_interp_checkingForModUpdatesX">Checking for mod updates ({0})</system:String>
     <!-- 0={Mod name} -->
-
+    <system:String x:Key="string_useInappUpdater">Use in-app updater*</system:String>
+    <system:String x:Key="string_tooltip_useInAppUpdater">NexusMods Premium users only: Clicking update will download and automatically import the mod to the library.</system:String>
+    <system:String x:Key="string_tooltip_turnOffIfUndesirable">Turn this off if this causes issues or is undesirable.</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
@@ -1952,6 +1956,7 @@
     <system:String x:Key="string_enablesSingleinstancingOfAnApplication">Enables single-instancing of an application</system:String>
     <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper for robocopy command in C#</system:String>
     <system:String x:Key="string_starMeansForked">* = ME3Tweaks forked version</system:String>
+    <system:String x:Key="string_tooltip_clickToViewLicense">Click to view license</system:String>
 
     <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
@@ -3168,6 +3173,10 @@
     <system:String x:Key="string_dlmgr_subTempCache">Downloads will automatically be deleted when Mod Manager closes. Mods imported into the library will be unaffected. You can change this in the application settings.</system:String>
     <system:String xml:space="preserve" x:Key="string_dlmgr_subPermCache">Downloaded files are saved to the following location, which can be changed in the settings:\n{0}</system:String>
     <!-- 0={Folder path} -->
+    <system:String x:Key="string_failedDownloads">Failed downloads</system:String>
+    <system:String x:Key="string_clearAll">Clear all</system:String>
+    <system:String x:Key="string_tooltip_removeFailedDownload">Remove failed download</system:String>
+
 
     <!-- Merge Mod Loader -->
     <system:String x:Key="string_dialog_mergeModFeatureLevel1">Is the mergemod you are compiling going to be used in a mod that targets ModDesc 8.2 or lower?</system:String>

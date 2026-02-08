@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksCore.Objects;
+using ME3TweaksCoreWPF.UI;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -198,12 +199,18 @@ namespace ME3TweaksModManager.modmanager.objects
         #endregion
 
         /// <summary>
+        /// Command to remove this download from failed downloads
+        /// </summary>
+        public GenericCommand RemoveDownloadCommand {get;set;}
+
+        /// <summary>
         /// Constructor - sets state to Initializing
         /// </summary>
         protected ModDownload()
         {
             DownloadState = EModDownloadState.INITIALIZING;
             CancellationController = new CancellationTokenSource();
+            RemoveDownloadCommand = new GenericCommand(()=>DownloadManager.FailedDownloads.Remove(this), () => true);
         }
 
         private protected void OnDownloadProgress(long done, long total)
@@ -515,6 +522,25 @@ namespace ME3TweaksModManager.modmanager.objects
                                 { @"File", ModFile?.Name },
                                 { @"Result", $@"Failed, {downloadResult.errorMessage}" },
                             });
+                            if (downloadResult.result != null)
+                            {
+                                // Ensure download stream has been closed
+                                downloadResult.result.Close();
+                                if (downloadResult.result is FileStream fs && File.Exists(fs.Name))
+                                {
+                                    try
+                                    {
+                                        File.Delete(fs.Name);
+                                    }
+                                    catch
+                                    {
+                                        // Don't really care here...
+                                    }
+                                }
+                            }
+                            Status = downloadResult.errorMessage;
+                            DownloadState = EModDownloadState.FAILED;
+                            return;
                         }
                     }
                     else
@@ -530,7 +556,7 @@ namespace ME3TweaksModManager.modmanager.objects
                             ProgressMaximum = 100;
                             void onProgress(ProgressInfo pi)
                             {
-                                ProgressValue = (long) pi.Value;
+                                ProgressValue = (long)pi.Value;
                                 ProgressIndeterminate = false;
                             }
                             var hash = MUtilities.CalculateHash(DownloadedStream, progressDelegate: onProgress);

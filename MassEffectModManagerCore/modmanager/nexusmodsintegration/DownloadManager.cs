@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
@@ -56,6 +57,8 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// The list of downloads. They may not all be actively downloading, but in a queued state.
         /// </summary>
         private static ConcurrentDictionary<string, ModDownload> Downloads = new();
+
+        public static ObservableCollectionExtended<ModDownload> FailedDownloads { get; } = new();
 
         /// <summary>
         /// Get the downloads list
@@ -450,6 +453,12 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 if (Downloads.TryRemove(key, out _))
                 {
                     M3Log.Information($@"DownloadManager::Download was removed: {key} {downloadedMod.FileName}");
+                    if (downloadedMod.DownloadState == EModDownloadState.FAILED)
+                    {
+                        Application.Current.Dispatcher.Invoke(() => { 
+                            FailedDownloads.AddEx(downloadedMod);
+                        });
+                    }
                     OnDownloadRemoved?.Invoke(downloadedMod, EventArgs.Empty);
                 }
             }

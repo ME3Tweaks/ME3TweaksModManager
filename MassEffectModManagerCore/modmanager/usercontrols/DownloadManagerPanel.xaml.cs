@@ -1,6 +1,6 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using CommandLine;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
@@ -25,6 +25,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// List of downloads show in the in the panel
         /// </summary>
         public ObservableCollectionExtended<ModDownload> Downloads { get; } = new ObservableCollectionExtended<ModDownload>();
+
+        /// <summary>
+        /// Reference to the static FailedDownloads collection for binding
+        /// </summary>
+        public ObservableCollectionExtended<ModDownload> FailedDownloads => DownloadManager.FailedDownloads;
 
         public DownloadManagerPanel()
         {
@@ -118,7 +123,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Clear out canceled downloads from the manager.
             DownloadManager.ClearAbortedDownloads();
 
-            Downloads.Clear(); // Ensure we have no references in event this window doesn't clean up for some reason (memory analyzer shows it is not reliable unless another window appears)
+            Downloads.ClearEx(); // Ensure we have no references in event this window doesn't clean up for some reason (memory analyzer shows it is not reliable unless another window appears)
             base.OnClosing(dataEventArgs);
         }
 
@@ -168,5 +173,42 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 OnClosing(DataEventArgs.Empty);
             });
         }
+
+
+        private void ClearAllFailed_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() => 
+            { 
+                DownloadManager.FailedDownloads.ClearEx();
+                
+                // Check if both collections are empty and close the panel if so
+                CheckAndCloseIfEmpty();
+            });
+        }
+
+        private void RemoveFailedDownload_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is ModDownload download)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    DownloadManager.FailedDownloads.Remove(download);
+                    
+                    // Check if both collections are empty and close the panel if so
+                    CheckAndCloseIfEmpty();
+                });
+            }
+        }
+
+        private void CheckAndCloseIfEmpty()
+        {
+            // Check if both FailedDownloads and Downloads are empty
+            if (DownloadManager.FailedDownloads.Count == 0 && Downloads.Count == 0)
+            {
+                CloseWrapper();
+            }
+        }
+
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

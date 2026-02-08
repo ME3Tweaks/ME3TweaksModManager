@@ -7,6 +7,7 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
     xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:nexusmodsintegration="clr-namespace:ME3TweaksModManager.modmanager.nexusmodsintegration"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignHeight="450"
@@ -30,6 +31,112 @@
             Text="{Binding DownloadLocationText}"
             TextWrapping="Wrap"
             DockPanel.Dock="Bottom" />
+        <Separator
+            DockPanel.Dock="Bottom" />
+        <Expander
+            DockPanel.Dock="Bottom"
+            Margin="0,5,0,0"
+            IsExpanded="True"
+            DataContext="{Binding FailedDownloads}">
+            <Expander.Style>
+                <Style
+                    TargetType="Expander"
+                    BasedOn="{StaticResource {x:Type Expander}}">
+                    <Setter
+                        Property="Visibility"
+                        Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding Count, Converter={StaticResource IntGreaterThanConverter}, ConverterParameter=0, Mode=OneWay}"
+                            Value="True">
+                            <Setter
+                                Property="Visibility"
+                                Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Expander.Style>
+            <Expander.Header>
+                <StackPanel
+                    Orientation="Horizontal">
+                    <TextBlock
+                        Text="{DynamicResource string_failedDownloads}"
+                        FontWeight="Bold" />
+                    <TextBlock
+                        Text=" ("
+                        FontWeight="Bold"
+                        Margin="3,0,0,0" />
+                    <TextBlock
+                        Text="{Binding Count, Mode=OneWay}"
+                        FontWeight="Bold" />
+                    <TextBlock
+                        Text=")"
+                        FontWeight="Bold" />
+                </StackPanel>
+            </Expander.Header>
+            <DockPanel>
+                <Button
+                    Content="{DynamicResource string_clearAll}"
+                    DockPanel.Dock="Bottom"
+                    HorizontalAlignment="Right"
+                    Margin="0,5,0,0"
+                    Padding="7,4"
+                    Click="ClearAllFailed_Click">
+                    <Button.Style>
+                        <Style
+                            TargetType="Button"
+                            BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter
+                                Property="Visibility"
+                                Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding Count, Converter={StaticResource IntGreaterThanConverter}, ConverterParameter=1, Mode=OneWay}"
+                                    Value="True">
+                                    <Setter
+                                        Property="Visibility"
+                                        Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <ItemsControl
+                    ItemsSource="{Binding}"
+                    Margin="0,5,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel
+                                Margin="0,2,0,2">
+                                <Button
+                                    Content="✕"
+                                    DockPanel.Dock="Right"
+                                    Width="26"
+                                    Height="26"
+                                    Margin="5,0,0,0"
+                                    FontWeight="Bold"
+                                    VerticalAlignment="Center"
+                                    Click="RemoveFailedDownload_Click"
+                                    Tag="{Binding}"
+                                    ToolTip="{DynamicResource string_tooltip_removeFailedDownload}" />
+                                <StackPanel
+                                    DockPanel.Dock="Left"
+                                    HorizontalAlignment="Stretch">
+                                    <TextBlock
+                                        Text="{Binding ModFile.Name}"
+                                        FontWeight="Bold"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Text="{Binding Status}"
+                                        Opacity="0.7"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+        </Expander>
         <ItemsControl
             ItemsSource="{Binding Downloads}">
             <ItemsControl.ItemTemplate>
@@ -66,7 +173,7 @@
                                 VerticalAlignment="Bottom"
                                 Margin="0,0,0,2"
                                 Visibility="{Binding CanImport, Converter={StaticResource BoolToVisibilityConverter}}"
-                                Command="{Binding BeginImportCommand,                                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:DownloadManagerPanel}}}"
+                                Command="{Binding BeginImportCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:DownloadManagerPanel}}}"
                                 CommandParameter="{Binding}" />
                         </DockPanel>
                         <ProgressBar
