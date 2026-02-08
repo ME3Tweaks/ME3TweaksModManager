@@ -585,6 +585,14 @@
     <system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">EFehler beim Zusammenführen globaler Shader: {0}</system:String>
     <!-- 0={Error message} -->
     <system:String x:Key="string_interp_installingASIMod">Installiere ASI-Mod</system:String>
+    <system:String x:Key="string_dialog_msvcVersionMissing">ASI-Mods erfordern die Installation von Microsoft Visual C++ Redistributable x64 14.50 oder höher. ASI-Mods sind für das korrekte Funktionieren von Modding in der Legendary Edition notwendig.</system:String>
+    <system:String x:Key="string_mSVCPPRequired">MSVC++ erforderlich</system:String>
+    <system:String x:Key="string_installForMe">Für mich installieren</system:String>
+    <system:String x:Key="string_installManually">Manuell installieren</system:String>
+    <system:String x:Key="string_doNotInstall">Nicht installieren</system:String>
+    <system:String x:Key="string_dialog_msvcManualDirections">Installiere die heruntergeladene ausführbare Datei, um die neueste Version von Microsoft Visual C++ 14 zu installieren. Klicke anschließend auf OK, um fortzufahren.</system:String>
+    <system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Microsoft Visual C++ Redistributable installiert</system:String>
+    <system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Installation der Microsoft Visual C++ Redistributable fehlgeschlagen.</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly konnte nicht heruntergeladen werden: {0}</system:String>
@@ -2876,6 +2884,10 @@
     <system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">Diese Einstellungen sind verfügbar, wenn sich die Anwendung im Betamodus befindet.</system:String>
     <system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Mod Manager auf die aktuelle stabile Version downgraden?</system:String>
     <system:String x:Key="string_disablingBetaMode">Deaktiviere Betamodus</system:String>
+    <system:String x:Key="string_originalTrilogySettings">Original Trilogie-Einstellungen</system:String>
+    <system:String x:Key="string_description_originalTrilogySettings">Diese Optionen gelten nur beim Modden der Original-Trilogie.</system:String>
+    <system:String x:Key="string_preferCompressingPackages">Beim Import das Komprimieren von Paketen bevorzugen</system:String>
+    <system:String x:Key="string_description_preferCompressingPackages">Package-Dateien der Original-Trilogie wurden üblicherweise unkomprimiert modifiziert und verteilt. Wenn diese Option aktiviert ist, werden sie beim Import komprimiert, wodurch Speicherplatz gespart wird — allerdings auf Kosten einer längeren Importzeit.</system:String>
 
     <!-- Check Box Combo Box Control -->
     <system:String x:Key="string_noItemsSelected">Nichts ausgewählt</system:String>
