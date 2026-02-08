@@ -2979,10 +2979,19 @@ namespace ME3TweaksModManager
                 {
                     shouldBringToFG = true;
                     Activate();
-                    DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink);
-                    ShowDownloadManager();
-                }
 
+                    if (NexusModsUtilities.UserInfo == null)
+                    {
+                        // Not logged in
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_nexusLoginRequiredForDownload), M3L.GetString(M3L.string_notSignedIn), MessageBoxButton.OK, MessageBoxImage.Error);
+                        ShowNexusPanel();
+                    }
+                    else
+                    {
+                        DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink);
+                        ShowDownloadManager();
+                    }
+                }
                 if (CommandLinePending.PendingInstallBink && CommandLinePending.PendingGame != null)
                 {
                     shouldBringToFG = true;
