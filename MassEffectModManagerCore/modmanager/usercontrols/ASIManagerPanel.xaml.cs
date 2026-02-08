@@ -24,6 +24,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class ASIManagerPanel : MMBusyPanelBase
     {
+        // This property holds the developer-only group id text to show on the UI when appropriate
+        public string SelectedASIGroupIdText { get; set; }
+
+        // Controls visibility of the Group ID textblock in the UI
+        public bool ShowSelectedASIGroupId { get; set; }
         public int SelectedTabIndex { get; set; }
         private object SelectedASIObject { get; set; }
         public string SelectedASIDescription { get; set; }
@@ -234,6 +239,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
 
                 SelectedASISubtext = subtext;
+                // Developer-only GroupID display for ASIMod entries (manifest groups)
+                if (Settings.DeveloperMode)
+                {
+                    SelectedASIGroupIdText = M3L.GetString(M3L.string_interp_groupIDX, asiMod.UpdateGroupId);
+                    ShowSelectedASIGroupId = true;
+                }
+                else
+                {
+                    SelectedASIGroupIdText = null;
+                    ShowSelectedASIGroupId = false;
+                }
             }
             else if (v is IKnownInstalledASIMod kaim)
             {
@@ -261,6 +277,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
                 }
                 SelectedASISubtext = subtext;
+                // Developer-only GroupID display for known installed ASIs
+                if (Settings.DeveloperMode && kaim.AssociatedManifestItem?.OwningMod != null)
+                {
+                    SelectedASIGroupIdText = M3L.GetString(M3L.string_interp_groupIDX, kaim.AssociatedManifestItem.OwningMod.UpdateGroupId);
+                    ShowSelectedASIGroupId = true;
+                }
+                else
+                {
+                    SelectedASIGroupIdText = null;
+                    ShowSelectedASIGroupId = false;
+                }
             }
             else if (v is IUnknownInstalledASIMod nonManifestAsiMod)
             {
@@ -268,6 +295,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SelectedASIName = nonManifestAsiMod.UnmappedFilename;
                 SelectedASISubtext = M3L.GetString(M3L.string_SSINotPresentInManifest);
                 InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
+                SelectedASIGroupIdText = null;
+                ShowSelectedASIGroupId = false;
             }
             else
             {
@@ -276,6 +305,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SelectedASISubtext = "";
                 SelectedASIObject = null;
                 InstallButtonText = M3L.GetString(M3L.string_noASISelected);
+                SelectedASIGroupIdText = null;
+                ShowSelectedASIGroupId = false;
             }
         }
 

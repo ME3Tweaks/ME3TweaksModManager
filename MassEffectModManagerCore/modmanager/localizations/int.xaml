@@ -1977,6 +1977,8 @@
     <system:String x:Key="string_errorDeletingASI">Error deleting ASI</system:String>
     <system:String x:Key="string_interp_anErrorOccurredInstallingTheASI">An error occurred installing the ASI: {0}</system:String>
     <!-- 0={Exception message} -->
+    <system:String x:Key="string_interp_groupIDX">Group ID: {0}</system:String>
+    <!-- 0={Number} - Group ID is for "ASI Group ID", a technical term that describes a group of ASIs (e.g. DebugLogger for LE1 is Group ID 71) -->
 
     <!-- Starter Kit Window-->
     <system:String x:Key="string_title_starterkit">DLC Mod Starter Kit Generator</system:String>
