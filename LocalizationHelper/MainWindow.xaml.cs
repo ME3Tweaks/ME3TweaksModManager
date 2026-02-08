@@ -222,13 +222,27 @@ namespace LocalizationHelper
                 var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
                 var rootLen = modmanagerroot.Length + 1;
 
-                var allCsFiles = Directory.EnumerateFiles(modmanagerroot, "*.cs", SearchOption.AllDirectories);
-                foreach(var csFile in allCsFiles)
+                var allCsFiles = Directory.EnumerateFiles(modmanagerroot, "*", SearchOption.AllDirectories);
+                foreach (var csFile in allCsFiles)
                 {
                     var subStr = csFile.Substring(rootLen);
                     if (subStr.StartsWith(@"obj\"))
                         continue;
-                    files.Add(subStr);
+
+
+                    var filename = Path.GetFileName(subStr);
+                    switch (filename)
+                    {
+                        case "M3MemoryAnalyzer.xaml":
+                        case "IniDataTemplates.xaml":
+                            continue;
+                    }
+
+                    var ext = Path.GetExtension(subStr);
+                    if (ext == ".cs" || ext == ".xaml")
+                    {
+                        files.Add(subStr);
+                    }
                 }
 
                 if (false)
@@ -720,6 +734,12 @@ namespace LocalizationHelper
                 //ResultTextBox.Text = doc.ToString();
                 foreach (var v in localizations)
                 {
+                    // Skip strings that don't contain any alphabetic characters (no localizable text)
+                    if (!v.Key.Any(char.IsLetter))
+                    {
+                        continue;
+                    }
+
                     var newlines = v.Key.Contains("\n");
                     var text = v.Key.Replace("\r\n", "&#10;").Replace("\n", "&#10;");
                     result.Add("\t<system:String" + (newlines ? " xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
