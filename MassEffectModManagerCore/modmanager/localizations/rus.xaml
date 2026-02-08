@@ -35,6 +35,7 @@
 	<system:String x:Key="string_enablesSingleinstancingOfAnApplication">Включение режима Single Instance для приложения</system:String>
 	<system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Враппер для команды robocopy в C#</system:String>
 	<system:String x:Key="string_starMeansForked">* = Форк-версия ME3Tweaks</system:String>
+	<system:String x:Key="string_tooltip_clickToViewLicense">Нажмите для просмотра лицензии</system:String>
 	<system:String x:Key="string_textureModded">Текстура модифицирована</system:String>
 	<system:String x:Key="string_interp_modNameByAuthorName">{0} от {1}</system:String>
 	<system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">Как минимум в одном указанном Alternate DLC не задан параметр FriendlyName, который требуется модам, предназначенным для cmmver >= 6.0.</system:String>
@@ -123,6 +124,7 @@
 	<system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">Возникла ошибка при удалении ASI: {0}</system:String>
 	<system:String x:Key="string_errorDeletingASI">Ошибка удаления ASI</system:String>
 	<system:String x:Key="string_interp_anErrorOccurredInstallingTheASI">Возникла ошибка при установки ASI: {0}</system:String>
+	<system:String x:Key="string_interp_groupIDX">Group ID: {0}</system:String>
 	<system:String x:Key="string_interp_errorRestoringFromBackupX">Возникла ошибка при восстановлении из архива: {0}</system:String>
 	<system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Mass Effect Randomizer, Legendary Explorer и другие.</system:String>
 	<system:String x:Key="string_backupsMustBeCreatedFresh">Архивы должны создаваться из свежеустановленной, оригинальной копии игры. Модифицированные архивы не поддерживаются.</system:String>
@@ -491,6 +493,9 @@
 	<system:String x:Key="string_importComplete">Импорт завершен</system:String>
 	<system:String x:Key="string_dlmgr_subTempCache">Загрузки будут автоматически удалены при закрытии Mod Manager. Моды, импортированные в библиотеку, не будут затронуты. Вы можете изменить это в настройках приложения.</system:String>
 	<system:String x:Key="string_dlmgr_subPermCache" xml:space="preserve">Загруженные файлы сохраняются по указанному пути, который может быть изменен в настройках:\n{0}</system:String>
+	<system:String x:Key="string_failedDownloads">Неудачные загрузки</system:String>
+	<system:String x:Key="string_clearAll">Очистить все</system:String>
+	<system:String x:Key="string_tooltip_removeFailedDownload">Удалить неудачные загрузки</system:String>
 	<system:String x:Key="string_dialog_couldNotfindFXC">Копия fxc.exe не обнаружена. Вам нужно установить Windows SDS, содержащий компилятор D3D11.</system:String>
 	<system:String x:Key="string_fXCNotFound">FXC не найден</system:String>
 	<system:String x:Key="string_compilingShaders">Компиляция шейдеров</system:String>
@@ -1378,6 +1383,15 @@
 	<system:String x:Key="string_mergedGlobalShaders">Глобальный шейдеры объединены</system:String>
 	<system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Ошибка объединения глобальных шейдеров: {0}</system:String>
 	<system:String x:Key="string_interp_installingASIMod">Установка ASI-мода</system:String>
+	<system:String x:Key="string_dialog_msvcVersionMissing">ASI-моды требуют установки Microsoft Visual C++ Redistributable x64 14.50 или выше. ASI-моды требуются для корректной работы моддинга Legendary Edition.</system:String>
+	<system:String x:Key="string_mSVCPPRequired">Требуется MSVC++</system:String>
+	<system:String x:Key="string_installForMe">Установить для меня</system:String>
+	<system:String x:Key="string_installManually">Установить вручную</system:String>
+	<system:String x:Key="string_doNotInstall">Не устанавливать</system:String>
+	<system:String x:Key="string_dialog_msvcManualDirections">Установить загруженный исполняемый файл для установки последней версии Microsoft Visual C++ 14. Нажмите OK по завершении для продолжения.</system:String>
+	<system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Установлен Microsoft Visual C++ Redistributable</system:String>
+	<system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Не удалось установить Microsoft Visual C++ Redistributable</system:String>
+	<system:String x:Key="string_testMicrosoftVisualC++Installer">Тест установщика Microsoft Visual C++</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Директория Mass Effect Config отсутствует. Она должна находиться в {0}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Невозможно запустить Mass Effect Ini Modder</system:String>
@@ -1711,6 +1725,9 @@
 	<system:String x:Key="string_tooltip_downloadAll">Скачать обновления для модов, поддерживающих прямые обновления</system:String>
 	<system:String x:Key="string_downloadAll">Скачать все</system:String>
 	<system:String x:Key="string_interp_checkingForModUpdatesX">Проверка обновлений мода ({0})</system:String>
+	<system:String x:Key="string_useInappUpdater">Использовать встроенный модуль обновления*</system:String>
+	<system:String x:Key="string_tooltip_useInAppUpdater">Только для пользователей NexusMods Premium: Нажатие на обновление загрузит и автоматически импортирует мод в библиотеку.</system:String>
+	<system:String x:Key="string_tooltip_turnOffIfUndesirable">Выключите это, если это вызывает проблемы или нежелательно.</system:String>
 	<system:String x:Key="string_interp_decompressedFileNotCorrectSize">Некорректный размер распакованного файла ({0}). Ожидалось: {1}, получено: {2}</system:String>
 	<system:String x:Key="string_interp_decompressedFileWrongHash">Неверный хэш распакованного файла ({0}). Ожидалось: {1}, получено: {2}</system:String>
 	<system:String x:Key="string_applying">Применение</system:String>
@@ -2090,6 +2107,10 @@
 	<system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">Данные настройки доступны, когда приложение находится в Бета-режиме</system:String>
 	<system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Откатить Mod Manager до текущей стабильной версии?</system:String>
 	<system:String x:Key="string_disablingBetaMode">Отключение Бета-режима</system:String>
+	<system:String x:Key="string_originalTrilogySettings">Настройки Оригинальной Трилогии</system:String>
+	<system:String x:Key="string_description_originalTrilogySettings">Данные опции применяются только при модификации Оригинальной Трилогии.</system:String>
+	<system:String x:Key="string_preferCompressingPackages">Приоритет сжатия пакетных файлов при импорте</system:String>
+	<system:String x:Key="string_description_preferCompressingPackages">Пакетные файлы в оригинальной трилогии модифицировались и распространялись без сжатия. Включение данной опции сожмет их для импорта, экомя место на диске за счет увеличения времени импорта.</system:String>
 	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Проверка ссылок в mergemods [{0}/{1}]</system:String>
 	<system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core не может совершить импорт: {0} {1} в {2}</system:String>
 	<system:String x:Key="string_syncingPlotManager">Синхронизация Plot Manager</system:String>
