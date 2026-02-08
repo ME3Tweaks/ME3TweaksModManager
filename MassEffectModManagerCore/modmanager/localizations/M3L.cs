@@ -1494,6 +1494,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_anErrorOccuredDeletingTheASI = "string_interp_anErrorOccuredDeletingTheASI";
 		public const string string_errorDeletingASI = "string_errorDeletingASI";
 		public const string string_interp_anErrorOccurredInstallingTheASI = "string_interp_anErrorOccurredInstallingTheASI";
+		public const string string_interp_groupIDX = "string_interp_groupIDX";
 		public const string string_title_starterkit = "string_title_starterkit";
 		public const string string_newDLCModInformation = "string_newDLCModInformation";
 		public const string string_modName = "string_modName";
