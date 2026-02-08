@@ -43,10 +43,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowBGFISDB_MenuItem)) ShowBGFISDB_Click(window);
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
             if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
+            if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
 #endif
         }
 
 #if DEBUG
+
+        private static void TestMSVCPPInstaller(MainWindow window)
+        {
+            window.InstallMSVCPP();
+        }
+
 
         private static void TriggerBTPBuild(MainWindow window)
         {

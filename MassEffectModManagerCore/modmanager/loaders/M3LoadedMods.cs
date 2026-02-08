@@ -570,7 +570,7 @@ namespace ME3TweaksModManager.modmanager.loaders
 
 
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            bw.RunWorkerCompleted += async (a, b) =>
             {
                 ModsLoaded = true;
                 IsLoadingMods = false;
@@ -588,8 +588,11 @@ namespace ME3TweaksModManager.modmanager.loaders
                 }
 
                 ModsReloaded?.Invoke(this, EventArgs.Empty);
-                
-                
+
+                if (Settings.GenerationSettingLE)
+                {
+                    MainWindow.Instance.CheckForMSVCPP();
+                }
             };
             bw.RunWorkerAsync();
         }
@@ -927,7 +930,6 @@ namespace ME3TweaksModManager.modmanager.loaders
                         M3Log.Information($@"Refreshing installation state for mod {changedStateMod.ModName} on target {target.TargetPath}");
                         mod.DetermineIfInstalled(state);
                     }
-
                 }
             }
         }

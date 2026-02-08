@@ -10,6 +10,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Helpers.MEM;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
@@ -109,6 +110,11 @@ namespace ME3TweaksModManager
         /// Task used when downloads are in progress. Set to null once background downloads have finished 
         /// </summary>
         public BackgroundTask DownloadingTask { get; set; }
+
+        /// <summary>
+        /// Flag to indicate if we have checked for Microsoft Visual C++ this session
+        /// </summary>
+        private bool hasCheckedForMSVC { get; set; } = false;
 
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
@@ -2095,6 +2101,71 @@ namespace ME3TweaksModManager
             return true;
         }
 
+        /// <summary>
+        /// Checks whether the required Microsoft Visual C++ Redistributable (x64, version 14.50 or higher) is installed
+        /// and prompts the user to install it if necessary.
+        /// </summary>
+        /// <remarks>This method is required for enabling ASI mod support in Legendary Edition modding. If
+        /// the application is running under Wine, this check is skipped. The user is prompted to install the
+        /// redistributable either automatically or manually if it is not detected.</remarks>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public async Task CheckForMSVCPP()
+        {
+            if (WineWorkarounds.WineDetected)
+            {
+                // We don't use this method for msvc on wine
+                return;
+            }
+
+            // 02/07/2026 - Check MSVC++ v145 or higher is available for LE
+            if (!hasCheckedForMSVC)
+            {
+                var msvcInstalled = MSVCPP.IsVCRedist2015To2026x64Installed();
+                if (msvcInstalled)
+                {
+                    // Prereq met, mark checked and done
+                    hasCheckedForMSVC = true;
+                    return;
+                }
+
+                // Prereq not met
+                MessageBoxResult res = M3L.ShowDialog(this,
+                    "ASI mods require installing Microsoft Visual C++ Redistributable x64 14.50 or higher. ASI mods are required for Legendary Edition modding to work properly.",
+                    "MSVC++ Required",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Warning,
+                    MessageBoxResult.Yes,
+                    "Install for me",
+                    "Install manually",
+                    "Do not install");
+
+                if (res == MessageBoxResult.Yes)
+                {
+                    // Install auto
+                    M3Log.Information(@"User choosing to install Microsoft Visual C++ Redistributable automatically");
+                    var installResult = await InstallMSVCPP();
+                }
+                else if (res == MessageBoxResult.No)
+                {
+                    M3Log.Information(@"User choosing to install Microsoft Visual C++ Redistributable manually");
+                    M3L.ShowDialog(this,
+                        "Install the downloaded executable file to install the latest version of Microsoft Visual C++ 14. Click OK when done to continue.",
+                        "MSVC++ Required",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information,
+                        MessageBoxResult.OK);
+
+                    // Recheck now
+                    await CheckForMSVCPP();
+                }
+                else if (res == MessageBoxResult.Cancel)
+                {
+                    M3Log.Warning(@"User declined to install Microsoft Visual C++ Redistributable");
+                    hasCheckedForMSVC = true;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Applies a mod to the current or forced target. This method is asynchronous, it must run on the UI thread but it will immediately yield once the installer begins.
@@ -3608,6 +3679,40 @@ namespace ME3TweaksModManager
             {
                 Settings.AlphaMode = true;
             }
+        }
+
+        /// <summary>
+        /// Downloads and installs the Microsoft Visual C++ Redistributable in the background.
+        /// </summary>
+        /// <remarks>This method submits a background job to download and install the Microsoft Visual C++
+        /// Redistributable package. The job status is updated based on the success or failure of the installation. This
+        /// method is intended for internal use and should not be called directly from user code.</remarks>
+        internal async Task<bool> InstallMSVCPP()
+        {
+            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MSVCPPInstall", "Downloading Microsoft Visual C++ Redistributable", "Installed Microsoft Visual C++ Redistributable");
+            var pi = new ProgressInfo();
+            pi.OnUpdate = (upd) =>
+            {
+                if (upd.Indeterminate)
+                {
+                    BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, upd.Status);
+                }
+                else
+                {
+                    BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, upd.Status + $@" {upd.Value:F0}%");
+                }
+            };
+            var result = await MSVCPP.DownloadAndInstallVCRedistx64Async(pi);
+            if (result)
+            {
+                task.FinishedUIText = "Installed Microsoft Visual C++ Redistributable";
+            }
+            else
+            {
+                task.FinishedUIText = "Failed to install Microsoft Visual C++ Redistributable";
+            }
+            BackgroundTaskEngine.SubmitJobCompletion(task);
+            return result;
         }
     }
 }
