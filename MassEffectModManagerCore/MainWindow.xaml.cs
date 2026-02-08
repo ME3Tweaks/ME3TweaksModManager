@@ -2144,7 +2144,8 @@ namespace ME3TweaksModManager
                 {
                     // Install auto
                     M3Log.Information(@"User choosing to install Microsoft Visual C++ Redistributable automatically");
-                    var installResult = await InstallMSVCPP();
+                    await Task.Run(async () => { await InstallMSVCPP(); });
+                    hasCheckedForMSVC = true;
                 }
                 else if (res == MessageBoxResult.No)
                 {
