@@ -41,7 +41,6 @@
     <converters1:EnumToEnabledConverter x:Key="EnumToEnabledConverter"/>
     <converters1:MEGameToGameNameConverter x:Key="MEGameToGameNameConverter"/>
     <converters1:BoolToDimmedOpacityConverter x:Key="BoolToDimmedOpacityConverter"/>
-    <converters1:NotZeroConverter x:Key="NotZeroConverter"/>
     <converters1:IntGreaterThanConverter x:Key="IntGreaterThanConverter"/>
 
     <Style x:Key="TargetSelectorContainerStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">

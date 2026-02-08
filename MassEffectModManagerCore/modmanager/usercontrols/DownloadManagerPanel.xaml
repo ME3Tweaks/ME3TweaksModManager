@@ -31,8 +31,6 @@
             Text="{Binding DownloadLocationText}"
             TextWrapping="Wrap"
             DockPanel.Dock="Bottom" />
-        <Separator
-            DockPanel.Dock="Bottom" />
         <Expander
             DockPanel.Dock="Bottom"
             Margin="0,5,0,0"

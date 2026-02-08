@@ -132,6 +132,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var canWrite = M3Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
             if (!canWrite)
             {
+                M3Log.Warning($@"Directory is not writable: {SelectedGameTarget.TargetPath}");
                 M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogNoWritePermissions), M3L.GetString(M3L.string_cannotWriteToGameDirectory), MessageBoxButton.OK, MessageBoxImage.Warning);
                 if (initialSetup)
                 {
@@ -175,6 +176,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         string message = M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedHeader, ModBeingInstalled.ModName);
                         message += string.Join('\n', incompatibleDLC);
                         message += M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedFooter, ModBeingInstalled.ModName);
+                        M3Log.Warning($@"Blocking install to this target, incomptaible DLC detected: {string.Join(',', incompatibleDLC)}");
                         M3L.ShowDialog(window, message, M3L.GetString(M3L.string_incompatibleDLCDetected), MessageBoxButton.OK, MessageBoxImage.Error);
 
                         if (initialSetup)
@@ -221,6 +223,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         var result = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_outdatedDLCDetected), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         if (result == MessageBoxResult.No)
                         {
+                            M3Log.Warning($@"Install cancelled - user declined to remove outdated DLC {string.Join(',', outdatedDLC)}");
                             InstallationCancelled = true;
                             OnClosing(DataEventArgs.Empty);
                             return;
@@ -786,6 +789,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         }
         private void InstallCancel_Click(object sender, RoutedEventArgs e)
         {
+            M3Log.Information(@"User clicked cancel in the options prompt");
             OnClosing(DataEventArgs.Empty);
         }
 
