@@ -534,6 +534,14 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_mergedGlobalShaders = "string_mergedGlobalShaders";
 		public const string string_interp_errorMergingGlobalShadersXMessage = "string_interp_errorMergingGlobalShadersXMessage";
 		public const string string_interp_installingASIMod = "string_interp_installingASIMod";
+		public const string string_dialog_msvcVersionMissing = "string_dialog_msvcVersionMissing";
+		public const string string_mSVCPPRequired = "string_mSVCPPRequired";
+		public const string string_installForMe = "string_installForMe";
+		public const string string_installManually = "string_installManually";
+		public const string string_doNotInstall = "string_doNotInstall";
+		public const string string_dialog_msvcManualDirections = "string_dialog_msvcManualDirections";
+		public const string string_installedMicrosoftVisualCPPRedistributable = "string_installedMicrosoftVisualCPPRedistributable";
+		public const string string_failedToInstallMicrosoftVisualCPPRedistributable = "string_failedToInstallMicrosoftVisualCPPRedistributable";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";

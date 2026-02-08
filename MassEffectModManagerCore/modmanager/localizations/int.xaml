@@ -585,6 +585,14 @@
     <system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Error merging global shaders: {0}</system:String>
     <!-- 0={Error message} -->
     <system:String x:Key="string_interp_installingASIMod">Installing ASI mod</system:String>
+    <system:String x:Key="string_dialog_msvcVersionMissing">ASI mods require installing Microsoft Visual C++ Redistributable x64 14.50 or higher. ASI mods are required for Legendary Edition modding to work properly.</system:String>
+    <system:String x:Key="string_mSVCPPRequired">MSVC++ Required</system:String>
+    <system:String x:Key="string_installForMe">Install for me</system:String>
+    <system:String x:Key="string_installManually">Install manually</system:String>
+    <system:String x:Key="string_doNotInstall">Do not install</system:String>
+    <system:String x:Key="string_dialog_msvcManualDirections">Install the downloaded executable file to install the latest version of Microsoft Visual C++ 14. Click OK when done to continue.</system:String>
+    <system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Installed Microsoft Visual C++ Redistributable</system:String>
+    <system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Failed to install Microsoft Visual C++ Redistributable</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>

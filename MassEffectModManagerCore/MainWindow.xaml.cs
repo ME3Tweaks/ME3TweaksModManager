@@ -8,6 +8,7 @@ using LegendaryExplorerCore.Misc;
 using ME3TweaksCore;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Helpers.MEM;
+using ME3TweaksCore.Localization;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Objects;
@@ -2130,14 +2131,14 @@ namespace ME3TweaksModManager
 
                 // Prereq not met
                 MessageBoxResult res = M3L.ShowDialog(this,
-                    "ASI mods require installing Microsoft Visual C++ Redistributable x64 14.50 or higher. ASI mods are required for Legendary Edition modding to work properly.",
-                    "MSVC++ Required",
+                    M3L.GetString(M3L.string_dialog_msvcVersionMissing),
+                    M3L.GetString(M3L.string_mSVCPPRequired),
                     MessageBoxButton.YesNoCancel,
                     MessageBoxImage.Warning,
                     MessageBoxResult.Yes,
-                    "Install for me",
-                    "Install manually",
-                    "Do not install");
+                    M3L.GetString(M3L.string_installForMe),
+                    M3L.GetString(M3L.string_installManually),
+                    M3L.GetString(M3L.string_doNotInstall));
 
                 if (res == MessageBoxResult.Yes)
                 {
@@ -2149,8 +2150,8 @@ namespace ME3TweaksModManager
                 {
                     M3Log.Information(@"User choosing to install Microsoft Visual C++ Redistributable manually");
                     M3L.ShowDialog(this,
-                        "Install the downloaded executable file to install the latest version of Microsoft Visual C++ 14. Click OK when done to continue.",
-                        "MSVC++ Required",
+                        M3L.GetString(M3L.string_dialog_msvcManualDirections),
+                        M3L.GetString(M3L.string_mSVCPPRequired),
                         MessageBoxButton.OK,
                         MessageBoxImage.Information,
                         MessageBoxResult.OK);
@@ -3689,7 +3690,7 @@ namespace ME3TweaksModManager
         /// method is intended for internal use and should not be called directly from user code.</remarks>
         internal async Task<bool> InstallMSVCPP()
         {
-            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MSVCPPInstall", "Downloading Microsoft Visual C++ Redistributable", "Installed Microsoft Visual C++ Redistributable");
+            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MSVCPPInstall", LC.GetString(LC.string_downloadingMicrosoftVisualCPPRedistributable), M3L.GetString(M3L.string_installedMicrosoftVisualCPPRedistributable));
             var pi = new ProgressInfo();
             pi.OnUpdate = (upd) =>
             {
@@ -3705,11 +3706,11 @@ namespace ME3TweaksModManager
             var result = await MSVCPP.DownloadAndInstallVCRedistx64Async(pi);
             if (result)
             {
-                task.FinishedUIText = "Installed Microsoft Visual C++ Redistributable";
+                task.FinishedUIText = M3L.GetString(M3L.string_installedMicrosoftVisualCPPRedistributable);
             }
             else
             {
-                task.FinishedUIText = "Failed to install Microsoft Visual C++ Redistributable";
+                task.FinishedUIText = M3L.GetString(M3L.string_failedToInstallMicrosoftVisualCPPRedistributable);
             }
             BackgroundTaskEngine.SubmitJobCompletion(task);
             return result;
