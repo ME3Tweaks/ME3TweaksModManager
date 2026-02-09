@@ -3176,7 +3176,8 @@
     <system:String x:Key="string_failedDownloads">Failed downloads</system:String>
     <system:String x:Key="string_clearAll">Clear all</system:String>
     <system:String x:Key="string_tooltip_removeFailedDownload">Remove failed download</system:String>
-
+    <system:String x:Key="string_dialog_mismatchingLocalNexusUsernames">The user signed into NexusMods in your browser and the user signed into NexusMods in Mod Manager aren't the same. For 'Download with Manager' to work, they must be the same.</system:String>
+    <system:String x:Key="string_cannotDownload">Cannot download</system:String>
 
     <!-- Merge Mod Loader -->
     <system:String x:Key="string_dialog_mergeModFeatureLevel1">Is the mergemod you are compiling going to be used in a mod that targets ModDesc 8.2 or lower?</system:String>

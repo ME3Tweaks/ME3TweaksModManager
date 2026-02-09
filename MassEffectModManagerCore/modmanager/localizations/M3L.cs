@@ -542,6 +542,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_msvcManualDirections = "string_dialog_msvcManualDirections";
 		public const string string_installedMicrosoftVisualCPPRedistributable = "string_installedMicrosoftVisualCPPRedistributable";
 		public const string string_failedToInstallMicrosoftVisualCPPRedistributable = "string_failedToInstallMicrosoftVisualCPPRedistributable";
+		public const string string_testMicrosoftVisualC++Installer = "string_testMicrosoftVisualC++Installer";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -1138,6 +1139,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_downloadAll = "string_tooltip_downloadAll";
 		public const string string_downloadAll = "string_downloadAll";
 		public const string string_interp_checkingForModUpdatesX = "string_interp_checkingForModUpdatesX";
+		public const string string_useInappUpdater = "string_useInappUpdater";
+		public const string string_tooltip_useInAppUpdater = "string_tooltip_useInAppUpdater";
+		public const string string_tooltip_turnOffIfUndesirable = "string_tooltip_turnOffIfUndesirable";
 		public const string string_anUpdateToME3TweaksModManagerIsAvailable = "string_anUpdateToME3TweaksModManagerIsAvailable";
 		public const string string_downloadingUpdate = "string_downloadingUpdate";
 		public const string string_preparingToApplyUpdate = "string_preparingToApplyUpdate";
@@ -1474,6 +1478,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_enablesSingleinstancingOfAnApplication = "string_enablesSingleinstancingOfAnApplication";
 		public const string string_wrapperForRobocopyCommandInCSharp = "string_wrapperForRobocopyCommandInCSharp";
 		public const string string_starMeansForked = "string_starMeansForked";
+		public const string string_tooltip_clickToViewLicense = "string_tooltip_clickToViewLicense";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
 		public const string string_updateASI = "string_updateASI";
@@ -2350,6 +2355,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_importComplete = "string_importComplete";
 		public const string string_dlmgr_subTempCache = "string_dlmgr_subTempCache";
 		public const string string_dlmgr_subPermCache = "string_dlmgr_subPermCache";
+		public const string string_failedDownloads = "string_failedDownloads";
+		public const string string_clearAll = "string_clearAll";
+		public const string string_tooltip_removeFailedDownload = "string_tooltip_removeFailedDownload";
+		public const string string_dialog_mismatchingLocalNexusUsernames = "string_dialog_mismatchingLocalNexusUsernames";
+		public const string string_cannotDownload = "string_cannotDownload";
 		public const string string_dialog_mergeModFeatureLevel1 = "string_dialog_mergeModFeatureLevel1";
 		public const string string_useEnhancedFeaturesQuestion = "string_useEnhancedFeaturesQuestion";
 		public const string string_dialog_unsupportedMergemodVersionMayBeTooNew = "string_dialog_unsupportedMergemodVersionMayBeTooNew";

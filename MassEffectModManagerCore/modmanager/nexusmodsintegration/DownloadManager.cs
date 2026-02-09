@@ -125,6 +125,16 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             {
                 M3Log.Information($@"Queueing nxmlink for download: {nxmLink}");
                 dl = new NexusModDownload(nxmLink);
+                if (!NexusModsUtilities.UserInfo.IsPremium && dl.ProtocolLink.UserId != NexusModsUtilities.UserInfo.UserID)
+                {
+                    M3Log.Error($@"The user id for this NXM link is not the same one as the user that is signed into Mod Manager. Cannot generate download links.");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        M3L.ShowDialog(MainWindow.Instance, M3L.GetString(M3L.string_dialog_mismatchingLocalNexusUsernames), M3L.GetString(M3L.string_cannotDownload), MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
+                    return null;
+                }
+
                 if (Downloads.ContainsKey(dl.CreateDownloadKey()))
                 {
                     M3Log.Information(@"Rejecting nxm download: Already being handled by the download manager.");
@@ -384,7 +394,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         {
             Debug.WriteLine(@":::DownloadManager:::");
             Debug.WriteLine($@"::{Downloads.Count} current items");
-            foreach(var dl in Downloads)
+            foreach (var dl in Downloads)
             {
                 Debug.WriteLine($":{dl.Value.DownloadState}\t{dl.Value.FileName}"); // do not localize
             }
@@ -455,7 +465,8 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     M3Log.Information($@"DownloadManager::Download was removed: {key} {downloadedMod.FileName}");
                     if (downloadedMod.DownloadState == EModDownloadState.FAILED)
                     {
-                        Application.Current.Dispatcher.Invoke(() => { 
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
                             FailedDownloads.AddEx(downloadedMod);
                         });
                     }
