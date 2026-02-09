@@ -960,8 +960,10 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is string nxmlink && nxmlink.StartsWith(@"nxm://"))
                 {
-                    DownloadManager.AddNXMDownload(nxmlink);
-                    ShowDownloadManager();
+                    if (DownloadManager.AddNXMDownload(nxmlink) != null)
+                    {
+                        ShowDownloadManager();
+                    }
                 }
             };
             ShowBusyControl(nexusSearchPanel);
@@ -2989,8 +2991,10 @@ namespace ME3TweaksModManager
                     }
                     else
                     {
-                        DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink);
-                        ShowDownloadManager();
+                        if (DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink) != null)
+                        {
+                            ShowDownloadManager();
+                        }
                     }
                 }
                 if (CommandLinePending.PendingInstallBink && CommandLinePending.PendingGame != null)
@@ -3463,6 +3467,7 @@ namespace ME3TweaksModManager
         {
             if (SelectedMod != null)
             {
+                M3Log.Information($@"Listing installable files for {SelectedMod.ModName}");
                 var files = SelectedMod.GetAllInstallableFiles();
                 ListDialog l = new ListDialog(files, M3L.GetString(M3L.string_interp_allInstallableFiles, SelectedMod.ModName), M3L.GetString(M3L.string_description_allInstallableFiles), this);
                 l.Show();
