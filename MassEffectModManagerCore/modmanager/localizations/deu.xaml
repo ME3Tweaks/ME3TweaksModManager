@@ -593,7 +593,9 @@
     <system:String x:Key="string_dialog_msvcManualDirections">Installiere die heruntergeladene ausführbare Datei, um die neueste Version von Microsoft Visual C++ 14 zu installieren. Klicke anschließend auf OK, um fortzufahren.</system:String>
     <system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Microsoft Visual C++ Redistributable installiert</system:String>
     <system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Installation der Microsoft Visual C++ Redistributable fehlgeschlagen.</system:String>
-
+    <system:String x:Key="string_testMicrosoftVisualC++Installer">Microsoft Visual C++ Installer testen</system:String>
+    <!-- This is in the Debug Menu -->
+    
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly konnte nicht heruntergeladen werden: {0}</system:String>
 
@@ -1405,7 +1407,9 @@
     <system:String  x:Key="string_downloadAll">Alle herunterladen</system:String>
     <system:String x:Key="string_interp_checkingForModUpdatesX">Suche nach Mod Updates ({0})</system:String>
     <!-- 0={Mod name} -->
-
+    <system:String x:Key="string_useInappUpdater">In-App Updater verwenden*</system:String>
+    <system:String x:Key="string_tooltip_useInAppUpdater">Nur für NexusMods-Premium-Nutzer: Beim Klicken auf „Aktualisieren“ wird die Mod heruntergeladen und automatisch in die Bibliothek importiert.</system:String>
+    <system:String x:Key="string_tooltip_turnOffIfUndesirable">Bei Problemen oder falls unerwünscht, diese Option deaktivieren.</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Ein Update für ME3Tweaks Mod Manager ist verfügbar.</system:String>
@@ -1952,6 +1956,7 @@
     <system:String x:Key="string_enablesSingleinstancingOfAnApplication">Ermöglicht single-instancing einer Applikation</system:String>
     <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper für robocopy-Befehl in C#</system:String>
     <system:String x:Key="string_starMeansForked">* = ME3Tweaks-Fork-Version</system:String>
+    <system:String x:Key="string_tooltip_clickToViewLicense">Lizenz anzeigen</system:String>
 
     <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">Von {0} | Version {1}</system:String>
@@ -1977,6 +1982,8 @@
     <system:String x:Key="string_errorDeletingASI">Fehler beim Löschen von ASI</system:String>
     <system:String x:Key="string_interp_anErrorOccurredInstallingTheASI">Beim Installieren der ASI ist ein Fehler aufgetreten: {0}</system:String>
     <!-- 0={Exception message} -->
+    <system:String x:Key="string_interp_groupIDX">Gruppen-ID: {0}</system:String>
+    <!-- 0={Number} - Group ID is for "ASI Group ID", a technical term that describes a group of ASIs (e.g. DebugLogger for LE1 is Group ID 71) -->
 
     <!-- Starter Kit Window-->
     <system:String x:Key="string_title_starterkit">DLC-Mod Starter Kit Generator</system:String>
@@ -3166,6 +3173,10 @@
     <system:String x:Key="string_dlmgr_subTempCache">Downloads werden beim Schließen des Mod-Managers automatisch gelöscht. Bereits importierte Mods bleiben davon unberührt. Dies kann in den Einstellung geändert werden.</system:String>
     <system:String xml:space="preserve" x:Key="string_dlmgr_subPermCache">Heruntergeladene Dateien werden am folgenden Speicherort gespeichert, der in den Einstellungen geändert werden kann:\n{0}</system:String>
     <!-- 0={Folder path} -->
+    <system:String x:Key="string_failedDownloads">Fehlgeschlagene Downloads</system:String>
+    <system:String x:Key="string_clearAll">Alle leeren</system:String>
+    <system:String x:Key="string_tooltip_removeFailedDownload">Fehlgeschlagenen Download entfernen</system:String>
+
 
     <!-- Merge Mod Loader -->
     <system:String x:Key="string_dialog_mergeModFeatureLevel1">Wird die zu kompilierende MergeMod in einer Mod verwendet, die auf ModDesc 8.2 oder niedriger abzielt?</system:String>
