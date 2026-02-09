@@ -104,11 +104,21 @@
                     Margin="0,5,0,0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <DockPanel
+                            <Grid
                                 Margin="0,2,0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
                                 <Button
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="1"
                                     Content="✕"
-                                    DockPanel.Dock="Right"
                                     Width="26"
                                     Height="26"
                                     Margin="5,0,0,0"
@@ -117,19 +127,20 @@
                                     Click="RemoveFailedDownload_Click"
                                     Tag="{Binding}"
                                     ToolTip="{DynamicResource string_tooltip_removeFailedDownload}" />
-                                <StackPanel
-                                    DockPanel.Dock="Left"
-                                    HorizontalAlignment="Stretch">
                                     <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="0"
                                         Text="{Binding ModFile.Name}"
-                                        FontWeight="Bold"
-                                        TextTrimming="CharacterEllipsis" />
+                                        FontWeight="Bold" />
                                     <TextBlock
+                                        HorizontalAlignment="Left"
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        MaxWidth="425"
                                         Text="{Binding Status}"
                                         Opacity="0.7"
-                                        TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                            </DockPanel>
+                                        TextWrapping="Wrap"/>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

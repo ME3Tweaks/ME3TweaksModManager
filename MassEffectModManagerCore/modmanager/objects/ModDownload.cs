@@ -435,6 +435,10 @@ namespace ME3TweaksModManager.modmanager.objects
                 {
                     M3Log.Exception(e, $@"Error downloading {ModFile?.FileName}:");
                     DownloadState = EModDownloadState.FAILED;
+                    if (Status == null)
+                    {
+                        Status = e.Message;
+                    }
                     ProgressIndeterminate = false;
                     InternalOnModDownloadError(M3L.GetString(M3L.string_interp_errorDownloadingModX, e.Message));
                 }
