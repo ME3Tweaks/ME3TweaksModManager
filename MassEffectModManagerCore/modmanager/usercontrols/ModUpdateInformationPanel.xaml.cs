@@ -37,6 +37,28 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool OperationInProgress { get; set; }
         public bool IsNexusPremiumUser => NexusModsUtilities.UserInfo?.IsPremium == true;
 
+        private bool _useInAppUpdater = Settings.AutoImportModUpdates && NexusModsUtilities.UserInfo?.IsPremium == true;
+        public bool UseInAppUpdater
+        {
+            get => _useInAppUpdater;
+            set
+            {
+
+                if (_useInAppUpdater == value) return;
+
+                _useInAppUpdater = value;
+
+                // Persist the user's preference when it changes
+                if (Settings.AutoImportModUpdates != value)
+                {
+                    Settings.AutoImportModUpdates = value;
+                }
+
+                // Notify UI of the property change
+                TriggerPropertyChangedFor(nameof(UseInAppUpdater));
+            }
+        }
+
         public ModUpdateInformationPanel(List<M3OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
             DownloadManager.OnDownloadMetadataLoaded += AssociateModDownload;

@@ -60,7 +60,7 @@
             <CheckBox
                 DockPanel.Dock="Left"
                 Content="{DynamicResource string_useInappUpdater}"
-                IsChecked="{Binding Path=(modmanager:Settings.AutoImportModUpdates)}"
+                IsChecked="{Binding UseInUpdater}"
                 IsEnabled="{Binding IsNexusPremiumUser}"
                 VerticalAlignment="Center"
                 Margin="10,5,0,5">
