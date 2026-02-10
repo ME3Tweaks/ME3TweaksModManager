@@ -1515,7 +1515,7 @@
     <system:String x:Key="string_pasteYourAPIKeyHere">Füge hier deinen API-Schlüssen ein</system:String>
     <system:String x:Key="string_manuallyEnterAPIKey">API-Schlüssel manuell eingeben</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Hier wird dein API-Schlüssel erscheinen</system:String>
-    <system:String x:Key="string_configureDownloadWithManager">'Herunterladen mit Manager' konfigurieren</system:String>
+    <system:String x:Key="string_configureDownloadWithManager">„Download with Manager“ konfigurieren</system:String>
 
     <!-- Mod install options -->
     <system:String x:Key="string_debugEnumerateOptions">Debug: Optionen aufzählen</system:String>
@@ -3176,7 +3176,8 @@
     <system:String x:Key="string_failedDownloads">Fehlgeschlagene Downloads</system:String>
     <system:String x:Key="string_clearAll">Alle leeren</system:String>
     <system:String x:Key="string_tooltip_removeFailedDownload">Fehlgeschlagenen Download entfernen</system:String>
-
+    <system:String x:Key="string_dialog_mismatchingLocalNexusUsernames">Der Benutzer, der im Browser bei NexusMods angemeldet ist, und der Benutzer, der im Mod Manager bei NexusMods angemeldet ist, sind nicht identisch. Damit „Download with Manager“ müssen beide übereinstimmen.</system:String>
+    <system:String x:Key="string_cannotDownload">Download nicht möglich</system:String>
 
     <!-- Merge Mod Loader -->
     <system:String x:Key="string_dialog_mergeModFeatureLevel1">Wird die zu kompilierende MergeMod in einer Mod verwendet, die auf ModDesc 8.2 oder niedriger abzielt?</system:String>
