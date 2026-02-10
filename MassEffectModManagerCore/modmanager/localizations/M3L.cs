@@ -542,7 +542,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_msvcManualDirections = "string_dialog_msvcManualDirections";
 		public const string string_installedMicrosoftVisualCPPRedistributable = "string_installedMicrosoftVisualCPPRedistributable";
 		public const string string_failedToInstallMicrosoftVisualCPPRedistributable = "string_failedToInstallMicrosoftVisualCPPRedistributable";
-		public const string string_testMicrosoftVisualC++Installer = "string_testMicrosoftVisualC++Installer";
+		public const string string_testMicrosoftVisualCppInstaller = "string_testMicrosoftVisualCppInstaller";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";

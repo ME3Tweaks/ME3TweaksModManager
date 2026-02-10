@@ -593,7 +593,7 @@
     <system:String x:Key="string_dialog_msvcManualDirections">Install the downloaded executable file to install the latest version of Microsoft Visual C++ 14. Click OK when done to continue.</system:String>
     <system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Installed Microsoft Visual C++ Redistributable</system:String>
     <system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Failed to install Microsoft Visual C++ Redistributable</system:String>
-    <system:String x:Key="string_testMicrosoftVisualC++Installer">Test Microsoft Visual C++ Installer</system:String>
+    <system:String x:Key="string_testMicrosoftVisualCppInstaller">Test Microsoft Visual C++ Installer</system:String>
     <!-- This is in the Debug Menu -->
     
     <!-- LEX Launcher -->

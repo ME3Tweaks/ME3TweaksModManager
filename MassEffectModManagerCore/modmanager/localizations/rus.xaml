@@ -1391,7 +1391,7 @@
 	<system:String x:Key="string_dialog_msvcManualDirections">Установить загруженный исполняемый файл для установки последней версии Microsoft Visual C++ 14. Нажмите OK по завершении для продолжения.</system:String>
 	<system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Установлен Microsoft Visual C++ Redistributable</system:String>
 	<system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Не удалось установить Microsoft Visual C++ Redistributable</system:String>
-	<system:String x:Key="string_testMicrosoftVisualC++Installer">Тест установщика Microsoft Visual C++</system:String>
+	<system:String x:Key="string_testMicrosoftVisualCppInstaller">Тест установщика Microsoft Visual C++</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Директория Mass Effect Config отсутствует. Она должна находиться в {0}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Невозможно запустить Mass Effect Ini Modder</system:String>

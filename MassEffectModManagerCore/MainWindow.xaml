@@ -1518,7 +1518,7 @@
                         Name="ShowXceedDialog_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="{DynamicResource string_testMicrosoftVisualC++Installer}"
+                        Header="{DynamicResource string_testMicrosoftVisualCppInstaller}"
                         Name="TestMSVCPInstaller_MenuItem"
                         Click="RouteDebugCall" />
                 </MenuItem>

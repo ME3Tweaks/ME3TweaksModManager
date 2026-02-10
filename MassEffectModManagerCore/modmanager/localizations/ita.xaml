@@ -1393,7 +1393,7 @@
 	<system:String x:Key="string_dialog_msvcManualDirections">Installa il file eseguibile scaricato</system:String>
 	<system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Microsoft Visual C++ Redistributable installato</system:String>
 	<system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Impossibile installare Microsoft Visual C++ Redistributable</system:String>
-	<system:String x:Key="string_testMicrosoftVisualC++Installer">Testa Installer di Microsoft Visual C++</system:String>
+	<system:String x:Key="string_testMicrosoftVisualCppInstaller">Testa Installer di Microsoft Visual C++</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Il file di configurazione di Mass Effect {0}.ini è mancante. Dovrebbe trovarsi in {1}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">La cartella di configurazione di Mass Effect è mancante. Dovrebbe trovarsi in {0}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect Ini Modder</system:String>
