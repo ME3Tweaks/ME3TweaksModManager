@@ -816,10 +816,16 @@ namespace ME3TweaksModManager.modmanager
         internal static bool UninstallBinkBypass(GameTargetWPF target)
         {
             if (target == null) return false;
-            target.UninstallBinkBypass();
-
-
-            return true;
+            try
+            {
+                target.UninstallBinkBypass();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                M3Log.Error($@"Error uninstalling bink bypass from {target.TargetPath}: {ex.Message}");
+                return false;
+            }
         }
 
         /// <summary>

@@ -2015,7 +2015,6 @@ namespace ME3TweaksModManager
                     M3Utilities.UninstallBinkBypass(target);
                 }
 
-
                 UpdateBinkStatus(target.Game);
             }
         }
