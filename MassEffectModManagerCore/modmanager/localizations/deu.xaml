@@ -893,7 +893,7 @@
     <system:String x:Key="string_noReferenceIssuesWereDetected">Keine Referenzprobleme wurden gefunden</system:String>
     <system:String x:Key="string_referencesCheckDetectedIssues">Referenzenprüfung hat Probleme gefunden</system:String>
     <system:String x:Key="string_modsNotInThirdPartyIdentificationService">Mod(s) nicht im Drittanbieter-Mod Indentifikations-Dienst</system:String>
-    <system:String x:Key="string_interp_infoModNameTooLong">Der Modname „{0}“ist länger als 35 Zeichen ({1} Zeichen). Ziehe in Erwägung, den Namen zu verkürzen, so dass er leicht von Benutzern in der Mod-Bibliothek gelesen werden kann.</system:String>
+    <system:String x:Key="string_interp_infoModNameTooLong">Der Modname „{0}“ ist länger als 35 Zeichen ({1} Zeichen). Ziehe in Erwägung, den Namen zu verkürzen, so dass er leicht von Benutzern in der Mod-Bibliothek gelesen werden kann.</system:String>
     <!-- 0={ModName} 1={integer} -->
     <system:String x:Key="string_interp_fatalMissingNeverstreamFlag">{0} Textur {1} {2} ist nicht extern gespeichert und hat über 6 Mips, doch der NeverStream-Marker ist nicht gesetzt. Wenn Textur-LODs erhöht werden, wird dieses Package das Spiel abstürzen lassen. Setze den NeverStream-Marker um dieses Problem zu beheben oder benutze einen externen TFC (bevorzugt). Externe TFCs für Texturen verbessert die Leistung des Spiels.</system:String>
     <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
