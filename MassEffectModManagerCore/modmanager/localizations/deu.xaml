@@ -386,7 +386,7 @@
     <system:String x:Key="string_installHeadmorph">Headmorph installieren</system:String>
     <system:String x:Key="string_restoreOnetimeTutorialMessages">Einmalige Einweisungsnachrichten wiederherstellen</system:String>
     <system:String x:Key="string_tooltip_restoreOnetimeTutorialMessages">Stellt Nachrichten im Programm, die nicht wieder angezeigt werden wenn du sie ausgeblendet hast, wieder her</system:String>
-    <system:String x:Key="string_tutorialui_listOflibraryMods">Dies ist die Liste der zur Installation verfügbaren Mods. Um installierte Mods anzuzeigen, klicke auf 'Ziel verwalten'.</system:String>
+    <system:String x:Key="string_tutorialui_listOflibraryMods">Dies ist die Liste der zur Installation verfügbaren Mods. Um installierte Mods anzuzeigen, klicke auf „Ziel verwalten“.</system:String>
     <system:String x:Key="string_synchronizingEmails">Emails werden synchronisiert</system:String>
     <system:String x:Key="string_synchronizedEmails">Emails wurden synchronisiert</system:String>
     <system:String x:Key="string_installingBinkASILoader">Bink ASI Loader wird installiert</system:String>
@@ -784,7 +784,7 @@
     <system:String x:Key="string_texturesCheck">Texturen-Check</system:String>
     <system:String x:Key="string_texturesCheckDetectedErrors">Der Texturen-Check hat Probleme gefunden beim Versuch alle Texturen des Mods zu laden. Überprüfe diese Probleme und behebe sie falls nötig bevor du fortfährst.</system:String>
     <system:String x:Key="string_textureErrorsInMod">Textur-Probleme in Mod(s)</system:String>
-    <system:String x:Key="string_interp_urlIsNotValid">Die URL ({0}) ist keine gültige URL. Überarbeite das 'modsite'-Feld in moddesc.ini um auf die Webseite deines Mods zu verlinken, damit Benutzer diese nach dem Import einfach finden können.</system:String>
+    <system:String x:Key="string_interp_urlIsNotValid">Die URL ({0}) ist keine gültige URL. Aktualisiere den modsite-Eintrag in moddesc.ini, sodass er auf die Seite deiner Mod verweist, damit Benutzer deine Mod nach dem Import leicht finden können.</system:String>
     <!-- 0 = url-->
     <system:String x:Key="string_emptyOrInvalidModUrl">Fehlende oder ungültige Mod-URL</system:String>
     <system:String x:Key="string_validationFailed">Validierung fehlgeschlagen</system:String>
@@ -841,8 +841,8 @@
     <system:String x:Key="string_interp_error_textureTaggedFileFound">{0} ist als modifizierte Textur markiert. Diese Datei kann nicht in einer Mod veröffentlicht werden. Mod-Dateien können nicht benutzt werden, wenn sie mit Mass Effect Modder oder ALOT Installer modifiziert wurden - benutze Package Editor in Legendary Explorer um Texturen für Mods, die Package Dateien benutzen, zu ersetzen. Veröffentlichung von Mods mit ALOT-Markierungen in den Dateien führt dazu, dass die Mod ALOT Installer und Mass Effect Modder blockiert.</system:String>
     <!-- 0={Filepath} -->
     <system:String x:Key="string_deploymentBlocked">Veröffentlichung blockiert</system:String>
-    <system:String x:Key="string_error_foundUnofficialDescriptor">Die moddesc.ini für diese Mod ist mit dem 'unofficial'-Deskriptorsatz markiert, das heißt die Mod wurde bereits einmal importiert. Inoffiziell importierte Mods importieren nur die Daten und nicht die Alternates oder andere wichtige Informationen. Dieser Deskriptorsatz muss vor der Veröffentlichung entfernt werden.</system:String>
-    <system:String x:Key="string_error_foundImportedByDesriptor">Die moddesc.ini für diese Mod ist mit dem 'importedbybuild'-Deskriptorsatz markiert. Dieser Deskriptorsatz wird nur für Mods benutzt, die mit dem Drittanbieter-Import-Dienst importiert wurden - da diese Mod veröffentlicht wird, wird sie als offiziell angesehen und daher muss diser Deskriptorsatz vor der Veröffentlichung entfernt werden.</system:String>
+    <system:String x:Key="string_error_foundUnofficialDescriptor">Die moddesc.ini dieser Mod ist mit dem Deskriptor „unofficial“ gekennzeichnet, was bedeutet, dass diese Mod zuvor importiert wurde. Inoffiziell importierte Mods importieren nur die Daten, jedoch nicht die Alternates und andere wichtige Informationen. Dieser Deskriptor muss vor dem Deployment entfernt werden.</system:String>
+    <system:String x:Key="string_error_foundImportedByDesriptor">Die moddesc.ini dieser Mod ist mit dem Deskriptor „importedbybuild“ gekennzeichnet. Dieser Deskriptor wird nur für Mods verwendet, die mit dem Drittanbieter-Import-Dienst importiert wurden — da diese Mod bereitgestellt wird, gilt sie als offiziell, und dieser Deskriptor muss daher vor der Bereitstellung entfernt werden.</system:String>
     <system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird benutzt, wenn Texturen mit den veralteten ME3Explorer Texturwerkzeugen ersetzt werden und ist eine häufige Quelle für Texturfehler. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
     <!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
     <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird von MEM bei der Installation von Texturen benutzt und kann nicht bei der Veröffentlichung benutzt werden, damit es nicht zu Konflikten kommt. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug.</system:String>
@@ -893,7 +893,7 @@
     <system:String x:Key="string_noReferenceIssuesWereDetected">Keine Referenzprobleme wurden gefunden</system:String>
     <system:String x:Key="string_referencesCheckDetectedIssues">Referenzenprüfung hat Probleme gefunden</system:String>
     <system:String x:Key="string_modsNotInThirdPartyIdentificationService">Mod(s) nicht im Drittanbieter-Mod Indentifikations-Dienst</system:String>
-    <system:String x:Key="string_interp_infoModNameTooLong">Der Modname '{0}' ist länger als 35 Zeichen ({1} Zeichen). Ziehe in Erwägung, den Namen zu verkürzen, so dass er leicht von Benutzern in der Mod-Bibliothek gelesen werden kann.</system:String>
+    <system:String x:Key="string_interp_infoModNameTooLong">Der Modname „{0}“ist länger als 35 Zeichen ({1} Zeichen). Ziehe in Erwägung, den Namen zu verkürzen, so dass er leicht von Benutzern in der Mod-Bibliothek gelesen werden kann.</system:String>
     <!-- 0={ModName} 1={integer} -->
     <system:String x:Key="string_interp_fatalMissingNeverstreamFlag">{0} Textur {1} {2} ist nicht extern gespeichert und hat über 6 Mips, doch der NeverStream-Marker ist nicht gesetzt. Wenn Textur-LODs erhöht werden, wird dieses Package das Spiel abstürzen lassen. Setze den NeverStream-Marker um dieses Problem zu beheben oder benutze einen externen TFC (bevorzugt). Externe TFCs für Texturen verbessert die Leistung des Spiels.</system:String>
     <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
@@ -1012,20 +1012,20 @@
     <system:String x:Key="string_deployment_sqmIssuesNoneFound">Keine Probleme bei der Squadmitgliederoutfit-Zusammenführung gefunden</system:String>
     <system:String x:Key="string_deployment_sqmIssuesFound">Probleme bei der Squadmitgliederoutfit-Zusammenführung gefunden</system:String>
     <system:String x:Key="string_deployment_sqmIssuesFoundTooltip">Veröffentlichung hat Probleme bei der Squadmitgliederoutfit-Zusammenführung gefunden</system:String>
-    <system:String x:Key="string_deployment_sqmIssueReferencedPackageNotFound">Squadmitgliederoutfit-Package'{0}' scheint nicht mit diesem Mod installiert zu werden.</system:String>
+    <system:String x:Key="string_deployment_sqmIssueReferencedPackageNotFound">Squadmitgliederoutfit-Package „{0}“ scheint nicht mit diesem Mod installiert zu werden.</system:String>
     <!-- 0={Filepath} -->
-    <system:String x:Key="string_deployment_sqmIssueOutfitLocalizationMissing">Lokalisierung '{0}' fehlt für Squadmitglied-Package {1}</system:String>
+    <system:String x:Key="string_deployment_sqmIssueOutfitLocalizationMissing">Lokalisierung „{0}“ fehlt für Squadmitglied-Package {1}</system:String>
     <!-- 0={Localization such as INT/POL/DEU etc} 1={Package filename} -->
-    <system:String x:Key="string_deployment_sqmIssueInvalidOutfitImageReferenceType">Ungültiger Bildwert '{0}': Export muss den Typ 'Texture2D' haben, doch die Referenz hat Typ '{1}'.</system:String>
+    <system:String x:Key="string_deployment_sqmIssueInvalidOutfitImageReferenceType">Ungültiger Bildwert „{0}“: Export muss den Typ „Texture2D“ haben, doch die Referenz hat Typ „{1}“.</system:String>
     <!-- 0={instanced path in the package file} 1={classtype of found export (e.g. 'Class', 'Package', 'Material'} -->
-    <system:String x:Key="string_deployment_sqmIssueCouldntFindOutfitImage">Ungültiger Bildwert '{0}': Keine installierbare Version von '{1}' beinhaltet einen Export mit instantiiertem vollständigem Pfad '{0}'.</system:String>
+    <system:String x:Key="string_deployment_sqmIssueCouldntFindOutfitImage">Ungültiger Bildwert „{0}“: Keine installierbare Version von „{1}“ beinhaltet einen Export mit instantiiertem vollständigem Pfad „{0}“.</system:String>
     <!-- 0={full instanced export path} 1={filename of package (no extension)} 2={instanced path in the package file} -->
     <system:String x:Key="string_deployment_sqmIssueHenchImagePackageNotFound">SquadmitgliedPackage Datei nicht gefunden. Das Package sollte als SFXHenchImages_[DLC_MOD_YourModName] benannt sein.</system:String>
-    <system:String x:Key="string_deployment_sqmIssueInvalidHenchId">Unbekannter 'henchname': {0}. Groß- / Kleinschreibung beachten!</system:String>
+    <system:String x:Key="string_deployment_sqmIssueInvalidHenchId">Unbekannter „henchname“: {0}. Groß- / Kleinschreibung beachten!</system:String>
     <!-- 0={Henchman ID such as jimmy, prothean, liara} -->
     <system:String x:Key="string_deployment_basegameFullFileWarning">Mod installiert möglicherweise eine Datei die von Zusammenführungsmods benutzt werden kann: {0}. Ziehe in Erwägung, für diese Datei Zusammenführungsmods zu verwenden, damit dein Mod besser mit anderen Mods kompatibel ist.</system:String>
     <!-- 0={mt} -->
-    <system:String x:Key="string_deployment_unusedExtraFileTypeFound">{0}-Datei könnte mir diesem Mod installiert werden: {1}. Die Datei sollte entfernt werden, da sie nie vom Spiel benutzt wird. Um derartige Dateien dennoch zu inkludieren, nutze 'additionaldeploymentfolders' unter dem [UPDATES] header.</system:String>
+    <system:String x:Key="string_deployment_unusedExtraFileTypeFound">{0}-Datei könnte mir diesem Mod installiert werden: {1}. Die Datei sollte entfernt werden, da sie nie vom Spiel benutzt wird. Um derartige Dateien dennoch zu inkludieren, nutze „additionaldeploymentfolders“ unter dem [UPDATES] header.</system:String>
     <!-- 0={ext} 1={file} -->
     <system:String x:Key="string_deployment_nexusUpdaterServiceInfo">{0} ({1}) ist nicht in der Liste der erlaubten Mods des NexusMods Update-Dienstes. Damit Updates für diese Mod gesucht werden können, muss sie beim Dienst registriert werden (aufgrund der Funktionsweise der NexusMods API). Du kannst die Mod über den #nexusupdate-rules Kanel im ME3Tweaks Discord eintragen lassen.</system:String>
     <!-- 0={Mod name} 1={game (ME1/ME2... etc)} -->
@@ -1045,7 +1045,7 @@
     <!-- 0={filepath} 1={integer} 2={floating point number (cmmver)} -->
     <system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">MergeMod {0} konnte nicht geladen werden. Es ist möglicherweise nicht kompatibel mit cmmver {1}</system:String>
     <!-- 0={filepath} 1={floating point number (cmmver)} -->
-    <system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">Das Bannerbild '{0}' hat ein ungültiges Seitenverhältnis. Es muss ein Seitenverhältnis von etwa 580x47 (12,34:1) haben. Das aktuelle Bild hat die Abmessungen {1}x{2}.</system:String>
+    <system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">Das Bannerbild „{0}“ hat ein ungültiges Seitenverhältnis. Es muss ein Seitenverhältnis von etwa 580x47 (12,34:1) haben. Das aktuelle Bild hat die Abmessungen {1}x{2}.</system:String>
     <system:String x:Key="string_deployment_asiNotFoundInManifest">Die ASI-Gruppen-ID {0} ist im ASI-Manifest für {1} nicht verfügbar. Diese ASI kann nur installiert werden, wenn sie im Manifest vorhanden ist.</system:String>
     <!-- 0={ASI Group ID} 1={Game} -->
     <system:String x:Key="string_deployment_asiVersionNotFoundInManifest">Die ASI-Gruppen-ID {0}, Version {1}, ist im ASI-Manifest für {2} nicht verfügbar. Diese ASI kann nur installiert werden, wenn sie im Manifest vorhanden ist.</system:String>
@@ -1059,7 +1059,7 @@
     <system:String x:Key="string_deployment_foundM3toWithPrecompileBTP">Diese Mod verwendet eine vorkompilierte BTP-Datei; die enthaltenen .m3to-Dateien werden nicht verwendet und sollten entfernt werden.</system:String>
     <system:String x:Key="string_deployment_incorrectGameForBTP">Die beigefügte Texture Override-Manifestdatei {0} gehört zum falschen Spiel: {1}</system:String>
     <!-- 0={Relative file path} 1={Game} -->
-    <system:String x:Key="string_deployment_invalidSourcePackageReferenceForBTP">Die beigefügte Texture Override-Manifestdatei {0} verweist auf die quell-Package Datei '{1}', die von der Mod nicht referenziert wird und daher niemals kompiliert werden kann.</system:String>
+    <system:String x:Key="string_deployment_invalidSourcePackageReferenceForBTP">Die beigefügte Texture Override-Manifestdatei {0} verweist auf die quell-Package Datei „{1}“, die von der Mod nicht referenziert wird und daher niemals kompiliert werden kann.</system:String>
     <!-- 0={Relative file path} 1={Filename} -->
     <system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">DLC-Überschreibung des Bio2DA-Merge-Ziels {0} kann nicht veröffentlicht werden. Verwende stattdessen Merge-Mods und Bio2DA Merge.</system:String>
     <!-- 0={Filename} -->
@@ -1084,7 +1084,7 @@
     <system:String x:Key="string_backupsAreShared">Backups werden von verschiedenen Modding-Tools gemeinsam genutzt, darunter Mass Effect Randomizer, Legendary Explorer und andere.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups müssen von einer frischen, unmodifizierten Installation des Spielt erstellt werden. Backups von modifizierten Installationen werden nicht unterstützt.</system:String>
     <system:String x:Key="string_backUp">Backup</system:String>
-    <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups können benutzt werden um deine Installation auf den ungemoddeten Zustand zurückzusetzen und sind ein wichtiger Schritt beim Modden. Um ein Backup zu entkoppeln und aus den Mod-Werkzeugen zu entfernen, klicke den 'Backup entkoppeln' Knopf. Um aus einem Backup wiederherzustellen, benutze den Ziel verwalten Knopf im Hauptfenster.&#10;&#10;Backups werden außerdem als Dateiquelle für bestimmte Programmfunktionen benutzt. Daher benötigen einige fortgeschrittene Optionen ein Backup als Quelle für unmodifizierte Dateien.</system:String>
+    <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups können benutzt werden um deine Installation auf den ungemoddeten Zustand zurückzusetzen und sind ein wichtiger Schritt beim Modden. Um ein Backup zu entkoppeln und aus den Mod-Werkzeugen zu entfernen, klicke den „Backup entkoppeln“ Knopf. Um aus einem Backup wiederherzustellen, benutze den Ziel verwalten Knopf im Hauptfenster.&#10;&#10;Backups werden außerdem als Dateiquelle für bestimmte Programmfunktionen benutzt. Daher benötigen einige fortgeschrittene Optionen ein Backup als Quelle für unmodifizierte Dateien.</system:String>
     <system:String x:Key="string_validatingBackupSource">Überprüfe Backup-Quelle</system:String>
     <system:String x:Key="string_waitingForUserInput">Warte auf Benutzereingabe</system:String>
     <system:String x:Key="string_selectBackupDestination">Backup-Ziel wählen (muss ein leerer Ordner sein)</system:String>
@@ -1113,7 +1113,7 @@
     <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">In diesem Ziel sind nicht alle OFFIZIELLEN DLC installiert. Stelle sicher, dass du alle OFFIZIELLEN DLC installiert hast, die dein Backup enthalten soll, ansonsten können nur vorhandene DLC wiederhergestellt werden.\n\nDie folgenden DLCs sind nicht installiert:\n{0}\n\nHinweis: Es werden nicht alle DLC in einem Backup benötigt (z.B. wenn du ein DLC nicht besitzt), jedoch sind einige Mod Manager Funktionen von bestimmten DLC abhängig und können dann nicht benutzt werden, wie beispielsweise ME3Tweaks ModMaker.\n\nEin Backup dieses Ziels erstellen?</system:String>
     <!-- 0 = bulleted list of DLC -->
     <system:String x:Key="string_linkBackupToAnExistingGameCopy">Backup mit einer bestehenden Spielkopie verknüpfen</system:String>
-    <system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">Diese Installation kann nicht als Backup verknüpft werden, da sie bereits in der Liste der modifizierbaren Ziele ist. Um diese Installation als Backup zu verknüpfen, lösche zuerst das Ziel aus dem Installationsinformationsfenster, unter 'Ziel verwalten'.</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">Diese Installation kann nicht als Backup verknüpft werden, da sie bereits in der Liste der modifizierbaren Ziele ist. Um diese Installation als Backup zu verknüpfen, lösche zuerst das Ziel aus dem Installationsinformationsfenster, unter „Ziel verwalten“.</system:String>
     <system:String x:Key="string_cannotLinkGameCopy">Spielkopie kann nicht verknüpft werden</system:String>
     <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">Die gewählte Installation kann aufgrund von Validierungsfehlern nicht als Backup verknüpft werden: {0}.</system:String>
     <!-- 0=Validation failure reason -->
@@ -1531,19 +1531,19 @@
     <!-- 0={FriendlyName} 1={imageHeight} -->
     <system:String x:Key="string_validation_alt_imageAssetMissingHeight">Alternate {0} gibt ein Bild an, aber keine (gültige) ImageHeight. ImageHeight wird von Alternates benötigt, die ein Bild angeben.</system:String>
     <!-- 0={FriendlyName} -->
-    <system:String x:Key="string_validation_alt_cannotUseHiddenWithOptionGroup">Alternate {0} kann 'Hidden' nicht auf 'true' setzen, wenn 'OptionGroup' benutzt wird.</system:String>
+    <system:String x:Key="string_validation_alt_cannotUseHiddenWithOptionGroup">Alternate {0} kann „Hidden“ nicht auf „true“ setzen, wenn „OptionGroup“ benutzt wird.</system:String>
     <!-- 0={Alternate FriendlyName} -->
-    <system:String x:Key="string_validation_alt_invalidHiddenValue">Der Wert für 'Hidden' in Alternate {0} ist nicht 'true' oder 'false'. Der angegebene ungültige Wert lautet: {1}</system:String>
+    <system:String x:Key="string_validation_alt_invalidHiddenValue">Der Wert für „Hidden“ in Alternate {0} ist nicht „true“ oder „false“. Der angegebene ungültige Wert lautet: {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
     <system:String x:Key="string_validation_alt_dependsKeysMissingPlusMinus">Alternate {0} hat einen Wert in seiner DependsOnKeys-Liste der nicht mit +/- beginnt: {1}. Werte müssen mit einem + oder - beginnen.</system:String>
     <!-- 0={Alternate FriendlyName} 1={key} -->
-    <system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} referenziert seinen eigenen 'OptionKey' in seiner DependsOnKeys-Liste. Dies wird nicht unterstützt. Ungültiger Wert: {1}</system:String>
+    <system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} referenziert seinen eigenen „OptionKey“ in seiner DependsOnKeys-Liste. Dies wird nicht unterstützt. Ungültiger Wert: {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
     <system:String x:Key="string_validation_alt_dependsMissingAction">Alternate {0} benutzt DependsOnKeys aber definiert kein DependsOnMetAction-Attribut. Dieses Attribut ist erforderlich.</system:String>
     <!-- 0={Alternate FriendlyName} -->
     <system:String x:Key="string_validation_alt_dependsMissingNotMetAction">Alternate {0} benutzt DependsOnKeys aber definiert kein DependsOnNotMetAction-Attribut. Dieses Attribut ist erforderlich.</system:String>
     <!-- 0={Alternate FriendlyName} -->
-    <system:String x:Key="string_validation_alt_dependsOnKeyReferencesMissingAlternate">Alternate {0} benutzt einen DependsOnKey-Wert '{1}' der von keinem Alternate dieser Mod definiert wird.</system:String>
+    <system:String x:Key="string_validation_alt_dependsOnKeyReferencesMissingAlternate">Alternate {0} benutzt einen DependsOnKey-Wert „{1}“ der von keinem Alternate dieser Mod definiert wird.</system:String>
     <!-- 0={Alternate FriendlyName} 1={dependsOnKey.Key} -->
     <system:String xml:space="preserve" x:Key="string_alt_groupRequiresDepends">Benötigt {0} Option: {1}\n</system:String>
     <!-- 0={Alternate Groupname} 1={Alternate FriendlyName} -->
@@ -1590,7 +1590,7 @@
     <!-- 0={FriendlyName} 1={Condition} 2={dlc} -->
     <system:String x:Key="string_interp_validation_altdlc_specificSizedFilesMismatchedParams">Alternate DLC {0} benutzt COND_SPECIFIC_SIZED_FILES, aber die Listen RequiredFileRelativePaths und RequiredFileSizes sind nicht gleich lang.</system:String>
     <!-- 0={FriendlyName} -->
-    <system:String x:Key="string_interp_validation_altdlc_specificSizedFilesContainsIllegalPattern">Alternate DLC {0} RequiredFileRelativePaths Eintrag {1} ist ungültig: Werte dürfen aus Sciherheitsgründen '..' nicht enthalten</system:String>
+    <system:String x:Key="string_interp_validation_altdlc_specificSizedFilesContainsIllegalPattern">Alternate DLC {0} RequiredFileRelativePaths Eintrag {1} ist ungültig: Werte dürfen aus Sciherheitsgründen „..“ nicht enthalten</system:String>
     <!-- 0={FriendlyName} 1={reqFile} -->
     <system:String x:Key="string_interp_validation_altdlc_specificSizedFileMustBeLargerThanZero">Alternate DLC {0} RequiredFileSizes Eintrag {1} ist ungültig: {2}. Werte müssen größer oder gleich null sein.</system:String>
     <!-- 0={FriendlyName} 1={reqFile} 2={reqSizeStr} -->
@@ -1600,7 +1600,7 @@
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_validation_altdlc_condManualWithConditionalDLC">Alternate DLC {0} hat einen Wert für ConditionalDLC bei der Condition COND_MANUAL. Benutze für COND_MANUAL nicht ConditionalDLC, sondern DLCRequirements.</system:String>
     <!-- 0={friendlyName} -->
-    <system:String x:Key="string_interp_validation_altdlc_flattentNotTrueOrFalse">Alternate DLC ({0}) benutzt den 'FlattenMultiListOutput'-Deskriptorsatz, aber der Wert ist nicht 'true' oder 'false': {1}</system:String>
+    <system:String x:Key="string_interp_validation_altdlc_flattentNotTrueOrFalse">Alternate DLC ({0}) enthält den Deskriptor „FlattenMultiListOutput“, aber der Wert ist weder „true“ noch „false“: {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
     <system:String x:Key="string_interp_validation_altdlc_dlcrequirementsHasOfficialLEDLC">Alternate DLC ({0}) DLCRequirements gibt ein DLC an, das in Legendary Edition enthalten ist. Mods für Legendary Edition mit moddesc 8.0 und höher können kein vanilla DLC als DLCRequirements angeben, da Mod Manager keine Spiele unterstützt, die das vanilla DLC nicht haben. Nicht unterstützter Wert: {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={unsupported value} -->
@@ -1637,7 +1637,7 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate File ({0}) in-mod Ziel (ModFile) scheint auf kein DLC-Ziel abzuzielen, das diese Mod (immer) installiert: {1}</system:String>
     <!-- 0={FriendlyName} 1={File path} -->
-    <system:String x:Key="string_interp_validation_altfile_flattentNotTrueOrFalse">Alternate File ({0}) benutzt den 'FlattenMultiListOutput'Deskriptorsatz, aber der Wert ist nicht 'true' oder 'false': {1}</system:String>
+    <system:String x:Key="string_interp_validation_altfile_flattentNotTrueOrFalse">Alternate File ({0}) enthält den Deskriptor „FlattenMultiListOutput“, aber der Wert ist weder „true“ noch „false“: {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
     <system:String x:Key="string_interp_altfile_missingOperation">Alternative File gibt keine ModOperation an, die für alle Alternate Files erforderlich ist: {0}</system:String>
     <!-- 0={Alternate name} -->
@@ -1687,15 +1687,15 @@
     <!-- 0 = destination file path in moddesc -->
     <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Datei konnte nicht zur schreibgeschützten Installation markiert werden: {0} existiert nicht in der installation map nach dem Bauen, wird jedoch in der addreadonlytargets-Liste angegeben.</system:String>
     <!-- 0 = source file path in moddesc -->
-    <system:String x:Key="string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Eine Alternate File, die die OptionGroup-Funktion benutzt, muss mindestens ein AlternateFile Struct mit CheckedByDefault-Option in ihrem Set haben, da mindestens eine Option immer gewählt sein muss. Der Name der fehlerhaften OptionGroup lautet '{0}'.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Eine Alternate File, die die OptionGroup-Funktion benutzt, muss mindestens ein AlternateFile Struct mit CheckedByDefault-Option in ihrem Set haben, da mindestens eine Option immer gewählt sein muss. Der Name der fehlerhaften OptionGroup lautet „{0}“.</system:String>
     <!-- 0=group. Shown if no items in group have CheckedByDefault. ALT FILE OPTION -->
-    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files, die die OptionGroup-Funktion benutzen, dürfen nur ein Set von AlternateFile Structs mit CheckedByDefault haben. Der Name der fehlerhaften OptionGroup lautet '{0}'.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files, die die OptionGroup-Funktion benutzen, dürfen nur ein Set von AlternateFile Structs mit CheckedByDefault haben. Der Name der fehlerhaften OptionGroup lautet „{0}“.</system:String>
     <!-- 0=group. Shown if more than one item in group has CheckedByDefault. ALT FILE OPTION-->
-    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Eine Alternate DLC, die die OptionGroup-Funktion benutzt, muss mindestens ein AlternateDLC Struct mit CheckedByDefault-Option in ihrem Set haben, da mindestens eine Option immer gewählt sein muss. Der Name der fehlerhaften OptionGroup lautet '{0}'.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Eine Alternate DLC, die die OptionGroup-Funktion benutzt, muss mindestens ein AlternateDLC Struct mit CheckedByDefault-Option in ihrem Set haben, da mindestens eine Option immer gewählt sein muss. Der Name der fehlerhaften OptionGroup lautet „{0}“.</system:String>
     <!-- 0=group. Shown if no items in group have CheckedByDefault. ALT DLC OPTION -->
-    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate DLCs, die die OptionGroup-Funktion benutzen, dürfen nur ein Set von AlternateDLC Structs mit CheckedByDefault haben. Der Name der fehlerhaften OptionGroup lautet '{0}'.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate DLCs, die die OptionGroup-Funktion benutzen, dürfen nur ein Set von AlternateDLC Structs mit CheckedByDefault haben. Der Name der fehlerhaften OptionGroup lautet „{0}“.</system:String>
     <!-- 0=group. Shown if more than one item in group has CheckedByDefault. ALT DLC OPTION-->
-    <system:String x:Key="string_interp_validation_modjob_cannotContainDotDot">Der relative Pfad {0} darf nicht '..' enthalten</system:String>
+    <system:String x:Key="string_interp_validation_modjob_cannotContainDotDot">Der relative Pfad {0} darf nicht „..“ enthalten</system:String>
     <!-- 0={Relative path value} -->
     <system:String x:Key="string_interp_validation_modjob_duplicateOptionKeys">Es gibt Alternativen mit doppelten OptionKey-Werten. Dies liegt daran, dass entweder doppelte OptionKey-Werte auf ihnen festgelegt sind oder dass verschiedene Optionen denselben FriendlyName-Wert haben. Die folgenden Werte haben duplikate: {0}</system:String>
     <!-- 0={string.Join(',', duplicates)} -->
@@ -1750,7 +1750,7 @@
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomoddev">In der moddesc.ini-Datei unter {0} ist kein Wert für moddev eingestellt. Dieser Wert wird benötigt.</system:String>
     <!-- 0 = moddesc.ini file path -->
     <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">Diese Mod hat sowohl einen Update-Dienst Update-Code als auch einen Modmaker-Code. Das ist nicht erlaubt.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">Diese Mod gibt eine unbekannte Spiel-ID im ModInfo Deskriptor 'game' an. Erlaubte Werte sind ME1, ME2, ME3, LE1, LE2, LE3 und LELAUNCHER. Angegebener Wert: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">Diese Mod gibt eine unbekannte Spiel-ID im ModInfo Deskriptor „game“ an. Erlaubte Werte sind ME1, ME2, ME3, LE1, LE2, LE3 und LELAUNCHER. Angegebener Wert: {0}</system:String>
     <!-- provided game value from moddesc -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12">Diese Mod ist für {0}. Die moddesc-Version ist {1}, aber ME1 oder ME2 werden erst ab moddesc-Version 6.0 unterstützt.</system:String>
     <!-- 0 = game name, 1 = moddesc target version number -->
@@ -1780,7 +1780,7 @@
     <!-- 0 = header string in moddesc.ini -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">Job header (CUSTOMDLC) hat nicht zusammenpassende sourcedirs und destdirs Deskriptorlisten. sourcedirs enthält {0} Elemente, destdirs enthält {1} Elemente. Die Anzahl der Elemente beider Listen muss gleich sein.</system:String>
     <!-- 0 = number, 1 = number -->
-    <system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs oder destdirs enthält ein Element, das einen '.' (destdirs) oder zwei '..' (sourcedirs) enthält. Das ist nicht erlaubt.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs oder destdirs enthält ein Element, das einen „.“ (destdirs) oder zwei „..“ (sourcedirs) enthält. Das ist nicht erlaubt.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing">Job header (CUSTOMDLC) sourcedirs Deskriptor gibt die Installation eines Custom DLC-Ordners an, der nicht im Mod-Ordner existiert: {0}</system:String>
     <!-- 0 = source dlc foldername -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_destDirCannotBeMetadataOrOfficialDLC">Job header (CUSTOMDLC) destdirs Deskriptor gibt die Installation eines Custom DLC-Ordners an ein geschütztes Ziel an: {0}. Custom DLC kann nicht in einen Ordner mit dem selben Namen wie ein offizielles DLC oder metadata-Ordner installiert werden.</system:String>
@@ -1839,12 +1839,12 @@
     <system:String x:Key="string_interp_validation_modparsing_invalidUrlScheme">Ungültige URL für Mod {0}: Die URL muss vom Typ http:// oder https:// sein und eine gültige, wohlgeformte URL sein. Ungültiger Wert: {1}</system:String>
     <!-- 0={ModName} 1={ModWebsite} -->
     <system:String x:Key="string_interp_validation_modparsing_cannotCombineLocalizationTask">Diese Mod gibt einen LOCALIZATION task neben weiteren anderen task headern an. Eine Mod mit LOCALIZATION task darf nur einen LOCALIZATION task enhalten und kann nicht mit anderen tasks kombiniert werden.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_missingDlcNameDesriptor">Dem LOCALIZATION task für diese Mod fehlt der 'dlcname'-Deskriptor, der benötigt wird, um das Ziel dieses Lokalisierungsmods festzulegen.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_missingDlcNameDesriptor">Der LOCALIZATION-Task für diese Mod enthält nicht den Deskriptor „dlcname“, der verwendet wird, um das Ziel dieser Lokalisierungs-Mod zu bestimmen.</system:String>
     <system:String x:Key="string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound">Eine referenzierte Lokalisierungsdatei konnte nicht gefunden werden: {0}</system:String>
     <!-- 0={Referenced Filepath} -->
     <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFileType">Eine referenzierte Lokalisierungsdatei ist keine .tlk-Datei: {0}. LOCALIZATION tasks erlauben nur die Installation von .tlk-Dateien.</system:String>
     <!-- 0={Referenced Filepath} -->
-    <system:String x:Key="string_interp_validation_modparsing_invalidDlcNameLocalization">Der 'dlcname'-Deskriptor unter LOCALIZATION muss mit DLC_ beginnen und darf kein offizielles DLC für das Spiel sein. Ungültiger Wert: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_invalidDlcNameLocalization">Der Deskriptor „dlcname“ im LOCALIZATION-Abschnitt muss mit „DLC_“ beginnen und darf kein offizielles DLC des Spiels sein. Ungültiger Wert: {0}</system:String>
     <!-- 0={DLC folder name} -->
     <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFilename">Die referenzierte Lokalisierungsdatei hat einen falschen Namen: {0}. Lokalisierungsdateienamen müssen mit dem Namen des DLCs beginnen, gefolgt von einem Unterstrich und dann dem dreibuchstabigen Sprachcode.</system:String>
     <!-- 0={Incorrect filename} -->
@@ -1857,12 +1857,12 @@
     <system:String x:Key="string_interp_singleRequiredDLC">Installation setzt voraus, dass mindestens eins der folgenden DLCs installiert ist:</system:String>
     <system:String x:Key="string_interp_validation_modparsing_bannerImageAssetNotFound">Mod benutzt ein Banner-Bild namens {0}, doch diese Datei existiert nicht im M3Images-Verzeichnis.</system:String>
     <!-- 0={Filename} -->
-    <system:String x:Key="string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3">Mod benutzt ein Banner-Bild in einer Archivdatei, doch als Speicherart wird nicht 'Kopieren' verwendet. Mod Manager lädt keine Mods aus einem Archiv, das nicht mit Mod Manager erstellt wurde.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3">Diese Mod benutzt ein Banner-Bild in einer Archivdatei, doch als Speicherart wird nicht „Copy“ verwendet. Mod Manager lädt keine Mods aus einem Archiv, das nicht mit Mod Manager erstellt wurde.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_mergeModGameIdMismatch">MergeMod {0} gibt als geeignetes Spiel {1} an, doch die Mod welcher diese MergeMod lädt ist für {2}. Mod und MergeMod müssen für dasselbe Spiel geeignet sein.</system:String>
     <!-- 0={Filename} 1={Game ID} 2={Game ID} -->
     <system:String x:Key="string_interp_validation_modparsing_leGamesRequireCmm7">{0} ist für {1} bestimmt. ModDesc-Versionen (cmmver Deskriptor im ModManager-Abschnitt) unter 7.0 sind nicht für Legendary Edition-Spiele geeignet.</system:String>
     <!-- 0={ModName} 1={GameName} -->
-    <system:String x:Key="string_interp_validation_modparsing_securityIssueMergeModDotDot">{0} gibt im Abschnitt {1} einen MergeMod an, welcher '..' im Dateinamen hat. '..' ist nicht in Namen erlaubt.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_securityIssueMergeModDotDot">{0} gibt im Abschnitt {1} einen MergeMod an, welcher „..“ im Dateinamen hat. „..“ ist nicht in Namen erlaubt.</system:String>
     <!-- 0={ModName} 1={Job Header (BASEGAME, RETALIATION, etc)} -->
     <system:String x:Key="string_interp_validation_modparsing_mergeModNotFound">{0} gibt im Abschnitt {1} einen MergeMod an, welcher nicht im Ordner {2} existiert: {3}.</system:String>
     <!-- 0={ModName} 1={Header (BASEGAME, REBELLION, etc)} 2={Merge foldername} 3={filename} -->
@@ -1871,7 +1871,7 @@
     <!-- 0={ModName} 1={Header (BASEGAME, REBELLION, etc)} 2={Filename} -->
     <system:String x:Key="string_interp_validation_modparsing_tlkMergeNoTlkXmlFound">Mod gibt {0} task header an, aber keine xml-Datei wurde im {1}-Ordner gefunden. Entferne diesen task header wenn du ihn nicht brauchst oder füge gültige xml-Dateien im {1}-Ordner hinzu.</system:String>
     <!-- 0={Header (GAME1_EMBEDDED_TLK)} 1={Embedded TLK Foldername} -->
-    <system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">Der {0} header unterstützt nur solche Dateien im Ordner {1} welche mindestens 2 '.' enthalten: einer für die Dateiendung und mindestens ein weiterer um den Package-Namen vom Exportpfad zu trennen. Wenn der Export unter Packages verschachtelt ist, werden weitere '.' benötigt. Ungültiger Wert: {2}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">Der {0} header unterstützt nur solche Dateien im Ordner {1} welche mindestens 2 „.“ enthalten: einer für die Dateiendung und mindestens ein weiterer um den Package-Namen vom Exportpfad zu trennen. Wenn der Export unter Packages verschachtelt ist, werden weitere „.“ benötigt. Ungültiger Wert: {2}</system:String>
     <!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
     <system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">Der LELAUNCHER header unterstützt nur die folgenden Dateiendungen: {0} Ein nicht unterstützter Dateityp wurde gefunden: {1}</system:String>
     <!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
@@ -1885,17 +1885,17 @@
     <!-- 0={Task header} 1={Foldername} -->
     <system:String x:Key="string_interp_validation_modparsing_improperPackedFile">Die Mod hat eine Datei, die nicht ordnungsgemäß im Archiv gespeichert ist: {0}. Mods müssen vom Mod-Manager bereitgestellt werden, um ordnungsgemäß zu funktionieren.</system:String>
     <!-- 0={File path} -->
-    <system:String x:Key="string_interp_validation_modparsing_sortIndexGroupUnique">Alternate {0} gibt einen 'sortindex'-Wert an, der sich von einem anderen in Gruppe '{1}' unterscheidet. Alternate gibt den 'sortindex'-Wert {2} an, aber ein anderer gibt {3} an. 'sortindex'-Werte in einer Gruppe müssen alle gleich oder nur einer darf definiert sein.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_sortIndexGroupUnique">Alternate {0} gibt einen „sortindex“-Wert an, der sich von einem anderen in Gruppe „{1}“ unterscheidet. Alternate gibt den „sortindex“-Wert {2} an, aber ein anderer gibt {3} an. „sortindex“-Werte in einer Gruppe müssen alle gleich oder nur einer darf definiert sein.</system:String>
     <!-- 0={option FriendlyName} 1={option GroupName} 2={Option sortindex, integer} 3={Proper index, integer} -->
     <system:String x:Key="string_mod_modReferencesTextureFiles">Diese Mod verweist auf Textur-Mod-Dateien, die installiert werden können, nachdem alle anderen Mods installiert wurden:</system:String>
     <system:String x:Key="string_mod_modReferencesHeadmorphFiles">Diese Mod kann die folgenden Headmorph-Dateien installieren:</system:String>
     <system:String x:Key="string_interp_validation_modparsing_unsupportedModdescVersion">Die von dieser Mod angegebene cmmver ({0}) ist höher als die Version, die von diesem Build von ME3Tweaks Mod Manager ({1}) unterstützt wird. Möglicherweise musst du den Mod Manager updaten, damit diese Mod geladen werden kann.</system:String>
     <!-- 0={Version number} 1={Version number} -->
-    <system:String x:Key="string_mod_validation_basegameMergeModsWithoutModDir">[BASEGAME] 'mergemods' wurde angegeben, aber 'moddir' nicht - wolltest du moddir auf '.' setzen? Das Zusammenführen von Mods funktioniert nicht ohne die Einstellung eines moddir-Werts, verwende den Wert '.' wenn du keine anderen Dateien zum Ersetzen habst, oder entferne mergemods aus diesem task header.</system:String>
+    <system:String x:Key="string_mod_validation_basegameMergeModsWithoutModDir">[BASEGAME] „mergemods“ wurde angegeben, aber „moddir“ nicht — sollte „moddir“ auf „.“ gesetzt werden? Mergemods funktioniert nicht ohne einen gesetzten „moddir“-Wert. Verwende den Wert „.“, wenn keine anderen Dateien ersetzt werden sollen, oder entferne „mergemods“ aus diesem Task-Header.</system:String>
     <!-- This is for user convenience -->
     <system:String x:Key="string_installsTheFollowingASIMods">Installiert die folgenden ASI-Mods:</system:String>
     <system:String x:Key="string_invalid">Ungültig</system:String>
-    <system:String x:Key="string_interp_validation_altSpecifiesValueFolderDoesntExist">Alternate {0} gibt einen '{1}'-Wert an, der auf einen Ordner in {2} verweist, der nicht existiert.</system:String>
+    <system:String x:Key="string_interp_validation_altSpecifiesValueFolderDoesntExist">Alternate {0} gibt einen „{1}“-Wert an, der auf einen Ordner in {2} verweist, der nicht existiert.</system:String>
     <!-- 0={Name} 1={Name of folder} 2={Folder name} -->
     <system:String x:Key="string_validation_mergeModVersionUnsupported">Mergemod konnte nicht geladen werden: Nicht unterstützte Version</system:String>
     <system:String x:Key="string_interp_validation_mergeModCompilerTooNew">Mergemod {0} wurde mit einem Compiler erstellt, der mindestens cmmver {1} erfordert. Kompiliere die Mergemod neu oder aktualisiere die cmmver</system:String>
@@ -1906,7 +1906,7 @@
     <!-- M3 ASI Version -->
     <system:String x:Key="string_validation_m3ASIVersionWrongValueCount">M3ASIVersion-Daten in Moddesc sind ungültig. Eine M3ASIVersion-Struct kann höchstens 1 oder 2 Werte enthalten: GroupID und optional die Version. Dies hat {0} Einträge. Daten: {1}</system:String>
     <!-- 0={integer} 1={data} -->
-    <system:String x:Key="string_interp_m3ASIVersionMissingKey">M3ASIVersion-Daten in Moddesc sind ungültig. Schlüssel '{0}' fehlt. Daten: {1}</system:String>
+    <system:String x:Key="string_interp_m3ASIVersionMissingKey">M3ASIVersion-Daten in Moddesc sind ungültig. Schlüssel „{0}“ fehlt. Daten: {1}</system:String>
     <!-- 0={'groupid'} 1={int} -->
     <system:String x:Key="string_interp_m3ASIVersionNotAnInteger">M3ASIVersion-Daten in Moddesc sind ungültig. Der Schlüssel „{0}“ wurde nicht in einen Integer aufgelöst. Daten: {1}</system:String>
     <!-- 0={'groupid'} 1={int} -->
@@ -2392,7 +2392,7 @@
     <system:String x:Key="string_selectMixinsToCompile">Wähle zu kompilierende Mixins</system:String>
     <system:String x:Key="string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup">Kein Backup für ME3 verfügbar. Mixins können ohne Backup nicht benutzt werden.</system:String>
     <!-- appears in bottom left of mixin library if ME3 backup cannot be found -->
-    <system:String xml:space="preserve" x:Key="string_interp_dialogCreatingNewModWithExistingName">Erstellen einer Mod mit Namen '{0}' löscht den bestehenden Mod-Ordner aus der Mod-Bibliothek:\n{1}\n\nFortsetzen?</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogCreatingNewModWithExistingName">Erstellen einer Mod mit Namen „{0}“ löscht den bestehenden Mod-Ordner aus der Mod-Bibliothek:\n{1}\n\nFortsetzen?</system:String>
     <!-- 0=NewModName 1=modpath -->
     <system:String x:Key="string_compilingMixins">Mixins werden kompiliert...</system:String>
     <system:String x:Key="string_interp_errorApplyingMixinsForFile">Fehler beim Anwenden von Mixins ({0}) für Datei {1}: {2}</system:String>
@@ -2432,7 +2432,7 @@
     <system:String x:Key="string_edit">Bearbeiten</system:String>
     <system:String x:Key="string_tooltip_targetToInstallThisModGroupTo">Ziel für das diese Modgruppe installiert werden soll</system:String>
     <system:String x:Key="string_deleteGroup">Gruppe löschen</system:String>
-    <system:String x:Key="string_interp_deleteTheSelectedBatchQueue">Die Installationsgruppe '{0}' löschen?</system:String>
+    <system:String x:Key="string_interp_deleteTheSelectedBatchQueue">Die Installationsgruppe „{0}“ löschen?</system:String>
     <!-- 0={Name of a user-defined batch installation queue/group} -->
     <system:String x:Key="string_modNotAvailableForInstall">Mod nicht für installation verfügbar</system:String>
     <system:String x:Key="string_modNotAvailable">Mod nicht verfügbar:</system:String>
@@ -2802,7 +2802,7 @@
     <!-- 0={version} -->
     <system:String xml:space="preserve" x:Key="string_interp_invalidMergeModManifestReason">Ungültiges MergeMod Manifest:\n{0}</system:String>
     <!-- 0={reason merge manifest was invalid (schema text)} -->
-    <system:String x:Key="string_filenameCannotBeNullInAMergeManifestFile">'filename' in einer Merge-Manifest-Datei darf nicht null sein!</system:String>
+    <system:String x:Key="string_filenameCannotBeNullInAMergeManifestFile">„filename“ in einer Merge-Manifest-Datei darf nicht null sein!</system:String>
     <system:String x:Key="string_interp_targetingNonStartupFile">Kann jetzt nicht in eine nicht-Startup-Datei mergen: {0}</system:String>
     <!-- 0={FileName} -->
     <system:String x:Key="string_error_mergefile_badMagic">MergeMod V1 Datei hat keine vorangestellte Asset Magic - diese Datei wurde nicht ordnungsgemäß gebaut!</system:String>
@@ -2827,10 +2827,10 @@
     <!-- 0={Instanced Full Path of Entry} 1={Error messages list} -->
     <system:String x:Key="string_interp_mergefile_notPropertyExportConfigFlag">{0} in {1} ist kein Eigenschaftsexport. Konfigurationsmarker auf diesem Export kann nicht deaktiviert werden.</system:String>
     <!-- 0={entry InstancedFullPath} 1={Filepath} -->
-    <system:String x:Key="string_interp_mergefile_invalidEnumPropertyValue">'propertyvalue' für EnumProperty muss einen '.' enthalten, um den Enum-Typ vom Enum-Wert zu trennen</system:String>
+    <system:String x:Key="string_interp_mergefile_invalidEnumPropertyValue">„propertyvalue“ für EnumProperty muss einen „.“ enthalten, um den Enum-Typ vom Enum-Wert zu trennen</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_fileLibInitMergeMod1Script">FileLib für Skriptaktualisierung konnte nicht initialisiert werden, Script kann nicht in {0} gemergt werden:\n{1}</system:String>
     <!-- 0={target entry InstancedFullPath} 1={newline split list of errors} -->
-    <system:String x:Key="string_interp_mergefile_noLocalizedFiles">Keine lokalisierten Dateien zum zusammenführen mit {0} gefunden. Die aktivierte Einstellung 'applytoallapplications' führt Änderungen nur mit lokalisierten Versionen einer Datei zusammen</system:String>
+    <system:String x:Key="string_interp_mergefile_noLocalizedFiles">Keine lokalisierten Dateien zum zusammenführen mit {0} gefunden. Die aktivierte Einstellung „applytoallapplications“ führt Änderungen nur mit lokalisierten Versionen einer Datei zusammen</system:String>
     <!-- 0={FileName} -->
     <system:String x:Key="string_interp_mergefile_errorCompilingClassAfterEdit">Fehler beim Kompilieren der Klasse {0} nach Hinzufügen oder Ersetzen von {1}: {2}</system:String>
     <!-- 0={targetExport InstancedFullPath} 1={Script Filename} 2={list of errors} -->
@@ -2838,7 +2838,7 @@
     <!-- 0={number} 1={number}-->
     <system:String x:Key="string_interp_propertyNotFoundX">Eigenschaft nicht gefunden: {0}</system:String>
     <!-- 0={Property string In.This.Form} -->
-    <system:String xml:space="preserve" x:Key="string_interp_errorCompilingPropertyXinYZ">Fehler beim Kompilieren von Eigenschaft '{0}' in {1}:\n{2}</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorCompilingPropertyXinYZ">Fehler beim Kompilieren von Eigenschaft „{0}“ in {1}:\n{2}</system:String>
     <!-- 0={PropertyName} 1={full path of the export In.This.Form} 2={List of error messages separated line by line} -->
     <system:String x:Key="string_interp_incompleteStaticArrayIndex">Unvollständiger static array Index in propertyname: {0}</system:String>
     <!-- 0={Name of property In.This.Form} -->
@@ -2917,10 +2917,10 @@
     <system:String x:Key="string_executables">Ausführbare Dateien</system:String>
     <!-- Used in context of filetype selector. 'Executables (*.exe)' -->
     <system:String x:Key="string_nexusModsDownloaderConfiguration">NexusMods Downloader Einstellungen</system:String>
-    <system:String x:Key="string_description_downloadWithManager">Die Funktion 'mit Manager herunterladen' auf NexusMods benutzt das NXM-Protokoll. Das heißt, dass nur eine Anwendung auf einmal registriert sein kann um diese Aufrufe zu erhalten. Mod Manager kann sich selbst registrieren und Aufrufe für nicht unterstützte Spiele (wie Skyrim oder Fallout) an einen anderen Manager deiner Wahl weiterleiten.</system:String>
+    <system:String x:Key="string_description_downloadWithManager">Die Funktion „Download with Manager“ auf NexusMods benutzt das NXM-Protokoll. Das heißt, dass nur eine Anwendung auf einmal registriert sein kann um diese Aufrufe zu erhalten. Mod Manager kann sich selbst registrieren und Aufrufe für nicht unterstützte Spiele (wie Skyrim oder Fallout) an einen anderen Manager deiner Wahl weiterleiten.</system:String>
     <system:String x:Key="string_registerME3TweaksModManagerAsHandler">ME3Tweaks Mod Manager als Handler registrieren</system:String>
     <system:String x:Key="string_otherApps">Andere Anwendungen</system:String>
-    <system:String x:Key="string_description_downloadWithManagerOtherApps">Du kannst für andere als die Mass Effect Spiele andere Anwendungen registrieren. Dazu musst du die Domäne (d.h. der Name des Spiels in einer NexusMods URL), die Zielanwendung und die Parameter für die Anwendung angeben. Benutze '%1' als Platzhalter für den nxm://-Link</system:String>
+    <system:String x:Key="string_description_downloadWithManagerOtherApps">Du kannst für andere als die Mass Effect Spiele andere Anwendungen registrieren. Dazu musst du die Domäne (d.h. der Name des Spiels in einer NexusMods URL), die Zielanwendung und die Parameter für die Anwendung angeben. Benutze „%1“ als Platzhalter für den nxm://-Link</system:String>
     <system:String x:Key="string_addOtherApp">Andere Anwendung hinzufügen</system:String>
     <system:String x:Key="string_additionalApp">Weitere Anwendung</system:String>
     <system:String x:Key="string_application">Anwendung</system:String>
