@@ -69,6 +69,20 @@ Inside your .m3to file(s), you specify your overrides, as well as the game the m
 
 <img width="1409" height="364" alt="520537321-990f886e-7e59-4d00-a23c-1437d9a3a4f4" src="https://github.com/user-attachments/assets/4c2751c5-3e28-4260-950b-8304a8d7eb9d" />
 
+An example single texture replacement might look like this, for replacing the Presidium sky in LE1:
+```
+{
+    "game": "LE1",
+    "textures": [
+        {
+            "sourcepackage": "TO_Textures.pcc",
+            "textureifp": "BIOA_STA20_T.SKYRGB"
+        }
+    ]
+}
+```
+
+And an [example mod for M3TO is available at NexusMods](https://www.nexusmods.com/masseffectlegendaryedition/mods/3120).
 
 For each texture, you must specify the source package name, relative to the CookedPCConsole folder of your DLC mod. You also must specify the `textureifp`, which is the instanced full path as shown in your package. 
 
