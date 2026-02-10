@@ -93,7 +93,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     GroupDescription = M3L.GetString(M3L.string_description_originalTrilogySettings),
                     VisibilityDelegate = () => Settings.GenerationSettingOT,
                     AllSettings = [
-                        new M3BooleanSetting(settingsType, nameof(Settings.PreferCompressingPackages), M3L.GetString(M3L.string_preferCompressingPackages), M3L.GetString(M3L.string_description_preferCompressingPackages)),
+                        new M3BooleanSetting(settingsType, nameof(Settings.PreferCompressingPackages), M3L.GetString(M3L.string_preferCompressingPackages), M3L.string_description_preferCompressingPackages),
                         new M3BooleanSetting(settingsType, nameof(Settings.AutoUpdateLODs4K), M3L.string_autoUpdateLODs4K, M3L.string_tooltip_autoLods4K),
                         new M3BooleanSetting(settingsType, nameof(Settings.AutoUpdateLODs2K), M3L.string_autoUpdateLODs2K, M3L.string_tooltip_autoLods2K),
                     ]
