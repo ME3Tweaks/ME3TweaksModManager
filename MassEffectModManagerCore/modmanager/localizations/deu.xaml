@@ -358,7 +358,7 @@
     <system:String x:Key="string_loadingTargets">Ziele werden geladen</system:String>
     <!-- Shown when app is booting up and game targets are being inspected -->
     <system:String x:Key="string_configureNxmHandlerOnBoot">Beim Start nxm:// zum Öffnen mit Mod Manager konfigurieren</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_configureNxmHandlerOnBoot">Konfiguriert das NexusMods nxm://-Protokoll so, dass 'Download with Manager' auf NexusMods ME3Tweaks Mod Manager startet. Wenn ausgeschaltet, kannst du es manuell im NexusMods-Fenster wieder einschalten</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_configureNxmHandlerOnBoot">Konfiguriert das NexusMods nxm://-Protokoll so, dass „Download with Manager“ auf NexusMods ME3Tweaks Mod Manager startet. Wenn ausgeschaltet, kannst du es manuell im NexusMods-Fenster wieder einschalten</system:String>
     <system:String x:Key="string_dialog_nexusLoginRequiredForDownload">ME3Tweaks Mod Manager muss mit deinem NexusMods-Benutzerkonto verknüpft sein, um direkt von NexusMods herunterladen zu können. Klicke OK, um die NexusMods-Anmeldeseite aufzurufen und das Programm zu verknüpfen.</system:String>
     <system:String x:Key="string_notSignedIn">Nicht angemeldet</system:String>
     <system:String x:Key="string_couldNotEndorseFile">Datei konnte nicht empfohlen werden</system:String>
@@ -3176,7 +3176,7 @@
     <system:String x:Key="string_failedDownloads">Fehlgeschlagene Downloads</system:String>
     <system:String x:Key="string_clearAll">Alle leeren</system:String>
     <system:String x:Key="string_tooltip_removeFailedDownload">Fehlgeschlagenen Download entfernen</system:String>
-    <system:String x:Key="string_dialog_mismatchingLocalNexusUsernames">Der Benutzer, der im Browser bei NexusMods angemeldet ist, und der Benutzer, der im Mod Manager bei NexusMods angemeldet ist, sind nicht identisch. Damit „Download with Manager“ müssen beide übereinstimmen.</system:String>
+    <system:String x:Key="string_dialog_mismatchingLocalNexusUsernames">Der Benutzer, der im Browser bei NexusMods angemeldet ist, und der Benutzer, der im Mod Manager bei NexusMods angemeldet ist, sind nicht identisch. Damit „Download with Manager“ funktioniert, müssen beide übereinstimmen.</system:String>
     <system:String x:Key="string_cannotDownload">Download nicht möglich</system:String>
 
     <!-- Merge Mod Loader -->
