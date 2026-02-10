@@ -135,6 +135,6 @@ You can add there command line options in a custom launch configuration to help 
 
 - `-disabletextureoverride`
   - Disables overrides at boot, only loading the manifests, but not performing texture replacements
-- `-to-trace`
-  - Enables trace level logs which can help track down issues such as seeing what manifest items loaded, which BTP files were found, etc
+- `-trace-log-level`
+  - Enables trace level logs in ASIs that use the common ASI logger. This can help track down issues such as seeing what manifest items loaded, which BTP files were found, etc
 
