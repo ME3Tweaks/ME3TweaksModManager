@@ -118,6 +118,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (InstallationTargets.Count == 1)
                 {
                     // There are no other options
+                    InstallationCancelled = true;
                     OnClosing(DataEventArgs.Empty);
                 }
 
@@ -686,10 +687,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SelectedGameTarget != null)
             {
                 SetupOptions(true);
-                if (BatchMod != null && BatchMod.UseSavedOptions && BatchMod.HasChosenOptions && !BatchMod.ChosenOptionsDesync)
+                if (!InstallationCancelled)
                 {
-                    // Install our option choices
-                    InstallBatchChosenOptions();
+                    if (BatchMod != null && BatchMod.UseSavedOptions && BatchMod.HasChosenOptions && !BatchMod.ChosenOptionsDesync)
+                    {
+                        // Install our option choices
+                        InstallBatchChosenOptions();
+                    }
                 }
             }
         }
