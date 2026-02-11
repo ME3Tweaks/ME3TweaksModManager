@@ -198,6 +198,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
+            // Log breakdown of items to be installed
+            var batchModCount = SelectedBatchQueue.ModsToInstall.Count;
+            var asiModCount = SelectedBatchQueue.ASIModsToInstall?.Count ?? 0;
+            var textureModCount = SelectedBatchQueue.TextureModsToInstall.Count;
+
+            M3Log.Information($"Installing batch group '{SelectedBatchQueue.ModName}': {batchModCount} mods, {asiModCount} ASI mods, {textureModCount} texture mods, game restore: {SelectedBatchQueue.RestoreBeforeInstall}");
+
             TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.ModName},
