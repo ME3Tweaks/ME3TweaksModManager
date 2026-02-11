@@ -1284,7 +1284,7 @@ namespace ME3TweaksModManager
             }
         }
 
-        private void HandleBatchTextureInstall(GameTarget target, BatchLibraryInstallQueue queue)
+        private async void HandleBatchTextureInstall(GameTarget target, BatchLibraryInstallQueue queue)
         {
             if (queue.TextureModsToInstall.Any(x => x.IsAvailableForInstall()))
             {
@@ -1302,22 +1302,22 @@ namespace ME3TweaksModManager
                     // There is at least one mod that is not standalone
                     ShowTextureWarning = !queue.UseSavedOptions && queue.ModsToInstall.Where(x => !x.ModMissing).Any(x => !x.IsStandalone)
                 };
-                tip.Close += (sender, args) =>
+                tip.Close += async (sender, args) =>
                 {
                     ReleaseBusyControl(); // This is so the panel is closed
-                    FinishBatchInstall(queue); // This can throw a dialog. So it will have to manually trigger the batch panel result as none may be showing.
+                    await FinishBatchInstall(queue); // This can throw a dialog. So it will have to manually trigger the batch panel result as none may be showing.
                 };
                 ShowBusyControl(tip);
             }
             else
             {
                 HandleBatchPanelResult = true; // We should handle the results
-                FinishBatchInstall(queue); // Advance to next step
+                await FinishBatchInstall(queue); // Advance to next step
             }
 
         }
 
-        private async void FinishBatchInstall(BatchLibraryInstallQueue queue)
+        private async Task FinishBatchInstall(BatchLibraryInstallQueue queue)
         {
             // 11/18/2023 - batch installer with ASI mods was not clearing out queue
             // This should force merges to occur.
@@ -1334,7 +1334,8 @@ namespace ME3TweaksModManager
                     M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
                     // This should be pretty fast since it doesn't have to hash. So we don't run this
                     // async.
-                    queue.Save(true).Wait(); // Commit the result
+                    await queue.Save(true);
+                    M3Log.Information($@"Batch queue saved.");
                 }
             }
         }
