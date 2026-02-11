@@ -1208,6 +1208,7 @@ namespace ME3TweaksModManager
                         else
                         {
                             // Install failed or was aborted
+                            M3Log.Warning($@"Batch install was aborted or one failed, setting HandleBatchPanelResult to true");
                             HandleBatchPanelResult = true;
                         }
                     }
