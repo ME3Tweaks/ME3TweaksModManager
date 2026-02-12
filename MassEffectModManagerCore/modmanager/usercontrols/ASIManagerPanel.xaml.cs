@@ -173,12 +173,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (InstallInProgress) return false;
             if (SelectedASIObject is ASIMod am)
             {
-                return !MUtilities.IsGameRunning(am.Game) && (Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false);
+                return !MRunningGameInfo.IsGameRunning(am.Game) && (Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false);
             }
 
             if (SelectedASIObject is InstalledASIMod iam)
             {
-                return !MUtilities.IsGameRunning(iam.Game) && (Games.FirstOrDefault(x => x.Game == iam.Game)?.GameTargets.Any() ?? false);
+                return !MRunningGameInfo.IsGameRunning(iam.Game) && (Games.FirstOrDefault(x => x.Game == iam.Game)?.GameTargets.Any() ?? false);
             }
 
             return false;

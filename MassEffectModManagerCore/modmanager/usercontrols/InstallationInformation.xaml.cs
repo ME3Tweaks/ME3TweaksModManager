@@ -55,11 +55,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanRestoreMPSFARs()
         {
-            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MUtilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
         }
         private bool CanRestoreSPSFARs()
         {
-            return IsPanelOpen && SelectedTarget.Game != MEGame.Unknown && !MUtilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget.Game != MEGame.Unknown && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
         }
 
         private bool CanRemoveTarget() => SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !SelectedTarget.RegistryActive;
@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown
                    && BackupService.GetBackupStatus(SelectedTarget.Game).BackedUp
                    && !RestoreAllBasegameInProgress
-                   && !MUtilities.IsGameRunning(SelectedTarget.Game)
+                   && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game)
                    // Check there is at least one file we can restore
                    && SelectedTarget.ModifiedBasegameFiles.Count(x =>
                        !SelectedTarget.TextureModded || !x.FilePath.RepresentsPackageFilePath()) > 0;
@@ -293,7 +293,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanRestoreAllSFARs()
         {
-            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MUtilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 bool deleteConfirmationCallback(InstalledDLCMod mod)
                 {
-                    if (MUtilities.IsGameRunning(selectedTarget.Game))
+                    if (MRunningGameInfo.IsGameRunning(selectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning,
@@ -411,7 +411,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 selectedTarget.PopulateTextureInstallHistory();
                 bool restoreBasegamefileConfirmationCallback(string filepath)
                 {
-                    if (MUtilities.IsGameRunning(selectedTarget.Game))
+                    if (MRunningGameInfo.IsGameRunning(selectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, selectedTarget.Game.ToGameName()), M3L.GetString(M3L.string_gameRunning),
@@ -451,7 +451,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 bool restoreSfarConfirmationCallback(string sfarPath)
                 {
-                    if (MUtilities.IsGameRunning(selectedTarget.Game))
+                    if (MRunningGameInfo.IsGameRunning(selectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,
