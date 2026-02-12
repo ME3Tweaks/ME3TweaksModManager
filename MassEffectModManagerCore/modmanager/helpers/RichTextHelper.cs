@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
@@ -21,7 +22,12 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static string GetHeader()
         {
-            return @"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\fs18 "; // Must contain space on the end
+            var fontSizeToUse = 18;
+
+            // Apply Windows text scale factor (from Accessibility settings)
+            fontSizeToUse = (int)Math.Round(fontSizeToUse * DPIScaling.TextScaleFactor);
+
+            return @"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\fs" + fontSizeToUse + @" "; // Must contain space on the end
         }
 
         public static string GetFooter()
