@@ -32,6 +32,12 @@
                             <GroupBox.Style>
                                 <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
                                     <Setter Property="Padding" Value="6, 0"/>
+                                    <Style.Triggers>
+                                        <!-- Hide entire group if its visibility delegate returns false -->
+                                        <DataTrigger Binding="{Binding IsVisible}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
                                 </Style>
                             </GroupBox.Style>
                             <GroupBox.Header>
@@ -49,6 +55,7 @@
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="VerticalContentAlignment" Value="Center"/>
                                         <Setter Property="Margin" Value="-7,0,-8,0"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ContentControl">
@@ -61,11 +68,26 @@
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
-
                                         <Style.Triggers>
                                             <Trigger Property="ItemsControl.AlternationIndex" Value="1">
                                                 <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}"/>
                                             </Trigger>
+                                            <!-- Hide individual settings if they require dev mode but it's not enabled -->
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding RequiresDevMode}" Value="True"/>
+                                                    <Condition Binding="{Binding Path=(modmanager:Settings.DeveloperMode)}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </MultiDataTrigger>
+                                            <!-- Hide individual settings if they require beta mode but it's not enabled -->
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding RequiresBetaMode}" Value="True"/>
+                                                    <Condition Binding="{Binding Path=(modmanager:Settings.BetaMode)}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </ItemsControl.ItemContainerStyle>

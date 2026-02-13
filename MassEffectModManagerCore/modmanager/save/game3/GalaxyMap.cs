@@ -27,14 +27,14 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("GalaxyMapSaveRecord")]
+    [OriginalName(@"GalaxyMapSaveRecord")]
     public class GalaxyMap : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("Planets")]
+        [OriginalName(@"Planets")]
         private List<Planet> _Planets = new List<Planet>();
 
-        [OriginalName("Systems")]
+        [OriginalName(@"Systems")]
         private List<System> _Systems = new List<System>();
         #endregion
 
@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Planets)
                 {
                     this._Planets = value;
-                    this.NotifyPropertyChanged("Planets");
+                    this.NotifyPropertyChanged(@"Planets");
                 }
             }
         }
@@ -66,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Systems)
                 {
                     this._Systems = value;
-                    this.NotifyPropertyChanged("Systems");
+                    this.NotifyPropertyChanged(@"Systems");
                 }
             }
         }
@@ -84,20 +84,20 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         #region Children
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        [OriginalName("PlanetSaveRecord")]
+        [OriginalName(@"PlanetSaveRecord")]
         public class Planet : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("PlanetID")]
+            [OriginalName(@"PlanetID")]
             private int _Id;
 
-            [OriginalName("bVisited")]
+            [OriginalName(@"bVisited")]
             private bool _Visited;
 
-            [OriginalName("Probes")]
+            [OriginalName(@"Probes")]
             private List<Vector2D> _Probes = new List<Vector2D>();
 
-            [OriginalName("bShowAsScanned")]
+            [OriginalName(@"bShowAsScanned")]
             private bool _ShowAsScanned;
             #endregion
 
@@ -118,7 +118,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -130,7 +130,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Id)
                     {
                         this._Id = value;
-                        this.NotifyPropertyChanged("Id");
+                        this.NotifyPropertyChanged(@"Id");
                     }
                 }
             }
@@ -143,7 +143,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Visited)
                     {
                         this._Visited = value;
-                        this.NotifyPropertyChanged("Visited");
+                        this.NotifyPropertyChanged(@"Visited");
                     }
                 }
             }
@@ -156,7 +156,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Probes)
                     {
                         this._Probes = value;
-                        this.NotifyPropertyChanged("Probes");
+                        this.NotifyPropertyChanged(@"Probes");
                     }
                 }
             }
@@ -169,7 +169,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._ShowAsScanned)
                     {
                         this._ShowAsScanned = value;
-                        this.NotifyPropertyChanged("ShowAsScanned");
+                        this.NotifyPropertyChanged(@"ShowAsScanned");
                     }
                 }
             }
@@ -187,17 +187,17 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        [OriginalName("SystemSaveRecord")]
+        [OriginalName(@"SystemSaveRecord")]
         public class System : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("SystemID")]
+            [OriginalName(@"SystemID")]
             private int _Id;
 
-            [OriginalName("fReaperAlertLevel")]
+            [OriginalName(@"fReaperAlertLevel")]
             private float _ReaperAlertLevel;
 
-            [OriginalName("bReapersDetected")]
+            [OriginalName(@"bReapersDetected")]
             private bool _ReapersDetected;
             #endregion
 
@@ -217,7 +217,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -229,7 +229,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Id)
                     {
                         this._Id = value;
-                        this.NotifyPropertyChanged("Id");
+                        this.NotifyPropertyChanged(@"Id");
                     }
                 }
             }
@@ -242,7 +242,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (Equals(value, this._ReaperAlertLevel) == false)
                     {
                         this._ReaperAlertLevel = value;
-                        this.NotifyPropertyChanged("ReaperAlertLevel");
+                        this.NotifyPropertyChanged(@"ReaperAlertLevel");
                     }
                 }
             }
@@ -255,7 +255,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._ReapersDetected)
                     {
                         this._ReapersDetected = value;
-                        this.NotifyPropertyChanged("ReapersDetected");
+                        this.NotifyPropertyChanged(@"ReapersDetected");
                     }
                 }
             }

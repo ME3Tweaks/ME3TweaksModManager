@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using System.ComponentModel;
@@ -153,11 +154,21 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// </summary>
         public Action<Mod> SelectModCallback { get; set; }
 
+
         /// <summary>
         /// If mods are currently loading
         /// </summary>
         public bool IsLoadingMods { get; private set; } =
             true; // This makes the spinner activate while program is starting up.
+
+        /// <summary>
+        /// Sets the loading state for the mod library, which controls UI availability
+        /// </summary>
+        /// <param name="isLoading">True to indicate mods are loading and disable UI, false to enable UI</param>
+        public void SetLoadingState(bool isLoading)
+        {
+            IsLoadingMods = isLoading;
+        }
 
         /// <summary>
         /// If the mod library has completed the first load
@@ -571,17 +582,29 @@ namespace ME3TweaksModManager.modmanager.loaders
 
 
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            bw.RunWorkerCompleted += async (a, b) =>
             {
                 ModsLoaded = true;
                 IsLoadingMods = false;
                 LoadedOnce = true;
+
+                // 12/21/2025 - Run filter to ensure filter text is applied to the UI
+                // 01/08/2026 - Note: This changes the UI so it must be run BEFORE
+                //              selection callback or it will appear to not scroll the 
+                //              list
+                FilterMods();
+
                 if (b.Result is Mod m)
                 {
                     SelectModCallback?.Invoke(m);
                 }
 
                 ModsReloaded?.Invoke(this, EventArgs.Empty);
+
+                if (Settings.GenerationSettingLE)
+                {
+                    MainWindow.Instance.CheckForMSVCPP();
+                }
             };
             bw.RunWorkerAsync();
         }
@@ -615,21 +638,42 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (libraryType == MessageBoxResult.Yes)
             {
                 // Shared
-                CommonOpenFileDialog m = new CommonOpenFileDialog
+                if (WineWorkarounds.WineDetected)
                 {
-                    IsFolderPicker = true,
-                    EnsurePathExists = true,
-                    Title = M3L.GetString(M3L.string_selectModLibraryFolder)
-                };
-                if (m.ShowDialog(centeringWindow) == CommonFileDialogResult.Ok)
-                {
-                    Settings.ModLibraryPath = m.FileName;
-                    if (loadModsAfterSelecting)
+                    var m = new OpenFolderDialog
                     {
-                        Instance.LoadMods();
-                    }
+                        ValidateNames = true,
+                        Title = M3L.GetString(M3L.string_selectModLibraryFolder)
+                    };
+                    if (m.ShowDialog(centeringWindow) == true)
+                    {
+                        Settings.ModLibraryPath = m.FolderName;
+                        if (loadModsAfterSelecting)
+                        {
+                            Instance.LoadMods();
+                        }
 
-                    return true;
+                        return true;
+                    }
+                }
+                else
+                {
+                    CommonOpenFileDialog m = new CommonOpenFileDialog
+                    {
+                        IsFolderPicker = true,
+                        EnsurePathExists = true,
+                        Title = M3L.GetString(M3L.string_selectModLibraryFolder)
+                    };
+                    if (m.ShowDialog(centeringWindow) == CommonFileDialogResult.Ok)
+                    {
+                        Settings.ModLibraryPath = m.FileName;
+                        if (loadModsAfterSelecting)
+                        {
+                            Instance.LoadMods();
+                        }
+
+                        return true;
+                    }
                 }
             }
 
@@ -898,7 +942,6 @@ namespace ME3TweaksModManager.modmanager.loaders
                         M3Log.Information($@"Refreshing installation state for mod {changedStateMod.ModName} on target {target.TargetPath}");
                         mod.DetermineIfInstalled(state);
                     }
-
                 }
             }
         }

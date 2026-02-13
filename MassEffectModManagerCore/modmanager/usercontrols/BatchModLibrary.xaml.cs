@@ -104,7 +104,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return SelectedBatchQueue != null && App.IsDebug;
         }
 
-        private void DuplicateGroup()
+        private async void DuplicateGroup()
         {
             if (SelectedBatchQueue == null) return;
 
@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (!File.Exists(destPath))
                     {
                         SelectedBatchQueue.ModName = result;
-                        SelectedBatchQueue.Save(false, destPath);
+                        await SelectedBatchQueue.Save(false, destPath);
                         parseBatchFiles(destPath);
                     }
                     else
@@ -197,6 +197,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                             MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
                 }
             }
+
+            // Log breakdown of items to be installed
+            var batchModCount = SelectedBatchQueue.ModsToInstall.Count;
+            var asiModCount = SelectedBatchQueue.ASIModsToInstall?.Count ?? 0;
+            var textureModCount = SelectedBatchQueue.TextureModsToInstall.Count;
+
+            M3Log.Information($"Installing batch group '{SelectedBatchQueue.ModName}': {batchModCount} mods, {asiModCount} ASI mods, {textureModCount} texture mods, game restore: {SelectedBatchQueue.RestoreBeforeInstall}");
 
             TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {

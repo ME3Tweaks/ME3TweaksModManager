@@ -1,13 +1,20 @@
-﻿using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.Diagnostics;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
-using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
+using ME3TweaksCore.ME3Tweaks.M3Merge.Bio2DATable;
+using ME3TweaksCore.ME3Tweaks.ModManager;
+using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksCore.TextureOverride;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
-using Newtonsoft.Json;
-using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.mod.merge;
+using Newtonsoft.Json;
+using System.IO.Hashing;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -258,7 +265,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
             var referencedFiles = item.ModToValidateAgainst.GetAllRelativeReferences(false);
 
-            // Check for metacmms
+            #region Check for metacmm files
             var metacmms = referencedFiles.Where(x => Path.GetFileName(x) == @"_metacmm.txt").ToList();
             if (metacmms.Any())
             {
@@ -268,8 +275,9 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     item.AddBlockingError(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
                 }
             }
+            #endregion
 
-            // Check for texture markers
+            #region Check for texture markers and malformed packages
             var packageFiles = referencedFiles.Where(x => x.RepresentsPackageFilePath());
             foreach (var p in packageFiles)
             {
@@ -280,32 +288,141 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     item.AddBlockingError(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                 }
 
-                var package = MEPackageHandler.QuickOpenMEPackage(fullPath);
+                var package = MEPackageHandler.UnsafePartialLoad(fullPath, x => false);
+
+                #region Malformed packages
+                if (package.NameCount == 0)
                 {
-                    if (package.NameCount == 0)
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
+                }
+
+                if (package.ImportCount == 0)
+                {
+                    // Is there always an import? I assume from native classes...?
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
+                }
+
+                if (package.ExportCount == 0)
+                {
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
+                }
+
+                if (package.Game != item.ModToValidateAgainst.Game)
+                {
+                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningPackageForOtherGameFound, package.FilePath.Substring(item.ModToValidateAgainst.ModPath.Length + 1), package.Game, item.ModToValidateAgainst.Game));
+                }
+                #endregion
+
+                #region Bad forced export
+                //12/7/2025 - Forced export checks
+                var badLeaves = PackageDiags.GetBadForcedExportLeaves(package);
+                if (badLeaves.Any())
+                {
+                    item.AddBlockingError(M3L.GetString(M3L.string_deployment_inconsistentForcedExport, p), badLeaves[0].Entry);
+                }
+                #endregion
+            }
+            #endregion
+
+            #region Ensure precompiled BTP has matching metadata file
+            bool usingPrecompiledBTP = false;
+            List<string> m3toFiles = new List<string>();
+            foreach (var rel in referencedFiles)
+            {
+                if (Path.GetFileName(rel).StartsWith(TextureOverrideManifest.PREFIX_TEXTURE_OVERRIDE_MANIFEST)
+                    && Path.GetExtension(rel) == TextureOverrideManifest.EXTENSION_TEXTURE_OVERRIDE_MANIFEST)
+                {
+                    // Detected an .m3to
+                    m3toFiles.Add(rel);
+                }
+
+                if (Path.GetFileName(rel) == M3CTextureOverrideMerge.COMBINED_BTP_FILENAME)
+                {
+                    // Detected a precompiled BTP.
+                    usingPrecompiledBTP = true;
+
+                    // Check for metadata file.
+                    var path = Path.Combine(item.ModToValidateAgainst.ModPath, rel);
+                    var dir = Directory.GetParent(path).FullName;
+                    var btmPath = Path.Combine(dir, M3CTextureOverrideMerge.BTP_METADATA_FILENAME);
+                    if (!File.Exists(btmPath))
                     {
-                        item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_missingRequiredBTM, M3CTextureOverrideMerge.BTP_METADATA_FILENAME));
+                        continue;
                     }
 
-                    if (package.ImportCount == 0)
+                    // Verify metadata file matches
+                    var btpStream = File.OpenRead(path);
+                    BinaryTexturePackage btp = null;
+                    try
                     {
-                        // Is there always an import? I assume from native classes...?
-                        item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
+                        btp = new BinaryTexturePackage(btpStream);
+                    }
+                    catch (Exception e)
+                    {
+                        M3Log.Error($@"Error reading BTP file: {e.Message}");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_unableToParsePrecompiledBTPX, e.Message));
+                        continue;
                     }
 
-                    if (package.ExportCount == 0)
+                    // Check FNV hash
+                    var testhash = btp.Header.TargetHash;
+                    var hashStr = $@"{item.ModToValidateAgainst.Game}{Path.GetFileName(dir)}";
+                    var expectedhash = FNV1.Compute(hashStr);
+
+                    if (testhash != expectedhash)
                     {
-                        item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
+                        M3Log.Error($@"BTP appears to be for a different DLC/game, hash check failed. Expected {expectedhash.ToString(@"X8")}, BTP hash is {testhash.ToString(@"X8")}");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_btpHashCheckFailed));
+                        continue;
                     }
 
-                    if (package.Game != item.ModToValidateAgainst.Game)
+                    // Check metadata file
+                    var hash = Crc32.HashToUInt32(File.ReadAllBytes(btmPath));
+                    if (btp.Header.MetadataCRC != hash)
                     {
-                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningPackageForOtherGameFound, package.FilePath.Substring(item.ModToValidateAgainst.ModPath.Length + 1), package.Game, item.ModToValidateAgainst.Game));
+                        MLog.Error($@"Precompiled BTP has a mismatched metadata file! CRC we got: {hash}, CRC we expected: {btp.Header.MetadataCRC}");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_invalidBTPMetadata));
+                        continue;
                     }
                 }
             }
 
-            //Check moddesc.ini for things that shouldn't be present - unofficial
+            if (usingPrecompiledBTP && m3toFiles.Count > 0)
+            {
+                item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_foundM3toWithPrecompileBTP));
+            }
+
+            // Check m3to files' file references
+            if (m3toFiles.Count > 0)
+            {
+                var packageMap = referencedFiles.Where(x => x.RepresentsPackageFilePath()).ToDictionary<string, string>(x => Path.GetFileName(x), null);
+
+                foreach (var m3toRel in m3toFiles)
+                {
+                    var fPath = Path.Combine(item.ModToValidateAgainst.ModPath, m3toRel);
+                    var tom = JsonConvert.DeserializeObject<TextureOverrideManifest>(File.ReadAllText(fPath));
+                    if (tom.Game != item.ModToValidateAgainst.Game)
+                    {
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_incorrectGameForBTP, m3toRel, tom.Game));
+                        continue;
+                    }
+
+                    var sourcePackages = tom.Textures.Select(x => x.CompilingSourcePackage).Distinct().ToList();
+                    foreach (var sp in sourcePackages)
+                    {
+                        var fileName = Path.GetFileName(sp);
+                        if (!packageMap.ContainsKey(fileName))
+                        {
+                            item.AddBlockingError(M3L.GetString(M3L.string_deployment_invalidSourcePackageReferenceForBTP, m3toRel, sp));
+                            continue;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region moddesc.ini checks
             if (item.ModToValidateAgainst.IsUnofficial)
             {
                 item.AddBlockingError(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
@@ -318,14 +435,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
 
             // Check mod name length
-            if (item.ModToValidateAgainst.ModName.Length > 40)
+            if (item.ModToValidateAgainst.ModName.Length > 35)
             {
                 item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
             }
-
+            #endregion
 
             #region Check 2DA is not in autoload and M3DA (LE1)
-
             if (item.ModToValidateAgainst.Game == MEGame.LE1)
             {
                 // Get autoloads
@@ -343,7 +459,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
             #endregion
 
-            #region Check for full-file mergemod targets
+            #region Check for full-file replacement of mergemod targets
             // Check if our mod contains any basegame only files that are hot merge mod targets.
             var basegameJob = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME);
             if (basegameJob != null)
@@ -413,7 +529,6 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check for misc development files such as decompiled folders and other .bin files.
-
             var installableFiles = item.ModToValidateAgainst.GetAllInstallableFiles();
 
             var developmentOnlyFiles = new[] { @".xml", @".dds", @".png" }; // Should maybe check for duplicate coalesceds...
@@ -427,8 +542,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check if it is enrolled in Nexus Updater Service
-
-            if (item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
+            if (item.ModToValidateAgainst.NexusUpdateCheck && item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
             {
                 item.AddInfoWarning(M3L.GetString(M3L.string_deployment_nexusUpdaterServiceInfo, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.Game));
             }
@@ -436,7 +550,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             #region Check for m3za so user doesn't forget
             // Check for compressed m3za
-            if (item.ModToValidateAgainst.Game.IsGame1() && item.ModToValidateAgainst.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null && item.ModToValidateAgainst.ModDescTargetVersion >= 8.0)
+            if (item.ModToValidateAgainst.Game.IsGame1() && item.ModToValidateAgainst.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null && item.ModToValidateAgainst.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
             {
                 var m3zaFile = Path.Combine(item.ModToValidateAgainst.ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
                 if (File.Exists(m3zaFile))
@@ -447,7 +561,6 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check if in TMPI already
-
             var dlcFolders = item.ModToValidateAgainst.GetAllPossibleCustomDLCFolders();
             foreach (var dlc in dlcFolders)
             {
@@ -460,14 +573,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             #endregion
 
             #region Check merge mod version with moddesc version
-
             foreach (var mergeMod in item.ModToValidateAgainst.GetAllMergeMods())
             {
                 using var ms = File.OpenRead(Path.Combine(item.ModToValidateAgainst.ModPath, mergeMod));
                 var mm = MergeModLoader.LoadMergeMod(ms, mergeMod, false);
                 if (mm != null)
                 {
-                    if (mm.MergeModVersion > 1) // 1 is supposed on all
+                    if (mm.MergeModVersion > 1) // 1 is supported on all
                     {
                         if (item.ModToValidateAgainst.ModDescTargetVersion < MergeModLoader.GetMinimumCmmVerRequirement(mm.MergeModVersion))
                         {
@@ -478,6 +590,76 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 else
                 {
                     item.AddBlockingError(M3L.GetString(M3L.string_interp_mergeModFailedToLoadUnknownFeatureLevel, mergeMod, item.ModToValidateAgainst.ModDescTargetVersion));
+                }
+            }
+            #endregion
+
+            #region Check if LE1 ships any Bio2DA Merge targets as DLC 
+            if (item.ModToValidateAgainst.Game == MEGame.LE1)
+            {
+                foreach (var installableFile in installableFiles)
+                {
+                    var fif = Path.GetFileName(installableFile);
+                    foreach (var mergeName in Bio2DAMerge.Mergable2DAFiles)
+                    {
+                        if (fif.CaseInsensitiveEquals(mergeName) && installableFile.DetermineDLCNameFromPath() != null)
+                        {
+                            item.AddBlockingError(M3L.GetString(M3L.string_deployment_cannotShipDLCOverridesOfMerge2DATargets, fif));
+                            break;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region Banner Image is valid
+            // Check banner image aspect ratio
+            if (!string.IsNullOrWhiteSpace(item.ModToValidateAgainst.BannerImageName))
+            {
+                try
+                {
+                    var bitmap = item.ModToValidateAgainst.LoadModImageAsset(item.ModToValidateAgainst.BannerImageName);
+                    if (bitmap != null)
+                    {
+                        var aspectRatio = (double)bitmap.Width / bitmap.Height;
+                        var aspectRatioDiff = Mod.RequiredBannerAspectRatio - aspectRatio;
+
+                        if (Math.Abs(aspectRatioDiff) > Mod.RequiredAspectRatioTolerance)
+                        {
+                            item.AddBlockingError(M3L.GetString(M3L.string_deployment_bannerImageInvalidAspectRatio,
+                                item.ModToValidateAgainst.BannerImageName,
+                                bitmap.Width,
+                                bitmap.Height));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Warning($@"Error checking banner image aspect ratio: {ex.Message}");
+                }
+            }
+            #endregion
+
+            #region Check if ASIs listed in the mod are available in the ASI manifest
+            if (item.ModToValidateAgainst.ASIModsToInstall.Any())
+            {
+                var asiModsForGame = ASIManager.GetASIModsByGame(item.ModToValidateAgainst.Game);
+                foreach (var asiMod in item.ModToValidateAgainst.ASIModsToInstall)
+                {
+                    var group = asiModsForGame?.FirstOrDefault(x => x.UpdateGroupId == asiMod.ASIGroupID);
+                    if (group == null)
+                    {
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_asiNotFoundInManifest, asiMod.ASIGroupID, item.ModToValidateAgainst.Game));
+                    }
+                    else if (asiMod.Version != null)
+                    {
+                        // Check if the specific version exists
+                        var version = group.Versions.FirstOrDefault(x => x.Version == asiMod.Version);
+                        if (version == null)
+                        {
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_asiVersionNotFoundInManifest, asiMod.ASIGroupID, asiMod.Version, item.ModToValidateAgainst.Game));
+                        }
+                    }
                 }
             }
             #endregion
@@ -504,6 +686,5 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 }
             }
         }
-
     }
 }

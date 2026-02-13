@@ -79,7 +79,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         }
 
         /// <summary>
-        /// Downloads a static asset that is mirrored onto the ME3Tweaks Assets repo. This is not the same as the github version of staticfiles.
+        /// Downloads a static asset that is mirrored onto the static files branch.
         /// </summary>
         /// <param name="assetName">The asset filename. Do not include any path information.</param>
         /// <returns></returns>

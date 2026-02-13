@@ -27,17 +27,17 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("DependentDLCRecord")]
+    [OriginalName(@"DependentDLCRecord")]
     public class DependentDLC : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("ModuleID")]
+        [OriginalName(@"ModuleID")]
         private int _ModuleId;
 
-        [OriginalName("Name")]
+        [OriginalName(@"Name")]
         private string _Name;
 
-        [OriginalName("CanonicalName")]
+        [OriginalName(@"CanonicalName")]
         private string _CanonicalName;
         #endregion
 
@@ -50,7 +50,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public override string ToString()
         {
-            return String.Format("{1} ({0})",
+            return string.Format(@"{1} ({0})",
                                  this._ModuleId,
                                  this._Name);
         }
@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ModuleId)
                 {
                     this._ModuleId = value;
-                    this.NotifyPropertyChanged("ModuleId");
+                    this.NotifyPropertyChanged(@"ModuleId");
                 }
             }
         }
@@ -78,7 +78,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Name)
                 {
                     this._Name = value;
-                    this.NotifyPropertyChanged("Name");
+                    this.NotifyPropertyChanged(@"Name");
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CanonicalName)
                 {
                     this._CanonicalName = value;
-                    this.NotifyPropertyChanged("CanonicalName");
+                    this.NotifyPropertyChanged(@"CanonicalName");
                 }
             }
         }

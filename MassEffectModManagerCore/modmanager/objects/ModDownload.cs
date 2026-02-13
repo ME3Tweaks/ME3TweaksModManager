@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksCore.Objects;
+using ME3TweaksCoreWPF.UI;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -79,6 +81,9 @@ namespace ME3TweaksModManager.modmanager.objects
         /// </summary>
         private void OnDownloadStateChanged()
         {
+            // Import is only set to true if download is done and we aren't set to auto import
+            CanImport = DownloadState == EModDownloadState.DOWNLOADCOMPLETE && !AutoImport;
+
             switch (DownloadState)
             {
                 // Download has stopped.
@@ -107,6 +112,12 @@ namespace ME3TweaksModManager.modmanager.objects
             // Fire state changed after we update the active variable
             DownloadStateChanged?.Invoke(this, null);
         }
+
+        /// <summary>
+        /// If download is in state where user could press 'Import' button.
+        /// </summary>
+        public bool CanImport { get; set; }
+
         public event EventHandler<EventArgs> DownloadStateChanged;
 
 
@@ -188,12 +199,18 @@ namespace ME3TweaksModManager.modmanager.objects
         #endregion
 
         /// <summary>
+        /// Command to remove this download from failed downloads
+        /// </summary>
+        public GenericCommand RemoveDownloadCommand {get;set;}
+
+        /// <summary>
         /// Constructor - sets state to Initializing
         /// </summary>
         protected ModDownload()
         {
             DownloadState = EModDownloadState.INITIALIZING;
             CancellationController = new CancellationTokenSource();
+            RemoveDownloadCommand = new GenericCommand(()=>DownloadManager.FailedDownloads.Remove(this), () => true);
         }
 
         private protected void OnDownloadProgress(long done, long total)
@@ -341,7 +358,7 @@ namespace ME3TweaksModManager.modmanager.objects
                     ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(ProtocolLink.Domain, ProtocolLink.ModId, ProtocolLink.FileId).Result;
                     if (ModFile != null)
                     {
-                        if (ModFile.SizeInBytes != null && ModFile.SizeInBytes.Value > DOWNLOAD_TO_MEMORY_SIZE_CAP && M3Utilities.GetDiskFreeSpaceEx(M3Filesystem.GetModDownloadCacheDirectory(), out var free, out var total, out var totalFree))
+                        if (ModFile.SizeInBytes != null && ModFile.SizeInBytes.Value > DOWNLOAD_TO_MEMORY_SIZE_CAP && MUtilities.GetDiskFreeSpaceEx(M3Filesystem.GetModDownloadCacheDirectory(), out var free, out var total, out var totalFree))
                         {
                             // Check free disk space.
                             var spaceRequiredWithBuffer = ModFile.SizeInBytes * 1.2;// 20% buffer.
@@ -418,6 +435,10 @@ namespace ME3TweaksModManager.modmanager.objects
                 {
                     M3Log.Exception(e, $@"Error downloading {ModFile?.FileName}:");
                     DownloadState = EModDownloadState.FAILED;
+                    if (Status == null)
+                    {
+                        Status = e.Message;
+                    }
                     ProgressIndeterminate = false;
                     InternalOnModDownloadError(M3L.GetString(M3L.string_interp_errorDownloadingModX, e.Message));
                 }
@@ -505,6 +526,25 @@ namespace ME3TweaksModManager.modmanager.objects
                                 { @"File", ModFile?.Name },
                                 { @"Result", $@"Failed, {downloadResult.errorMessage}" },
                             });
+                            if (downloadResult.result != null)
+                            {
+                                // Ensure download stream has been closed
+                                downloadResult.result.Close();
+                                if (downloadResult.result is FileStream fs && File.Exists(fs.Name))
+                                {
+                                    try
+                                    {
+                                        File.Delete(fs.Name);
+                                    }
+                                    catch
+                                    {
+                                        // Don't really care here...
+                                    }
+                                }
+                            }
+                            Status = downloadResult.errorMessage;
+                            DownloadState = EModDownloadState.FAILED;
+                            return;
                         }
                     }
                     else
@@ -517,7 +557,13 @@ namespace ME3TweaksModManager.modmanager.objects
                         {
                             // Todo: If verification fails, should we let user try to continue anyways?
 
-                            var hash = MUtilities.CalculateHash(DownloadedStream);
+                            ProgressMaximum = 100;
+                            void onProgress(ProgressInfo pi)
+                            {
+                                ProgressValue = (long)pi.Value;
+                                ProgressIndeterminate = false;
+                            }
+                            var hash = MUtilities.CalculateHash(DownloadedStream, progressDelegate: onProgress);
                             var matchingHashedFiles = NexusModsUtilities.MD5Search(ProtocolLink.Domain, hash);
                             if (matchingHashedFiles.All(x => x.Mod.ModID != ProtocolLink.ModId))
                             {
@@ -559,7 +605,7 @@ namespace ME3TweaksModManager.modmanager.objects
 
                 if (CancellationController.Token.IsCancellationRequested)
                 {
-                    Status = "Canceled";
+                    Status = M3L.GetString(M3L.string_canceled);
                     DownloadState = EModDownloadState.DOWNLOADCANCELED;
                 }
                 else

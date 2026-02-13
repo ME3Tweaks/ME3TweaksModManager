@@ -1,18 +1,13 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using FontAwesome5;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
 
 namespace ME3TweaksModManager.modmanager.usercontrols

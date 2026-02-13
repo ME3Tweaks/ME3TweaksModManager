@@ -1,20 +1,21 @@
 ﻿using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.ME3Tweaks.ModManager;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.batch;
+using ME3TweaksModManager.modmanager.objects.exceptions;
+using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using ME3TweaksCore.Objects;
-using ME3TweaksModManager.modmanager.installer;
-using ME3TweaksModManager.modmanager.objects.exceptions;
-using ME3TweaksModManager.modmanager.objects.installer;
-using ME3TweaksModManager.modmanager.objects.batch;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -117,6 +118,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (InstallationTargets.Count == 1)
                 {
                     // There are no other options
+                    InstallationCancelled = true;
                     OnClosing(DataEventArgs.Empty);
                 }
 
@@ -131,6 +133,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var canWrite = M3Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
             if (!canWrite)
             {
+                M3Log.Warning($@"Directory is not writable: {SelectedGameTarget.TargetPath}");
                 M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogNoWritePermissions), M3L.GetString(M3L.string_cannotWriteToGameDirectory), MessageBoxButton.OK, MessageBoxImage.Warning);
                 if (initialSetup)
                 {
@@ -174,6 +177,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         string message = M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedHeader, ModBeingInstalled.ModName);
                         message += string.Join('\n', incompatibleDLC);
                         message += M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedFooter, ModBeingInstalled.ModName);
+                        M3Log.Warning($@"Blocking install to this target, incomptaible DLC detected: {string.Join(',', incompatibleDLC)}");
                         M3L.ShowDialog(window, message, M3L.GetString(M3L.string_incompatibleDLCDetected), MessageBoxButton.OK, MessageBoxImage.Error);
 
                         if (initialSetup)
@@ -220,6 +224,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         var result = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_outdatedDLCDetected), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         if (result == MessageBoxResult.No)
                         {
+                            M3Log.Warning($@"Install cancelled - user declined to remove outdated DLC {string.Join(',', outdatedDLC)}");
                             InstallationCancelled = true;
                             OnClosing(DataEventArgs.Empty);
                             return;
@@ -447,6 +452,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (sender is AlternateOption ao && data is DataEventArgs args && args.Data is bool newState)
             {
+                Debug.WriteLine(@"===================");
                 var altsToUpdate = findOptionsDependentOn(ao);
 
                 if (altsToUpdate.Any())
@@ -552,12 +558,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var allOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
 
 #if DEBUG
-            Debug.WriteLine($@"Matching on optionkey {alternateOption.OptionKey}");
+            Debug.WriteLine($@"Finding options dependent on optionkey: {alternateOption.OptionKey}");
             foreach (var op in allOptions)
             {
                 foreach (var k in op.DependsOnKeys)
                 {
-                    Debug.WriteLine($@"{op.FriendlyName} | {k.Key} matches {alternateOption.OptionKey}: {k.Key == alternateOption.OptionKey}");
+                    if (k.Key == alternateOption.OptionKey)
+                    {
+                        Debug.WriteLine($@"{op.FriendlyName} | {k} depends on {alternateOption.OptionKey}: {k.Key == alternateOption.OptionKey}");
+                    }
                 }
             }
 #endif
@@ -579,7 +588,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // 06/11/2022 - Change to only 8.0 or higher to prevent breaking old mods that abused the group not having a default
                     // option picked
                     // NEEDS A BIT MORE VALIDATION ON PASSING OPTIONS THROUGH
-                    if (group.SelectedOption.UINotApplicable && ModBeingInstalled.ModDescTargetVersion >= 8.0) return false; // Option must be selectable by user in order for it to be chosen by multi selector
+                    if (group.SelectedOption.UINotApplicable && ModBeingInstalled.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0) return false; // Option must be selectable by user in order for it to be chosen by multi selector
                 }
                 else
                 {
@@ -678,10 +687,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SelectedGameTarget != null)
             {
                 SetupOptions(true);
-                if (BatchMod != null && BatchMod.UseSavedOptions && BatchMod.HasChosenOptions && !BatchMod.ChosenOptionsDesync)
+                if (!InstallationCancelled)
                 {
-                    // Install our option choices
-                    InstallBatchChosenOptions();
+                    if (BatchMod != null && BatchMod.UseSavedOptions && BatchMod.HasChosenOptions && !BatchMod.ChosenOptionsDesync)
+                    {
+                        // Install our option choices
+                        InstallBatchChosenOptions();
+                    }
                 }
             }
         }
@@ -781,6 +793,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         }
         private void InstallCancel_Click(object sender, RoutedEventArgs e)
         {
+            M3Log.Information(@"User clicked cancel in the options prompt");
             OnClosing(DataEventArgs.Empty);
         }
 

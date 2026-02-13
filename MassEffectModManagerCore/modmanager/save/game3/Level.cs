@@ -26,17 +26,17 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("LevelSaveRecord")]
+    [OriginalName(@"LevelSaveRecord")]
     public class Level : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("LevelName")]
+        [OriginalName(@"LevelName")]
         private string _Name;
 
-        [OriginalName("bShouldBeLoaded")]
+        [OriginalName(@"bShouldBeLoaded")]
         private bool _ShouldBeLoaded;
 
-        [OriginalName("bShouldBeVisible")]
+        [OriginalName(@"bShouldBeVisible")]
         private bool _ShouldBeVisible;
         #endregion
 
@@ -56,7 +56,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Name)
                 {
                     this._Name = value;
-                    this.NotifyPropertyChanged("Name");
+                    this.NotifyPropertyChanged(@"Name");
                 }
             }
         }
@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ShouldBeLoaded)
                 {
                     this._ShouldBeLoaded = value;
-                    this.NotifyPropertyChanged("ShouldBeLoaded");
+                    this.NotifyPropertyChanged(@"ShouldBeLoaded");
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ShouldBeVisible)
                 {
                     this._ShouldBeVisible = value;
-                    this.NotifyPropertyChanged("ShouldBeVisible");
+                    this.NotifyPropertyChanged(@"ShouldBeVisible");
                 }
             }
         }

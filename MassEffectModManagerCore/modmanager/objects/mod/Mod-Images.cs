@@ -1,16 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
     {
-        private const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
-        private const double RequiredAspectRatioTolerance = 0.08;
+        internal const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
+        internal const double RequiredAspectRatioTolerance = 0.08;
 
         /// <summary>
         /// The images folder for a mod. Do not change
@@ -125,11 +122,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 var bitmap = LoadModImageAsset(BannerImageName);
                 if (bitmap != null)
                 {
-                    var aspectRatio = bitmap.Width / bitmap.Height;
+                    var aspectRatio = (double)bitmap.Width / bitmap.Height;
                     var aspectRatioDiff = RequiredBannerAspectRatio - aspectRatio;
                     if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
                     {
-                        // Must have specific aspect ratio.limes
+                        // Must have specific aspect ratio
                         M3Log.Error($@"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
                         RemoveAssetFromCache(BannerImageName);
                     }

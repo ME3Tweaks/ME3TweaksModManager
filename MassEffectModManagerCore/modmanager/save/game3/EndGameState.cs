@@ -27,18 +27,18 @@
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {
-    [OriginalName("EEndGameState")]
+    [OriginalName(@"EEndGameState")]
     public enum EndGameState
     {
-        [OriginalName("EGS_NotFinished")]
+        [OriginalName(@"EGS_NotFinished")]
         //[DisplayName("Not Finished")]
         NotFinished = 0,
 
-        [OriginalName("EGS_OutInABlazeOfGlory")]
+        [OriginalName(@"EGS_OutInABlazeOfGlory")]
         //[DisplayName("Out In A Blaze Of Glory")]
         OutInABlazeOfGlory = 1,
 
-        [OriginalName("EGS_LivedToFightAgain")]
+        [OriginalName(@"EGS_LivedToFightAgain")]
         //[DisplayName("Lived To Fight Again")]
         LivedToFightAgain = 2,
     }

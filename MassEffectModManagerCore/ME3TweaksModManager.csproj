@@ -10,8 +10,8 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>10.0.0.136</Version>
-		<Copyright>ME3Tweaks 2012-2025</Copyright>
+		<Version>10.0.0.140</Version>
+		<Copyright>ME3Tweaks 2012-2026</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>ME3TweaksModManager</PackageId>
 		<Product>ME3Tweaks Mod Manager</Product>
@@ -193,7 +193,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="CliWrap" Version="3.9.0" />
+		<PackageReference Include="CliWrap" Version="3.10.0" />
 		<PackageReference Include="DarkNet" Version="2.3.0" />
 		<PackageReference Include="Flurl" Version="4.0.0" />
 		<PackageReference Include="Flurl.Http" Version="4.0.2" />
@@ -220,7 +220,7 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
 		<PackageReference Include="SSH.NET" Version="2025.1.0" />
-		<PackageReference Include="WatsonWebsocket" Version="4.1.7" />
+		<PackageReference Include="WatsonWebsocket" Version="4.1.8" />
 		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
 	</ItemGroup>
 	<ItemGroup>

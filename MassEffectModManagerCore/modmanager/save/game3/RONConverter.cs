@@ -49,13 +49,13 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
                 switch (parsingSection)
                 {
-                    case "accessory_mesh":
+                    case @"accessory_mesh":
                         {
                             // ?
                             head.AccessoryMeshes.Add(line.Trim().Trim(',', '"'));
                         }
                         break;
-                    case "morph_features":
+                    case @"morph_features":
                         {
                             if (keyValSplit.Length != 2)
                                 continue; // ignore line
@@ -64,7 +64,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                             { Feature = scalar.Key, Offset = scalar.Value });
                         }
                         break;
-                    case "offset_bones":
+                    case @"offset_bones":
                         {
                             while (!line.Contains("}"))
                             {
@@ -84,19 +84,19 @@ namespace ME3TweaksModManager.modmanager.save.game3
                             }
                         }
                         break;
-                    case "lod0_vertices":
+                    case @"lod0_vertices":
                         readVertices(head.Lod0Vertices, lines, ref i);
                         break;
-                    case "lod1_vertices":
+                    case @"lod1_vertices":
                         readVertices(head.Lod1Vertices, lines, ref i);
                         break;
-                    case "lod2_vertices":
+                    case @"lod2_vertices":
                         readVertices(head.Lod2Vertices, lines, ref i);
                         break;
-                    case "lod3_vertices":
+                    case @"lod3_vertices":
                         readVertices(head.Lod3Vertices, lines, ref i);
                         break;
-                    case "scalar_parameters":
+                    case @"scalar_parameters":
                         {
                             if (keyValSplit.Length != 2)
                                 continue; // ignore line
@@ -105,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                             { Name = scalar.Key, Value = scalar.Value });
                         }
                         break;
-                    case "vector_parameters":
+                    case @"vector_parameters":
                         {
                             if (keyValSplit.Length != 2)
                                 continue; // ignore line
@@ -114,7 +114,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                             { Name = vector.Key, Value = vector.Value });
                         }
                         break;
-                    case "texture_parameters":
+                    case @"texture_parameters":
                         {
                             if (keyValSplit.Length != 2)
                                 continue; // ignore line

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.options
 {
@@ -21,5 +16,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols.options
             get;
             set;
         }
+
+        /// <summary>
+        /// Makes the setting visible only if dev mode is enabled.
+        /// </summary>
+        public bool RequiresDevMode { get; set; }
+        
+        /// <summary>
+        /// Makes the setting visible only if beta mode is enabled.
+        /// </summary>
+        public bool RequiresBetaMode { get; set; }
     }
 }

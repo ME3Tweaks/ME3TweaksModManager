@@ -145,7 +145,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"OIGDisablerThread");
                 nbw.DoWork += async (a, b) =>
                 {
-                    if (!MUtilities.IsGameRunning(Game))
+                    if (!MRunningGameInfo.IsGameRunning(Game))
                     {
                         var d3d9Path = Path.Combine(M3Directories.GetExecutableDirectory(SelectedTarget), @"d3d9.dll");
                         if (!File.Exists(d3d9Path))

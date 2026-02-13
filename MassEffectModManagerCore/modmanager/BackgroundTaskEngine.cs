@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using ME3TweaksModManager.modmanager.diagnostics;
 using PropertyChanged;
 
@@ -29,10 +30,10 @@ namespace ME3TweaksModManager.modmanager
 
         // PRIVATE VARIABLES
         //No real concurrent list so i guess we'll use a dictionary
-        private ConcurrentDictionary<int, BackgroundTask> backgroundJobs = new();
-        private int nextJobID = 1;
-        private static object lockSubmitJob = new object();
-        private static object lockReleaseJob = new object();
+        private readonly ConcurrentDictionary<int, BackgroundTask> backgroundJobs = new();
+        private int nextJobID = 0;
+        private static readonly object lockSubmitJob = new object();
+        private static readonly object lockReleaseJob = new object();
         private Action<string> updateTextDelegate { get; init; }
         /// <summary>
         /// Invoked when the activity indicator should be shown.
@@ -47,6 +48,11 @@ namespace ME3TweaksModManager.modmanager
         /// The current active task. If there is no active task this will be the last finished task.
         /// </summary>
         public BackgroundTask ActiveTask { get; set; }
+        
+        /// <summary>
+        /// Gets the currently running background jobs. For diagnostic purposes only.
+        /// </summary>
+        /// <returns></returns>
         public ConcurrentDictionary<int, BackgroundTask> getJobs() => backgroundJobs;
 
 
@@ -89,7 +95,8 @@ namespace ME3TweaksModManager.modmanager
                     throw new Exception(@"Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
                 }
 
-                BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
+                int taskId = Interlocked.Increment(ref nextJobID);
+                BackgroundTask bt = new BackgroundTask(taskName, taskId, uiText, finishedUiText);
                 backgroundJobs.TryAdd(bt.TaskID, bt);
                 if (uiText != null && !SuppressMessageUpdates)
                 {
@@ -123,7 +130,8 @@ namespace ME3TweaksModManager.modmanager
                     }
                     else
                     {
-                        ActiveTask = backgroundJobs.First().Value;
+                        // Get the task with the highest ID (most recently added)
+                        ActiveTask = backgroundJobs.OrderByDescending(x => x.Key).First().Value;
                         if (!SuppressMessageUpdates)
                         {
                             updateTextDelegate(ActiveTask.UIText);
@@ -133,6 +141,7 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
+        // This method is weaved by Fody
         private void OnActiveTaskChanged(object oldValue, object newValue)
         {
             if (oldValue is BackgroundTask bto)
@@ -145,8 +154,6 @@ namespace ME3TweaksModManager.modmanager
                 btn.Active = true;
             }
         }
-
-        public event EventHandler NotifyBackgroundJobChanged;
 
         /// <summary>
         /// Prevents the bottom left text from updating
@@ -163,6 +170,38 @@ namespace ME3TweaksModManager.modmanager
         {
             Instance.SuppressMessageUpdates = false;
         }
+
+        /// <summary>
+        /// Suppresses status message updates and returns a disposable that will restore updates when disposed.
+        /// Use with 'using' statement for automatic restoration.
+        /// Usage: using var suppressionObject =  BackgroundTaskEngine.SuppressStatusMessageUpdatesScoped();
+        /// </summary>
+        /// <returns>A disposable that restores message updates when disposed</returns>
+        public static IDisposable SuppressStatusMessageUpdatesScoped()
+        {
+            SuppressStatusMessageUpdates();
+            return new DisposableAction(() => AllowMessageUpdates());
+        }
+
+        private class DisposableAction : IDisposable
+        {
+            private readonly Action action;
+            private bool disposed;
+
+            public DisposableAction(Action action)
+            {
+                this.action = action ?? throw new ArgumentNullException(nameof(action));
+            }
+
+            public void Dispose()
+            {
+                if (!disposed)
+                {
+                    action();
+                    disposed = true;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -171,26 +210,30 @@ namespace ME3TweaksModManager.modmanager
     [AddINotifyPropertyChangedInterface]
     public class BackgroundTask
     {
-        internal string TaskName; //Taskname is mostly useful for debugging.
+        /// <summary>
+        /// Task name is mostly useful for debugging.
+        /// </summary>
+        public string TaskName { get; }
 
         /// <summary>
         /// Text to bind to in the UI
         /// </summary>
-        internal string UIText { get; set; }
+        public string UIText { get; internal set; }
 
         /// <summary>
         /// Text that will be set when the task completes
         /// </summary>
-        internal string FinishedUIText { get; set; }
+        public string FinishedUIText { get; set; }
+        
         /// <summary>
         /// The ID of the task.
         /// </summary>
-        internal int TaskID { get; set; }
+        public int TaskID { get; }
 
         /// <summary>
         /// If the task is currently active.
         /// </summary>
-        internal bool Active { get; set; }
+        public bool Active { get; internal set; }
 
         /// <summary>
         /// Constructs a new BackgroundTask.
@@ -201,7 +244,7 @@ namespace ME3TweaksModManager.modmanager
         /// <param name="finishedUiText"></param>
         public BackgroundTask(string taskName, int taskId, string uiText = null, string finishedUiText = null)
         {
-            this.TaskName = taskName;
+            this.TaskName = taskName ?? throw new ArgumentNullException(nameof(taskName));
             this.UIText = uiText;
             this.FinishedUIText = finishedUiText;
             this.TaskID = taskId;

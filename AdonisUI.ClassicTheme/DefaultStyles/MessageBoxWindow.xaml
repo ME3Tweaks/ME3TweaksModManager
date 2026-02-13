@@ -28,6 +28,8 @@
                 </Style>
             </Setter.Value>
         </Setter>
+        <Setter Property="TitleBarForeground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+        <Setter Property="TitleBarBackground" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}"/>
     </Style>
 
 </ResourceDictionary>

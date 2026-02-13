@@ -9,6 +9,7 @@
                        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                        xmlns:nativeMods="clr-namespace:ME3TweaksCore.NativeMods;assembly=ME3TweaksCore"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+                       xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
                        xmlns:nativeMods1="clr-namespace:ME3TweaksCoreWPF.NativeMods;assembly=ME3TweaksCoreWPF"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        MinWidth="640"
@@ -81,6 +82,7 @@
                         <TextBlock Margin="0,10,0,0" Text="{Binding SelectedASIName}" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" />
                         <TextBlock Text="{Binding SelectedASISubtext}" TextWrapping="Wrap" TextAlignment="Center" />
                         <TextBlock Margin="5,0" Text="{Binding SelectedASIDescription}" TextWrapping="Wrap" />
+                        <TextBlock Margin="5,6,5,5" Text="{Binding SelectedASIGroupIdText}" TextWrapping="Wrap" Visibility="{Binding ShowSelectedASIGroupId, Converter={StaticResource BoolToVisibilityConverter}}" />
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -116,11 +118,12 @@
                             <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right"/>
                             <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" TextWrapping="Wrap" />
                         </DockPanel>
-                        <ListBox Grid.Row="3" BorderThickness="1" 
+                        <ListBox 
+                                 Grid.Row="3" BorderThickness="1" 
                                  ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" 
                                  ItemsSource="{Binding DisplayedASIMods}" 
                                  HorizontalContentAlignment="Stretch" 
-                                 SelectedItem="{Binding SelectedASI}"
+                                 SelectedItem="{Binding SelectedASI, Mode=OneWay}"
                                  SelectionChanged="ASIManagerLists_SelectedChanged">
                         </ListBox>
                     </Grid>

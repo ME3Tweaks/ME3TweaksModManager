@@ -1,31 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
-using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
-using LegendaryExplorerCore.Unreal;
-using LegendaryExplorerCore.Unreal.BinaryConverters;
-using LegendaryExplorerCore.UnrealScript;
-using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
-using ME3TweaksCore.GameFilesystem;
+﻿using System.Windows.Input;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.M3Merge.PlotManager;
-using ME3TweaksCore.Misc;
-using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
-using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksCoreWPF;
-using ME3TweaksCoreWPF.Targets;
-using ME3TweaksModManager.modmanager.diagnostics;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -66,6 +43,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (b.Error != null)
                 {
                     M3Log.Exception(b.Error, @"Error running plot sync:");
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_errorMergingPlotManagerFiles, b.Error.Message), M3L.GetString(M3L.string_errorSyncingPlotManager), System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
                 OnClosing(DataEventArgs.Empty);
             };

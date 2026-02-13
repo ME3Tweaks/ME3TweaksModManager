@@ -39,7 +39,7 @@ using ME3TweaksModManager.modmanager.save.shared;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("SFXSaveGame")]
+    [OriginalName(@"SFXSaveGame")]
     public class SaveFileGame3 : IUnrealSerializable, INotifyPropertyChanged, ISaveFile
     {
 
@@ -77,95 +77,95 @@ namespace ME3TweaksModManager.modmanager.save.game3
         public bool Proxy_IsFemale => _Player.Proxy_IsFemale;
         public string Proxy_DebugName => DebugName;
 
-        [OriginalName("DebugName")]
+        [OriginalName(@"DebugName")]
         private string _DebugName;
 
-        [OriginalName("SecondsPlayed")]
+        [OriginalName(@"SecondsPlayed")]
         private float _SecondsPlayed;
 
 
-        [OriginalName("Disc")]
+        [OriginalName(@"Disc")]
         private int _Disc;
 
-        [OriginalName("BaseLevelName")]
+        [OriginalName(@"BaseLevelName")]
         private string _BaseLevelName;
         public string Proxy_BaseLevelName => BaseLevelName;
 
 
-        [OriginalName("BaseLevelNameDisplayOverrideAsRead")]
+        [OriginalName(@"BaseLevelNameDisplayOverrideAsRead")]
         private string _BaseLevelNameDisplayOverrideAsRead;
 
-        [OriginalName("Difficulty")]
+        [OriginalName(@"Difficulty")]
         private DifficultyOptions _Difficulty;
 
-        [OriginalName("EndGameState")]
+        [OriginalName(@"EndGameState")]
         private EndGameState _EndGameState;
 
-        [OriginalName("TimeStamp")]
+        [OriginalName(@"TimeStamp")]
         private SaveTimeStamp _TimeStamp = new SaveTimeStamp();
         public DateTime Proxy_TimeStamp => _TimeStamp.ToDate();
 
-        [OriginalName("SaveLocation")]
+        [OriginalName(@"SaveLocation")]
         private Vector _Location = new Vector();
 
-        [OriginalName("SaveRotation")]
+        [OriginalName(@"SaveRotation")]
         private Rotator _Rotation = new Rotator();
 
-        [OriginalName("CurrentLoadingTip")]
+        [OriginalName(@"CurrentLoadingTip")]
         private int _CurrentLoadingTip;
 
-        [OriginalName("LevelRecords")]
+        [OriginalName(@"LevelRecords")]
         private List<Level> _Levels = new List<Level>();
 
-        [OriginalName("StreamingRecords")]
+        [OriginalName(@"StreamingRecords")]
         private List<StreamingState> _StreamingRecords = new List<StreamingState>();
 
-        [OriginalName("KismetRecords")]
+        [OriginalName(@"KismetRecords")]
         private List<KismetBool> _KismetRecords = new List<KismetBool>();
 
-        [OriginalName("DoorRecords")]
+        [OriginalName(@"DoorRecords")]
         private List<Door> _Doors = new List<Door>();
 
-        [OriginalName("PlaceableRecords")]
+        [OriginalName(@"PlaceableRecords")]
         private List<Placeable> _Placeables = new List<Placeable>();
 
-        [OriginalName("PawnRecords")]
+        [OriginalName(@"PawnRecords")]
         private List<Guid> _Pawns = new List<Guid>();
 
-        [OriginalName("PlayerRecord")]
+        [OriginalName(@"PlayerRecord")]
         private Player _Player = new Player();
 
-        [OriginalName("HenchmanRecords")]
+        [OriginalName(@"HenchmanRecords")]
         private List<Henchman> _Henchmen = new List<Henchman>();
 
-        [OriginalName("PlotRecord")]
+        [OriginalName(@"PlotRecord")]
         private PlotTable _Plot = new PlotTable();
 
-        [OriginalName("ME1PlotRecord")]
+        [OriginalName(@"ME1PlotRecord")]
         private ME1PlotTable _Me1Plot = new ME1PlotTable();
 
-        [OriginalName("PlayerVariableRecords")]
+        [OriginalName(@"PlayerVariableRecords")]
         private List<PlayerVariable> _PlayerVariables = new List<PlayerVariable>();
 
-        [OriginalName("GalaxyMapRecord")]
+        [OriginalName(@"GalaxyMapRecord")]
         private GalaxyMap _GalaxyMap = new GalaxyMap();
 
-        [OriginalName("DependentDLC")]
+        [OriginalName(@"DependentDLC")]
         private List<DependentDLC> _DependentDLC = new List<DependentDLC>();
 
-        [OriginalName("TreasureRecords")]
+        [OriginalName(@"TreasureRecords")]
         private List<LevelTreasure> _Treasures = new List<LevelTreasure>();
 
-        [OriginalName("UseModuleRecords")]
+        [OriginalName(@"UseModuleRecords")]
         private List<Guid> _UseModules = new List<Guid>();
 
-        [OriginalName("ConversationMode")]
+        [OriginalName(@"ConversationMode")]
         private AutoReplyModeOptions _ConversationMode;
 
-        [OriginalName("ObjectiveMarkerRecords")]
+        [OriginalName(@"ObjectiveMarkerRecords")]
         private List<ObjectiveMarker> _ObjectiveMarkers = new List<ObjectiveMarker>();
 
-        [OriginalName("SavedObjectiveText")]
+        [OriginalName(@"SavedObjectiveText")]
         private int _SavedObjectiveText;
         #endregion
 
@@ -176,7 +176,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
             stream.Serialize(ref this._SecondsPlayed);
             stream.Serialize(ref this._Disc);
             stream.Serialize(ref this._BaseLevelName);
-            stream.Serialize(ref this._BaseLevelNameDisplayOverrideAsRead, s => s.Version < 36, () => "None");
+            stream.Serialize(ref this._BaseLevelNameDisplayOverrideAsRead, s => s.Version < 36, () => @"None");
             stream.SerializeEnum(ref this._Difficulty);
 
             if (stream.Version >= 43 && stream.Version <= 46)
@@ -222,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Endian)
                 {
                     this._Endian = value;
-                    this.NotifyPropertyChanged("Endian");
+                    this.NotifyPropertyChanged(@"Endian");
                 }
             }
         }
@@ -236,7 +236,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Version)
                 {
                     this._Version = value;
-                    this.NotifyPropertyChanged("Version");
+                    this.NotifyPropertyChanged(@"Version");
                 }
             }
         }
@@ -250,18 +250,18 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Checksum)
                 {
                     this._Checksum = value;
-                    this.NotifyPropertyChanged("Checksum");
+                    this.NotifyPropertyChanged(@"Checksum");
                 }
             }
         }
 
         private static class Categories
         {
-            public const string Basic = "Basic";
-            public const string Location = "Location";
-            public const string Squad = "Squad";
-            public const string Plot = "Plot";
-            public const string Uncategorized = "Uncategorized";
+            public const string Basic = @"Basic";
+            public const string Location = @"Location";
+            public const string Squad = @"Squad";
+            public const string Plot = @"Plot";
+            public const string Uncategorized = @"Uncategorized";
         }
 
         public string DebugName
@@ -272,7 +272,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._DebugName)
                 {
                     this._DebugName = value;
-                    this.NotifyPropertyChanged("DebugName");
+                    this.NotifyPropertyChanged(@"DebugName");
                 }
             }
         }
@@ -285,7 +285,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._SecondsPlayed) == false)
                 {
                     this._SecondsPlayed = value;
-                    this.NotifyPropertyChanged("SecondsPlayed");
+                    this.NotifyPropertyChanged(@"SecondsPlayed");
                 }
             }
         }
@@ -298,7 +298,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Disc)
                 {
                     this._Disc = value;
-                    this.NotifyPropertyChanged("Disc");
+                    this.NotifyPropertyChanged(@"Disc");
                 }
             }
         }
@@ -311,7 +311,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._BaseLevelName)
                 {
                     this._BaseLevelName = value;
-                    this.NotifyPropertyChanged("BaseLevelName");
+                    this.NotifyPropertyChanged(@"BaseLevelName");
                 }
             }
         }
@@ -324,7 +324,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._BaseLevelNameDisplayOverrideAsRead)
                 {
                     this._BaseLevelNameDisplayOverrideAsRead = value;
-                    this.NotifyPropertyChanged("BaseLevelNameDisplayOverrideAsRead");
+                    this.NotifyPropertyChanged(@"BaseLevelNameDisplayOverrideAsRead");
                 }
             }
         }
@@ -337,13 +337,13 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Difficulty)
                 {
                     this._Difficulty = value;
-                    this.NotifyPropertyChanged("Difficulty");
+                    this.NotifyPropertyChanged(@"Difficulty");
                 }
             }
         }
 
         [Description(
-            "Note: this value was re-used from Mass Effect 2, and the value of 'LivedToFightAgain' is what indicates that the save can be imported. It has nothing to do with your ending of Mass Effect 3."
+            @"Note: this value was re-used from Mass Effect 2, and the value of 'LivedToFightAgain' is what indicates that the save can be imported. It has nothing to do with your ending of Mass Effect 3."
             )]
         public EndGameState EndGameState
         {
@@ -353,7 +353,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EndGameState)
                 {
                     this._EndGameState = value;
-                    this.NotifyPropertyChanged("EndGameState");
+                    this.NotifyPropertyChanged(@"EndGameState");
                 }
             }
         }
@@ -366,7 +366,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._TimeStamp)
                 {
                     this._TimeStamp = value;
-                    this.NotifyPropertyChanged("TimeStamp");
+                    this.NotifyPropertyChanged(@"TimeStamp");
                 }
             }
         }
@@ -379,7 +379,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Location)
                 {
                     this._Location = value;
-                    this.NotifyPropertyChanged("Location");
+                    this.NotifyPropertyChanged(@"Location");
                 }
             }
         }
@@ -392,7 +392,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Rotation)
                 {
                     this._Rotation = value;
-                    this.NotifyPropertyChanged("Rotation");
+                    this.NotifyPropertyChanged(@"Rotation");
                 }
             }
         }
@@ -405,7 +405,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CurrentLoadingTip)
                 {
                     this._CurrentLoadingTip = value;
-                    this.NotifyPropertyChanged("CurrentLoadingTip");
+                    this.NotifyPropertyChanged(@"CurrentLoadingTip");
                 }
             }
         }
@@ -418,7 +418,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Levels)
                 {
                     this._Levels = value;
-                    this.NotifyPropertyChanged("Levels");
+                    this.NotifyPropertyChanged(@"Levels");
                 }
             }
         }
@@ -431,7 +431,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._StreamingRecords)
                 {
                     this._StreamingRecords = value;
-                    this.NotifyPropertyChanged("StreamingRecords");
+                    this.NotifyPropertyChanged(@"StreamingRecords");
                 }
             }
         }
@@ -444,7 +444,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._KismetRecords)
                 {
                     this._KismetRecords = value;
-                    this.NotifyPropertyChanged("KismetRecords");
+                    this.NotifyPropertyChanged(@"KismetRecords");
                 }
             }
         }
@@ -457,7 +457,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Doors)
                 {
                     this._Doors = value;
-                    this.NotifyPropertyChanged("Doors");
+                    this.NotifyPropertyChanged(@"Doors");
                 }
             }
         }
@@ -470,7 +470,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Placeables)
                 {
                     this._Placeables = value;
-                    this.NotifyPropertyChanged("Placeables");
+                    this.NotifyPropertyChanged(@"Placeables");
                 }
             }
         }
@@ -483,7 +483,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Pawns)
                 {
                     this._Pawns = value;
-                    this.NotifyPropertyChanged("Pawns");
+                    this.NotifyPropertyChanged(@"Pawns");
                 }
             }
         }
@@ -496,7 +496,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Player)
                 {
                     this._Player = value;
-                    this.NotifyPropertyChanged("Player");
+                    this.NotifyPropertyChanged(@"Player");
                 }
             }
         }
@@ -509,7 +509,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Henchmen)
                 {
                     this._Henchmen = value;
-                    this.NotifyPropertyChanged("Henchmen");
+                    this.NotifyPropertyChanged(@"Henchmen");
                 }
             }
         }
@@ -522,7 +522,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Plot)
                 {
                     this._Plot = value;
-                    this.NotifyPropertyChanged("Plot");
+                    this.NotifyPropertyChanged(@"Plot");
                 }
             }
         }
@@ -538,7 +538,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Me1Plot)
                 {
                     this._Me1Plot = value;
-                    this.NotifyPropertyChanged("ME1Plot");
+                    this.NotifyPropertyChanged(@"ME1Plot");
                 }
             }
         }
@@ -551,7 +551,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._PlayerVariables)
                 {
                     this._PlayerVariables = value;
-                    this.NotifyPropertyChanged("PlayerVariables");
+                    this.NotifyPropertyChanged(@"PlayerVariables");
                 }
             }
         }
@@ -564,7 +564,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._GalaxyMap)
                 {
                     this._GalaxyMap = value;
-                    this.NotifyPropertyChanged("GalaxyMap");
+                    this.NotifyPropertyChanged(@"GalaxyMap");
                 }
             }
         }
@@ -577,7 +577,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._DependentDLC)
                 {
                     this._DependentDLC = value;
-                    this.NotifyPropertyChanged("DependentDLC");
+                    this.NotifyPropertyChanged(@"DependentDLC");
                 }
             }
         }
@@ -590,7 +590,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Treasures)
                 {
                     this._Treasures = value;
-                    this.NotifyPropertyChanged("Treasures");
+                    this.NotifyPropertyChanged(@"Treasures");
                 }
             }
         }
@@ -603,7 +603,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._UseModules)
                 {
                     this._UseModules = value;
-                    this.NotifyPropertyChanged("UseModules");
+                    this.NotifyPropertyChanged(@"UseModules");
                 }
             }
         }
@@ -617,7 +617,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ConversationMode)
                 {
                     this._ConversationMode = value;
-                    this.NotifyPropertyChanged("ConversationMode");
+                    this.NotifyPropertyChanged(@"ConversationMode");
                 }
             }
         }
@@ -630,7 +630,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ObjectiveMarkers)
                 {
                     this._ObjectiveMarkers = value;
-                    this.NotifyPropertyChanged("ObjectiveMarkers");
+                    this.NotifyPropertyChanged(@"ObjectiveMarkers");
                 }
             }
         }
@@ -643,7 +643,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._SavedObjectiveText)
                 {
                     this._SavedObjectiveText = value;
-                    this.NotifyPropertyChanged("SavedObjectiveText");
+                    this.NotifyPropertyChanged(@"SavedObjectiveText");
                 }
             }
         }
@@ -668,12 +668,12 @@ namespace ME3TweaksModManager.modmanager.save.game3
             throw new Exception(@"This is not propertly implemented right now");
             if (save == null)
             {
-                throw new ArgumentNullException("save");
+                throw new ArgumentNullException(@"save");
             }
 
             if (output == null)
             {
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(@"output");
             }
 
             using (var memory = new MemoryStream())

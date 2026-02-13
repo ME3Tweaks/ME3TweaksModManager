@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
@@ -134,6 +135,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     pc.ApplyChanges(package, mac, mmp, mergeWeightDelegate);
                 }
 
+                mmp.FileTransitionMap[f].AppliedMergeMods.Add(OwningMM.MergeModFilename);
 
                 // If this is the final sve
                 var isFinalSaveInHMS = mmp.MergeModToSavePackageWith != null && mmp.MergeModToSavePackageWith.TryGetValue(Path.GetFileName(f), out var mm) && mm == OwningMM;

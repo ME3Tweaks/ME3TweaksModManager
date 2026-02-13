@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using System.Xml.Serialization;
 using AdonisUI.Helpers;
 using Brush = System.Windows.Media.Brush;
 using Point = System.Windows.Point;
@@ -70,6 +68,15 @@ namespace AdonisUI.Controls
         }
 
         /// <summary>
+        /// Gets the title bar actual height.
+        /// </summary>
+        public double TitleBarActualHeight
+        {
+            get => (double)GetValue(TitleBarActualHeightProperty);
+            private set => SetValue(TitleBarActualHeightPropertyKey, value);
+        }
+
+        /// <summary>
         /// Gets or sets the content of the window's title bar
         /// between the title and the window buttons.
         /// </summary>
@@ -95,6 +102,15 @@ namespace AdonisUI.Controls
         {
             get => (Brush)GetValue(TitleBarBackgroundProperty);
             set => SetValue(TitleBarBackgroundProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the visibility of the title component of the window.
+        /// </summary>
+        public Visibility TitleVisibility
+        {
+            get => (Visibility)GetValue(TitleVisibilityProperty);
+            set => SetValue(TitleVisibilityProperty, value);
         }
 
         /// <summary>
@@ -126,15 +142,30 @@ namespace AdonisUI.Controls
             set => SetValue(ShrinkTitleBarWhenMaximizedProperty, value);
         }
 
+        /// <summary>
+        /// Controls whether the title bar should be drawn over the window content instead of being stacked on top of it.
+        /// </summary>
+        public bool PlaceTitleBarOverContent
+        {
+            get => (bool)GetValue(PlaceTitleBarOverContentProperty);
+            set => SetValue(PlaceTitleBarOverContentProperty, value);
+        }
+
         public static readonly DependencyProperty IconVisibilityProperty = DependencyProperty.Register("IconVisibility", typeof(Visibility), typeof(AdonisWindow), new PropertyMetadata(Visibility.Visible));
 
         protected internal static readonly DependencyProperty IconSourceProperty = DependencyProperty.Register("IconSource", typeof(ImageSource), typeof(AdonisWindow), new PropertyMetadata(null));
+
+        protected internal static readonly DependencyPropertyKey TitleBarActualHeightPropertyKey = DependencyProperty.RegisterReadOnly("TitleBarActualHeight", typeof(double), typeof(AdonisWindow), new PropertyMetadata(0.0d));
+
+        protected internal static readonly DependencyProperty TitleBarActualHeightProperty = TitleBarActualHeightPropertyKey.DependencyProperty;
 
         public static readonly DependencyProperty TitleBarContentProperty = DependencyProperty.Register("TitleBarContent", typeof(object), typeof(AdonisWindow), new PropertyMetadata(null));
 
         public static readonly DependencyProperty TitleBarForegroundProperty = DependencyProperty.Register("TitleBarForeground", typeof(Brush), typeof(AdonisWindow), new PropertyMetadata(null));
 
         public static readonly DependencyProperty TitleBarBackgroundProperty = DependencyProperty.Register("TitleBarBackground", typeof(Brush), typeof(AdonisWindow), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty TitleVisibilityProperty = DependencyProperty.Register("TitleVisibility", typeof(Visibility), typeof(AdonisWindow), new PropertyMetadata(Visibility.Visible));
 
         public static readonly DependencyProperty WindowButtonHighlightBrushProperty = DependencyProperty.Register("WindowButtonHighlightBrush", typeof(Brush), typeof(AdonisWindow), new PropertyMetadata(null));
 
@@ -143,6 +174,8 @@ namespace AdonisUI.Controls
         protected internal static readonly DependencyProperty MaximizeBorderThicknessProperty = MaximizeBorderThicknessPropertyKey.DependencyProperty;
 
         public static readonly DependencyProperty ShrinkTitleBarWhenMaximizedProperty = DependencyProperty.Register("ShrinkTitleBarWhenMaximized", typeof(bool), typeof(AdonisWindow), new PropertyMetadata(true));
+
+        public static readonly DependencyProperty PlaceTitleBarOverContentProperty = DependencyProperty.Register("PlaceTitleBarOverContent", typeof(bool), typeof(AdonisWindow), new PropertyMetadata(false));
 
         static AdonisWindow()
         {
@@ -175,7 +208,11 @@ namespace AdonisUI.Controls
 
         private BitmapSource GetApplicationIcon()
         {
-            Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly()?.ManifestModule.FullyQualifiedName);
+            string appFilePath = Process.GetCurrentProcess().MainModule.FileName;
+            if (!File.Exists(appFilePath))
+                return null;
+
+            Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(appFilePath);
 
             if (appIcon == null)
                 return null;
@@ -221,6 +258,7 @@ namespace AdonisUI.Controls
 
             UpdateLayoutForSizeToContent();
             HwndInterop.PositionChanging += DisableSizeToContentWhenMaximizing;
+            HandleTitleBarActualHeightChanged();
         }
 
         /// <summary>
@@ -231,7 +269,7 @@ namespace AdonisUI.Controls
         {
             dragMoveThumb.MouseLeftButtonDown += (s, e) =>
             {
-                if (e.ChangedButton == MouseButton.Left)
+                if (e.ChangedButton == MouseButton.Left && e.ClickCount == 1)
                 {
                     if (WindowState == WindowState.Maximized)
                         dragMoveThumb.MouseMove += RestoreOnMouseMove;
@@ -452,6 +490,24 @@ namespace AdonisUI.Controls
             {
                 SizeToContent = SizeToContent.Manual;
             }
+        }
+
+        private void HandleTitleBarActualHeightChanged()
+        {
+            if (!(GetTemplateChild("TitleBar") is Border titleBar))
+            {
+                return;
+            }
+            ;
+
+            var titleBarHeightPropertyDescriptor = DependencyPropertyDescriptor.FromProperty(ActualHeightProperty, typeof(Border));
+
+            titleBarHeightPropertyDescriptor.AddValueChanged(titleBar, (sender, e) =>
+            {
+                TitleBarActualHeight = PlaceTitleBarOverContent
+                    ? titleBar.ActualHeight
+                    : 0.0d;
+            });
         }
     }
 }

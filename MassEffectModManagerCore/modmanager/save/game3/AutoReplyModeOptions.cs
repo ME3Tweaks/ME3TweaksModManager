@@ -27,18 +27,18 @@
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {
-    [OriginalName("EAutoReplyModeOptions")]
+    [OriginalName(@"EAutoReplyModeOptions")]
     public enum AutoReplyModeOptions : byte
     {
-        [OriginalName("ARMO_All_Decisions")]
+        [OriginalName(@"ARMO_All_Decisions")]
         //[DisplayName("All Decisions")]
         AllDecisions = 0,
 
-        [OriginalName("ARMO_Major_Decisions")]
+        [OriginalName(@"ARMO_Major_Decisions")]
         //[DisplayName("Major Decisions")]
         MajorDecisions = 1,
 
-        [OriginalName("ARMO_No_Decisions")]
+        [OriginalName(@"ARMO_No_Decisions")]
         //[DisplayName("No Decisions")]
         NoDecisions = 2,
     }

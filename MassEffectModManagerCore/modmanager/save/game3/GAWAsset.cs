@@ -27,14 +27,14 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("GAWAssetSaveInfo")]
+    [OriginalName(@"GAWAssetSaveInfo")]
     public class GAWAsset : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("Id")]
+        [OriginalName(@"Id")]
         private int _Id;
 
-        [OriginalName("Strength")]
+        [OriginalName(@"Strength")]
         private int _Strength;
         #endregion
 
@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public override string ToString()
         {
-            return this.Name ?? "(null)";
+            return this.Name ?? @"(null)";
         }
 
         #region Properties
@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Id)
                 {
                     this._Id = value;
-                    this.NotifyPropertyChanged("Id");
+                    this.NotifyPropertyChanged(@"Id");
                 }
             }
         }
@@ -78,7 +78,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Strength)
                 {
                     this._Strength = value;
-                    this.NotifyPropertyChanged("Strength");
+                    this.NotifyPropertyChanged(@"Strength");
                 }
             }
         }

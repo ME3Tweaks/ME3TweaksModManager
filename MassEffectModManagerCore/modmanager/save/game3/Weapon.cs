@@ -26,29 +26,29 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("WeaponSaveRecord")]
+    [OriginalName(@"WeaponSaveRecord")]
     public class Weapon : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("WeaponClassName")]
+        [OriginalName(@"WeaponClassName")]
         private string _ClassName;
 
-        [OriginalName("AmmoUsedCount")]
+        [OriginalName(@"AmmoUsedCount")]
         private int _AmmoUsedCount;
 
-        [OriginalName("TotalAmmo")]
+        [OriginalName(@"TotalAmmo")]
         private int _AmmoTotal;
 
-        [OriginalName("bCurrentWeapon")]
+        [OriginalName(@"bCurrentWeapon")]
         private bool _CurrentWeapon;
 
-        [OriginalName("bLastWeapon")]
+        [OriginalName(@"bLastWeapon")]
         private bool _WasLastWeapon;
 
-        [OriginalName("AmmoPowerName")]
+        [OriginalName(@"AmmoPowerName")]
         private string _AmmoPowerName;
 
-        [OriginalName("AmmoPowerSourceTag")]
+        [OriginalName(@"AmmoPowerSourceTag")]
         private string _AmmoPowerSourceTag;
         #endregion
 
@@ -77,7 +77,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ClassName)
                 {
                     this._ClassName = value;
-                    this.NotifyPropertyChanged("ClassName");
+                    this.NotifyPropertyChanged(@"ClassName");
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._AmmoUsedCount)
                 {
                     this._AmmoUsedCount = value;
-                    this.NotifyPropertyChanged("AmmoUsedCount");
+                    this.NotifyPropertyChanged(@"AmmoUsedCount");
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._AmmoTotal)
                 {
                     this._AmmoTotal = value;
-                    this.NotifyPropertyChanged("AmmoTotal");
+                    this.NotifyPropertyChanged(@"AmmoTotal");
                 }
             }
         }
@@ -116,7 +116,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CurrentWeapon)
                 {
                     this._CurrentWeapon = value;
-                    this.NotifyPropertyChanged("IsCurrentWeapon");
+                    this.NotifyPropertyChanged(@"IsCurrentWeapon");
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._WasLastWeapon)
                 {
                     this._WasLastWeapon = value;
-                    this.NotifyPropertyChanged("WasLastWeapon");
+                    this.NotifyPropertyChanged(@"WasLastWeapon");
                 }
             }
         }
@@ -142,7 +142,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._AmmoPowerName)
                 {
                     this._AmmoPowerName = value;
-                    this.NotifyPropertyChanged("AmmoPowerName");
+                    this.NotifyPropertyChanged(@"AmmoPowerName");
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._AmmoPowerSourceTag)
                 {
                     this._AmmoPowerSourceTag = value;
-                    this.NotifyPropertyChanged("AmmoPowerSourceTag");
+                    this.NotifyPropertyChanged(@"AmmoPowerSourceTag");
                 }
             }
         }

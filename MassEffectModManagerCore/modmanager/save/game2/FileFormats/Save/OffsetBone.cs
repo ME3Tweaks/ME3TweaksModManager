@@ -6,10 +6,10 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public partial class OffsetBone : IUnrealSerializable
     {
-        [UnrealFieldDisplayName("Name")]
+        [UnrealFieldDisplayName(@"Name")]
         public string Name;
 
-        [UnrealFieldDisplayName("Offset")]
+        [UnrealFieldDisplayName(@"Offset")]
         public Vector Offset;
 
         public void Serialize(IUnrealStream stream)
@@ -20,7 +20,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 
         public override string ToString()
         {
-            return String.Format("{0} = {1}",
+            return String.Format(@"{0} = {1}",
                 this.Name,
                 this.Offset);
         }

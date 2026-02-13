@@ -58,7 +58,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}, {2}, {3}",
+            return string.Format(@"{0}, {1}, {2}, {3}",
                                  this._R,
                                  this._G,
                                  this._B,
@@ -74,7 +74,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._R) == false)
                 {
                     this._R = value;
-                    this.NotifyPropertyChanged("R");
+                    this.NotifyPropertyChanged(@"R");
                 }
             }
         }
@@ -87,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._G) == false)
                 {
                     this._G = value;
-                    this.NotifyPropertyChanged("G");
+                    this.NotifyPropertyChanged(@"G");
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._B) == false)
                 {
                     this._B = value;
-                    this.NotifyPropertyChanged("B");
+                    this.NotifyPropertyChanged(@"B");
                 }
             }
         }
@@ -113,7 +113,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._A) == false)
                 {
                     this._A = value;
-                    this.NotifyPropertyChanged("A");
+                    this.NotifyPropertyChanged(@"A");
                 }
             }
         }

@@ -24,6 +24,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         /// </summary>
         private const int TEXT_MIN_SIZE_TO_COMPRESS = 80;
 
+        /// <summary>
+        /// The data block identifier for merge mods in BFGIS. DO NOT CHANGE THIS.
+        /// </summary>
+        public const string MERGEMOD_BGFIS_DATA_BLOCK = @"BFGIS-MergeMods";
+
+        /// <summary>
+        /// The magic string for assets in merge mod v1
+        /// </summary>
         private const string MMV1_ASSETMAGIC = @"MMV1";
 
         [JsonIgnore]

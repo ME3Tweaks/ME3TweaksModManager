@@ -1,5 +1,6 @@
 ﻿using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 
@@ -14,7 +15,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         public static ConditionalDLC MakeConditionalDLC(Mod mod, string input, bool canBePlusMinus)
         {
-            if (mod.ModDescTargetVersion >= 9.0)
+            if (mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
             {
                 // Use the base constructor
                 return new ConditionalDLC(input, mod.ModDescTargetVersion, canBePlusMinus);

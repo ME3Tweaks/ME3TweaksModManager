@@ -1,16 +1,11 @@
-﻿using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksCore.TextureOverride;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.importer;
@@ -24,6 +19,13 @@ using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using SevenZip;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -124,6 +126,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanClose() => !DeploymentInProgress;
 
+
+        // BTP is not included as testing showed about 15% compression savings on it.
         /// <summary>
         /// File extensions that will be stored uncompressed in archive as they already have well compressed data and may be of a large size
         /// (which increases the solid block size)
@@ -256,7 +260,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 var references = modBeingDeployed.GetAllRelativeReferences(true);
 
-                if (modBeingDeployed.ModDescTargetVersion >= 8.0)
+                if (modBeingDeployed.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
                 {
                     // ModDesc 8 / Mod Manager 8 uses a CompressedTLKMergeInfo file instead. Do not compress these files at all, it will be handled in a separate step.
                     references = references.Where(x => !x.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase)).ToList();
@@ -322,6 +326,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
+            void on7zOperation(ESevenZipOperation operation, object value, object value2)
+            {
+                switch (operation)
+                {
+                    case ESevenZipOperation.FinalMove:
+                        OperationText = M3L.GetString(M3L.string_interp_finalizingArchive);
+                        unchecked
+                        {
+                            ProgressValue = (long)value;
+                            ProgressMax = (long)value2;
+                        }
+                        break;
+                }
+            }
 
 
             //var padWidth = archiveMapping.Keys.MaxBy(x => x.Length).Length + 2;
@@ -341,7 +359,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             compressor.CustomParameters.Add(@"s", @"off");
             compressor.CompressionMode = CompressionMode.Create;
             compressor.CompressionLevel = CompressionLevel.None;
-            compressor.CompressFileDictionary(archiveMapping.Where(x => x.Value == null).Select(x => x.Key).ToDictionary(x => x, x => (string)null), archivePath);
+            compressor.CompressFileDictionary(archiveMapping.Where(x => x.Value == null).Select(x => x.Key).ToDictionary(x => x, x => (string)null), archivePath, operationCallback: on7zOperation);
 
             // Setup compress for pass 2
             compressor.CustomParameters.Clear();
@@ -374,8 +392,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             compressor.Progressing += (a, b) =>
             {
                 //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
-                ProgressMax = b.TotalAmount;
-                ProgressValue = b.AmountCompleted;
+                ProgressMax = (long)b.TotalAmount;
+                ProgressValue = (long)b.AmountCompleted;
                 var now = DateTime.Now;
                 if ((now - lastPercentUpdateTime).Milliseconds > ModInstallerPanel.PERCENT_REFRESH_COOLDOWN)
                 {
@@ -400,7 +418,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var compressItems = archiveMapping.Where(x => x.Value != null && ShouldBeSolidCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
             if (compressItems.Any())
             {
-                compressor.CompressFileDictionary(compressItems, archivePath);
+                compressor.CompressFileDictionary(compressItems, archivePath, operationCallback: on7zOperation);
             }
 
             // Pass 2: Individual compressed items (non-solid)
@@ -414,7 +432,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (individualcompressItems.Any())
             {
                 currentDeploymentStep = M3L.GetString(M3L.string_individuallyCompressedItems);
-                compressor.CompressFileDictionary(individualcompressItems, archivePath);
+                compressor.CompressFileDictionary(individualcompressItems, archivePath, operationCallback: on7zOperation);
             }
             // Compress files one at a time to prevent solid
             //foreach (var item in individualcompressItems)
@@ -432,7 +450,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             currentDeploymentStep = M3L.GetString(M3L.string_uncompressedModItems);
             var nocompressItems = archiveMapping.Where(x => x.Value != null && !ShouldBeSolidCompressed(x, archiveMappingToSourceMod[x.Key]) && !ShouldBeIndividualCompressed(x, archiveMappingToSourceMod[x.Key])).Reverse().ToDictionary(p => p.Key, p => p.Value);
 
-            compressor.CompressFileDictionary(nocompressItems, archivePath);
+            compressor.CompressFileDictionary(nocompressItems, archivePath, operationCallback: on7zOperation);
 
             void generatingCompressedFileProgress(uint done, uint total)
             {
@@ -457,7 +475,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 var references = modBeingDeployed.GetAllRelativeReferences(true);
 
-                if (modBeingDeployed.ModDescTargetVersion >= 8.0 && references.Any(x => x.StartsWith(Mod.Game1EmbeddedTlkFolderName)))
+                if (modBeingDeployed.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0 && references.Any(x => x.StartsWith(Mod.Game1EmbeddedTlkFolderName)))
                 {
                     // It needs a compression tlk merge file installed
                     currentDeploymentStep = M3L.GetString(M3L.string_creatingCombinedTLKMergeFile);
@@ -485,7 +503,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         { inArchiveGame1TlkFolderPath, null }, // The folder - this is required to be added so it shows up in the archive filesystem table
                         { inArchiveMergeFilePath, mergeFileTemp } // The actual file in the folder
-                    }, archivePath);
+                    }, archivePath, operationCallback: on7zOperation);
                     File.Delete(mergeFileTemp);
 
                 }
@@ -570,7 +588,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return false; // Referenced image file should not be compressed.
             if (modRelPath == @"moddesc.ini")
                 return false; // moddesc.ini should not be compressed.
-            if (modBeingDeployed.ModDescTargetVersion >= 8.0 && fileMapping.Key.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase))
+            if (modBeingDeployed.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0 && fileMapping.Key.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase))
                 return false; // ModDesc 8 / Mod Manager 8 uses a CompressedTLKMergeInfo file instead.
             return true;
         }
@@ -599,11 +617,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <summary>
         /// Maximum on the progress bar
         /// </summary>
-        public ulong ProgressMax { get; set; } = 100;
+        public long ProgressMax { get; set; } = 100;
         /// <summary>
         /// The current value of the progress bar
         /// </summary>
-        public ulong ProgressValue { get; set; } = 0;
+        public long ProgressValue { get; set; } = 0;
         /// <summary>
         /// The bottom left text that describes the current operation
         /// </summary>

@@ -8,13 +8,18 @@ using ME3TweaksCore.Objects;
 using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.windows;
 using SevenZip;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
+    [Localizable(false)]
     public static class DebugMenu
     {
         public static void RouteDebugCall(string sender, MainWindow window)
@@ -38,6 +43,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowWelcomePanel_MenuItem)) ShowWelcomePanel_Click(window);
             if (sender == nameof(MainWindow.ShowBGFISDB_MenuItem)) ShowBGFISDB_Click(window);
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
+            if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
+            if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
 #endif
         }
 #if DEBUG
@@ -69,6 +76,45 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Task.Run(() =>
             {
                 M3CTextureOverrideMerge.PerformDLCMerge(target, dlcFolder, pi);
+            }).ContinueWithOnUIThread(r => { BackgroundTaskEngine.SubmitJobCompletion(task); });
+
+        }
+
+#if DEBUG
+
+        private static void TestMSVCPPInstaller(MainWindow window)
+        {
+            window.InstallMSVCPP();
+        }
+
+
+        private static void TriggerBTPBuild(MainWindow window)
+        {
+            if (window.SelectedMod == null)
+                return;
+
+            var target = window.GetCurrentTarget(window.SelectedMod.Game);
+            if (target == null)
+                return;
+
+            var dlcFolder = window.SelectedMod.GetAllPossibleCustomDLCFolders().FirstOrDefault();
+            if (dlcFolder == null)
+                return;
+
+            var gameDir = Path.Combine(target.GetDLCPath(), dlcFolder);
+            if (!Directory.Exists(gameDir))
+                return;
+
+            var task = BackgroundTaskEngine.SubmitBackgroundJob("Texture Override Merge", "Texture Override Merge", "Completed");
+            void onProgress(ProgressInfo pi)
+            {
+                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, $"{pi.Status}");
+            }
+            var pi = new ProgressInfo();
+            pi.OnUpdate = onProgress;
+            Task.Run(() =>
+            {
+                M3CTextureOverrideMerge.PerformDLCMerge(target, dlcFolder, false, pi);
             }).ContinueWithOnUIThread(r => { BackgroundTaskEngine.SubmitJobCompletion(task); });
 
         }
@@ -280,6 +326,28 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static void TestCode_Click(MainWindow mw)
         {
+            var helpWindow = new DynamicHelpWindow();
+            helpWindow.Owner = mw; // Set owner if needed
+            helpWindow.ShowDialog();
+        }
+
+        private static void ShowXceedDialog(MainWindow window)
+        {
+            // Used to test theming
+            Task.Run(() =>
+            {
+                Thread.Sleep(200);
+            }).ContinueWithOnUIThread(x =>
+            {
+                var title = @"Test dialog";
+                var str = @"This is a test dialog. I am a long running message. Do you want to continue?\n\nPlease make sure I fit the width you need and don't look goofy. The defaults seem to be really poor";
+                var buttons = System.Windows.MessageBoxButton.YesNoCancel;
+                var icon = System.Windows.MessageBoxImage.Warning;
+
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, str,title,buttons,icon);
+                M3L.ShowDialog(window, str, title, buttons, icon);
+                M3L.ShowDialog(window, "Done.");
+            });
 
         }
 #endif

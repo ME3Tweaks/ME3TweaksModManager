@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 using System.Xml.Linq;
-using Dark.Net;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.extensions;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.meim;
-using Microsoft.AppCenter.Analytics;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -141,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
         public string GetPropertyMap(string filename)
@@ -157,7 +150,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            var items = new[] {BioEngineEntries.ToList(), BioGameEntries.ToList(), BioPartyEntries.ToList()};
+            var items = new[] { BioEngineEntries.ToList(), BioGameEntries.ToList(), BioPartyEntries.ToList() };
 
             foreach (var list in items)
             {
@@ -170,7 +163,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                 }
             }
 
-            ShowMessage(M3L.GetString(M3L.string_resetIniItemsExceptBasic),7000);
+            ShowMessage(M3L.GetString(M3L.string_resetIniItemsExceptBasic), 7000);
         }
 
         /// <summary>
@@ -258,7 +251,7 @@ public event PropertyChangedEventHandler PropertyChanged;
             if (doNotOpen)
                 return true;
 
-            if (M3L.ShowDialog(this, "Close without saving changes?", "Application closing", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            if (M3L.ShowDialog(this, M3L.GetString(M3L.string_closeWithoutSavingChangesQuestion), M3L.GetString(M3L.string_applicationClosing), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
             {
                 Close();
                 return true;

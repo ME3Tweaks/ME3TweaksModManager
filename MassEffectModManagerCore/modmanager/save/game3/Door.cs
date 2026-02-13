@@ -27,17 +27,17 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("DoorSaveRecord")]
+    [OriginalName(@"DoorSaveRecord")]
     public class Door : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("DoorGUID")]
+        [OriginalName(@"DoorGUID")]
         private Guid _Guid;
 
-        [OriginalName("CurrentState")]
+        [OriginalName(@"CurrentState")]
         private byte _CurrentState;
 
-        [OriginalName("OldState")]
+        [OriginalName(@"OldState")]
         private byte _OldState;
         #endregion
 
@@ -57,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Guid)
                 {
                     this._Guid = value;
-                    this.NotifyPropertyChanged("Guid");
+                    this.NotifyPropertyChanged(@"Guid");
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CurrentState)
                 {
                     this._CurrentState = value;
-                    this.NotifyPropertyChanged("CurrentState");
+                    this.NotifyPropertyChanged(@"CurrentState");
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._OldState)
                 {
                     this._OldState = value;
-                    this.NotifyPropertyChanged("OldState");
+                    this.NotifyPropertyChanged(@"OldState");
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<!-- Windows 2004 -->
 		<TargetFrameworks>net10.0-windows</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 		<Platforms>x64</Platforms>

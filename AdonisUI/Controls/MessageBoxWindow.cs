@@ -1,16 +1,12 @@
 ﻿using AdonisUI.Helpers;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Media;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interop;
-using System.Windows.Media;
 
 namespace AdonisUI.Controls
 {
@@ -135,7 +131,7 @@ namespace AdonisUI.Controls
         /// </summary>
         public MessageBoxWindow()
         {
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             Loaded += OnLoaded;
             Closing += OnClosing;
             DataContextChanged += OnDataContextChanged;
@@ -149,7 +145,11 @@ namespace AdonisUI.Controls
             Rect screenBounds = GetCurrentScreenBounds();
             Size transformedScreenBounds = TransformToWindowCoordinates(new Size(screenBounds.Width, screenBounds.Height));
             MaxHeight = transformedScreenBounds.Height * MaxRelativeScreenHeight;
-            MaxWidth = CalcMaxWidth(transformedScreenBounds);
+            MaxWidth = 500; 
+            // ME3Tweaks - don't calc max width
+            // CalcMaxWidth(transformedScreenBounds);
+
+
 
             AttachButtonClickHandlers();
 
@@ -235,7 +235,7 @@ namespace AdonisUI.Controls
             double additionalWidthRequiredForButtons = Math.Max(CalcDesiredActualSizeDiff(buttonContainer).X, 0);
             fittingMaxWidth = Math.Min(fittingMaxWidth + additionalWidthRequiredForButtons, maxAbsoluteScreenWidth);
 
-            return fittingMaxWidth;
+            return 450; // fittingMaxWidth;
         }
 
         /// <summary>

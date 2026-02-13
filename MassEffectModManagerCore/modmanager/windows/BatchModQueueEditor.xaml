@@ -27,7 +27,7 @@
     </Window.Style>
     <Window.Resources>
         <converters:NotZeroVisibilityConverter
-            x:Key="NotZeroVisibilityConvetrter" />
+            x:Key="NotZeroVisibilityConverter" />
         <Style x:Key="AdonisProgressBar" 
                TargetType="ProgressBar" 
                BasedOn="{StaticResource {x:Type ProgressBar}}" >

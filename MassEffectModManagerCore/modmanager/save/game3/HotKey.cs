@@ -26,17 +26,17 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("HotKeySaveRecord")]
+    [OriginalName(@"HotKeySaveRecord")]
     public class HotKey : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("PawnName")]
+        [OriginalName(@"PawnName")]
         private string _PawnName;
 
-        [OriginalName("PowerID")]
+        [OriginalName(@"PowerID")]
         private int _PowerId;
 
-        [OriginalName("PowerName")]
+        [OriginalName(@"PowerName")]
         private string _PowerName;
         #endregion
 
@@ -56,7 +56,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._PawnName)
                 {
                     this._PawnName = value;
-                    this.NotifyPropertyChanged("PawnName");
+                    this.NotifyPropertyChanged(@"PawnName");
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._PowerId)
                 {
                     this._PowerId = value;
-                    this.NotifyPropertyChanged("PowerId");
+                    this.NotifyPropertyChanged(@"PowerId");
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._PowerName)
                 {
                     this._PowerName = value;
-                    this.NotifyPropertyChanged("PowerName");
+                    this.NotifyPropertyChanged(@"PowerName");
                 }
             }
         }

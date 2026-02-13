@@ -88,7 +88,15 @@ namespace ME3TweaksModManager.modmanager
 
         internal static List<string> DirectoryGetFiles(string directoryPath, string searchPattern, SearchOption directorySearchOption, SevenZipExtractor archive = null)
         {
-            if (archive == null) return Directory.GetFiles(directoryPath, searchPattern, directorySearchOption).ToList();
+            if (archive == null)
+            {
+                if (Directory.Exists(directoryPath))
+                {
+                    return Directory.GetFiles(directoryPath, searchPattern, directorySearchOption).ToList();
+                }
+                M3Log.Warning($@"FilesystemInterposer::DirectoryGetFiles has been called on path that doesn't exist: {directoryPath}");
+                return [];
+            }
             var fileList = new List<string>();
             string internalSearchPattern = directoryPath.TrimEnd('\'').Replace('/', '\\') + '\\'; //ensures we are looking in directory itself
             int numSlashesInBasepath = internalSearchPattern.Count(f => f == '\\'); //used for same directory search

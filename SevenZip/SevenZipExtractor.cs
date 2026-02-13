@@ -939,6 +939,33 @@ namespace SevenZip
             }
         }
 
+        // ME3TWEAKS 01/28/2026 - Use Dictionary for index to path lookup so archives
+        // with lots of files don't do enormous amounts of enumeration
+
+        private ReadOnlyDictionary<uint, ArchiveFileInfo> _archiveFileDataMap;
+
+        /// <summary>
+        /// Gets a map of indices to the archive file info for improved performance in some code paths.
+        /// </summary>
+        public ReadOnlyDictionary<uint, ArchiveFileInfo> ArchiveFileDataMap
+        {
+            get
+            {
+                DisposedCheck();
+                if (_archiveFileDataMap != null)
+                {
+                    return _archiveFileDataMap;
+                }
+
+                // Index for some reason is int but we need it as uint
+                var dictionary = ArchiveFileData.ToDictionary(x => (uint) x.Index, x => x);
+                _archiveFileDataMap = new ReadOnlyDictionary<uint, ArchiveFileInfo>(dictionary);
+                return _archiveFileDataMap;
+            }
+        }
+
+        // END ME3TWEAKS ========================
+
         /// <summary>
         /// Gets the properties for the current archive
         /// </summary>

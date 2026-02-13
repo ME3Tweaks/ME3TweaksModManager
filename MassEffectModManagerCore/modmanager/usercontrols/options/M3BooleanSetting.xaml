@@ -5,10 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.options"
              mc:Ignorable="d"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              Loaded="M3BooleanSetting_OnLoaded"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <CheckBox Name="SettingCB">
+    <CheckBox Name="SettingCB"
+              BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}">
         <CheckBox.ContentTemplate>
             <DataTemplate>
                 <DockPanel>

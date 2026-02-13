@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.objects.nexusfiledb;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
@@ -13,7 +12,7 @@ namespace ME3TweaksModManager.Tests
         public void TestNexusDB()
         {
             // Fetch the latest DB
-            var downloadResult = M3OnlineContent.DownloadME3TweaksStaticAsset(@"nexusfiledb.zip");
+            var downloadResult = M3OnlineContent.DownloadToMemory(@"https://github.com/ME3Tweaks/ME3TweaksAssets/releases/download/nexusfiledb/nexusfiledb.zip");
             if (downloadResult.errorMessage != null)
             {
                 Assert.Fail($@"Nexus DB could not be downloaded: {downloadResult.errorMessage}");
@@ -28,7 +27,7 @@ namespace ME3TweaksModManager.Tests
 
             foreach (var domain in searchGames)
             {
-                var db = GameDatabase.LoadDatabase(domain, downloadResult.download);
+                var db = GameDatabase.LoadDatabase(domain, downloadResult.result);
 
                 foreach (var instanceId in db.FileInstances)
                 {

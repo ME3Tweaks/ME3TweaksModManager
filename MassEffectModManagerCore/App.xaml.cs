@@ -80,17 +80,6 @@ namespace ME3TweaksModManager
         /// </summary>
         public const double HighestSupportedModDesc = 9.2;
 
-        // Hi. If you're reading this, and going to try and argue that this lowest version is arbitrary,
-        // you should try supporting software for free, and see how well supporting every single
-        // version of Windows works out for you.
-        // LTSC is not supported as it is for Enterprises
-        public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.26100"); // Windows 11 24H2
-
-        internal static readonly string[] SupportedOperatingSystemVersions =
-        {
-            @"Windows 11 24H2"
-        };
-
         /// <summary>
         /// If telemetry has been flushed after checking if it is enabled.
         /// </summary>
@@ -100,11 +89,11 @@ namespace ME3TweaksModManager
         {
             // Another exe was launched
             Debug.WriteLine($"Instance args: {string.Join(" ", args)}");
-            Dispatcher?.Invoke(() =>
+            Dispatcher?.Invoke(async () =>
             {
                 if (Current.MainWindow is MainWindow mw)
                 {
-                    if (mw.HandleInstanceArguments(args))
+                    if (await mw.HandleInstanceArguments(args))
                     {
                         // Bring to front
                         mw.Activate();
@@ -116,7 +105,7 @@ namespace ME3TweaksModManager
 
         public App() : base()
         {
-            ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
+            SetExecutableLocation();
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
@@ -224,6 +213,11 @@ namespace ME3TweaksModManager
                         {
                             CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
                         }
+                        if (parsedCommandLineArgs.Value.DisableWineWorkarounds)
+                        {
+                            WineWorkarounds.WineDetected = false;
+                            M3Log.Warning(@"Wine Workarounds Disabled");
+                        }
                     }
                     else
                     {
@@ -248,6 +242,10 @@ namespace ME3TweaksModManager
 
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
+
+                // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
+                WineWorkarounds.Init();
+
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
 
@@ -259,6 +257,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Running as " + Environment.UserName);
                 M3Log.Information(@"Executable location: " + ExecutableLocation);
                 M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
+                WineWorkarounds.LogWineInfo();
 
                 //Get build date
                 BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });
@@ -288,18 +287,21 @@ namespace ME3TweaksModManager
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                     new FrameworkPropertyMetadata(true));
 
-                try
+                if (!WineWorkarounds.WineDetected)
                 {
-                    var avs = M3Utilities.GetListOfInstalledAV();
-                    M3Log.Information(@"Detected the following antivirus products:");
-                    foreach (var av in avs)
+                    try
                     {
-                        M3Log.Information(" - " + av);
+                        var avs = M3Utilities.GetListOfInstalledAV();
+                        M3Log.Information(@"Detected the following antivirus products:");
+                        foreach (var av in avs)
+                        {
+                            M3Log.Information(" - " + av);
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
+                    catch (Exception e)
+                    {
+                        M3Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
+                    }
                 }
 
                 //Build 104 changed location of settings from AppData to ProgramData.
@@ -731,12 +733,6 @@ namespace ME3TweaksModManager
             SingleInstance.Cleanup();
         }
 
-        public static bool IsOperatingSystemSupported()
-        {
-            OperatingSystem os = Environment.OSVersion;
-            return os.Version >= App.MIN_SUPPORTED_OS;
-        }
-
 #if DEBUG
         private static void ForceImports()
         {
@@ -752,6 +748,15 @@ namespace ME3TweaksModManager
             var nothing2 = FileSize.GibiByte;
         }
 #endif
+
+        /// <summary>
+        /// Sets the location of the executable for this process. This is used by test cases
+        /// to fake paths.
+        /// </summary>
+        public static void SetExecutableLocation()
+        {
+            ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
+        }
     }
 
     class CLIOptions
@@ -810,5 +815,8 @@ namespace ME3TweaksModManager
 
         [Option(@"featurelevel", HelpText = "Indicates the feature level a command line operation uses")]
         public double FeatureLevel { get; set; }
+
+        [Option(@"disablewineworkarounds", HelpText = "Disables Wine workarounds if Wine is detected. Used for Wine development.")]
+        public bool DisableWineWorkarounds { get; set; }
     }
 }

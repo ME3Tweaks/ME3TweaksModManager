@@ -26,59 +26,59 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("AppearanceSaveRecord")]
+    [OriginalName(@"AppearanceSaveRecord")]
     public class Appearance : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("CombatAppearance")]
+        [OriginalName(@"CombatAppearance")]
         private PlayerAppearanceType _CombatAppearance;
 
-        [OriginalName("CasualID")]
+        [OriginalName(@"CasualID")]
         private int _CasualId;
 
-        [OriginalName("FullBodyID")]
+        [OriginalName(@"FullBodyID")]
         private int _FullBodyId;
 
-        [OriginalName("TorsoID")]
+        [OriginalName(@"TorsoID")]
         private int _TorsoId;
 
-        [OriginalName("ShoulderID")]
+        [OriginalName(@"ShoulderID")]
         private int _ShoulderId;
 
-        [OriginalName("ArmID")]
+        [OriginalName(@"ArmID")]
         private int _ArmId;
 
-        [OriginalName("LegID")]
+        [OriginalName(@"LegID")]
         private int _LegId;
 
-        [OriginalName("SpecID")]
+        [OriginalName(@"SpecID")]
         private int _SpecId;
 
-        [OriginalName("Tint1ID")]
+        [OriginalName(@"Tint1ID")]
         private int _Tint1Id;
 
-        [OriginalName("Tint2ID")]
+        [OriginalName(@"Tint2ID")]
         private int _Tint2Id;
 
-        [OriginalName("Tint3ID")]
+        [OriginalName(@"Tint3ID")]
         private int _Tint3Id;
 
-        [OriginalName("PatternID")]
+        [OriginalName(@"PatternID")]
         private int _PatternId;
 
-        [OriginalName("PatternColorID")]
+        [OriginalName(@"PatternColorID")]
         private int _PatternColorId;
 
-        [OriginalName("HelmetID")]
+        [OriginalName(@"HelmetID")]
         private int _HelmetId;
 
-        [OriginalName("bHasMorphHead")]
+        [OriginalName(@"bHasMorphHead")]
         private bool _HasMorphHead;
 
-        [OriginalName("MorphHead")]
+        [OriginalName(@"MorphHead")]
         private MorphHead _MorphHead = new MorphHead();
 
-        [OriginalName("EmissiveID")]
+        [OriginalName(@"EmissiveID")]
         private int _EmissiveId;
         #endregion
 
@@ -111,8 +111,8 @@ namespace ME3TweaksModManager.modmanager.save.game3
         #region Properties
         private static class Categories
         {
-            public const string Head = "Head";
-            public const string Body = "Body";
+            public const string Head = @"Head";
+            public const string Body = @"Body";
         }
 
         public PlayerAppearanceType CombatAppearance
@@ -123,7 +123,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CombatAppearance)
                 {
                     this._CombatAppearance = value;
-                    this.NotifyPropertyChanged("CombatAppearance");
+                    this.NotifyPropertyChanged(@"CombatAppearance");
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CasualId)
                 {
                     this._CasualId = value;
-                    this.NotifyPropertyChanged("CasualId");
+                    this.NotifyPropertyChanged(@"CasualId");
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._FullBodyId)
                 {
                     this._FullBodyId = value;
-                    this.NotifyPropertyChanged("FullBodyId");
+                    this.NotifyPropertyChanged(@"FullBodyId");
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._TorsoId)
                 {
                     this._TorsoId = value;
-                    this.NotifyPropertyChanged("TorsoId");
+                    this.NotifyPropertyChanged(@"TorsoId");
                 }
             }
         }
@@ -175,7 +175,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ShoulderId)
                 {
                     this._ShoulderId = value;
-                    this.NotifyPropertyChanged("ShoulderId");
+                    this.NotifyPropertyChanged(@"ShoulderId");
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ArmId)
                 {
                     this._ArmId = value;
-                    this.NotifyPropertyChanged("ArmId");
+                    this.NotifyPropertyChanged(@"ArmId");
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._LegId)
                 {
                     this._LegId = value;
-                    this.NotifyPropertyChanged("LegId");
+                    this.NotifyPropertyChanged(@"LegId");
                 }
             }
         }
@@ -214,7 +214,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._SpecId)
                 {
                     this._SpecId = value;
-                    this.NotifyPropertyChanged("SpecId");
+                    this.NotifyPropertyChanged(@"SpecId");
                 }
             }
         }
@@ -227,7 +227,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Tint1Id)
                 {
                     this._Tint1Id = value;
-                    this.NotifyPropertyChanged("Tint1Id");
+                    this.NotifyPropertyChanged(@"Tint1Id");
                 }
             }
         }
@@ -240,7 +240,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Tint2Id)
                 {
                     this._Tint2Id = value;
-                    this.NotifyPropertyChanged("Tint2Id");
+                    this.NotifyPropertyChanged(@"Tint2Id");
                 }
             }
         }
@@ -253,7 +253,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Tint3Id)
                 {
                     this._Tint3Id = value;
-                    this.NotifyPropertyChanged("Tint3Id");
+                    this.NotifyPropertyChanged(@"Tint3Id");
                 }
             }
         }
@@ -266,7 +266,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._PatternId)
                 {
                     this._PatternId = value;
-                    this.NotifyPropertyChanged("PatternId");
+                    this.NotifyPropertyChanged(@"PatternId");
                 }
             }
         }
@@ -279,7 +279,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._PatternColorId)
                 {
                     this._PatternColorId = value;
-                    this.NotifyPropertyChanged("PatternColorId");
+                    this.NotifyPropertyChanged(@"PatternColorId");
                 }
             }
         }
@@ -292,7 +292,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._HelmetId)
                 {
                     this._HelmetId = value;
-                    this.NotifyPropertyChanged("HelmetId");
+                    this.NotifyPropertyChanged(@"HelmetId");
                 }
             }
         }
@@ -305,7 +305,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._HasMorphHead)
                 {
                     this._HasMorphHead = value;
-                    this.NotifyPropertyChanged("HasMorphHead");
+                    this.NotifyPropertyChanged(@"HasMorphHead");
                 }
             }
         }
@@ -318,7 +318,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MorphHead)
                 {
                     this._MorphHead = value;
-                    this.NotifyPropertyChanged("MorphHead");
+                    this.NotifyPropertyChanged(@"MorphHead");
                 }
             }
         }
@@ -331,7 +331,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EmissiveId)
                 {
                     this._EmissiveId = value;
-                    this.NotifyPropertyChanged("EmissiveId");
+                    this.NotifyPropertyChanged(@"EmissiveId");
                 }
             }
         }

@@ -327,7 +327,12 @@ namespace SevenZip
                         //ExtractionPath - TODO: Allow customization of where file is output to.
                         if (outputFilenameMapping != null)
                         {
-                            fileName = outputFilenameMapping.Invoke(_extractor.ArchiveFileData.FirstOrDefault(x => x.Index == index));
+                            // ME3TWEAKS 01/28/2026 - Use map of indices to improve performance
+                            _extractor.ArchiveFileDataMap.TryGetValue(index, out var info);
+                            fileName = outputFilenameMapping.Invoke(info);
+                            // END ME3TWEAKS =====
+
+                            // fileName = outputFilenameMapping.Invoke(_extractor.ArchiveFileData.FirstOrDefault(x => x.Index == index));
                         }
                         else
                         {

@@ -27,19 +27,19 @@
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {
-    [OriginalName("EObjectiveMarkerIconType")]
+    [OriginalName(@"EObjectiveMarkerIconType")]
     public enum ObjectiveMarkerIconType : byte
     {
-        [OriginalName("EOMIT_None")]
+        [OriginalName(@"EOMIT_None")]
         None = 0,
 
-        [OriginalName("EOMIT_Attack")]
+        [OriginalName(@"EOMIT_Attack")]
         Attack = 1,
 
-        [OriginalName("EOMIT_Supply")]
+        [OriginalName(@"EOMIT_Supply")]
         Supply = 2,
 
-        [OriginalName("EOMIT_Alert")]
+        [OriginalName(@"EOMIT_Alert")]
         Alert = 3,
     }
 }

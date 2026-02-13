@@ -27,13 +27,13 @@
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {
-    [OriginalName("EPlayerAppearanceType")]
+    [OriginalName(@"EPlayerAppearanceType")]
     public enum PlayerAppearanceType : byte
     {
-        [OriginalName("PlayerAppearanceType_Parts")]
+        [OriginalName(@"PlayerAppearanceType_Parts")]
         Parts = 0,
 
-        [OriginalName("PlayerAppearanceType_Full")]
+        [OriginalName(@"PlayerAppearanceType_Full")]
         Full = 1,
     }
 }

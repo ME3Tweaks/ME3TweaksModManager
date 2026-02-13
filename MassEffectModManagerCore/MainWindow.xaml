@@ -16,7 +16,8 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
     xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
-    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -41,6 +42,9 @@
             Key="F"
             Modifiers="Control"
             Command="{Binding SearchModsCommand}" />
+        <KeyBinding
+            Key="Delete"
+            Command="{Binding DeleteModFromLibraryCommand}" />
     </Window.InputBindings>
     <Window.Resources>
         <Storyboard
@@ -511,9 +515,9 @@
                         Header="{DynamicResource string_importAndManageMods}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem
-                        Header="Download Manager"
+                        Header="{DynamicResource string_downloadManager}"
                         Command="{Binding OpenDownloadManagerCommand}"
-                        ToolTip="Show current running downloads">
+                        ToolTip="{DynamicResource string_tooltip_showCurrentRunningDownloads}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -558,6 +562,19 @@
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
                                 Icon="Solid_Eye"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_manageCachedTargets}"
+                        Command="{Binding ManageCachedTargetsCommand}"
+                        ToolTip="{DynamicResource string_tooltip_manageCachedTargets}">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_Database"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1391,12 +1408,6 @@
                     <!--<MenuItem
                         Header="{DynamicResource string_blankItemToAvoidBreakingTheInterface}" />-->
                     <MenuItem
-                        Header="{DynamicResource string_showModInstallationStatusInLbrary}"
-                        ToolTip="{DynamicResource string_tooltip_notReliableForAllMods}"
-                        IsCheckable="True"
-                        StaysOpenOnClick="True"
-                        IsChecked="{Binding Path=(modmanager:Settings.ShowInstalledModsInLibrary)}" />
-                    <MenuItem
                         Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
                         Header="{DynamicResource string_suppressTargetMerges}"
                         ToolTip="{DynamicResource string_tooltip_suppressTargetMerges}"
@@ -1404,19 +1415,24 @@
                         StaysOpenOnClick="True"
                         IsChecked="{Binding Path=(modmanager:Settings.SessionOnly_SuppressDLCMerge)}" />
                     <MenuItem
-                       Header="Convert .mem to M3 Texture Override"
-                       Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
-                       ToolTip="Converts a .mem file to a texture override version by installing the .mem, inspecting the changes, and then pulling them to a chosen DLC mod."                       
-                       Command="{Binding ConvertMEMToTOCommand}" />
+                        Header="{DynamicResource string_convertMemToM3TextureOverride}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                        ToolTip="{DynamicResource string_tooltip_convertMemtoM3TextureOverride}"
+                        Command="{Binding ConvertMEMToTOCommand}" />
                 </MenuItem>
                 <MenuItem
-                    Header="Alpha"
+                    Header="{DynamicResource string_alpha}"
                     Padding="4"
                     Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}">
                     <MenuItem
+                    Header="Alpha"
+                    Padding="4"
+                    Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}">
+                        <MenuItem
                         Header="Build Base Milan"
                         Name="BuildBaseMilan_MenuItem"
                         Command="{Binding BuildBaseMilanCommand}" />
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
@@ -1440,6 +1456,10 @@
                     <MenuItem
                         Header="{DynamicResource string_debugPrintInstallationQueue}"
                         Name="DebugPrintInstallationQueue_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_triggerBTPBuildOnModFolderInstalled}"
+                        Name="TriggerBTPBuild_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
                         Header="{DynamicResource string_requiresSelectedTarget}"
@@ -1504,8 +1524,12 @@
                         Name="Test7z_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Trigger BTP build on mod folder (installed)"
-                        Name="TriggerBTPBuild_MenuItem"
+                        Header="{DynamicResource string_showTestDialog}"
+                        Name="ShowXceedDialog_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_testMicrosoftVisualCppInstaller}"
+                        Name="TestMSVCPInstaller_MenuItem"
                         Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
@@ -1527,19 +1551,6 @@
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
                                 Icon="Solid_Stethoscope"
-                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                Height="16"
-                                Width="16" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem
-                        ToolTip="{DynamicResource string_tooltip_diagnosticTool_OpenAllPackages}"
-                        Header="{DynamicResource string_diagnosticTool_OpenAllPackages}"
-                        Command="{Binding DiagToolOpenAllPackagesCommand}">
-                        <MenuItem.Icon>
-                            <fa5:ImageAwesome
-                                Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Solid_BookOpen"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />

@@ -58,7 +58,7 @@ namespace ME3TweaksModManager.Tests
 
 
                 Settings.LogModStartup = true;
-                App.BuildNumber = 134; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE. Not really a convenient way to update it constantly though...
+                App.BuildNumber = 136; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE. Not really a convenient way to update it constantly though...
 #if !AZURE || DEBUG
                 Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.Debug().CreateLogger();
 #else
@@ -68,10 +68,13 @@ namespace ME3TweaksModManager.Tests
 
                 //BackupService.RefreshBackupStatus(null); // used in mixin testing
 
-                CombinedServiceData = JsonConvert.DeserializeObject<JToken>(MOnlineContent.FetchRemoteString(M3ServiceLoader.CombinedServiceFetchURL.MainURL));
-
+                CombinedServiceData = JsonConvert.DeserializeObject<JToken>(MOnlineContent.FetchRemoteString(M3ServiceLoader.CombinedServiceFetchURL));
+#if AZURE
                 App.ExecutableLocation = Path.Combine(TestDataPath, "Executable", "ME3TweaksModManager.exe");
-                Directory.CreateDirectory(Directory.GetParent(App.ExecutableLocation).FullName); // For faking 
+#else
+                App.SetExecutableLocation();
+#endif
+                // Directory.CreateDirectory(Directory.GetParent(App.ExecutableLocation).FullName); // For faking 
                 initialized = true;
             }
         }

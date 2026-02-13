@@ -28,6 +28,10 @@ namespace ME3TweaksModManager.modmanager.objects
                     npl.KeyExpiry = exp;
                     npl.Key = parameters[@"key"];
                 }
+                if (int.TryParse(parameters[@"user_id"], out var uid))
+                {
+                    npl.UserId = uid;
+                }
             }
 
             return npl;
@@ -47,5 +51,10 @@ namespace ME3TweaksModManager.modmanager.objects
         /// The download key, required for download
         /// </summary>
         public string Key { get; set; }
+
+        /// <summary>
+        /// The user id of the user that is signed into the browser that generated the nxm link
+        /// </summary>
+        public int UserId { get; private set; }
     }
 }

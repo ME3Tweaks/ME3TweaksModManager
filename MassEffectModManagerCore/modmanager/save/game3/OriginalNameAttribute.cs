@@ -32,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         {
             if (string.IsNullOrEmpty(name) == true)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(@"name");
             }
 
             this.Name = name;

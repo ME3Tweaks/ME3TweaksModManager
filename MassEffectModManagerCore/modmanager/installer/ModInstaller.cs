@@ -9,6 +9,7 @@ using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.M3Merge.PlotManager;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
@@ -123,7 +124,11 @@ namespace ME3TweaksModManager.modmanager.installer
         /// <summary>
         /// LE - Could not source oodle dll
         /// </summary>
-        INSTALL_ABORTED_OODLE_MISSING
+        INSTALL_ABORTED_OODLE_MISSING,
+        /// <summary>
+        /// LE - Failure building BTP file
+        /// </summary>
+        INSTALL_FAILED_BTP_BUILD_FAILED
     }
 
 
@@ -240,9 +245,9 @@ namespace ME3TweaksModManager.modmanager.installer
         }
 
         /// <summary>
-        /// Performs the mod installation. This is a blocking method.
+        /// Performs the mod installation. This is a blocking method and must be run on a background thread or a new task.Run()!
         /// </summary>
-        public void InstallMod()
+        public async Task InstallMod()
         {
             var sw = Stopwatch.StartNew();
             bool testrun = false; //change to true to test
@@ -300,7 +305,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         if (gt.IsValid && !gt.IsBinkBypassInstalled())
                         {
                             // Bink isn't installed and it needs autoboot
-                            if (MUtilities.IsGameRunning(MEGame.LELauncher))
+                            if (MRunningGameInfo.IsGameRunning(MEGame.LELauncher))
                             {
                                 M3Log.Warning(@"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
                             }
@@ -322,7 +327,7 @@ namespace ME3TweaksModManager.modmanager.installer
             {
                 M3Log.Information(@"RCW mod: Beginning RCW mod subinstaller");
                 InstallAttachedRCWMod();
-                
+
                 // Consistent logging
                 if (InstallationResult.Result == EModInstallerResult.INSTALL_SUCCESSFUL)
                 {
@@ -619,7 +624,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 }
             }
 
-            M3Utilities.DriveFreeBytes(InstallOptionsPackage.InstallTarget.TargetPath, out var freeSpaceOnTargetDisk);
+            MUtilities.DriveFreeBytes(InstallOptionsPackage.InstallTarget.TargetPath, out var freeSpaceOnTargetDisk);
             requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.1); //+10% for some overhead
             M3Log.Information($@"Mod requires {FileSize.FormatSize(requiredSpaceToInstall)} of disk space to install. We have {FileSize.FormatSize(freeSpaceOnTargetDisk)} available");
             if (requiredSpaceToInstall > (long)freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
@@ -930,21 +935,34 @@ namespace ME3TweaksModManager.modmanager.installer
 #endif
                 }
 
-                void addBasegameTrackedFile(string originalmd5, string file, string finalMD5 = null)
+                // Add a tracked change from an applied merge mod.
+                void addBasegameTrackedFile(string file, MergeFileTransition transition)
                 {
                     if (file != null)
                     {
                         if (file.Contains(@"BioGame\CookedPC", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            // It's basegame
-                            var mm = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length,
-                                InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, finalMD5);
-                            var existingInfo =
-                                BasegameFileIdentificationService.GetBasegameFileSource(
-                                    InstallOptionsPackage.InstallTarget, file, originalmd5);
-                            var newTextToAppend =
-                                $@"{InstallOptionsPackage.ModBeingInstalled.ModName} {InstallOptionsPackage.ModBeingInstalled.ModVersionString}";
+                            // It's basegame, get the current record (if any)
+                            var mm = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, transition.FinalMD5);
+                            var existingInfo = BasegameFileIdentificationService.GetBasegameFileSource(InstallOptionsPackage.InstallTarget, file, transition.OriginalMD5);
+
+                            // Text to append to the existing info
+                            var newTextToAppend = $@"{InstallOptionsPackage.ModBeingInstalled.ModName} {InstallOptionsPackage.ModBeingInstalled.ModVersionString}";
+
+                            // 01/26/2026 - Add block containing applied m3ms
+                            if (transition.AppliedMergeMods != null && transition.AppliedMergeMods.Any())
+                            {
+                                //if (!string.IsNullOrWhiteSpace(newTextToAppend))
+                                //{
+                                //    newTextToAppend += "\n"; // do not localize
+                                //st}
+                                newTextToAppend += BasegameFileRecord.CreateBlock(MergeMod1.MERGEMOD_BGFIS_DATA_BLOCK, string.Join(BasegameFileRecord.BLOCK_SEPARATOR, transition.AppliedMergeMods));
+                            }
+
+
+                            // For tracking which mods have modified this file (not reliable)
                             mm.moddeschashes ??= new();
+
                             if (existingInfo != null)
                             {
                                 if (!existingInfo.source.Contains(newTextToAppend))
@@ -954,10 +972,14 @@ namespace ME3TweaksModManager.modmanager.installer
 
                                 mm.moddeschashes.AddRange(existingInfo.moddeschashes);
                             }
+                            else
+                            {
+                                mm.source = newTextToAppend;
+                            }
 
+                            //Set record
                             mm.moddeschashes.Add(InstallOptionsPackage.ModBeingInstalled.ModDescHash);
-                            basegameIdentificationServiceRecords[
-                                Path.GetRelativePath(InstallOptionsPackage.InstallTarget.TargetPath, file)] = mm;
+                            basegameIdentificationServiceRecords[Path.GetRelativePath(InstallOptionsPackage.InstallTarget.TargetPath, file)] = mm;
                         }
                     }
                 }
@@ -991,8 +1013,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         {
                             if (!mmp.MergeModToSavePackageWith.TryGetValue(af, out _))
                             {
-                                mmp.MergeModToSavePackageWith[af] =
-                                    mm; // This merge mod should be the one to save the package.
+                                mmp.MergeModToSavePackageWith[af] = mm; // This merge mod should be the one to save the package.
                             }
                         }
                     }
@@ -1006,7 +1027,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     mmp.FinalizeFileTransitionMap();
                     foreach (var f in mmp.FileTransitionMap.Where(x => x.Value.WasSavedOnce))
                     {
-                        addBasegameTrackedFile(f.Value.OriginalMD5, f.Key, f.Value.FinalMD5);
+                        addBasegameTrackedFile(f.Key, f.Value);
                     }
                 }
 
@@ -1104,7 +1125,10 @@ namespace ME3TweaksModManager.modmanager.installer
                 }
             }
 
-            if (InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+            // We check for 9.2 or higher here to force mods to update to 9.2 to use this feature,
+            // this ensures the developer is aware changes have been made.
+            if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_2
+                && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
             {
                 void onMergeUpdate(ProgressInfo pi)
                 {
@@ -1123,10 +1147,18 @@ namespace ME3TweaksModManager.modmanager.installer
                         continue;
                     }
 
-                    // Test build
                     var pi = new ProgressInfo();
                     pi.OnUpdate = onMergeUpdate;
-                    M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.InstallTarget, dlcName, pi);
+                    var mergeError = M3CTextureOverrideMerge.PerformDLCMerge(InstallOptionsPackage.InstallTarget, dlcName, !Settings.DeveloperMode, pi);
+                    if (mergeError != null)
+                    {
+                        // An error occurred during merge
+                        InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_BTP_BUILD_FAILED;
+                        InstallationResult.ErrorMessage = mergeError;
+                        InstallationResult.ErrorTitle = M3L.GetString(M3L.string_textureOverrideMergeFailed);
+                        InstallationResult.ErrorImage = MessageBoxImage.Error;
+                        return;
+                    }
                 }
             }
 
@@ -1161,7 +1193,7 @@ namespace ME3TweaksModManager.modmanager.installer
             if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME1)
             {
                 M3Log.Information(@"Installing supporting ASI files");
-                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME1_DLC_MOD_ENABLER, @"DLC Mod Enabler", InstallOptionsPackage.InstallTarget); //16 = DLC Mod Enabler
+                await ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME1_DLC_MOD_ENABLER, @"DLC Mod Enabler", InstallOptionsPackage.InstallTarget); //16 = DLC Mod Enabler
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME2)
             {
@@ -1171,27 +1203,27 @@ namespace ME3TweaksModManager.modmanager.installer
             {
                 if (InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_BalanceChangesReplacer, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_BalanceChangesReplacer, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
                 }
 
                 if (InstallOptionsPackage.InstallTarget.Supported)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_AutoTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
-                    ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_ME3Logger, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_AutoTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.ME3_ME3Logger, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
                 }
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE1)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoTOCLE, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoloadEnabler, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoTOCLE, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE1_AutoloadEnabler, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE2)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE2_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE2_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE3)
             {
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                await ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_AutoTOCLE, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             } 
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LMP)
             {
@@ -1207,7 +1239,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 var asiToInstall = ASIManager.GetASIModVersion(InstallOptionsPackage.ModBeingInstalled.Game, asiMod.ASIGroupID, asiMod.Version, includeHidden: M3ASIManager.CanSeeHiddenASIs());
                 if (asiToInstall != null)
                 {
-                    ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
+                    await ASIManager.InstallASIToTarget(asiToInstall, InstallOptionsPackage.InstallTarget);
                 }
                 else
                 {

@@ -1,11 +1,12 @@
-﻿using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
-using LegendaryExplorerCore.Compression;
+﻿using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.objects.tlk
 {
@@ -246,7 +247,7 @@ namespace ME3TweaksModManager.modmanager.objects.tlk
             // Contains position for start of offset data (long long)
             Dictionary<string, long> headerOffsetMap = new Dictionary<string, long>();
 
-            var searchOption = mod.ModDescTargetVersion >= 9 ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var searchOption = mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0 ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
             var files = Directory.GetFiles(inputDirectory, @"*.xml", searchOption);
             List<string> optionKeys = new List<string>();

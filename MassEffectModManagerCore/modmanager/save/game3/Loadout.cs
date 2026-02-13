@@ -56,7 +56,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._AssaultRifle)
                 {
                     this._AssaultRifle = value;
-                    this.NotifyPropertyChanged("AssaultRifle");
+                    this.NotifyPropertyChanged(@"AssaultRifle");
                 }
             }
         }
@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Shotgun)
                 {
                     this._Shotgun = value;
-                    this.NotifyPropertyChanged("Shotgun");
+                    this.NotifyPropertyChanged(@"Shotgun");
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._SniperRifle)
                 {
                     this._SniperRifle = value;
-                    this.NotifyPropertyChanged("SniperRifle");
+                    this.NotifyPropertyChanged(@"SniperRifle");
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._SubmachineGun)
                 {
                     this._SubmachineGun = value;
-                    this.NotifyPropertyChanged("SubmachineGun");
+                    this.NotifyPropertyChanged(@"SubmachineGun");
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Pistol)
                 {
                     this._Pistol = value;
-                    this.NotifyPropertyChanged("Pistol");
+                    this.NotifyPropertyChanged(@"Pistol");
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._HeavyWeapon)
                 {
                     this._HeavyWeapon = value;
-                    this.NotifyPropertyChanged("HeavyWeapon");
+                    this.NotifyPropertyChanged(@"HeavyWeapon");
                 }
             }
         }

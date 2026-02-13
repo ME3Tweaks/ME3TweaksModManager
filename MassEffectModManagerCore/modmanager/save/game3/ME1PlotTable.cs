@@ -28,7 +28,7 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("ME1PlotTableRecord")]
+    [OriginalName(@"ME1PlotTableRecord")]
     // ReSharper disable InconsistentNaming
     public class ME1PlotTable : IUnrealSerializable, INotifyPropertyChanged
         // ReSharper restore InconsistentNaming
@@ -39,15 +39,15 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
 
         #region Fields
-        [OriginalName("BoolVariables")]
+        [OriginalName(@"BoolVariables")]
         private BitArray _BoolVariables = new BitArray(0);
 
         private readonly BitArrayWrapper _BoolVariablesWrapper;
 
-        [OriginalName("IntVariables")]
+        [OriginalName(@"IntVariables")]
         private List<int> _IntVariables = new List<int>();
 
-        [OriginalName("FloatVariables")]
+        [OriginalName(@"FloatVariables")]
         private List<float> _FloatVariables = new List<float>();
         #endregion
 
@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
             get { return this._BoolVariables; }
         }
 
-        [DisplayName("Bool Variables")]
+        [DisplayName(@"Bool Variables")]
         public BitArrayWrapper BoolVariablesWrapper
         {
             get { return this._BoolVariablesWrapper; }
@@ -74,12 +74,12 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._BoolVariables)
                 {
                     this._BoolVariables = value;
-                    this.NotifyPropertyChanged("BoolVariables");
+                    this.NotifyPropertyChanged(@"BoolVariables");
                 }
             }*/
         }
 
-        [DisplayName("Int Variables")]
+        [DisplayName(@"Int Variables")]
         public List<int> IntVariables
         {
             get { return this._IntVariables; }
@@ -88,12 +88,12 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._IntVariables)
                 {
                     this._IntVariables = value;
-                    this.NotifyPropertyChanged("IntVariables");
+                    this.NotifyPropertyChanged(@"IntVariables");
                 }
             }
         }
 
-        [DisplayName("Float Variables")]
+        [DisplayName(@"Float Variables")]
         public List<float> FloatVariables
         {
             get { return this._FloatVariables; }
@@ -102,7 +102,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._FloatVariables)
                 {
                     this._FloatVariables = value;
-                    this.NotifyPropertyChanged("FloatVariables");
+                    this.NotifyPropertyChanged(@"FloatVariables");
                 }
             }
         }

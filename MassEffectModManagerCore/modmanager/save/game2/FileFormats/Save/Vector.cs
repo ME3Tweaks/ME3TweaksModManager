@@ -6,13 +6,13 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public partial class Vector : IUnrealSerializable
     {
-        [UnrealFieldDisplayName("X")]
+        [UnrealFieldDisplayName(@"X")]
         public float X;
 
-        [UnrealFieldDisplayName("Y")]
+        [UnrealFieldDisplayName(@"Y")]
         public float Y;
 
-        [UnrealFieldDisplayName("Z")]
+        [UnrealFieldDisplayName(@"Z")]
         public float Z;
 
         public void Serialize(IUnrealStream stream)
@@ -24,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 
         public override string ToString()
         {
-            return String.Format("{0}, {1}, {2}",
+            return String.Format(@"{0}, {1}, {2}",
                 this.X,
                 this.Y,
                 this.Z);

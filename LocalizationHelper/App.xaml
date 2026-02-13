@@ -5,5 +5,5 @@
              Startup="App_OnStartup">
     <Application.Resources>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-</Application.Resources>
+    </Application.Resources>
 </Application>

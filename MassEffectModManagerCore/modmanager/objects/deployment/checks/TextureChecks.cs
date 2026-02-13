@@ -1,11 +1,12 @@
 ﻿using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.Classes;
+using ME3TweaksCore.ME3Tweaks.ModManager;
+using ME3TweaksCore.Misc;
 using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.localizations;
 using System.Diagnostics;
-using ME3TweaksCore.Misc;
-using ME3TweaksCore.Services.ThirdPartyModIdentification;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -229,7 +230,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             if (duplicates.Any())
             {
-                if (item.ModToValidateAgainst.ModDescTargetVersion >= 9.0)
+                if (item.ModToValidateAgainst.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                 {
                     item.AddBlockingError(
                         M3L.GetString(M3L.string_interp_cannotShipMultipleSameTFC, string.Join(',', duplicates)));
