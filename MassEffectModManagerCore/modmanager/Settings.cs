@@ -158,26 +158,6 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
-
-        private static bool _alphaMode = false;
-        public static bool AlphaMode
-        {
-            get
-            {
-#if DEBUG
-                return true;
-#else
-                return _alphaMode;
-#endif
-            }
-            set
-            {
-#if !DEBUG
-                SetProperty(ref _alphaMode, value);
-#endif
-            }
-        }
-
         private static bool _configureNXMHandlerOnBoot = true;
 
         public static bool ConfigureNXMHandlerOnBoot

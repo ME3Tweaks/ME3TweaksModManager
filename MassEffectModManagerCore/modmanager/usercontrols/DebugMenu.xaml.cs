@@ -47,47 +47,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
 #endif
         }
-#if DEBUG
-
-        private static void TriggerBTPBuild(MainWindow window)
-        {
-            if (window.SelectedMod == null)
-                return;
-
-            var target = window.GetCurrentTarget(window.SelectedMod.Game);
-            if (target == null)
-                return;
-
-            var dlcFolder = window.SelectedMod.GetAllPossibleCustomDLCFolders().FirstOrDefault();
-            if (dlcFolder == null)
-                return;
-
-            var gameDir = Path.Combine(target.GetDLCPath(), dlcFolder);
-            if (!Directory.Exists(gameDir))
-                return;
-
-            var task = BackgroundTaskEngine.SubmitBackgroundJob("Texture Override Merge", "Texture Override Merge", "Completed");
-            void onProgress(ProgressInfo pi)
-            {
-                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, $"{pi.Status}");
-            }
-            var pi = new ProgressInfo();
-            pi.OnUpdate = onProgress;
-            Task.Run(() =>
-            {
-                M3CTextureOverrideMerge.PerformDLCMerge(target, dlcFolder, pi);
-            }).ContinueWithOnUIThread(r => { BackgroundTaskEngine.SubmitJobCompletion(task); });
-
-        }
 
 #if DEBUG
-
-        private static void TestMSVCPPInstaller(MainWindow window)
-        {
-            window.InstallMSVCPP();
-        }
-
-
         private static void TriggerBTPBuild(MainWindow window)
         {
             if (window.SelectedMod == null)
@@ -117,6 +78,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 M3CTextureOverrideMerge.PerformDLCMerge(target, dlcFolder, false, pi);
             }).ContinueWithOnUIThread(r => { BackgroundTaskEngine.SubmitJobCompletion(task); });
 
+        }
+
+        private static void TestMSVCPPInstaller(MainWindow window)
+        {
+            window.InstallMSVCPP();
         }
 
         private static void TestDetermineIfInstalled(MainWindow window)

@@ -125,6 +125,7 @@ namespace ME3TweaksModManager
                     loadLETarget(MEGame.LE1, LE1Directory.DefaultGamePath);
                     loadLETarget(MEGame.LE2, LE2Directory.DefaultGamePath);
                     loadLETarget(MEGame.LE3, LE3Directory.DefaultGamePath);
+                    loadLETarget(MEGame.LMP, LMPDirectory.DefaultGamePath);
                 }
 
                 // Read steam locations
@@ -185,6 +186,7 @@ namespace ME3TweaksModManager
                 targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME1, targets, out _).Select(x=>x.Target));
 
                 // Load LE cached targets
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LMP, targets, out _).Select(x=>x.Target));
                 targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE3, targets, out _).Select(x=>x.Target));
                 targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE2, targets, out _).Select(x=>x.Target));
                 targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE1, targets, out _).Select(x=>x.Target));
@@ -201,7 +203,9 @@ namespace ME3TweaksModManager
             var finalList = new List<GameTargetWPF>();
 
             //LE
-            var aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE3 && x.RegistryActive);
+            var aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LMP && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE3 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE2 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
@@ -226,6 +230,7 @@ namespace ME3TweaksModManager
                 { Selectable = false });
             }
 
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.LMP && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE3 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE2 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE1 && !x.RegistryActive));
