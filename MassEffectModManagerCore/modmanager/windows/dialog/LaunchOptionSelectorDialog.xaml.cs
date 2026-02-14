@@ -36,6 +36,9 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
                 case MEGame.LE3:
                     matchGuid = Settings.SelectedLE3LaunchOption;
                     break;
+                case MEGame.LMP:
+                    matchGuid = Settings.SelectedLMPLaunchOption;
+                    break;
             }
             ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == matchGuid);
 
@@ -125,6 +128,9 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
                         break;
                     case MEGame.LE3:
                         Settings.SelectedLE3LaunchOption = ChosenOption.PackageGuid;
+                        break;
+                    case MEGame.LMP:
+                        Settings.SelectedLMPLaunchOption = ChosenOption.PackageGuid;
                         break;
                 }
 

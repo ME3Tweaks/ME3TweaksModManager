@@ -391,6 +391,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _selectedLE3LaunchOption, value);
         }
 
+        private static Guid _selectedLMPLaunchOption = Guid.Empty;
+        public static Guid SelectedLMPLaunchOption
+        {
+            get => _selectedLMPLaunchOption;
+            set => SetProperty(ref _selectedLMPLaunchOption, value);
+        }
+
 
         private static bool _enableLE1CoalescedMerge = true;
         public static bool EnableLE1CoalescedMerge
@@ -589,6 +596,7 @@ namespace ME3TweaksModManager.modmanager
             SelectedLE1LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", Guid.Empty);
             SelectedLE2LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", Guid.Empty);
             SelectedLE3LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", Guid.Empty);
+            SelectedLMPLaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLMPLaunchOption", Guid.Empty);
 
             // Debugging options - these have no UI.
             UseOptimizedTextureRestore = LoadSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", true);
@@ -814,6 +822,7 @@ namespace ME3TweaksModManager.modmanager
                     SaveSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", SelectedLE1LaunchOption);
                     SaveSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", SelectedLE2LaunchOption);
                     SaveSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", SelectedLE3LaunchOption);
+                    SaveSettingGuid(settingsIni, "ModManager", "SelectedLMPLaunchOption", SelectedLMPLaunchOption);
 
                     SaveSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", EnableLE1CoalescedMerge);
                     SaveSettingBool(settingsIni, "ModManager", "EnableLE12DAMerge", EnableLE12DAMerge);

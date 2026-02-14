@@ -119,6 +119,7 @@ namespace ME3TweaksModManager
                 MEGame.LE1 => Settings.SelectedLE1LaunchOption,
                 MEGame.LE2 => Settings.SelectedLE2LaunchOption,
                 MEGame.LE3 => Settings.SelectedLE3LaunchOption,
+                MEGame.LMP => Settings.SelectedLMPLaunchOption,
                 _ => Guid.Empty,
             };
 
