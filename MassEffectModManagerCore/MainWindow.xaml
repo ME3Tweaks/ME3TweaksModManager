@@ -1424,15 +1424,10 @@
                     Header="{DynamicResource string_alpha}"
                     Padding="4"
                     Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}">
-                    <MenuItem
-                    Header="Alpha"
-                    Padding="4"
-                    Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}">
                         <MenuItem
                         Header="Build Base Milan"
                         Name="BuildBaseMilan_MenuItem"
                         Command="{Binding BuildBaseMilanCommand}" />
-                    </MenuItem>
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
