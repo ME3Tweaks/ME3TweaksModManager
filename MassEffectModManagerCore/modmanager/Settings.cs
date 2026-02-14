@@ -152,9 +152,7 @@ namespace ME3TweaksModManager.modmanager
             }
             set
             {
-#if !DEBUG
                 SetProperty(ref _alphaMode, value);
-#endif
             }
         }
 
