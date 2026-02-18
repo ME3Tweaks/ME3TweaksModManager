@@ -151,7 +151,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 else if (ui is M3OnlineContent.NexusModUpdateInfo nmui)
                 {
                     // Check if we should auto-download and import
-                    if (Settings.AutoImportModUpdates && NexusModsUtilities.UserInfo?.IsPremium == true)
+                    if (UseInAppUpdater && NexusModsUtilities.UserInfo?.IsPremium == true)
                     {
                         var usedInAppDownloader = await AttemptQueueNexusModDownload(nmui);
                         if (!usedInAppDownloader)
@@ -462,7 +462,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
 
         // 03/21/2025 - Show all download button if we are in beta mode.
-        public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || NexusModsUtilities.UserInfo?.IsPremium == true));
+        public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || NexusModsUtilities.UserInfo?.IsPremium == true && UseInAppUpdater));
 
         /// <summary>
         /// If the clear completed button should be shown at all to the user
