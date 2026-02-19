@@ -9,10 +9,7 @@ using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.gametarget;
-
-#if WITH_APPCENTER
-using Microsoft.AppCenter.Crashes;
-#endif
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
@@ -32,29 +29,25 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 // This uses just EnableTelemetry as it uses the queue system which will check if the telemetry witholding gate has been witheld.
                 TrackEventCallback = (eventName, properties) => { if (Settings.EnableTelemetry) { App.SubmitAnalyticTelemetryEvent(eventName, properties); } },
                 // This uses CanSendTelemetry to ensure gating any bootup telemetry
-                TrackErrorCallback = (eventName, properties) =>
+                TrackErrorCallback = (e, properties) =>
                 {
                     if (Settings.CanSendTelemetry)
                     {
-                        // Microsoft shut down AppCenter March 2025
-                        // TelemetryInterposer.TrackError(eventName, properties);
+                        M3OpenTelemetry.TrackError(e, properties);
                     }
                 },
                 UploadErrorLogCallback = (e, data) =>
                 {
                     if (Settings.CanSendTelemetry)
                     {
-#if WITH_APPCENTER
-                        var attachments = new List<ErrorAttachmentLog>();
+                        var properties = data != null ? new Dictionary<string, string>(data) : new Dictionary<string, string>();
                         string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                        if (log != null && log.Length < FileSize.MebiByte * 7)
+                        if (log != null)
                         {
-                            attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
+                            const int maxLogLength = 8192; // 8192 chars seems pretty small...
+                            properties[@"log"] = log.Length > maxLogLength ? log.Substring(log.Length - maxLogLength) : log;
                         }
-
-                        // We directly send to Crashes
-                        Crashes.TrackError(e, data);
-#endif
+                        M3OpenTelemetry.TrackError(e, properties);
                     }
                 },
                 CanFetchContentThrottleCheck = M3OnlineContent.CanFetchContentThrottleCheck,

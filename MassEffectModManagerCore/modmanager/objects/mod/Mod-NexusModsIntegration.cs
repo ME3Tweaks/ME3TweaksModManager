@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
@@ -7,8 +7,6 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
-using Microsoft.AppCenter.Analytics;
-
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod

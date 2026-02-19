@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
@@ -11,8 +11,6 @@ using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 
 #if WITH_APPCENTER
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
 #endif
 
 using Microsoft.WindowsAPICodePack.Dialogs;

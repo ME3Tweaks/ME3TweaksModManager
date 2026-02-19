@@ -18,7 +18,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// </summary>
     public partial class AboutPanel : MMBusyPanelBase
     {
-        public bool TelemetryKeyAvailable => APIKeys.HasAppCenterKey;
+        public bool TelemetryKeyAvailable => APIKeys.HasAppInsightsConnectionString;
         public string NetVersion => Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
 
         public ObservableCollectionExtended<LibraryCredit> Libraries { get; } = new ObservableCollectionExtended<LibraryCredit>();
