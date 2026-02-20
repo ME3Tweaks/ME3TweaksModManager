@@ -36,7 +36,7 @@ namespace ME3TweaksModManager.modmanager
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
-            
+
             // Don't save session-only settings
             if (Loaded && !propertyName.StartsWith("SessionOnly_"))
             {
@@ -422,6 +422,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _le1ConsoleKey, value);
         }
 
+        private static Guid _instanceGuid = Guid.Empty;
+        public static Guid InstanceGuid
+        {
+            get => _instanceGuid;
+            set => SetProperty(ref _instanceGuid, value);
+        }
+
         private static bool _isLE1MiniConsoleKeySet;
         public static bool IsLE1MiniConsoleKeySet
         {
@@ -536,7 +543,8 @@ namespace ME3TweaksModManager.modmanager
                     M3Log.Error(@"Error reading settings.ini file: " + e.Message);
                     M3Log.Error(@"Mod Manager will use the defaults instead");
                 }
-            } else
+            }
+            else
             {
                 M3Log.Information(@"No settings.ini file found, using defaults");
                 settingsIni = new IniData();
@@ -580,6 +588,7 @@ namespace ME3TweaksModManager.modmanager
 
             SSUILoadAllSaves = LoadSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", false);
             ForcePullContentNextBoot = LoadSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", false);
+            InstanceGuid = LoadSettingGuid(settingsIni, "ModManager", "InstanceGuid", Guid.Empty);
 
             // LEGENDARY
             SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
@@ -621,6 +630,7 @@ namespace ME3TweaksModManager.modmanager
 
             // BETA OPTIONS
             ShowInstalledModsInLibrary = LoadSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", false);
+
 
             Loaded = true;
         }
@@ -816,6 +826,10 @@ namespace ME3TweaksModManager.modmanager
                     SaveSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", SelectedLE1LaunchOption);
                     SaveSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", SelectedLE2LaunchOption);
                     SaveSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", SelectedLE3LaunchOption);
+                    if (InstanceGuid != Guid.Empty)
+                    {
+                        SaveSettingGuid(settingsIni, "ModManager", "InstanceGuid", InstanceGuid);
+                    }
 
                     SaveSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", EnableLE1CoalescedMerge);
                     SaveSettingBool(settingsIni, "ModManager", "EnableLE12DAMerge", EnableLE12DAMerge);
