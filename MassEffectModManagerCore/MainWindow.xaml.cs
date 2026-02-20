@@ -2415,8 +2415,10 @@ namespace ME3TweaksModManager
 
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
                     data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
+                    data[@"BuildDate"] = BuildHelper.BuildDateString; 
+                    data[@"Version"] = MLibraryConsumer.GetAppVersion().ToString();
 
-                    App.SubmitAnalyticTelemetryEvent(@"Hardware Info", data);
+                    App.SubmitAnalyticTelemetryEvent(@"Version and Hardware Info", data);
                 }
                 catch //(Exception e)
                 {
