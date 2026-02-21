@@ -44,6 +44,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
             if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
             if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
+            if (sender == nameof(MainWindow.CrashTest_MenuItem)) CrashTest(window);
 #endif
         }
 
@@ -316,6 +317,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 M3L.ShowDialog(window, "Done.");
             });
 
+        }
+
+        /// <summary>
+        /// Triggers a crash by intentionally throwing an exception for testing purposes.
+        /// </summary>
+        /// <remarks>This method is intended for testing error handling scenarios and should not be used
+        /// in production code.</remarks>
+        /// <exception cref="Exception">Always thrown to indicate a simulated crash during the execution of the method.</exception>
+        private static void CrashTest(MainWindow window){
+            throw new Exception(@"CrashTest");
         }
 #endif
     }

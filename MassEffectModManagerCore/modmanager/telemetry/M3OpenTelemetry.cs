@@ -1,5 +1,6 @@
 using Azure.Monitor.OpenTelemetry.Exporter;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Helpers;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
@@ -39,11 +40,19 @@ namespace ME3TweaksModManager.modmanager.telemetry
             }
         }
 
+        private static void AddBuildInfo(Dictionary<string, string> data)
+        {
+            data[@"BuildDate"] = BuildHelper.BuildDateString;
+            data[@"Version"] = MLibraryConsumer.GetAppVersion().ToString();
+        }
+
         /// <summary>
         /// Tracks a named event with optional property bag.
         /// </summary>
         public static void TrackEvent(string name, Dictionary<string, string> properties = null)
         {
+            if (!Settings.CanSendTelemetry)
+                return;
             EnsureInstanceGuid();
             using var activity = Source.StartActivity(name, ActivityKind.Internal);
             if (activity != null)
@@ -54,8 +63,11 @@ namespace ME3TweaksModManager.modmanager.telemetry
                 activity.SetTag(@"ai.user.id", Settings.InstanceGuid.ToString());
 
                 if (properties != null)
+                {
+                    AddBuildInfo(properties);
                     foreach (var kvp in properties)
                         activity.SetTag(kvp.Key, kvp.Value);
+                }
             }
         }
 
@@ -64,6 +76,8 @@ namespace ME3TweaksModManager.modmanager.telemetry
         /// </summary>
         public static void TrackError(Exception exception, Dictionary<string, string> properties = null)
         {
+            if (!Settings.CanSendTelemetry)
+                return;
             EnsureInstanceGuid();
             using var activity = Source.StartActivity(exception?.GetType().Name ?? @"Error", ActivityKind.Internal);
             if (activity != null)
@@ -75,8 +89,60 @@ namespace ME3TweaksModManager.modmanager.telemetry
                 activity.AddException(exception);
                 activity.SetStatus(ActivityStatusCode.Error, exception?.Message);
                 if (properties != null)
+                {
+                    AddBuildInfo(properties);
                     foreach (var kvp in properties)
                         activity.SetTag(kvp.Key, kvp.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tracks a crash exception, attaches the latest log file, and immediately flushes telemetry to the server.
+        /// This method must be called right before the application exits due to an unhandled crash.
+        /// </summary>
+        public static void TrackCrash(Exception exception, Dictionary<string, string> properties = null)
+        {
+            if (!Settings.CanSendTelemetry)
+                return;
+            EnsureInstanceGuid();
+            var activityName = @"Crash";
+            if (exception?.GetType() != null)
+            {
+                activityName = $@"{exception.GetType()} - Crash";
+            }
+            using (var activity = Source.StartActivity(activityName, ActivityKind.Internal))
+            {
+                if (activity != null)
+                {
+                    activity.SetTag(@"ai.user.id", Settings.InstanceGuid.ToString());
+                    activity.AddException(exception);
+                    activity.SetStatus(ActivityStatusCode.Error, exception?.Message);
+
+                    // Attach the latest log file; do not restart the logger since the app is about to exit
+                    string logText = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), false);
+                    if (logText != null)
+                    {
+                        // Application Insights limits property values to 8192; keep the most recent (tail) of the log
+                        const int maxLogLength = 8192;
+                        if (logText.Length > maxLogLength)
+                            logText = logText.Substring(logText.Length - maxLogLength);
+                        activity.SetTag(@"log", logText);
+                    }
+
+                    if (properties != null)
+                        foreach (var kvp in properties)
+                            activity.SetTag(kvp.Key, kvp.Value);
+                }
+            }
+            // Force flush so telemetry is delivered before the process exits
+            if (_tracerProvider != null && _tracerProvider.ForceFlush())
+            {
+                Debug.WriteLine(@"Flush succeeded!");
+            }
+            else
+            {
+                Debug.WriteLine(@"Flush failed or no tracer provider");
             }
         }
 
@@ -85,6 +151,7 @@ namespace ME3TweaksModManager.modmanager.telemetry
         /// </summary>
         public static void Shutdown()
         {
+            _tracerProvider?.ForceFlush();
             _tracerProvider?.Dispose();
             _tracerProvider = null;
         }

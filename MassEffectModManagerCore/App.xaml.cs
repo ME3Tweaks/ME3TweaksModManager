@@ -632,10 +632,7 @@ namespace ME3TweaksModManager
             }
 
             M3Log.Exception(e.Exception, @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:", true);
-            if (Settings.CanSendTelemetry)
-            {
-                M3OpenTelemetry.TrackError(e.Exception, new Dictionary<string, string>() { { @"Source", @"UnhandledDispatcherException" } });
-            }
+            M3OpenTelemetry.TrackCrash(e.Exception, new Dictionary<string, string>() { { @"Source", @"UnhandledDispatcherException" } });
         }
 
         /// <summary>
@@ -695,15 +692,15 @@ namespace ME3TweaksModManager
                     }
 
                     M3Log.Information(@"Application exiting normally");
-                    }
-                    else
-                    {
-                        // We don't log this anymore cause it causes too many duplicate log files to be opened
-                        //M3Log.Information(@"Application exiting (duplicate instance)");
-                    }
+                }
+                else
+                {
+                    // We don't log this anymore cause it causes too many duplicate log files to be opened
+                    //M3Log.Information(@"Application exiting (duplicate instance)");
+                }
 
-                    M3OpenTelemetry.Shutdown();
-                    Log.CloseAndFlush();
+                M3OpenTelemetry.Shutdown();
+                Log.CloseAndFlush();
             }
 
             // Clean up single instance

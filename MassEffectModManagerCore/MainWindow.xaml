@@ -1521,6 +1521,10 @@
                         Header="{DynamicResource string_testMicrosoftVisualCppInstaller}"
                         Name="TestMSVCPInstaller_MenuItem"
                         Click="RouteDebugCall" />
+                    <MenuItem
+                       Header="Crash test"
+                       Name="CrashTest_MenuItem"
+                       Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
