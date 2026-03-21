@@ -922,7 +922,7 @@ namespace ME3TweaksModManager.modmanager
         /// <param name="path">The directory path to open in Explorer.</param>
         internal static void OpenExplorer(string path)
         {
-            Process.Start("explorer", path);
+            Process.Start("explorer", $"\"{path}\"");
         }
 
         /// <summary>
