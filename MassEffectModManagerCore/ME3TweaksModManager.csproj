@@ -200,8 +200,8 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="FontAwesome5" Version="2.1.11" />
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api" Version="1.4.10" />
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.SelfApi" Version="2.5.14" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api" Version="1.4.11" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.SelfApi" Version="2.5.16" />
 		<PackageReference Include="Microsoft.AppCenter" Version="5.0.7" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.7" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.7" />

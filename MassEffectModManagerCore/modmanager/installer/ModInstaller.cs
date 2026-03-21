@@ -305,7 +305,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         if (gt.IsValid && !gt.IsBinkBypassInstalled())
                         {
                             // Bink isn't installed and it needs autoboot
-                            if (MUtilities.IsGameRunning(MEGame.LELauncher))
+                            if (MRunningGameInfo.IsGameRunning(MEGame.LELauncher))
                             {
                                 M3Log.Warning(@"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
                             }

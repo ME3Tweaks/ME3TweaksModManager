@@ -47,7 +47,7 @@
                 Visibility="{Binding ShowDownloadAllButton, Converter={StaticResource BoolToVisibilityConverter}}"
                 Padding="7,4"
                 HorizontalAlignment="Left"
-                Margin="0,5,0,5" />
+                Margin="0,5,5,5" />
             <Button
                 DockPanel.Dock="Left"
                 Content="{DynamicResource string_clearCompleted}"
@@ -56,14 +56,14 @@
                 Visibility="{Binding ShowClearCompletedButton, Converter={StaticResource BoolToVisibilityConverter}}"
                 Padding="7,4"
                 HorizontalAlignment="Left"
-                Margin="5,5,0,5" />
+                Margin="0,5,5,5" />
             <CheckBox
                 DockPanel.Dock="Left"
                 Content="{DynamicResource string_useInappUpdater}"
-                IsChecked="{Binding UseInUpdater}"
+                IsChecked="{Binding UseInAppUpdater}"
                 IsEnabled="{Binding IsNexusPremiumUser}"
                 VerticalAlignment="Center"
-                Margin="10,5,0,5">
+                Margin="0,5,0,5">
                 <CheckBox.ToolTip>
                     <TextBlock
                         TextWrapping="Wrap"

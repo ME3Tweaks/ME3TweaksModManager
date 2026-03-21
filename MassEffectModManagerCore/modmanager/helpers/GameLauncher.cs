@@ -212,7 +212,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
             }
 
-            if (Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
+            if (Settings.SkipLELauncher && target.Game.IsLEGame() && !MRunningGameInfo.IsGameRunning(MEGame.LELauncher))
             {
                 var launcherPath = Path.Combine(target.TargetPath, @"..", @"Launcher");
                 var launcherTarget = new GameTargetWPF(MEGame.LELauncher, launcherPath, false);
