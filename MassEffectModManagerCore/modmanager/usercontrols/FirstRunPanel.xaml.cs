@@ -69,8 +69,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             M3Log.Information(@"Completing first run panel onboarding");
             if (Settings.EnableTelemetry)
             {
-                // Start app center
-                App.InitAppCenter();
+                // Initialize OpenTelemetry / Application Insights
+                App.InitOpenTelemetry();
             }
             App.FlushTelemetryItems(); // Push through any pending telemetry items
             Result.ReloadMods = true; // User has now chosen their mod library

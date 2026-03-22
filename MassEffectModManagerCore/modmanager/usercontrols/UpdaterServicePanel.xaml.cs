@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,7 +23,6 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Renci.SshNet;
 using static ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;

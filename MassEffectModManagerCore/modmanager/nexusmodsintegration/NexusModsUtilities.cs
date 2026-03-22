@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,8 +15,6 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Ingestion.Models.Serialization;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;

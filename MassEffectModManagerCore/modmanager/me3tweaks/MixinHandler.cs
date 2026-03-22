@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -13,7 +13,6 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
-using Microsoft.AppCenter.Crashes;
 using Microsoft.IO;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks

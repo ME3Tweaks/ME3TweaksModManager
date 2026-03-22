@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -25,7 +25,6 @@ using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
 using Path = System.IO.Path;
 

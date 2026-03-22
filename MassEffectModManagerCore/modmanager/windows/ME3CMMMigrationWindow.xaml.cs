@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Windows;
 using IniParser;
 using IniParser.Model;
@@ -8,9 +8,8 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Crashes;
-
 namespace ME3TweaksModManager.modmanager.windows
 {
 
@@ -354,7 +353,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 {
                     migrated = false;
                     M3Log.Error(@"Error in migration: " + e.Message);
-                    Crashes.TrackError(e);
+                    M3OpenTelemetry.TrackError(e);
                 }
                 TelemetryInterposer.TrackEvent(@"ME3CMM Migration", new Dictionary<string, string>()
                 {

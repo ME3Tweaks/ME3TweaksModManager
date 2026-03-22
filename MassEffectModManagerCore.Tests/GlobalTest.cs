@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,8 +12,6 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
@@ -51,11 +49,6 @@ namespace ME3TweaksModManager.Tests
                 };
                 ME3TweaksCoreLib.Initialize(package);
                 // LegendaryExplorerCoreLib.InitLib(TaskScheduler.Default, null);
-
-                // Will need adjusted manually when WITH_APPCENTER is set to false in ME3TweaksModManager - maybe have a callback into it?
-                Analytics.SetEnabledAsync(false);
-                Crashes.SetEnabledAsync(false);
-
 
                 Settings.LogModStartup = true;
                 App.BuildNumber = 136; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE. Not really a convenient way to update it constantly though...

@@ -21,14 +21,9 @@ using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using Serilog;
+using ME3TweaksModManager.modmanager.telemetry;
 using SevenZip;
 using SingleInstanceCore;
-
-#if WITH_APPCENTER
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-#endif
 
 namespace ME3TweaksModManager
 {
@@ -345,8 +340,8 @@ namespace ME3TweaksModManager
                 }
                 else if (Settings.ShowedPreviewPanel)
                 {
-                    // Telemetry is on and we've shown the preview panel. Start appcenter
-                    InitAppCenter();
+                    // Telemetry is on and we've shown the preview panel. Initialize OpenTelemetry.
+                    InitOpenTelemetry();
                 }
                 else
                 {
@@ -494,9 +489,7 @@ namespace ME3TweaksModManager
             else
             {
                 // if telemetry is not enabled this will not do anything.
-#if WITH_APPCENTER
-                Analytics.TrackEvent(name, data);
-#endif
+                M3OpenTelemetry.TrackEvent(name, data);
             }
         }
 
@@ -517,54 +510,33 @@ namespace ME3TweaksModManager
             QueuedTelemetryItems = null; // Just release the memory. This variable is never used again
         }
 
-        internal static void InitAppCenter()
+        internal static void InitOpenTelemetry()
         {
-#if WITH_APPCENTER
             if (!new NickStrupat.ComputerInfo().ActuallyPlatform)
             {
                 M3Log.Warning(@"This does not appear to be an actually supported platform, disabling telemetry");
                 return;
             }
 #if !DEBUG
-            if (APIKeys.HasAppCenterKey)
+            if (APIKeys.HasAppInsightsConnectionString)
             {
-                Crashes.GetErrorAttachments = (ErrorReport report) =>
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    // Attach some text.
-                    string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:";
-                    M3Log.Fatal(report.StackTrace);
-                    M3Log.Fatal(errorMessage);
-                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                    if (log.Length < FileSize.MebiByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"crashlog.txt"));
-                    }
-                    else
-                    {
-                        //Compress log
-                        var compressedLog = LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, @"crashlog.txt.lzma", @"application/x-lzma"));
-                    }
-                    return attachments;
-                };
-                M3Log.Information(@"Initializing AppCenter");
-                AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
+                M3Log.Information(@"Initializing Application Insights telemetry");
+                M3OpenTelemetry.Initialize(APIKeys.AppInsightsConnectionString);
             }
             else
             {
-                M3Log.Error(@"This build is not configured correctly for AppCenter!");
+                M3Log.Error(@"This build is not configured correctly for Application Insights!");
             }
 #else
-            if (!APIKeys.HasAppCenterKey)
+            if (!APIKeys.HasAppInsightsConnectionString)
             {
-                Debug.WriteLine(@" >>> This build is missing an API key for AppCenter!");
+                Debug.WriteLine(@" >>> This build is missing an Application Insights connection string!");
             }
             else
             {
-                Debug.WriteLine(@"This build has an API key for AppCenter");
+                Debug.WriteLine(@"This build has an Application Insights connection string");
+                M3OpenTelemetry.Initialize(APIKeys.AppInsightsConnectionString);
             }
-#endif
 #endif
         }
 
@@ -660,6 +632,7 @@ namespace ME3TweaksModManager
             }
 
             M3Log.Exception(e.Exception, @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:", true);
+            M3OpenTelemetry.TrackCrash(e.Exception, new Dictionary<string, string>() { { @"Source", @"UnhandledDispatcherException" } });
         }
 
         /// <summary>
@@ -726,6 +699,7 @@ namespace ME3TweaksModManager
                     //M3Log.Information(@"Application exiting (duplicate instance)");
                 }
 
+                M3OpenTelemetry.Shutdown();
                 Log.CloseAndFlush();
             }
 
@@ -739,10 +713,6 @@ namespace ME3TweaksModManager
             // This method makes references to some imports that are only actually used by !DEBUG
             // This method is purposely never called. It is so when unnecessary imports are removed,
             // the ones needed by the items in the !DEBUG block remain
-#if WITH_APPCENTER
-            Crashes.TrackError(new Exception("TEST DUMMY"));
-            var nothing3 = AppCenter.Configured;
-#endif
             LZMA.Compress(new byte[0], 0);
             var nothing = LogCollector.SessionStartString;
             var nothing2 = FileSize.GibiByte;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -13,7 +13,6 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
 
 namespace ME3TweaksModManager.modmanager.usercontrols

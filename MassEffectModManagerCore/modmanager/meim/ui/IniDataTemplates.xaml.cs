@@ -1,4 +1,4 @@
-﻿/*=============================================
+/*=============================================
 Copyright (c) 2018 ME3Tweaks
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ME3TweaksCore.Helpers;
-using Microsoft.AppCenter.Crashes;
-
 namespace ME3TweaksModManager.modmanager.meim.ui
 {
     public partial class IniDataTemplates : ResourceDictionary

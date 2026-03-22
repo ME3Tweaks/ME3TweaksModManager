@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +12,6 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.tutorial;
 using ME3TweaksModManager.modmanager.windows;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;

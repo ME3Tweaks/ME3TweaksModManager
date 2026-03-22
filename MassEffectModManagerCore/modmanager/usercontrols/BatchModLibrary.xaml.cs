@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
@@ -18,7 +18,6 @@ using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using SevenZip;
 
