@@ -1436,6 +1436,10 @@
                         Click="RouteDebugCall"
                         Name="ReloadSelectedMod_MenuItem" />
                     <MenuItem
+                        Header="Convert TLK Merge to TLK Override"
+                        Click="RouteDebugCall"
+                        Name="TestTlkMergeConverter_MenuItem" />
+                    <MenuItem
                         Header="{DynamicResource string_runDetermineIfInstalled}"
                         Click="RouteDebugCall"
                         Name="DebugDetermineIfInstalled_MenuItem" />
