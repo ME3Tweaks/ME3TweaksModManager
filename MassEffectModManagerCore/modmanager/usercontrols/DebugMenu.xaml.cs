@@ -1,4 +1,5 @@
-﻿using LegendaryExplorerCore.Helpers;
+﻿using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using ME3TweaksCore.GameFilesystem;
@@ -9,7 +10,9 @@ using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.tlk;
 using ME3TweaksModManager.modmanager.windows;
 using SevenZip;
 using System.ComponentModel;
@@ -44,7 +47,68 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
             if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
             if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
+            if (sender == nameof(MainWindow.CrashTest_MenuItem)) CrashTest(window);
+            if (sender == nameof(MainWindow.TestTlkMergeConverter_MenuItem)) TestTlkMergeConverter(window);
 #endif
+        }
+
+        private static void TestTlkMergeConverter(MainWindow window)
+        {
+            if (window.SelectedMod == null || window.SelectedMod.Game != MEGame.LE1)
+                return;
+            var embeddedTLK = window.SelectedMod.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK);
+            if (embeddedTLK == null)
+                return;
+
+            var mod = window.SelectedMod;
+            var mergeFiles = mod.PrepareTLKMerge(out var compressedTlkData);
+            Debug.WriteLine("hi");
+
+            // Find DLC GlobalTLK name
+            var dlcJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+            if (dlcJob == null)
+                return;
+            var dlcEntry = dlcJob.CustomDLCFolderMapping.First().Key;
+            var dlcFolder = Path.Combine(mod.ModPath, dlcEntry);
+            var autoloadPath = Path.Combine(dlcFolder, "Autoload.ini");
+            var autoload = new AutoloadIni(autoloadPath);
+
+            var globalTlkName = autoload.GlobalTalkTables.FirstOrDefault();
+            if (globalTlkName == null)
+            {
+                return;
+            }
+
+            var globalPccName = globalTlkName.Substring(0, globalTlkName.IndexOf('.'));
+
+            var files = Directory.GetFiles(dlcFolder, globalPccName + @"*.pcc", SearchOption.AllDirectories);
+            foreach (var lang in GameLanguage.GetLanguagesForGame(MEGame.LE1))
+            {
+                var loc = lang.Localization;
+                if (loc == MELocalization.INT)
+                {
+                    loc = MELocalization.None;
+                }
+
+                var targetFiles = mergeFiles.Where(x =>
+                {
+                    var localFileLoc = x.Key.GetUnrealLocalization();
+                    if (localFileLoc == MELocalization.INT && loc == MELocalization.None)
+                        return true;
+                    return x.Key.GetUnrealLocalization() == loc;
+                }).ToList();
+
+                if (targetFiles.Count == 0)
+                {
+                    // No strings in this lang
+                    continue;
+                }
+
+                var tlkFile = files.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).GetUnrealLocalization() == loc);
+                if (tlkFile == null)
+                    continue;
+            }
+
         }
 
 #if DEBUG
@@ -311,11 +375,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var buttons = System.Windows.MessageBoxButton.YesNoCancel;
                 var icon = System.Windows.MessageBoxImage.Warning;
 
-                Xceed.Wpf.Toolkit.MessageBox.Show(window, str,title,buttons,icon);
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, str, title, buttons, icon);
                 M3L.ShowDialog(window, str, title, buttons, icon);
                 M3L.ShowDialog(window, "Done.");
             });
 
+        }
+
+        /// <summary>
+        /// Triggers a crash by intentionally throwing an exception for testing purposes.
+        /// </summary>
+        /// <remarks>This method is intended for testing error handling scenarios and should not be used
+        /// in production code.</remarks>
+        /// <exception cref="Exception">Always thrown to indicate a simulated crash during the execution of the method.</exception>
+        private static void CrashTest(MainWindow window)
+        {
+            throw new Exception(@"CrashTest");
         }
 #endif
     }
