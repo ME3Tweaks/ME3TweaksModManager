@@ -2397,7 +2397,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             var storageType = Archive.GetStorageTypeOfFile(path);
             if (storageType != @"Copy")
             {
-                M3Log.Error($@"Mod has file is improperly stored in the archive: {path}. Mods must be deployed from Mod Manager to properly work.");
+                M3Log.Error($@"Mod has file that is improperly stored in the archive: {path}. Mods must be deployed from Mod Manager to properly work.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_improperPackedFile, path);
                 return false;
             }
