@@ -334,6 +334,11 @@ namespace ME3TweaksModManager
                 // Set title bar color
                 DarkNet.Instance.SetCurrentProcessTheme(Settings.DarkTheme ? Theme.Dark : Theme.Light);
 
+                // We do conditional telemetry initialization here because we want to respect user settings as early as possible
+                // By default, if the preview panel has not been shown, telemetry data is queued. It will only be sent once the 
+                // preview panel has been shown where the user can make their telemetry election.
+                // Once it is closed, it will be discarded or sent.
+                // If the panel has been shown, and the setting is enabled, we enable it here.
                 if (Settings.ShowedPreviewPanel && !Settings.EnableTelemetry)
                 {
                     M3Log.Warning("Telemetry is disabled :(");
