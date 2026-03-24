@@ -496,6 +496,8 @@
 	<system:String x:Key="string_failedDownloads">Неудачные загрузки</system:String>
 	<system:String x:Key="string_clearAll">Очистить все</system:String>
 	<system:String x:Key="string_tooltip_removeFailedDownload">Удалить неудачные загрузки</system:String>
+	<system:String x:Key="string_dialog_mismatchingLocalNexusUsernames">Вход в NexusMods в вашем браузере и в Mod Manager был сделан под разными аккаунтами. Для работы функции 'Загрузка через Manager' они должны совпадать.</system:String>
+	<system:String x:Key="string_cannotDownload">Загрузка невозможна</system:String>
 	<system:String x:Key="string_dialog_couldNotfindFXC">Копия fxc.exe не обнаружена. Вам нужно установить Windows SDS, содержащий компилятор D3D11.</system:String>
 	<system:String x:Key="string_fXCNotFound">FXC не найден</system:String>
 	<system:String x:Key="string_compilingShaders">Компиляция шейдеров</system:String>
@@ -1193,7 +1195,7 @@
 	<system:String x:Key="string_setting_tooltip_launchThroughOrigin">Запускает EA App-игры через клиент EA App, для подтверждения лицензии и игрового времени. Это влияет только ME1/ME2 Origin версии, для ME3 это обязательно.</system:String>
 	<system:String x:Key="string_loadingTargets">Загрузка списка игр</system:String>
 	<system:String x:Key="string_configureNxmHandlerOnBoot">Настройка обработчика nxm:// при загрузке</system:String>
-	<system:String x:Key="string_tooltip_configureNxmHandlerOnBoot" xml:space="preserve">Настравивает обработчик nxm:// NexusMods, чтобы 'Download with Manager' на NexusMods загружала ME3Tweaks Mod Manager. При отключении можно включить повторно в панели NexusMods</system:String>
+	<system:String x:Key="string_tooltip_configureNxmHandlerOnBoot" xml:space="preserve">Настравивает обработчик nxm:// NexusMods, чтобы 'Загрузка через Manager' на NexusMods загружала ME3Tweaks Mod Manager. При отключении можно включить повторно в панели NexusMods</system:String>
 	<system:String x:Key="string_dialog_nexusLoginRequiredForDownload">ME3Tweaks Mod Manager должен быть привязан к вашему аккаунту NexusMods для прямой загрузки с NexusMods. Нажмите OK для перехода на страницу авторизации NexusMods и привязки приложения.</system:String>
 	<system:String x:Key="string_notSignedIn">Вход не выполнен</system:String>
 	<system:String x:Key="string_couldNotEndorseFile">Невозможно одобрить файл</system:String>
@@ -2036,7 +2038,7 @@
 	<system:String x:Key="string_authenticatedToNexusMods">Авторизован на NexusMods</system:String>
 	<system:String x:Key="string_interp_nexusModsReturnedAnErrorX" xml:space="preserve">NexusMods вернул ошибку:\n{0}</system:String>
 	<system:String x:Key="string_errorAuthenticatingToNexusMods">Ошибка авторизации на NexusMods</system:String>
-	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager имеет встроенную поддержку функций NexusMods, например, одобрение модов, отслеживание обновлений и "Загрузка через Manager". Вам требуется авторизоваться в NexusMods через ME3Tweaks Mod Manager для использования данных функций.</system:String>
+	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager имеет встроенную поддержку функций NexusMods, например, одобрение модов, отслеживание обновлений и 'Загрузка через Manager'. Вам требуется авторизоваться в NexusMods через ME3Tweaks Mod Manager для использования данных функций.</system:String>
 	<system:String x:Key="string_directions">Указания</system:String>
 	<system:String x:Key="string_nexusModsDirections">Выполните вход в NexusMods, нажав "Авторизоваться на NexusMods" внизу.  авторизуйте ME3Tweaks Mod Manager. Альтернативно, вы можете авторизоваться вручную, вставив ваш API-ключ NexusMods после выбора "Ввести API-ключ вручную". Ваш API-ключ можно найти в настройках аккаунта NexusMods.</system:String>
 	<system:String x:Key="string_caution">Внимание</system:String>
@@ -2057,7 +2059,7 @@
 	<system:String x:Key="string_application">Приложение</system:String>
 	<system:String x:Key="string_arguments">Аргументы</system:String>
 	<system:String x:Key="string_domains">Домены</system:String>
-	<system:String x:Key="string_dialog_setM3AsNXMHandler">ME3Tweaks Mod Manager настроен на обработку ссылок nxm:// с NexusMods. Вы можете перенаправлять запросы 'Download with Manager' для прочих игр в другие приложения, если желаете использовать их для этих игр.</system:String>
+	<system:String x:Key="string_dialog_setM3AsNXMHandler">ME3Tweaks Mod Manager настроен на обработку ссылок nxm:// с NexusMods. Вы можете перенаправлять запросы 'Загрузка через Manager' для прочих игр в другие приложения, если желаете использовать их для этих игр.</system:String>
 	<system:String x:Key="string_configuredNxmHandling">Настроенная обработка nxm:///</system:String>
 	<system:String x:Key="string_cannotHaveMultipleEntriesThatUseWildcard">Невозможно иметь одновременно несколько записей с маской *</system:String>
 	<system:String x:Key="string_officialDLCToggler">Official DLC Toggler</system:String>
