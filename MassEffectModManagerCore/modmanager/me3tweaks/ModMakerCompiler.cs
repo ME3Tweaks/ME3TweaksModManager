@@ -245,7 +245,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                     var vanillaTLK = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, filename);
                     if (vanillaTLK != null)
                     {
-                        var tf = new ME2ME3TalkFile(vanillaTLK);
+                        var tf = new ME2ME3TalkFile(vanillaTLK, filename);
                         SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
                         foreach (var strnode in newstringnodes)
                         {
