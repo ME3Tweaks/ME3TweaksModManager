@@ -313,13 +313,13 @@
 	<system:String x:Key="string_unbindKey">Dissocia tasto</system:String>
 	<system:String x:Key="string_testSquadmateMerge">Testa merge compagno di squadra</system:String>
 	<system:String x:Key="string_mMV1DEBUG">DEBUG MMV1</system:String>
-	<system:String x:Key="string_buildMD5DB">Builda MD5 DB</system:String>
-	<system:String x:Key="string_updateMD5DB">Aggiorna MD5 DB</system:String>
-	<system:String x:Key="string_testCode">Testa codice</system:String>
+	<system:String x:Key="string_buildMD5DB">Costruisci DB MD5</system:String>
+	<system:String x:Key="string_updateMD5DB">Aggiorna DB MD5</system:String>
+	<system:String x:Key="string_testCode">Testa il codice</system:String>
 	<system:String x:Key="string_test7z">Testa 7z</system:String>
 	<system:String x:Key="string_originalTrilogy">Trilogia Originale</system:String>
 	<system:String x:Key="string_legendaryEdition">Legendary Edition</system:String>
-	<system:String x:Key="string_autobootLE2Test">Test di avvio automatico di LE2</system:String>
+	<system:String x:Key="string_autobootLE2Test">Avvia automaticamente i test di LE2</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">Visualizzatore di Debug di MEM Vanilla</system:String>
 	<system:String x:Key="string_showBasegameFileIdentificationServiceViewer">Mostra il Visualizzatore del Servizio di Identificazione File del gioco base</system:String>
 	<system:String x:Key="string_triggerBTPBuildOnModFolderInstalled">Avvia la build BTP sulla cartella della mod (installata)</system:String>
@@ -1251,9 +1251,9 @@
 	<system:String x:Key="string_interp_decompressingFnamePercent">Decompressione di {0} {1}%</system:String>
 	<system:String x:Key="string_interp_failedToDecompressFname">Decompressione di {0} fallita</system:String>
 	<system:String x:Key="string_betaBuildDialog">Questa è una build beta di ME3Tweaks Mod Manager. Le mod distribuite con questa build non saranno supportate da ME3Tweaks, ma sei incoraggiato ad usarla e riportare problemi nel discord.</system:String>
-	<system:String x:Key="string_compilingMergemod">Compilazione mergemod</system:String>
-	<system:String x:Key="string_compiledMergemod">Mergemod compilata</system:String>
-	<system:String x:Key="string_failedToCompileMergemod">Compilazione mergemod fallita</system:String>
+	<system:String x:Key="string_compilingMergemod">Compilazione della Merge Mod in corso</system:String>
+	<system:String x:Key="string_compiledMergemod">Merge Mod compilata</system:String>
+	<system:String x:Key="string_failedToCompileMergemod">Compilazione della Merge Mod fallita</system:String>
 	<system:String x:Key="string_failedToInstallBinkASILoader">Installazione di bink ASI loader fallita</system:String>
 	<system:String x:Key="string_beta">Beta</system:String>
 	<system:String x:Key="string_selectLaunchOptions">Seleziona opzioni di avvio</system:String>
@@ -1370,7 +1370,7 @@
 	<system:String x:Key="string_typeToSearch">Scrivi per cercare</system:String>
 	<system:String x:Key="string_tooltip_endorseThisModOnNexusMods">Approva questa mod su NexusMods</system:String>
 	<system:String x:Key="string_interp_errorMerging2DAX">Si è verificato un errore nell'unione delle tabelle 2DA: {0}</system:String>
-	<system:String x:Key="string_interp_mergemodAssetIsZeroBytes">La risorsa Mergemod è a zero byte: {0}. Le risorse non possono essere vuote.</system:String>
+	<system:String x:Key="string_interp_mergemodAssetIsZeroBytes">La risorsa della Merge Mod ha zero byte: {0}. Le risorse non possono essere vuote.</system:String>
 	<system:String x:Key="string_downloadManager">Download Manager</system:String>
 	<system:String x:Key="string_tooltip_showCurrentRunningDownloads">Mostra download in corso</system:String>
 	<system:String x:Key="string_convertMemToM3TextureOverride">Converti .mem in M3 Texture Override</system:String>
@@ -1444,15 +1444,15 @@
 	<system:String x:Key="string_textureExportsNotListedInThisMemFile">[Esportazioni texture non elencate in questo file .mem]</system:String>
 	<system:String x:Key="string_textureModsMustBeImportedBeforeUse">Le Texture Mod devono essere importate prima di poter essere utilizzate</system:String>
 	<system:String x:Key="string_listTruncatedTo100Entries">(lista troncata a 100 elementi)</system:String>
-	<system:String x:Key="string_dialog_mergeModFeatureLevel1">La mergemod che stai compilando sarà usata in una mod che punta a ModDesc 8.2 o inferiore?</system:String>
+	<system:String x:Key="string_dialog_mergeModFeatureLevel1">La Merge Mod che stai compilando sarà usata in una mod che punta a ModDesc 8.2 o inferiore?</system:String>
 	<system:String x:Key="string_useEnhancedFeaturesQuestion">Utilizzare funzioni avanzate?</system:String>
-	<system:String x:Key="string_dialog_unsupportedMergemodVersionMayBeTooNew">Versione di mergemod non supportata: potrebbe essere troppo nuova per questa versione del Mod Manager.</system:String>
-	<system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Il file della merge mod non ha il magic header corretto</system:String>
+	<system:String x:Key="string_dialog_unsupportedMergemodVersionMayBeTooNew">Versione della Merge Mod non supportata: potrebbe essere troppo nuova per questa versione del Mod Manager.</system:String>
+	<system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Il file della Merge Mod non ha il magic header corretto</system:String>
 	<system:String x:Key="string_interp_unsupportedMergeModVersionVersionX">Versione della Merge Mod non supportata: {0}</system:String>
-	<system:String x:Key="string_interp_invalidMergeModManifestReason" xml:space="preserve">Manifest della merge mod non valido:\n{0}</system:String>
+	<system:String x:Key="string_interp_invalidMergeModManifestReason" xml:space="preserve">Manifest della Merge Mod non valido:\n{0}</system:String>
 	<system:String x:Key="string_filenameCannotBeNullInAMergeManifestFile">'filename' non può essere null in un file di tipo merge manifest!</system:String>
 	<system:String x:Key="string_interp_targetingNonStartupFile">Impossibile fondere in un file non-startup in questo momento: {0}</system:String>
-	<system:String x:Key="string_error_mergefile_badMagic">L'asset di Merge Mod V1 non è prefissato dall'asset magic - questo file non è stato buildato correttamente!</system:String>
+	<system:String x:Key="string_error_mergefile_badMagic">L'asset della Merge Mod V1 non è prefissato dall'asset magic - questo file non è stato compilato correttamente!</system:String>
 	<system:String x:Key="string_interp_error_mergefile_assetNotFoundX">Il file asset non esiste nella cartella: {0}</system:String>
 	<system:String x:Key="string_interp_error_mergefile_scriptNotFoundX">Il file script non esiste nella cartella: {0}</system:String>
 	<system:String x:Key="string_interp_mergefile_couldNotFindExportInPackage">Impossibile trovare l'export nel package {0}: {1}! Impossibile applicare MergeFileChange1.</system:String>
@@ -1467,12 +1467,12 @@
 	<system:String x:Key="string_interp_fileLibInitMergeMod1Script" xml:space="preserve">È stato impossibile inizializzare FileLib per l'aggiornamento dello script, impossibile fondere lo script con {0}:\n{1}</system:String>
 	<system:String x:Key="string_interp_mergefile_noLocalizedFiles">Impossibile trovare alcun file localizzato da fondere dentro {0}. Questo merge ha 'applytoallapplications' impostato a true, che rende le modifiche applicabili solo alla versione localizzata di un file</system:String>
 	<system:String x:Key="string_interp_mergefile_errorCompilingClassAfterEdit">Errore durante la compilazione della classe {0} dopo aver aggiunto o sostituito {1}: {2}</system:String>
-	<system:String x:Key="string_interp_mergefile_serialSizeMismatch">La merge mod non era della lunghezza corretta; leggiamo dalla posizione {0} ma la merge mod è lunga {1} byte</system:String>
+	<system:String x:Key="string_interp_mergefile_serialSizeMismatch">La Merge Mod non era della lunghezza corretta; leggiamo dalla posizione {0} ma la Merge Mod è lunga {1} byte</system:String>
 	<system:String x:Key="string_interp_propertyNotFoundX">Proprietà non trovata: {0}</system:String>
 	<system:String x:Key="string_interp_errorCompilingPropertyXinYZ" xml:space="preserve">Errore durante la compilazione della proprietà '{0}' in {1}:\n{2}</system:String>
 	<system:String x:Key="string_interp_incompleteStaticArrayIndex">Indice di vettore statico incompleto in propertyname: {0}</system:String>
 	<system:String x:Key="string_interp_updatingX">Aggiornamento di {0}</system:String>
-	<system:String x:Key="string_interp_mergeModAssetsSingleFolder">I file delle risorse per le mergemod devono essere tutti contenuti nella stessa cartella. Nome risorsa non valido: {0}</system:String>
+	<system:String x:Key="string_interp_mergeModAssetsSingleFolder">I file delle risorse per le Merge Mod devono essere tutti contenuti nella stessa cartella. Nome della risorsa non valida: {0}</system:String>
 	<system:String x:Key="string_interp_classUpdateCannotNestMoreThanOne">Convalida fallita su {0} {1}: la classe non può essere annidata in più di un package di profondità.</system:String>
 	<system:String x:Key="string_interp_classUpdateCannotUpdateVanillaClass">Convalida fallita su {0} {1}: ClassUpdate non può essere usato per modificare alcuna classe vanilla</system:String>
 	<system:String x:Key="string_no">No</system:String>
@@ -1491,7 +1491,7 @@
 	<system:String x:Key="string_deployment_sqmIssueCouldntFindOutfitImage">Valore non valido dell'immagine '{0}': Nessuna versione installabile di '{1}' contiene un'esportazione con un percorso completo instanziato di '{0}'.</system:String>
 	<system:String x:Key="string_deployment_sqmIssueHenchImagePackageNotFound">Impossibile trovare il file package delle immagini del compagno di squadra. Il package dovrebbe chiamarsi SFXHenchImages_[DLC_MOD_IlNomeDellaTuaMod].</system:String>
 	<system:String x:Key="string_deployment_sqmIssueInvalidHenchId">Valore 'henchname' sconosciuto: {0}. I valori sono case sensitive.</system:String>
-	<system:String x:Key="string_deployment_basegameFullFileWarning">La mod installa potenzialmente file selezionabili come target da mergemod: {0}. Considera di cambiare questa mod in modo che utilizzi mergemod, così sarà più compatibile con altre mod.</system:String>
+	<system:String x:Key="string_deployment_basegameFullFileWarning">La mod installa potenzialmente file selezionabili come target per Merge Mod: {0}. Considera di cambiare questa mod in modo che utilizzi Merge Mod, così sarà più compatibile con altre mod.</system:String>
 	<system:String x:Key="string_deployment_unusedExtraFileTypeFound">Il file {0} potrebbe venire installato con la mod: {1}. Questo file dovrebbe venire rimosso in quanto il gioco non lo userà mai. Se vuoi includere file extra come questo usa 'additionaldeploymentfolders' dall'header [UPDATES].</system:String>
 	<system:String x:Key="string_deployment_nexusUpdaterServiceInfo">{0} ({1}) non è registrato nella whitelist del Servizio di Aggiornamento di NexusMods. In modo che questa mod possa controllare gli aggiornamenti deve venire registrata nel servizio di aggiornamento (a causa della progettazione della API di nexusMods). Puoi registrare questa mod nel Server Discord di ME3Tweaks, nel canale #nexusupdate-rules.</system:String>
 	<system:String x:Key="string_interp_compressedTlkDataInfo">Questa mod utilizza l'header del task {0}. È stata rilevata una versione compressa dei file xml ({1}); verrà usato questo file per la distribuzione al posto dei file xml individuali. Se non è ciò che volevi fare rimuovi il file compresso e il mod manager ne serializzerà uno nuovo durante la distribuzione.</system:String>
@@ -1502,8 +1502,8 @@
 	<system:String x:Key="string_dialog_guidanceAvailable">Le seguenti linee guida generali sono disponibili per la tua mod.</system:String>
 	<system:String x:Key="string_miscellaneousGuidance">Linee guida varie</system:String>
 	<system:String x:Key="string_interp_modsDontMixAutoloadAndM3DA">Le mod non devono combinare l'uso delle voci 2DA di Autoload.ini con l'uso di LE1 2DA Merge (.m3da), poiché ciò potrebbe causare problemi. Autoload: {0}</system:String>
-	<system:String x:Key="string_interp_mergeModFeatureLevelIncompatible">MergeMod {0} è stato compilato al livello di funzionalità V{1}, che richiede un cmmver minimo di {2}. È necessario ricompilare il file mergemod.</system:String>
-	<system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">Il caricamento di MergeMod {0} non è riuscito. Potrebbe non essere compatibile con il cmmver {1}.</system:String>
+	<system:String x:Key="string_interp_mergeModFeatureLevelIncompatible">La Merge Mod {0} è stata compilata al livello di funzionalità V{1}, che richiede un cmmver minimo di {2}. È necessario ricompilare il file della Merge Mod.</system:String>
+	<system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">Il caricamento della Merge Mod {0} non è riuscito. Potrebbe non essere compatibile con il cmmver {1}.</system:String>
 	<system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">L'immagine del banner '{0}' ha delle proporzioni non valide. Deve avere un aspect ratio di circa 580x47 (12.34:1). L'immagine corrente è {1}x{2}.</system:String>
 	<system:String x:Key="string_deployment_asiNotFoundInManifest">L'ID del gruppo ASI {0} non è disponibile nel manifest ASI di {1}. Questa ASI non verrà installata a meno che non sia disponibile nel manifest.</system:String>
 	<system:String x:Key="string_deployment_asiVersionNotFoundInManifest">L'ID del gruppo ASI {0} versione {1} non è disponibile nel manifest ASI di {2}. Questa ASI non verrà installata a meno che non sia disponibile nel manifest.</system:String>
@@ -1513,7 +1513,7 @@
 	<system:String x:Key="string_deployment_foundM3toWithPrecompileBTP">Questa mod sta usando un file BTP precompilato; i file .m3to inclusi non saranno usati e dovrebbero essere rimossi</system:String>
 	<system:String x:Key="string_deployment_incorrectGameForBTP">Il file manifest di texture override incluso {0} è per il gioco sbagliato: {1}</system:String>
 	<system:String x:Key="string_deployment_invalidSourcePackageReferenceForBTP">Il file manifest di texture override incluso {0} fa riferimento al package sorgente '{1}', a cui la mod non fa riferimento e non si potrà mai compilare</system:String>
-	<system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">Impossibile spedire il DLC override del target merge Bio2DA {0}, usa piuttosto le merge mod e il Bio2DA merge</system:String>
+	<system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">Impossibile spedire il DLC override del target merge Bio2DA {0}, usa piuttosto le Merge Mod e il Bio2DA merge</system:String>
 	<system:String x:Key="string_deployment_btpHashCheckFailed">Il BTP sembra fare riferimento a un DLC o gioco diverso, il controllo dell'hash è fallito. Il BTP deve essere ricompilato</system:String>
 	<system:String x:Key="string_deployment_invalidBTPMetadata">Il file di metadati del BTP incluso (BTPMetadata.btm) non è valido, il BTP deve essere ricompilato</system:String>
 	<system:String x:Key="string_interp_appliesToX">Si applica al file {0}</system:String>
@@ -1689,9 +1689,9 @@
 	<system:String x:Key="string_interp_error_singleRequiredDlcMissing">{0} richiede almeno uno dei DLC seguenti installati:{1}</system:String>
 	<system:String x:Key="string_warningTexturesAreInstalled" xml:space="preserve">Delle texture sono state installate e questa mod installa o modifica file package. Puoi continuare a installare questa mod, ma i nuovi file non avranno le texture aggiornate che sono state installate precedentemente. Inoltre Mass Effect Modder non eseguirà più azioni su questa installazione del gioco.\n\nLe Texture Mod dovrebbero essere installate dopo che tutti i file package sono stati installati.\n\nContinuare l'installazione?</system:String>
 	<system:String x:Key="string_warningTextureModsAreInstalled">Attenzione: Texture Mod installate</system:String>
-	<system:String x:Key="string_interp_errorApplyingMergeModXY">C'è stato un errore durante l'applicazione della merge mod {0}: {1}.</system:String>
+	<system:String x:Key="string_interp_errorApplyingMergeModXY">C'è stato un errore durante l'applicazione della Merge Mod {0}: {1}.</system:String>
 	<system:String x:Key="string_updatingTLKFiles">Aggiornamento dei file TLK</system:String>
-	<system:String x:Key="string_applyingMergemods">Applicamento delle mergemod</system:String>
+	<system:String x:Key="string_applyingMergemods">Applicazione delle Merge Mod in corso</system:String>
 	<system:String x:Key="string_notice_directModsDontGoToLibrary">Le mod installate direttamente da archivi non appariranno nella libreria delle mod</system:String>
 	<system:String x:Key="string_interp_errorInstallingBinkBypassX">C'è stato un errore durante l'installazione del bink bypass, il quale è richiesto per il supporto completo al modding: {0}</system:String>
 	<system:String x:Key="string_title_errorInstallingBinkBypass">Errore durante l'installazione del bink bypass</system:String>
@@ -1700,7 +1700,7 @@
 	<system:String x:Key="string_modRequiresAMDProcessor">Questa mod può essere installata solo su un sistema con processore AMD.</system:String>
 	<system:String x:Key="string_oodleNotFound">Non è stato possibile individuare la libreria di compressione per l'apertura e il salvataggio dei package della Legendary Edition.</system:String>
 	<system:String x:Key="string_ensureGameIsValidDiscord">Assicurati che il gioco sia installato correttamente e che sia stato eseguito una volta. Se continui ad avere problemi, vieni sul server Discord di ME3Tweaks.</system:String>
-	<system:String x:Key="string_trackingMergemodChanges">Tracciamento delle modifiche di mergemod</system:String>
+	<system:String x:Key="string_trackingMergemodChanges">Tracciamento delle modifiche della Merge Mod in corso</system:String>
 	<system:String x:Key="string_tooltip_optionNotApplicable">In base alle condizioni stabilite dallo sviluppatore della mod, questa opzione NON è applicabile in base alla configurazione attuale del gioco.</system:String>
 	<system:String x:Key="string_tooltip_optionForceApplied">In base alle condizioni stabilite dallo sviluppatore della mod, questa opzione DEVE essere applicata in base alla configurazione attuale del gioco.</system:String>
 	<system:String x:Key="string_textureOverrideMergeFailed">Merge dei texture override fallito</system:String>
@@ -1835,10 +1835,10 @@
 	<system:String x:Key="string_interp_singleRequiredDLC">Richiede almeno uno dei DLC seguenti per l'installazione:</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_bannerImageAssetNotFound">La mod ha una immagine banner con il nome {0}, ma questo file non esiste nella cartella M3Images.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3">La mod ha una immagine per il banner in un archivio, ma il tipo di storage non è indicato come 'Copy'. Il Mod Manager non caricherà mod da un archivio che utilizza immagini non distribuite con il Mod Manager.</system:String>
-	<system:String x:Key="string_interp_validation_modparsing_mergeModGameIdMismatch">La merge mod {0} elenca come gioco applicabile {1}, ma la mod che carica questa merge mod è per {2}. I giochi per cui sono fatte la mod e la merge mod devono corrispondere.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_mergeModGameIdMismatch">La Merge Mod {0} elenca come gioco applicabile {1}, ma la mod che carica questa Merge Mod è per {2}. I giochi per cui è fatta la mod e la Merge Mod devono corrispondere.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_leGamesRequireCmm7">{0} è fatta per {1}. Le versioni di ModDesc (descrittore cmmver sotto la sezione ModManager) sotto la 7.0 non possono avere come obiettivo i giochi della Legendary Edition.</system:String>
-	<system:String x:Key="string_interp_validation_modparsing_securityIssueMergeModDotDot">{0} ha una merge mod indicata sotto l'header {1} che contiene '..' nel nome. '..' non è permesso nei nomi.</system:String>
-	<system:String x:Key="string_interp_validation_modparsing_mergeModNotFound">{0} ha una merge mod indicata sotto l'header {1} che non esiste nella cartella {2}: {3}.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_securityIssueMergeModDotDot">{0} ha una Merge Mod indicata sotto l'header {1} che contiene '..' nel nome. '..' non è permesso nei nomi.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_mergeModNotFound">{0} ha una Merge Mod indicata sotto l'header {1} che non esiste nella cartella {2}: {3}.</system:String>
 	<system:String x:Key="string_validation_modparsing_customdlcDotDotFound">destdir dell'header CUSTOMDLC contiene un valore che contiene un carattere di separazione delle cartelle, che non è consentito.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_modInstallsBlacklistedDestFile">Il job {1} di {0} installa un file che non può essere installato dal Mod Manager in quanto è stato messo in blacklist. Installare questo file provocherebbe rischi per la sicurezza o si sa che potrebbe danneggiare l'installazione di un utente.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_tlkMergeNoTlkXmlFound">La mod specifica l'header del task {0}, ma nessun file xml è stato trovato nella cartella {1}. Rimuovi questo header del task se non lo stai usando o aggiungi un file xml valido alla cartella {1}.</system:String>
@@ -1857,9 +1857,9 @@
 	<system:String x:Key="string_installsTheFollowingASIMods">Installa i seguenti Mod ASI:</system:String>
 	<system:String x:Key="string_invalid">Non valido</system:String>
 	<system:String x:Key="string_interp_validation_altSpecifiesValueFolderDoesntExist">L'Alternativo {0} specifica un valore '{1}' che fa riferimento a una cartella in {2} che non esiste.</system:String>
-	<system:String x:Key="string_validation_mergeModVersionUnsupported">Mergemod non è stato caricato: Versione non supportata</system:String>
-	<system:String x:Key="string_interp_validation_mergeModCompilerTooNew">Mergemod {0} è stato compilato con un compilatore che richiede un cmmver minimo di {1}. Ricompilare il mergemod o aggiornare la cmmver</system:String>
-	<system:String x:Key="string_interp_errorReadingMergeMod">Si è verificato un errore nella lettura del mergemod di riferimento '{0}': {1}. Vedere i log per ulteriori informazioni.</system:String>
+	<system:String x:Key="string_validation_mergeModVersionUnsupported">La Merge Mod non è stata caricata: Versione non supportata</system:String>
+	<system:String x:Key="string_interp_validation_mergeModCompilerTooNew">La Merge Mod {0} è stata compilata con un compilatore che richiede un cmmver minimo di {1}. Ricompilare la Merge Mod o aggiornare la cmmver</system:String>
+	<system:String x:Key="string_interp_errorReadingMergeMod">Si è verificato un errore durante la lettura della Merge Mod di riferimento '{0}': {1}. Vedere i log per ulteriori informazioni.</system:String>
 	<system:String x:Key="string_interp_tlkmerge_couldNotFindExportInPackage">Impossibile trovare l'export nel package {0} per il merge TLK: {1} questo merge verrà saltato.</system:String>
 	<system:String x:Key="string_copiedModdesciniContentsToClipboard">Contenuto del file moddesc.ini copiato negli appunti</system:String>
 	<system:String x:Key="string_interp_failedToCopyModdescini">Impossibile copiare il testo di moddesc.ini negli appunti: {0}</system:String>
@@ -2113,7 +2113,7 @@
 	<system:String x:Key="string_description_originalTrilogySettings">Queste impostazioni vengono applicate solo quando si modda la Trilogia Originale.</system:String>
 	<system:String x:Key="string_preferCompressingPackages">Preferisci la compressione dei package all'importazione</system:String>
 	<system:String x:Key="string_description_preferCompressingPackages">I file package nella trilogia originale erano moddati e distribuiti senza compressione. Abilitare questa impostazione li farà comprimere all'importazione, risparmiando spazio su disco al costo di un tempo di importazione più lungo.</system:String>
-	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Controllo dei riferimenti nelle mergemod [{0}/{1}]</system:String>
+	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Controllo dei riferimenti nelle Merge Mod in corso [{0}/{1}]</system:String>
 	<system:String x:Key="string_interp_lecCouldNotResolveImport">Legendary Explorer Core non è stato in grado di risolvere l'importazione: {0} {1} in {2}</system:String>
 	<system:String x:Key="string_syncingPlotManager">Sincronizzazione del Plot Manager</system:String>
 	<system:String x:Key="string_dialog_errorMergingPlotManagerFiles" xml:space="preserve">C'è stato un errore durante il merge dei file di aggiornamento del plot manager: {0}.\n\nLa sincronizzazione del Plot Manager non è stata eseguita.</system:String>
