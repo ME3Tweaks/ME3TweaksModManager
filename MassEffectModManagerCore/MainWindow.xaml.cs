@@ -478,6 +478,8 @@ namespace ME3TweaksModManager
 
                 SelectedMod = x;
                 ModsList_ListBox.ScrollIntoView(SelectedMod);
+                // This makes the ApplyMod button refresh states so it shows up properly as clickable
+                CommandManager.InvalidateRequerySuggested();
             });
 
             // MOD UPDATER
@@ -715,8 +717,6 @@ namespace ME3TweaksModManager
         public ICommand CreateTestArchiveCommand { get; set; }
         public ICommand LaunchIniModderCommand { get; set; }
         public ICommand DownloadModMakerModCommand { get; set; }
-        public ICommand UpdaterServiceCommand { get; set; }
-        public ICommand UpdaterServiceSettingsCommand { get; set; }
         public ICommand MixinLibraryCommand { get; set; }
         public ICommand BatchModInstallerCommand { get; set; }
         public ICommand ImportDLCModFromGameCommand { get; set; }
@@ -764,8 +764,6 @@ namespace ME3TweaksModManager
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
             DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
-            UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
-            UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
             MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
             BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
             ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
@@ -1378,22 +1376,6 @@ namespace ME3TweaksModManager
         {
             return true;
         }
-
-        private void OpenUpdaterServicePanelEditorMode()
-        {
-            var updaterServicePanel = new UpdaterServicePanel();
-            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(updaterServicePanel);
-        }
-
-        private void OpenUpdaterServicePanel()
-        {
-            var updaterServicePanel = new UpdaterServicePanel(SelectedMod);
-            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(updaterServicePanel);
-        }
-
-        private bool CanOpenUpdaterServicePanel() => SelectedMod != null && SelectedMod.ModClassicUpdateCode > 0;
 
         private void OpenModMakerPanel()
         {

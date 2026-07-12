@@ -52,32 +52,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 #endif
         }
 
-        private static void TestTlkMergeConverter(MainWindow window)
-        {
-            if (window.SelectedMod == null || window.SelectedMod.Game != MEGame.LE1)
-                return;
-            var embeddedTLK = window.SelectedMod.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK);
-            if (embeddedTLK == null)
-                return;
-
-            var mod = window.SelectedMod;
-            var mergeFiles = mod.PrepareTLKMerge(out var compressedTlkData);
-            Debug.WriteLine("hi");
-
-            // Find DLC GlobalTLK name
-            var dlcJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
-            if (dlcJob == null)
-                return;
-            var dlcEntry = dlcJob.CustomDLCFolderMapping.First().Key;
-            var dlcFolder = Path.Combine(mod.ModPath, dlcEntry);
-            var autoloadPath = Path.Combine(dlcFolder, "Autoload.ini");
-            var autoload = new AutoloadIni(autoloadPath);
-
-            var globalTlkName = autoload.GlobalTalkTables.FirstOrDefault();
-            if (globalTlkName == null)
-            {
-                return;
-            }
+        
 
             var globalPccName = globalTlkName.Substring(0, globalTlkName.IndexOf('.'));
 

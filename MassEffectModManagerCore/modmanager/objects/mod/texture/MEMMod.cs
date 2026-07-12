@@ -279,5 +279,18 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         /// The size of the file that was parsed from disk. Used to detect a desync, if the file is large
         /// </summary>
         internal long InitialLoadedSize { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not MEMMod other)
+                return false;
+
+            return FilePath == other.FilePath;
+        }
+
+        public override int GetHashCode()
+        {
+            return FilePath?.GetHashCode() ?? 0;
+        }
     }
 }
