@@ -227,30 +227,6 @@
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem
-                Header="{DynamicResource string_mE3TweaksUpdaterService}"
-                Style="{StaticResource MenuItemHeaderStyle}"
-                ui:SharedUIBindings.DevModeGenerationOT="True" />
-            <MenuItem
-                Header="{DynamicResource string_Prepareforupdaterservice}"
-                Command="{Binding UpdaterServiceCommand}"
-                ToolTip="{DynamicResource string_tooltip_uploadToUpdaterService}"
-                ui:SharedUIBindings.DevModeGenerationOT="True">
-                <MenuItem.Icon>
-                    <fa5:ImageAwesome
-                        Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Solid_CloudUploadAlt"
-                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                        Height="16"
-                        Width="16"
-                        RenderOptions.BitmapScalingMode="HighQuality" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem
-                Header="{DynamicResource string_editUpdaterServiceSettings}"
-                Command="{Binding UpdaterServiceSettingsCommand}"
-                ToolTip="{DynamicResource string_tooltip_updaterServiceSettings}"
-                ui:SharedUIBindings.DevModeGenerationOT="True" />
-            <MenuItem
                 Header="{DynamicResource string_thirdPartyIdentificationService}"
                 Style="{StaticResource MenuItemHeaderStyle}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
