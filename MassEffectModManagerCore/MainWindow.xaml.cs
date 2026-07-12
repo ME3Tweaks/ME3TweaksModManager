@@ -478,6 +478,8 @@ namespace ME3TweaksModManager
 
                 SelectedMod = x;
                 ModsList_ListBox.ScrollIntoView(SelectedMod);
+                // This makes the ApplyMod button refresh states so it shows up properly as clickable
+                CommandManager.InvalidateRequerySuggested();
             });
 
             // MOD UPDATER
