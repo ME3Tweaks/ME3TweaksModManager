@@ -25,7 +25,7 @@
 
 	<!-- ME3Tweaks customization - always include System.Drawing.Common as we don't support old .NET versions. -->
 	<ItemGroup>
-		<PackageReference Include="System.Drawing.Common" Version="10.0.5" />
+		<PackageReference Include="System.Drawing.Common" Version="10.0.9" />
 	</ItemGroup>
 
 </Project>
