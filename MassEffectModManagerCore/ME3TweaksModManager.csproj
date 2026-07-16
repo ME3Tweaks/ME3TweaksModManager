@@ -1,328 +1,326 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-	<PropertyGroup>
-		<AssemblyTitle>ME3Tweaks Mod Manager</AssemblyTitle>
-		<OutputType>WinExe</OutputType>
-		<PublishTrimmed>false</PublishTrimmed>
-		<PublishReadyToRun>false</PublishReadyToRun>
-		<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
-		<TargetFrameworks>net10.0-windows</TargetFrameworks>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
-		<UseWPF>true</UseWPF>
-		<Platforms>x64</Platforms>
-		<Version>9.2.1.137</Version>
-		<Copyright>ME3Tweaks 2012-2026</Copyright>
-		<Authors>Mgamerz</Authors>
-		<PackageId>ME3TweaksModManager</PackageId>
-		<Product>ME3Tweaks Mod Manager</Product>
-		<Description>Mod Manager for the original Mass Effect Trilogy and Legendary Edition</Description>
-		<Company>ME3Tweaks</Company>
-		<StartupObject>ME3TweaksModManager.App</StartupObject>
-		<ApplicationIcon>appicon.ico</ApplicationIcon>
-		<AssemblyName>ME3TweaksModManager</AssemblyName>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-		<UserSecretsId>7b27ce2b-30bb-4b0a-b86c-79c02467be9f</UserSecretsId>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PropertyGroup>
+        <AssemblyTitle>ME3Tweaks Mod Manager</AssemblyTitle>
+        <OutputType>WinExe</OutputType>
+        <PublishTrimmed>false</PublishTrimmed>
+        <PublishReadyToRun>false</PublishReadyToRun>
+        <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+        <TargetFrameworks>net10.0-windows</TargetFrameworks>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+        <UseWPF>true</UseWPF>
+        <Platforms>x64</Platforms>
+        <Version>9.2.1.137</Version>
+        <Copyright>ME3Tweaks 2012-2026</Copyright>
+        <Authors>Mgamerz</Authors>
+        <PackageId>ME3TweaksModManager</PackageId>
+        <Product>ME3Tweaks Mod Manager</Product>
+        <Description>Mod Manager for the original Mass Effect Trilogy and Legendary Edition</Description>
+        <Company>ME3Tweaks</Company>
+        <StartupObject>ME3TweaksModManager.App</StartupObject>
+        <ApplicationIcon>appicon.ico</ApplicationIcon>
+        <AssemblyName>ME3TweaksModManager</AssemblyName>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <UserSecretsId>7b27ce2b-30bb-4b0a-b86c-79c02467be9f</UserSecretsId>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<PublishTrimmed>False</PublishTrimmed>
-		<Nullable>disable</Nullable>
-		<Configurations>Debug;DebugNoAC;Release;WinAzureTest;WinAzureRelease</Configurations>
-		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-	</PropertyGroup>
+        <Nullable>disable</Nullable>
+        <Configurations>Debug;DebugNoAC;Release;WinAzureTest;WinAzureRelease</Configurations>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DebugType>pdbonly</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoAC|x64'">
-		<DebugType>pdbonly</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <DebugType>pdbonly</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoAC|x64'">
+        <DebugType>pdbonly</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DebugType>embedded</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-		<Optimize>true</Optimize>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <DebugType>embedded</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
 
-	<!-- Azure pipelines build and test -->
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureRelease|x64'">
-		<DebugType>embedded</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>AZURE</DefineConstants>
-	</PropertyGroup>
+    <!-- Azure pipelines build and test -->
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureRelease|x64'">
+        <DebugType>embedded</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <DefineConstants>AZURE</DefineConstants>
+    </PropertyGroup>
 
-	<!-- Azure pipelines debugging locally -->
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureTest|x64'">
-		<DebugType>embedded</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;AZURE</DefineConstants>
-	</PropertyGroup>
+    <!-- Azure pipelines debugging locally -->
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureTest|x64'">
+        <DebugType>embedded</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <DefineConstants>DEBUG;AZURE</DefineConstants>
+    </PropertyGroup>
 
-	<!--Fody code generator to allow us to access OnPropertyChanged-->
-	<PropertyGroup>
-		<PropertyChangedAnalyzerConfiguration>
-			<IsCodeGeneratorDisabled>false</IsCodeGeneratorDisabled>
-			<EventInvokerName>OnPropertyChanged</EventInvokerName>
-		</PropertyChangedAnalyzerConfiguration>
-	</PropertyGroup>
+    <!--Fody code generator to allow us to access OnPropertyChanged-->
+    <PropertyGroup>
+        <PropertyChangedAnalyzerConfiguration>
+            <IsCodeGeneratorDisabled>false</IsCodeGeneratorDisabled>
+            <EventInvokerName>OnPropertyChanged</EventInvokerName>
+        </PropertyChangedAnalyzerConfiguration>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
-	<ItemGroup>
-		<None Remove="appicon.ico" />
-		<None Remove="images\asi.png" />
-		<None Remove="images\darktheme.png" />
-		<None Remove="images\dvd.png" />
-		<None Remove="images\gameicons\Unknown_48.ico" />
-		<None Remove="images\lighttheme.png" />
-		<None Remove="images\loadingspinner.png" />
-		<None Remove="images\me3tweaks.png" />
-		<None Remove="images\modmaker.png" />
-		<None Remove="images\nexusmods_scenethemed.png" />
-		<None Remove="images\ea.png" />
-		<None Remove="images\steam.png" />
-		<None Remove="images\terminal.png" />
-		<None Remove="images\unknown.png" />
-		<None Remove="images\unknownmap.png" />
-		<None Remove="images\windowicon.png" />
-		<None Remove="modmanager\asi\AutoTOC_LE-v2.0.asi" />
-		<None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
-		<None Remove="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
-		<None Remove="modmanager\asi\manifest.xml" />
-		<None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
-		<None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
-		<None Remove="modmanager\executables\vpat.exe" />
-		<None Remove="modmanager\gamemd5\me1.bin" />
-		<None Remove="modmanager\gamemd5\me1pl.bin" />
-		<None Remove="modmanager\gamemd5\me2.bin" />
-		<None Remove="modmanager\gamemd5\me3.bin" />
-		<None Remove="modmanager\licenses\minhook.txt" />
-		<None Remove="modmanager\localizations\icons\english.png" />
-		<None Remove="modmanager\localizations\icons\french.png" />
-		<None Remove="modmanager\localizations\icons\german.png" />
-		<None Remove="modmanager\localizations\icons\languageselector.png" />
-		<None Remove="modmanager\localizations\icons\polish.png" />
-		<None Remove="modmanager\localizations\icons\portuguese.png" />
-		<None Remove="modmanager\localizations\icons\russian.png" />
-		<None Remove="modmanager\localizations\icons\spanish.png" />
-		<None Remove="modmanager\me3tweaks\LiveIni.bin" />
-		<None Remove="modmanager\me3tweaks\PermissionsGranter.exe" />
-		<None Remove="modmanager\meim\propertymaps\BioEngine.xml" />
-		<None Remove="modmanager\meim\propertymaps\BioGame.xml" />
-		<None Remove="modmanager\meim\propertymaps\BioParty.xml" />
-		<None Remove="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
-		<None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
-		<None Remove="modmanager\objects\mod\merge\v1\schema.json" />
-		<None Remove="modmanager\objects\mod\merge\v2\schema.json" />
-		<None Remove="modmanager\objects\mod\merge\vanillaclasses.json.lzma" />
-		<None Remove="modmanager\starterkit\henchimages\placeholder_available.png" />
-		<None Remove="modmanager\starterkit\henchimages\placeholder_chosen.png" />
-		<None Remove="modmanager\starterkit\henchimages\placeholder_silo.png" />
-		<None Remove="modmanager\starterkit\scripts\SFXGUIData_ModSettings.uc" />
-		<None Remove="modmanager\starterkit\StarterKitTLK.xml" />
-		<None Remove="modmanager\toolicons\alot_32.png" />
-		<None Remove="modmanager\toolicons\alot_big.png" />
-		<None Remove="modmanager\toolicons\egmsettings_32.png" />
-		<None Remove="modmanager\toolicons\egmsettings_big.png" />
-		<None Remove="modmanager\toolicons\masseffectinimodder_32.png" />
-		<None Remove="modmanager\toolicons\masseffectinimodder_big.png" />
-		<None Remove="modmanager\toolicons\masseffectmodder_32.png" />
-		<None Remove="modmanager\toolicons\masseffectmodder_big.png" />
-		<None Remove="modmanager\toolicons\masseffectrandomizer_32.png" />
-		<None Remove="modmanager\toolicons\masseffectrandomizer_big.png" />
-		<None Remove="staticfiles\objectinfos\ME1ObjectInfo.json" />
-		<None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
-		<None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
-		<None Remove="updater\ME3CMM.exe" />
-		<None Remove="updater\ME3TweaksUpdater.exe" />
-	</ItemGroup>
-	<ItemGroup>
-		<Resource Include="images\dvd.png" />
-		<Resource Include="images\steam.png" />
-		<Resource Include="images\terminal.png" />
-	</ItemGroup>
-	<ItemGroup>
-		<Resource Include="appicon.ico" />
-		<Resource Include="images\darktheme.png" />
-		<Resource Include="images\lighttheme.png" />
-		<Resource Include="images\me3tweaks.png" />
-		<Resource Include="images\modmaker.png" />
-		<Resource Include="images\nexusmods_scenethemed.png" />
-		<Resource Include="images\unknown.png" />
-		<Resource Include="images\windowicon.png" />
-	</ItemGroup>
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="appicon.ico" />
+        <None Remove="images\asi.png" />
+        <None Remove="images\darktheme.png" />
+        <None Remove="images\dvd.png" />
+        <None Remove="images\gameicons\Unknown_48.ico" />
+        <None Remove="images\lighttheme.png" />
+        <None Remove="images\loadingspinner.png" />
+        <None Remove="images\me3tweaks.png" />
+        <None Remove="images\modmaker.png" />
+        <None Remove="images\nexusmods_scenethemed.png" />
+        <None Remove="images\ea.png" />
+        <None Remove="images\steam.png" />
+        <None Remove="images\terminal.png" />
+        <None Remove="images\unknown.png" />
+        <None Remove="images\unknownmap.png" />
+        <None Remove="images\windowicon.png" />
+        <None Remove="modmanager\asi\AutoTOC_LE-v2.0.asi" />
+        <None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
+        <None Remove="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
+        <None Remove="modmanager\asi\manifest.xml" />
+        <None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
+        <None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
+        <None Remove="modmanager\executables\vpat.exe" />
+        <None Remove="modmanager\gamemd5\me1.bin" />
+        <None Remove="modmanager\gamemd5\me1pl.bin" />
+        <None Remove="modmanager\gamemd5\me2.bin" />
+        <None Remove="modmanager\gamemd5\me3.bin" />
+        <None Remove="modmanager\licenses\minhook.txt" />
+        <None Remove="modmanager\localizations\icons\english.png" />
+        <None Remove="modmanager\localizations\icons\french.png" />
+        <None Remove="modmanager\localizations\icons\german.png" />
+        <None Remove="modmanager\localizations\icons\languageselector.png" />
+        <None Remove="modmanager\localizations\icons\polish.png" />
+        <None Remove="modmanager\localizations\icons\portuguese.png" />
+        <None Remove="modmanager\localizations\icons\russian.png" />
+        <None Remove="modmanager\localizations\icons\spanish.png" />
+        <None Remove="modmanager\me3tweaks\LiveIni.bin" />
+        <None Remove="modmanager\me3tweaks\PermissionsGranter.exe" />
+        <None Remove="modmanager\meim\propertymaps\BioEngine.xml" />
+        <None Remove="modmanager\meim\propertymaps\BioGame.xml" />
+        <None Remove="modmanager\meim\propertymaps\BioParty.xml" />
+        <None Remove="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
+        <None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
+        <None Remove="modmanager\objects\mod\merge\v1\schema.json" />
+        <None Remove="modmanager\objects\mod\merge\v2\schema.json" />
+        <None Remove="modmanager\objects\mod\merge\vanillaclasses.json.lzma" />
+        <None Remove="modmanager\starterkit\henchimages\placeholder_available.png" />
+        <None Remove="modmanager\starterkit\henchimages\placeholder_chosen.png" />
+        <None Remove="modmanager\starterkit\henchimages\placeholder_silo.png" />
+        <None Remove="modmanager\starterkit\scripts\SFXGUIData_ModSettings.uc" />
+        <None Remove="modmanager\starterkit\StarterKitTLK.xml" />
+        <None Remove="modmanager\toolicons\alot_32.png" />
+        <None Remove="modmanager\toolicons\alot_big.png" />
+        <None Remove="modmanager\toolicons\egmsettings_32.png" />
+        <None Remove="modmanager\toolicons\egmsettings_big.png" />
+        <None Remove="modmanager\toolicons\masseffectinimodder_32.png" />
+        <None Remove="modmanager\toolicons\masseffectinimodder_big.png" />
+        <None Remove="modmanager\toolicons\masseffectmodder_32.png" />
+        <None Remove="modmanager\toolicons\masseffectmodder_big.png" />
+        <None Remove="modmanager\toolicons\masseffectrandomizer_32.png" />
+        <None Remove="modmanager\toolicons\masseffectrandomizer_big.png" />
+        <None Remove="staticfiles\objectinfos\ME1ObjectInfo.json" />
+        <None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
+        <None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
+        <None Remove="updater\ME3CMM.exe" />
+        <None Remove="updater\ME3TweaksUpdater.exe" />
+    </ItemGroup>
+    <ItemGroup>
+        <Resource Include="images\dvd.png" />
+        <Resource Include="images\steam.png" />
+        <Resource Include="images\terminal.png" />
+    </ItemGroup>
+    <ItemGroup>
+        <Resource Include="appicon.ico" />
+        <Resource Include="images\darktheme.png" />
+        <Resource Include="images\lighttheme.png" />
+        <Resource Include="images\me3tweaks.png" />
+        <Resource Include="images\modmaker.png" />
+        <Resource Include="images\nexusmods_scenethemed.png" />
+        <Resource Include="images\unknown.png" />
+        <Resource Include="images\windowicon.png" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<Resource Include="images\asi.png" />
-		<EmbeddedResource Include="images\unknownmap.png" />
-		<EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
-		<EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
-		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
-		<EmbeddedResource Include="modmanager\asi\manifest.xml" />
-	</ItemGroup>
+    <ItemGroup>
+        <Resource Include="images\asi.png" />
+        <EmbeddedResource Include="images\unknownmap.png" />
+        <EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
+        <EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
+        <EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
+        <EmbeddedResource Include="modmanager\asi\manifest.xml" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
-		<EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
-		<EmbeddedResource Include="modmanager\gamemd5\*.bin" />
-		<EmbeddedResource Include="modmanager\squadmates\**\*.txt" />
-		<EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
-		<EmbeddedResource Include="modmanager\merge\game2email\**\*.pcc" />
-		<EmbeddedResource Include="modmanager\licenses\minhook.txt" />
-		<EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
-		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
-		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
-		<EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
-		<EmbeddedResource Include="modmanager\meim\propertymaps\BioParty.xml" />
-		<EmbeddedResource Include="modmanager\objects\mod\merge\vanillaclasses.json.lzma" />
-		<EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_available.png" />
-		<EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_chosen.png" />
-		<EmbeddedResource Include="modmanager\starterkit\scripts\SFXGUIData_ModSettings.uc" />
-		<EmbeddedResource Include="updater\ME3CMM.exe" />
-		<EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
-	</ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
+        <EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
+        <EmbeddedResource Include="modmanager\gamemd5\*.bin" />
+        <EmbeddedResource Include="modmanager\squadmates\**\*.txt" />
+        <EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
+        <EmbeddedResource Include="modmanager\merge\game2email\**\*.pcc" />
+        <EmbeddedResource Include="modmanager\licenses\minhook.txt" />
+        <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
+        <EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
+        <EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
+        <EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
+        <EmbeddedResource Include="modmanager\meim\propertymaps\BioParty.xml" />
+        <EmbeddedResource Include="modmanager\objects\mod\merge\vanillaclasses.json.lzma" />
+        <EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_available.png" />
+        <EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_chosen.png" />
+        <EmbeddedResource Include="modmanager\starterkit\scripts\SFXGUIData_ModSettings.uc" />
+        <EmbeddedResource Include="updater\ME3CMM.exe" />
+        <EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="CliWrap" Version="3.10.2" />
-		<PackageReference Include="DarkNet" Version="2.3.0" />
-		<PackageReference Include="Flurl" Version="4.0.0" />
-		<PackageReference Include="Flurl.Http" Version="4.0.2" />
-		<PackageReference Include="Fody" Version="6.9.3">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="FontAwesome5" Version="2.1.11" />
-		<PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.8.2" />
-		<PackageReference Include="OpenTelemetry" Version="1.16.0" />
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
-		<PackageReference Include="MvvmValidation" Version="3.1.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
-		<PackageReference Include="Octokit" Version="14.0.0" />
-		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.16.0" />
-		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
-		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
-		<PackageReference Include="Serilog" Version="4.4.0" />
-		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
-		<PackageReference Include="SSH.NET" Version="2025.1.0" />
-		<PackageReference Include="WatsonWebsocket" Version="4.1.8" />
-		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
-	</ItemGroup>
-	<ItemGroup>
-		<DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
-		<ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
-		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
-		<ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCoreWPF\ME3TweaksCoreWPF.csproj" />
-		<ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\ME3TweaksCore.csproj" />
-		<ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\submodules\ComputerInfo\ComputerInfo\ComputerInfo.csproj" />
-		<ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\submodules\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
-		<ProjectReference Include="..\WpfExtendedToolkit-Extended\Src\Xceed.Wpf.Toolkit\DotNetProjects.Wpf.Extended.Toolkit.csproj" />
-		<ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\submodules\AuthenticodeExaminer\src\AuthenticodeExaminer\AuthenticodeExaminer.csproj" />
+    <ItemGroup>
+        <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="CliWrap" Version="3.10.2" />
+        <PackageReference Include="DarkNet" Version="2.3.0" />
+        <PackageReference Include="Flurl" Version="4.0.0" />
+        <PackageReference Include="Flurl.Http" Version="4.0.2" />
+        <PackageReference Include="Fody" Version="6.9.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="FontAwesome5" Version="2.1.11" />
+        <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.8.2" />
+        <PackageReference Include="OpenTelemetry" Version="1.16.0" />
+        <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
+        <PackageReference Include="MvvmValidation" Version="3.1.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
+        <PackageReference Include="Octokit" Version="14.0.0" />
+        <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.16.0" />
+        <PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
+        <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
+        <PackageReference Include="Serilog" Version="4.4.0" />
+        <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+        <PackageReference Include="SingleInstanceCore" Version="2.2.2" />
+        <PackageReference Include="SSH.NET" Version="2025.1.0" />
+        <PackageReference Include="WatsonWebsocket" Version="4.1.8" />
+        <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
+        <ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
+        <ProjectReference Include="..\SevenZip\SevenZip.csproj" />
+        <ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCoreWPF\ME3TweaksCoreWPF.csproj" />
+        <ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\ME3TweaksCore.csproj" />
+        <ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\submodules\ComputerInfo\ComputerInfo\ComputerInfo.csproj" />
+        <ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\submodules\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
+        <ProjectReference Include="..\WpfExtendedToolkit-Extended\Src\Xceed.Wpf.Toolkit\DotNetProjects.Wpf.Extended.Toolkit.csproj" />
+        <ProjectReference Include="..\submodules\ME3TweaksCore\ME3TweaksCore\submodules\AuthenticodeExaminer\src\AuthenticodeExaminer\AuthenticodeExaminer.csproj" />
+    </ItemGroup>
 
-	</ItemGroup>
+    <ItemGroup>
+        <Resource Include="images\gameicons\*.ico" />
+        <Resource Include="images\ea.png" />
+        <EmbeddedResource Include="modmanager\executables\vpat.exe" />
+        <Resource Include="modmanager\localizations\icons\*.png" />
+        <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
+        <EmbeddedResource Include="modmanager\objects\mod\merge\v1\schema.json" />
+        <EmbeddedResource Include="modmanager\objects\mod\merge\v2\schema.json" />
+        <Resource Include="modmanager\toolicons\*.png" />
+        <Resource Include="modmanager\toolicons\*.ico" />
+        <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
+        <EmbeddedResource Include="modmanager\merge\dlc\**\*.pcc" />
+        <EmbeddedResource Include="modmanager\merge\dlc\**\*.ini" />
+        <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<Resource Include="images\gameicons\*.ico" />
-		<Resource Include="images\ea.png" />
-		<EmbeddedResource Include="modmanager\executables\vpat.exe" />
-		<Resource Include="modmanager\localizations\icons\*.png" />
-		<Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
-		<EmbeddedResource Include="modmanager\objects\mod\merge\v1\schema.json" />
-		<EmbeddedResource Include="modmanager\objects\mod\merge\v2\schema.json" />
-		<Resource Include="modmanager\toolicons\*.png" />
-		<Resource Include="modmanager\toolicons\*.ico" />
-		<EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
-		<EmbeddedResource Include="modmanager\merge\dlc\**\*.pcc" />
-		<EmbeddedResource Include="modmanager\merge\dlc\**\*.ini" />
-		<EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
-	</ItemGroup>
+    <ItemGroup>
+      <Compile Remove="modmanager\usercontrols\UILockoutPanel.cs" />
+    </ItemGroup>
 
-	<ItemGroup>
-	  <Compile Remove="modmanager\usercontrols\UILockoutPanel.cs" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- Localizations that have fallen out of date or were never implemented to begin with. -->
+        <Page Remove="modmanager\localizations\bra.xaml" />
+        <Page Remove="modmanager\localizations\esn.xaml" />
+        <Page Remove="modmanager\localizations\fra.xaml" />
+        <Page Remove="modmanager\localizations\pol.xaml" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<!-- Lcoalizations that have fallen out of date or were never implemented to begin with. -->
-		<Page Remove="modmanager\localizations\bra.xaml" />
-		<Page Remove="modmanager\localizations\esn.xaml" />
-		<Page Remove="modmanager\localizations\fra.xaml" />
-		<Page Remove="modmanager\localizations\pol.xaml" />
-	</ItemGroup>
+    <ItemGroup>
+        <Compile Update="modmanager\usercontrols\moddescinieditor\HeadmorphsEditorControl.xaml.cs">
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="modmanager\usercontrols\TestArchiveGenerator.xaml.cs">
+            <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="modmanager\usercontrols\moddescinieditor\HeadmorphsEditorControl.xaml.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Update="modmanager\usercontrols\TestArchiveGenerator.xaml.cs">
-			<SubType>Code</SubType>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Page Update="modmanager\localizations\deu.xaml">
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="modmanager\localizations\rus.xaml">
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="modmanager\usercontrols\NXMHandlerConfigPanel.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="modmanager\usercontrols\moddescinieditor\LELauncherEditorControl.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="modmanager\usercontrols\moddescinieditor\Game1TLKMergeEditorControl.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="modmanager\usercontrols\LE1CoalescedMergePanel.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="modmanager\usercontrols\PlotManagerUpdatePanel.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="modmanager\usercontrols\TextureInstallerPanel.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="modmanager\windows\dialog\DeploymentListDialog.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-			<SubType>Designer</SubType>
-		</Page>
-	</ItemGroup>
-	<ItemGroup>
-		<ContentWithTargetPath Include="modmanager\native\7z64.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<TargetPath>7z64.dll</TargetPath>
-		</ContentWithTargetPath>
-	</ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_silo.png" />
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="modmanager\merge\dlc\LE2\" />
-		<Folder Include="modmanager\merge\dlc\ME2\" />
-		<Folder Include="modmanager\objects\merge\email\" />
-		<Folder Include="modmanager\objects\merge\squadmate\" />
-		<Folder Include="modmanager\save\game2\UI\" />
-		<Folder Include="modmanager\squadmates\LE3\" />
-	</ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
-	</ItemGroup>
-
+    <ItemGroup>
+        <Page Update="modmanager\localizations\deu.xaml">
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="modmanager\localizations\rus.xaml">
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="modmanager\usercontrols\NXMHandlerConfigPanel.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+        <Page Update="modmanager\usercontrols\moddescinieditor\LELauncherEditorControl.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+        <Page Update="modmanager\usercontrols\moddescinieditor\Game1TLKMergeEditorControl.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+        <Page Update="modmanager\usercontrols\LE1CoalescedMergePanel.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+        <Page Update="modmanager\usercontrols\PlotManagerUpdatePanel.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+        <Page Update="modmanager\usercontrols\TextureInstallerPanel.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+        <Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="modmanager\windows\dialog\DeploymentListDialog.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+    </ItemGroup>
+    <ItemGroup>
+        <ContentWithTargetPath Include="modmanager\native\7z64.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>7z64.dll</TargetPath>
+        </ContentWithTargetPath>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_silo.png" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="modmanager\merge\dlc\LE2\" />
+        <Folder Include="modmanager\merge\dlc\ME2\" />
+        <Folder Include="modmanager\objects\merge\email\" />
+        <Folder Include="modmanager\objects\merge\squadmate\" />
+        <Folder Include="modmanager\save\game2\UI\" />
+        <Folder Include="modmanager\squadmates\LE3\" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
+    </ItemGroup>
 </Project>
