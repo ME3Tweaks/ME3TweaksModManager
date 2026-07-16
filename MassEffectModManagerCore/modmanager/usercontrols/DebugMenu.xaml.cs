@@ -48,7 +48,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
             if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
             if (sender == nameof(MainWindow.CrashTest_MenuItem)) CrashTest(window);
-            if (sender == nameof(MainWindow.TestTlkMergeConverter_MenuItem)) TestTlkMergeConverter(window);
 #endif
         }
 
