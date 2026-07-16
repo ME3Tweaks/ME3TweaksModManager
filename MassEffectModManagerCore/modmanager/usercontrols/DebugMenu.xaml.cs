@@ -53,38 +53,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         }
 
         
-
-            var globalPccName = globalTlkName.Substring(0, globalTlkName.IndexOf('.'));
-
-            var files = Directory.GetFiles(dlcFolder, globalPccName + @"*.pcc", SearchOption.AllDirectories);
-            foreach (var lang in GameLanguage.GetLanguagesForGame(MEGame.LE1))
-            {
-                var loc = lang.Localization;
-                if (loc == MELocalization.INT)
-                {
-                    loc = MELocalization.None;
-                }
-
-                var targetFiles = mergeFiles.Where(x =>
-                {
-                    var localFileLoc = x.Key.GetUnrealLocalization();
-                    if (localFileLoc == MELocalization.INT && loc == MELocalization.None)
-                        return true;
-                    return x.Key.GetUnrealLocalization() == loc;
-                }).ToList();
-
-                if (targetFiles.Count == 0)
-                {
-                    // No strings in this lang
-                    continue;
-                }
-
-                var tlkFile = files.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).GetUnrealLocalization() == loc);
-                if (tlkFile == null)
-                    continue;
-            }
-        }
-
 #if DEBUG
 
         private static void TestMSVCPPInstaller(MainWindow window)
