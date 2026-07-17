@@ -865,42 +865,69 @@ namespace LocalizationHelper
                 if (x == 132)
                     Debug.WriteLine("ok");
                 var line = filelines[x];
-                
-                // Check if we're entering or exiting a raw string literal
+                List<(int start, int end)> rawStringRanges = new List<(int, int)>();
+
+                // If currently inside a multi-line raw string literal, skip everything until closing delimiter
+                if (inRawStringLiteral)
+                {
+                    int closePos = line.IndexOf(rawStringClosingDelimiter, StringComparison.Ordinal);
+                    if (closePos >= 0)
+                    {
+                        rawStringRanges.Add((0, closePos + rawStringClosingDelimiter.Length - 1));
+                        inRawStringLiteral = false;
+                        rawStringClosingDelimiter = null;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
                 if (!inRawStringLiteral && !inMultiLineVerbatimString)
                 {
-                    // Look for raw string literal start: """ or $"""
-                    var trimmedLine = line.TrimStart();
-                    if (trimmedLine.StartsWith("\"\"\"") || trimmedLine.StartsWith("$\"\"\""))
+                    // Find raw string literal ranges ("""...""", $"""...""", $$"""...""", etc.) anywhere on the line
+                    int rawSearchPos = 0;
+                    while (rawSearchPos < line.Length)
                     {
-                        // Count the number of quotes to determine the delimiter
+                        int quoteStart = line.IndexOf('"', rawSearchPos);
+                        if (quoteStart == -1)
+                        {
+                            break;
+                        }
+
                         int quoteCount = 0;
-                        int startIndex = trimmedLine.StartsWith("$") ? 1 : 0;
-                        while (startIndex + quoteCount < trimmedLine.Length && trimmedLine[startIndex + quoteCount] == '"')
+                        while (quoteStart + quoteCount < line.Length && line[quoteStart + quoteCount] == '"')
                         {
                             quoteCount++;
                         }
-                        
+
                         if (quoteCount >= 3)
                         {
-                            // This is a raw string literal
-                            inRawStringLiteral = true;
-                            rawStringClosingDelimiter = new string('"', quoteCount);
-                            
-                            // Check if it closes on the same line
-                            var afterOpening = trimmedLine.Substring(startIndex + quoteCount);
-                            if (afterOpening.Contains(rawStringClosingDelimiter))
+                            int startPos = quoteStart;
+                            while (startPos > 0 && line[startPos - 1] == '$')
                             {
-                                // Single-line raw string literal, close it immediately
-                                inRawStringLiteral = false;
-                                rawStringClosingDelimiter = null;
+                                startPos--;
                             }
-                            continue;
+
+                            string closingDelimiter = new string('"', quoteCount);
+                            int closePos = line.IndexOf(closingDelimiter, quoteStart + quoteCount, StringComparison.Ordinal);
+                            if (closePos >= 0)
+                            {
+                                rawStringRanges.Add((startPos, closePos + quoteCount - 1));
+                                rawSearchPos = closePos + quoteCount;
+                                continue;
+                            }
+
+                            rawStringRanges.Add((startPos, line.Length - 1));
+                            inRawStringLiteral = true;
+                            rawStringClosingDelimiter = closingDelimiter;
+                            break;
                         }
+
+                        rawSearchPos = quoteStart + quoteCount;
                     }
-                    
+
                     // Check for multi-line verbatim string literal start: @" or $@"
-                    // This must be at start of assignment or after = 
                     if (line.Contains("@\""))
                     {
                         // Find the position of @"
@@ -910,7 +937,7 @@ namespace LocalizationHelper
                         {
                             atPos--; // Include the $
                         }
-                        
+
                         // Count the number of quotes in the rest of the line to see if it closes
                         int quoteCount = 0;
                         bool escaped = false;
@@ -928,7 +955,7 @@ namespace LocalizationHelper
                                 }
                             }
                         }
-                        
+
                         // If we have an odd number of quotes, or no closing quote, this continues to next line
                         // Verbatim strings can span multiple lines
                         if (quoteCount % 2 == 0 && quoteCount == 0)
@@ -950,16 +977,6 @@ namespace LocalizationHelper
                         }
                     }
                 }
-                else if (inRawStringLiteral)
-                {
-                    // We're in a raw string literal, check if this line closes it
-                    if (line.TrimEnd().EndsWith(rawStringClosingDelimiter))
-                    {
-                        inRawStringLiteral = false;
-                        rawStringClosingDelimiter = null;
-                    }
-                    continue; // Skip all lines inside raw string literals
-                }
                 else if (inMultiLineVerbatimString)
                 {
                     // We're in a multi-line verbatim string, check if this line closes it
@@ -978,7 +995,7 @@ namespace LocalizationHelper
                             }
                         }
                     }
-                    
+
                     // If we have an odd number of quotes, the last one closes the string
                     if (quoteCount % 2 == 1)
                     {
@@ -986,7 +1003,7 @@ namespace LocalizationHelper
                     }
                     continue; // Skip all lines inside multi-line verbatim strings
                 }
-                
+
                 if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
                 if (line.Contains("Localizable(true)", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -1118,7 +1135,7 @@ namespace LocalizationHelper
                     bool xmlPreserve = false;
                     var matchIndex = line.IndexOf(match.ToString());
                     
-                    // Check if this match is inside a verbatim string literal
+                    // Check if this match is inside a verbatim or raw string literal
                     bool insideVerbatimString = false;
                     foreach (var range in verbatimStringRanges)
                     {
@@ -1128,9 +1145,19 @@ namespace LocalizationHelper
                             break;
                         }
                     }
-                    
-                    if (insideVerbatimString) continue; // Skip strings inside verbatim literals
-                    
+
+                    bool insideRawString = false;
+                    foreach (var range in rawStringRanges)
+                    {
+                        if (matchIndex >= range.start && matchIndex <= range.end)
+                        {
+                            insideRawString = true;
+                            break;
+                        }
+                    }
+
+                    if (insideVerbatimString || insideRawString) continue; // Skip strings inside ignored literals
+
                     if (commentIndex >= 0 && matchIndex > commentIndex)
                     {
                         // Check it's not http:// in same line
