@@ -46,6 +46,11 @@ namespace ME3TweaksModManager
         private static bool POST_STARTUP = false;
 
         /// <summary>
+        /// If we should ignore that the app is running through Wine
+        /// </summary>
+        private static bool IGNORE_WINE = false;
+
+        /// <summary>
         /// The link to the Discord server
         /// </summary>
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
@@ -210,6 +215,7 @@ namespace ME3TweaksModManager
                         }
                         if (parsedCommandLineArgs.Value.DisableWineWorkarounds)
                         {
+                            IGNORE_WINE = true;
                             WineWorkarounds.WineDetected = false;
                             M3Log.Warning(@"Wine Workarounds Disabled");
                         }
@@ -238,8 +244,11 @@ namespace ME3TweaksModManager
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
 
+                // Check if user explicitly disabled wine workarounds
+                if (!IGNORE_WINE) {
                 // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
                 WineWorkarounds.Init();
+                }
 
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
