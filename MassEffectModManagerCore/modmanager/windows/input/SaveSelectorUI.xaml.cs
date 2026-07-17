@@ -787,18 +787,29 @@ namespace ME3TweaksModManager.modmanager.windows.input
             {
                 foreach (var mapEntry in areadata)
                 {
-                    var parms = StringStructParser.GetCommaSplitValues(mapEntry.Value, canBeCaseInsensitive: true);
-                    var isUsable = parms.TryGetValue(@"AreaName", out var areaname);
-                    isUsable &= parms.TryGetValue(@"ImageName", out var imagename);
-                    parms.TryGetValue(@"AreaStrRef", out var areaStrRefStr);
-
-                    if (isUsable)
+                    try
                     {
-                        mapToAssetNameMap[areaname] = imagename;
-                        if (int.TryParse(areaStrRefStr, out var strRef))
+                        var parms = StringStructParser.GetCommaSplitValues(mapEntry.Value, canBeCaseInsensitive: true);
+                        var isUsable = parms.TryGetValue(@"AreaName", out var areaname);
+                        isUsable &= parms.TryGetValue(@"ImageName", out var imagename);
+                        parms.TryGetValue(@"AreaStrRef", out var areaStrRefStr);
+
+                        if (isUsable)
                         {
-                            mapToStrRefName[areaname] = strRef;
+                            mapToAssetNameMap[areaname] = imagename;
+                            if (int.TryParse(areaStrRefStr, out var strRef))
+                            {
+                                mapToStrRefName[areaname] = strRef;
+                            }
                         }
+                    } catch (Exception e)
+                    {
+                        TelemetryInterposer.TrackEvent(@"Found malformed areadata entry", new Dictionary<string, string>()
+                        {
+                            {@"Game", Target.Game.ToString()},
+                            {@"Entry", mapEntry.Value},
+                        }); 
+                        M3Log.Error($@"Error parsing areadata string in {mapEntry.Value}: {mapEntry}. Error: {e.Message}");
                     }
                 }
             }
