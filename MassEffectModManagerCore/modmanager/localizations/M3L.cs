@@ -635,8 +635,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_modRequiresAMDProcessor = "string_modRequiresAMDProcessor";
 		public const string string_oodleNotFound = "string_oodleNotFound";
 		public const string string_ensureGameIsValidDiscord = "string_ensureGameIsValidDiscord";
-		public const string string_trackingMergemodChanges = "string_trackingMergemodChanges";
-		public const string string_tooltip_optionNotApplicable = "string_tooltip_optionNotApplicable";
+        public const string string_trackingMergemodChanges = "string_trackingMergemodChanges";
+        public const string string_trackingBasegameChanges = "string_trackingBasegameChanges";
+        public const string string_tooltip_optionNotApplicable = "string_tooltip_optionNotApplicable";
 		public const string string_tooltip_optionForceApplied = "string_tooltip_optionForceApplied";
 		public const string string_textureOverrideMergeFailed = "string_textureOverrideMergeFailed";
 		public const string string_welcomeTo = "string_welcomeTo";

@@ -248,7 +248,7 @@ namespace ME3TweaksModManager.modmanager.installer
         /// Performs the mod installation. This is a blocking method and must be run on a background thread or a new task.Run()!
         /// </summary>
         public async Task InstallMod()
-        {
+        {   
             var sw = Stopwatch.StartNew();
             bool testrun = false; //change to true to test
             M3Log.Information(@"Mod Installer Background thread starting");
@@ -714,7 +714,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 // There is probably better way to do this
                 var shouldTrack = InstallOptionsPackage.InstallTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)
                                                                         && targetPath.ContainsAny(MEDirectories.OfficialDLC(InstallOptionsPackage.InstallTarget.Game).Select(x => $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
-                if ((shouldTrack || !targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
+                if ((shouldTrack || !targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
                     && targetPath.Contains(InstallOptionsPackage.InstallTarget.TargetPath) // Must be within the game directory (no config files)
                     && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
                 {
@@ -1019,7 +1019,6 @@ namespace ME3TweaksModManager.modmanager.installer
                     }
                 }
 
-
                 // Run at the end of all merge mods so we get the final hash.
                 void convertMergeModRecordsToFileIdentificationRecords()
                 {
@@ -1275,15 +1274,33 @@ namespace ME3TweaksModManager.modmanager.installer
             Debug.WriteLine($@"Installer took {sw.ElapsedMilliseconds}ms");
             if (basegameFilesInstalled.Any() || basegameIdentificationServiceRecords.Any())
             {
+                M3Log.Information($@"Inventorying basegame changes for BFGIS");
+                SetAction?.Invoke(M3L.GetString(M3L.string_trackingBasegameChanges));
                 try
                 {
-                    var files = new List<BasegameFileRecord>(basegameFilesInstalled.Count + basegameIdentificationServiceRecords.Count);
-                    files.AddRange(basegameIdentificationServiceRecords.Values);
+                    var totalFilesToTrack = basegameFilesInstalled.Count + basegameIdentificationServiceRecords.Count;
+                    var files = new List<BasegameFileRecord>(totalFilesToTrack);
+                    var processedFiles = 0;
+
+                    void updateTrackingProgress()
+                    {
+                        processedFiles++;
+                        SetPercentVisibility?.Invoke(true);
+                        SetPercent?.Invoke((int)(processedFiles * 100.0 / totalFilesToTrack));
+                    }
+
+                    foreach (var record in basegameIdentificationServiceRecords.Values)
+                    {
+                        files.Add(record);
+                    }
+
                     foreach (var file in basegameFilesInstalled)
                     {
                         var entry = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled);
                         files.Add(entry);
+                        updateTrackingProgress();
                     }
+
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(files);
                 }
                 catch (Exception ex)

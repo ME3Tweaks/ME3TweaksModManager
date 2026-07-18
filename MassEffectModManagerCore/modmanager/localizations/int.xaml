@@ -722,6 +722,8 @@
     <system:String x:Key="string_ensureGameIsValidDiscord">Ensure your game is properly installed and has been run once. If you continue to have issues, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_trackingMergemodChanges">Tracking mergemod changes</system:String>
     <!-- M3 is inventorying files for changes, hence 'tracking' them -->
+    <system:String x:Key="string_trackingBasegameChanges">Tracking basegame changes</system:String>
+    <!-- M3 is inventorying files for changes, hence 'tracking' them -->
     <system:String x:Key="string_tooltip_optionNotApplicable">Based on conditions set by the mod developer, this option is not applicable based on your game's current setup</system:String>
     <system:String x:Key="string_tooltip_optionForceApplied">Based on conditions set by the mod developer, this option must be applied based on your game's current setup</system:String>
     <system:String x:Key="string_textureOverrideMergeFailed">Texture override merge failed</system:String>
