@@ -1895,10 +1895,37 @@
                                                         <RowDefinition
                                                             Height="Auto" />
                                                     </Grid.RowDefinitions>
+                                                    <!-- This border is effectively an underline effect -->
                                                     <Border
                                                         Background="{Binding BackgroundColor}"
                                                         Height="2"
-                                                        VerticalAlignment="Bottom" />
+                                                        VerticalAlignment="Bottom">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Opacity" Value="1" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                                                        <DataTrigger.EnterActions>
+                                                                            <BeginStoryboard x:Name="GameFilterLoadingPulseStoryboard">
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation
+                                                                                        Storyboard.TargetProperty="Opacity"
+                                                                                        From="1"
+                                                                                        To="0.25"
+                                                                                        Duration="0:0:0.5"
+                                                                                        AutoReverse="True"
+                                                                                        RepeatBehavior="Forever" />
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </DataTrigger.EnterActions>
+                                                                        <DataTrigger.ExitActions>
+                                                                            <StopStoryboard BeginStoryboardName="GameFilterLoadingPulseStoryboard" />
+                                                                        </DataTrigger.ExitActions>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                    </Border>
                                                     <TextBlock
                                                         Text="{Binding Game}" />
                                                 </Grid>
