@@ -1152,95 +1152,91 @@ namespace ME3TweaksModManager
         /// <param name="queue"></param>
         private void InstallBatchQueue(GameTarget target, BatchLibraryInstallQueue queue)
         {
-                    bool isFirstInstall = true;
-                    BatchPanelResult = new PanelResult();
-                    HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
-                    var target = batchLibrary.SelectedGameTarget;
-                    //Install queue
+            bool isFirstInstall = true;
+            BatchPanelResult = new PanelResult();
+            HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
+            //Install queue
 
-                    bool continueInstalling = true;
-                    int modIndex = 0;
+            bool continueInstalling = true;
+            int modIndex = 0;
 
-                    //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
-                    void modInstalled(bool successful, bool isfirst = false)
-                    {
-                        if (!isfirst)
-                        {
-                            M3Log.Information($@"ModInstalled() being called - successful: {successful}");
+            //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
+            void modInstalled(bool successful, bool isfirst = false)
+            {
+                if (!isfirst)
+                {
+                    M3Log.Information($@"ModInstalled() being called - successful: {successful}");
 
                     // Sync HasPromptedForBackup from the just-completed mod back to the queue so subsequent mods skip the backup prompt
                     if (modIndex > 0)
                         queue.HasPromptedForBackup |= queue.ModsToInstall[modIndex - 1].HasPromptedForBackup;
-                        }
-                        else
-                        {
+                }
+                else
+                {
 
-                            // Do an initial reload since we don't reload targets in the mod options panel anymore.
-                            target.ReloadGameTarget(false);
+                    // Do an initial reload since we don't reload targets in the mod options panel anymore.
+                    target.ReloadGameTarget(false);
 
-                            if (queue.ContainsTextureMods() && (queue.UseSavedOptions ||
-                                                                // If all options are standalone we don't really care if there are saved options so just show it here
-                                                                queue.ModsToInstall.Where(x => !x.ModMissing).All(x => x.IsStandalone)))
-                            {
-                                // We use batch text if this contains content mods due to the timing difference
-                                continueInstalling = TextureInstallerPanel.ShowTextureInstallWarning(this, queue.ContainsContentMods());
-                            }
-                        }
-
-                        continueInstalling &= successful && !IsOnTrackToClose;
-                        if (continueInstalling && queue.ModsToInstall.Count > modIndex)
-                        {
-                            var bm = queue.ModsToInstall[modIndex];
-                            modIndex++;
-                            if (bm.IsAvailableForInstall())
-                            {
-                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
-                                bm.UseSavedOptions = queue.UseSavedOptions;
-                                bm.IsFirstBatchMod = isFirstInstall;
-                        bm.HasPromptedForBackup = queue.HasPromptedForBackup; // pass through if user skipped restore option earlier
-                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
-                                isFirstInstall = false;
-                            }
-                            else
-                            {
-                                M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
-                                modInstalled(true); // Trigger next install
-                            }
-                        }
-                        else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
-                        {
-                            if (queue.ASIModsToInstall.Any())
-                            {
-                                ShowRunAndDone(
-                                    (config) => InstallBatchASIs(target, queue).Result,
-                                    M3L.GetString(M3L.string_installingASIMods),
-                                    M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
-                            }
-                            else
-                            {
-                                HandleBatchTextureInstall(target, queue);
-                            }
-                        }
-                        else
-                        {
-                            // Install failed or was aborted
-                            M3Log.Warning($@"Batch install was aborted or one failed, setting HandleBatchPanelResult to true");
-                            HandleBatchPanelResult = true;
-                        }
-                    }
-
-                    if (queue.RestoreBeforeInstall)
+                    if (queue.ContainsTextureMods() && (queue.UseSavedOptions ||
+                                                        // If all options are standalone we don't really care if there are saved options so just show it here
+                                                        queue.ModsToInstall.Where(x => !x.ModMissing).All(x => x.IsStandalone)))
                     {
-                        // Will trigger target reload automatically
-                        RunBatchRestore(queue, target, modInstalled);
+                        // We use batch text if this contains content mods due to the timing difference
+                        continueInstalling = TextureInstallerPanel.ShowTextureInstallWarning(this, queue.ContainsContentMods());
+                    }
+                }
+
+                continueInstalling &= successful && !IsOnTrackToClose;
+                if (continueInstalling && queue.ModsToInstall.Count > modIndex)
+                {
+                    var bm = queue.ModsToInstall[modIndex];
+                    modIndex++;
+                    if (bm.IsAvailableForInstall())
+                    {
+                        M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
+                        bm.UseSavedOptions = queue.UseSavedOptions;
+                        bm.IsFirstBatchMod = isFirstInstall;
+                        bm.HasPromptedForBackup = queue.HasPromptedForBackup; // pass through if user skipped restore option earlier
+                        ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
+                        isFirstInstall = false;
                     }
                     else
                     {
-                        modInstalled(true, true); //kick off first installation
+                        M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
+                        modInstalled(true); // Trigger next install
                     }
                 }
-            };
-            ShowBusyControl(batchLibrary);
+                else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
+                {
+                    if (queue.ASIModsToInstall.Any())
+                    {
+                        ShowRunAndDone(
+                            (config) => InstallBatchASIs(target, queue).Result,
+                            M3L.GetString(M3L.string_installingASIMods),
+                            M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
+                    }
+                    else
+                    {
+                        HandleBatchTextureInstall(target, queue);
+                    }
+                }
+                else
+                {
+                    // Install failed or was aborted
+                    M3Log.Warning($@"Batch install was aborted or one failed, setting HandleBatchPanelResult to true");
+                    HandleBatchPanelResult = true;
+                }
+            }
+
+            if (queue.RestoreBeforeInstall)
+            {
+                // Will trigger target reload automatically
+                RunBatchRestore(queue, target, modInstalled);
+            }
+            else
+            {
+                modInstalled(true, true); //kick off first installation
+            }
         }
 
         /// <summary>
@@ -2183,7 +2179,7 @@ namespace ME3TweaksModManager
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
         /// <param name="recordOptionsToBM">If options chosen should be saved back to the BatchMod object</param>
         /// <param name="useSavedBatchOptions">If options saved in the BatchMod object should be used</param>
-        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null,
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, BatchMod batchMod = null,
             bool? installCompressed = null, Action<bool, bool> installCompletedCallback = null)
         {
             if (!MRunningGameInfo.IsGameRunning(mod.Game))

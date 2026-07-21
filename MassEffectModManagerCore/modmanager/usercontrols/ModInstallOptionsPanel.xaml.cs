@@ -66,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         private List<PlusMinusKey> InOrderRecordedOptions { get; set; } = new();
 
-        public ModInstallOptionsPanel(Mod mod, GameTargetWPF gameTargetWPF, bool? installCompressed, BatchMod batchMod)
+        public ModInstallOptionsPanel(Mod mod, GameTarget gameTarget, bool? installCompressed, BatchMod batchMod)
         {
             ModBeingInstalled = mod;
 
@@ -101,7 +101,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <param name="newT"></param>
         public void OnSelectedGameTargetChanged(object oldT, object newT)
         {
-            Result.SelectedTarget = newT as GameTargetWPF;
+            Result.SelectedTarget = newT as GameTarget;
             if (oldT != null && newT != null)
             {
                 PreventInstallUntilTargetChange = false;
@@ -474,7 +474,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void UpdateOptions(ref int numAttemptsRemaining, Mod mod, GameTargetWPF target, List<AlternateOption> optionsToUpdate = null, bool initialSetup = false)
+        private void UpdateOptions(ref int numAttemptsRemaining, Mod mod, GameTarget target, List<AlternateOption> optionsToUpdate = null, bool initialSetup = false)
         {
             numAttemptsRemaining--;
             if (numAttemptsRemaining <= 0)

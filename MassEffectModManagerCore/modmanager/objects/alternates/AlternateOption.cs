@@ -285,7 +285,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         /// <param name="allOptionsDependedOn">List of alternate options that this one depends on, so they can be checked against for their selection state.</param>
         /// <returns>True if the selection state was changed; false if not. This is used to determine if there needs to be another call to update selections again</returns>
-        internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTargetWPF target)
+        internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTarget target)
         {
             if (DependsOnKeys.Count == 0) return false; // Nothing changes as we don't depend on any other options
             Debug.WriteLine($@"UpdateSelectability() on {FriendlyName} for {allOptionsDependedOn.Count()} options: {string.Join(',', allOptionsDependedOn.Select(x=>x.FriendlyName))}");
