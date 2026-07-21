@@ -27,7 +27,6 @@ using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
-using ME3TweaksModManager.modmanager.objects.mod.moddesc;
 using ME3TweaksModManager.modmanager.objects.tlk;
 using NickStrupat;
 using SevenZip;
