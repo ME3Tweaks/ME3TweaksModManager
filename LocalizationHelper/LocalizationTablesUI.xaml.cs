@@ -308,7 +308,7 @@ namespace LocalizationHelper
                         continue;
                     }
 
-                    Debug.WriteLine(line);
+                    // Debug.WriteLine(line);
                     if (line.StartsWith("<!--") && line.EndsWith("-->"))
                     {
                         //Comment - parse
@@ -586,9 +586,14 @@ namespace LocalizationHelper
 
                 var langLines = Regex.Split(langToXamlMap[lang], "\r\n|\r|\n");
                 int numBlankLines = 0;
-                for (int i = 3; i < langLines.Length - 2; i++) // star at line 3 and skip forward
+                for (int i = 3; i < langLines.Length - 2; i++) // start at line 3 and skip forward
                 {
                     var line = langLines[i].Trim();
+                    if (line == "</ResourceDictionary>")
+                    {
+                        // Not something we care about.
+                        continue;
+                    }
                     if (string.IsNullOrWhiteSpace(line))
                     {
                         numBlankLines++;
