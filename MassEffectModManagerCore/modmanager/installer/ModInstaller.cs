@@ -974,6 +974,12 @@ namespace ME3TweaksModManager.modmanager.installer
                                 {
                                     mm.source = $"{existingInfo.source}\n{newTextToAppend}"; // do not localize
                                 }
+                                else
+                                {
+                                    // Same mod is being reinstalled; carry forward the full existing source
+                                    // rather than letting the constructor default (just this mod's name) win.
+                                    mm.source = existingInfo.source;
+                                }
 
                                 mm.moddeschashes.AddRange(existingInfo.moddeschashes);
                             }

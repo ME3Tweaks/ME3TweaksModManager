@@ -20,7 +20,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
 
         public MergeFileTransition(string filename, string originalMD5)
         {
-            FileName = FileName;
+            FileName = filename;
             OriginalMD5 = originalMD5;
         }
     }
