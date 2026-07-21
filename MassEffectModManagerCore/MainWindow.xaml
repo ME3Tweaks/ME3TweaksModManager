@@ -2227,6 +2227,19 @@
                                                             Property="Text"
                                                             Value="{DynamicResource string_pleaseWait}" />
                                                     </DataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition
+                                                                Binding="{Binding LoadedOnce, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                            <Condition
+                                                                Binding="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter
+                                                            Property="Text"
+                                                            Value="Reloading mods" />
+                                                    </MultiDataTrigger>
                                                     <DataTrigger
                                                         Binding="{Binding AllGamesHidden, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="True">
@@ -2254,6 +2267,19 @@
                                                             Property="Text"
                                                             Value="{DynamicResource string_pleaseWait_startup}" />
                                                     </DataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition
+                                                                Binding="{Binding LoadedOnce, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                            <Condition
+                                                                Binding="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter
+                                                            Property="Text"
+                                                            Value="The mod library is reloading." />
+                                                    </MultiDataTrigger>
                                                     <DataTrigger
                                                         Binding="{Binding AllGamesHidden, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="True">
