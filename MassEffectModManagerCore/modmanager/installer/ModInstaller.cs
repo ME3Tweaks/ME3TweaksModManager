@@ -178,7 +178,7 @@ namespace ME3TweaksModManager.modmanager.installer
         /// <returns></returns>
         private bool CheckForGameBackup()
         {
-            var hasBackup = BackupService.GetBackupStatus(InstallOptionsPackage.ModBeingInstalled.Game).BackedUp;
+            var hasBackup = InstallOptionsPackage.HasDoneBackupCheck || BackupService.GetBackupStatus(InstallOptionsPackage.ModBeingInstalled.Game).BackedUp;
             var hasAnyGameModificationJobs = InstallOptionsPackage.ModBeingInstalled.InstallationJobs.Any(x => x.Header != ModJob.JobHeader.CUSTOMDLC && x.Header != ModJob.JobHeader.BALANCE_CHANGES);
 
             // 06/06/2022 - Check for PlotSync since it modifies basegame file
@@ -197,7 +197,13 @@ namespace ME3TweaksModManager.modmanager.installer
             if (!hasBackup)
             {
                 var installAnyways = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, InstallOptionsPackage.ModBeingInstalled.Game.ToGameName(), InstallOptionsPackage.ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
-                return installAnyways == MessageBoxResult.Yes;
+                if (installAnyways == MessageBoxResult.Yes)
+                {
+                    // User chose to install without a backup; flag this so subsequent batch mods skip the prompt
+                    InstallOptionsPackage.HasDoneBackupCheck = true;
+                    return true;
+                }
+                return false;
             }
 
             return true; //has backup

@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Exception error = null;
             try
             {
-                // Contains syncrhonous work so must run on background thread still.
+                // Contains synchronous work so must run on background thread still.
                 await Task.Run(async () => await Installer.InstallMod());
             }
             catch (Exception ex)

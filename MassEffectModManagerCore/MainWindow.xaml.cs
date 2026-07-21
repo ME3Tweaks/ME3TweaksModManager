@@ -1139,6 +1139,19 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
+                    InstallBatchQueue(batchLibrary.SelectedGameTarget, queue);
+                }
+            };
+            ShowBusyControl(batchLibrary);
+        }
+
+        /// <summary>
+        /// Installs a batch library install queue to the given target
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="queue"></param>
+        private void InstallBatchQueue(GameTarget target, BatchLibraryInstallQueue queue)
+        {
                     bool isFirstInstall = true;
                     BatchPanelResult = new PanelResult();
                     HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
@@ -1154,6 +1167,10 @@ namespace ME3TweaksModManager
                         if (!isfirst)
                         {
                             M3Log.Information($@"ModInstalled() being called - successful: {successful}");
+
+                    // Sync HasPromptedForBackup from the just-completed mod back to the queue so subsequent mods skip the backup prompt
+                    if (modIndex > 0)
+                        queue.HasPromptedForBackup |= queue.ModsToInstall[modIndex - 1].HasPromptedForBackup;
                         }
                         else
                         {
@@ -1180,6 +1197,7 @@ namespace ME3TweaksModManager
                                 M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
                                 bm.UseSavedOptions = queue.UseSavedOptions;
                                 bm.IsFirstBatchMod = isFirstInstall;
+                        bm.HasPromptedForBackup = queue.HasPromptedForBackup; // pass through if user skipped restore option earlier
                                 ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                                 isFirstInstall = false;
                             }
@@ -1248,6 +1266,7 @@ namespace ME3TweaksModManager
                 if (shouldRestore == MessageBoxResult.Yes)
                 {
                     // successful, isfirst
+                    queue.HasPromptedForBackup = true;
                     modInstalled(true, true);
                 }
             }
@@ -2193,6 +2212,11 @@ namespace ME3TweaksModManager
                                 modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
                             }
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+
+                            // Propagate HasDoneBackupCheck back to the BatchMod so the queue can update for subsequent mods
+                            if (batchMod != null && miop.HasDoneBackupCheck)
+                                batchMod.HasPromptedForBackup = true;
+
                             ReleaseBusyControl(); // Release the mod installer. This may cause merges to occur if batch panel handling is set to false.
 
                             // This must go after releasing the control because in batch mode it will begin setting up the next panel.

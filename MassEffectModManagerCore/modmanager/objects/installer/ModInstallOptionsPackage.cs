@@ -46,6 +46,12 @@ namespace ME3TweaksModManager.modmanager.objects.installer
         public bool IsFirstBatchMod { get; set; }
 
         /// <summary>
+        /// Used for batch mode; if this flag has been set then we don't do a backup check, this way we don't waste time
+        /// doing it over and over when the user already declined.
+        /// </summary>
+        public bool HasDoneBackupCheck { get; set; }
+
+        /// <summary>
         /// Makes empty selection options items
         /// </summary>
         internal void SetNoOptions()

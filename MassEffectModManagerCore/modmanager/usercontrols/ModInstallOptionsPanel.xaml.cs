@@ -656,7 +656,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SelectedOptions = optionsMap,
                 BatchMode = BatchMod != null,
                 IsFirstBatchMod = BatchMod?.IsFirstBatchMod ?? false,
-                SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected) // ME1 Read only option
+                SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected), // ME1 Read only option
+                HasDoneBackupCheck = BatchMod?.HasPromptedForBackup ?? false // Skip backup prompt if already done earlier in this batch
             };
 
             // Save batch options to the object in the event the user wants to save the options.

@@ -1,25 +1,15 @@
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.objects;
-using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using PropertyChanged;
 using SevenZip.EventArguments;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.objects.batch
@@ -107,9 +97,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public ObservableCollectionExtended<IBatchQueueMod> AllModsToInstall { get; } = new ObservableCollectionExtended<IBatchQueueMod>();
 
         /// <summary>
-        /// USED FOR SAVING/LOADING FILE FROM DISK
+        /// Used to indicate that the backup prompt has been shown. If this is true, don't show the backup prompt again, the user
+        /// decided to continue anyways. When a user says they want a backup, it will abort the install, so this being false has
+        /// no other meaning.
         /// </summary>
-        //public List<BatchMod> SerializedMods { get; internal set; }
+        [JsonIgnore]
+        public bool HasPromptedForBackup { get; set; } = false;
 
         /// <summary>
         /// If the mod should be installed with compression. This is only used in OT ME2 and ME3
