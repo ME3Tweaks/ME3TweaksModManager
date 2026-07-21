@@ -2,7 +2,9 @@
                     x:Class="ME3TweaksModManager.ui.MMStyles"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:fa5="http://schemas.fontawesome.com/icons/"
                     xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
@@ -43,6 +45,10 @@
     <converters1:BoolToDimmedOpacityConverter x:Key="BoolToDimmedOpacityConverter"/>
     <converters1:IntGreaterThanConverter x:Key="IntGreaterThanConverter"/>
 
+    <FontFamily x:Key="M3DefaultFont">Segoe UI</FontFamily>
+    <sys:Double x:Key="M3DefaultFontSize">12</sys:Double>
+    <Thickness x:Key="M3DefaultMenuItemMargin">-30,0,0,0</Thickness>
+
     <Style x:Key="TargetSelectorContainerStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
@@ -51,12 +57,30 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
     </Style>
+
+    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
+    <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource {x:Type ToolTip}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
+    <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
+
+    <Style TargetType="{x:Type adonisControls:MessageBoxWindow}" BasedOn="{StaticResource {x:Type adonisControls:MessageBoxWindow}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
     <Style
         x:Key="MenuItemHeaderStyle"
         TargetType="{x:Type MenuItem}">
         <Setter
             Property="Margin"
-            Value="-30,0,0,0" />
+            Value="{DynamicResource M3DefaultMenuItemMargin}" />
         <Setter
             Property="FontSize"
             Value="10" />

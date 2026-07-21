@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.helpers
@@ -23,11 +25,21 @@ namespace ME3TweaksModManager.modmanager.helpers
         public static string GetHeader()
         {
             var fontSizeToUse = 18;
+            var fontFamilyToUse = @"Segoe UI";
+            if (Application.Current.TryFindResource(@"M3DefaultFont") is FontFamily defaultM3Font)
+            {
+                M3Log.Information($@"Found rich text font - {defaultM3Font.Source}");
+                fontFamilyToUse = defaultM3Font.Source;
+            }
+            else
+            {
+                M3Log.Error(@"Failed to get rich text font");
+            }
 
             // Apply Windows text scale factor (from Accessibility settings)
             fontSizeToUse = (int)Math.Round(fontSizeToUse * DPIScaling.TextScaleFactor);
 
-            return @"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\fs" + fontSizeToUse + @" "; // Must contain space on the end
+            return @"{\rtf1\ansi\deff0{\fonttbl{\f0 " + fontFamilyToUse + @";}}\fs" + fontSizeToUse + @" "; // Must contain space on the end
         }
 
         public static string GetFooter()

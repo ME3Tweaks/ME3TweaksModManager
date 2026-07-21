@@ -24,6 +24,8 @@ using Serilog;
 using ME3TweaksModManager.modmanager.telemetry;
 using SevenZip;
 using SingleInstanceCore;
+using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace ME3TweaksModManager
 {
@@ -245,9 +247,11 @@ namespace ME3TweaksModManager
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
 
                 // Check if user explicitly disabled wine workarounds
-                if (!IGNORE_WINE) {
-                // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
-                WineWorkarounds.Init();
+                if (!IGNORE_WINE)
+                {
+                    // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
+                    WineWorkarounds.Init();
+                    RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
                 }
 
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
