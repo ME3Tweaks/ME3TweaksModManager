@@ -99,6 +99,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Installer.SetPercentVisibility = SetPercentVisibility;
 
             M3Log.Information($@"BeginInstallingMod(): {InstallOptionsPackage.ModBeingInstalled.ModName}");
+            Installer.PerformPrecheck();
+            if (Installer.InstallationResult.Aborted == true)
+            {
+                // Precheck failed
+                ModInstallationCompleted(null);
+                return;
+            }
+
 
             Exception error = null;
             try
