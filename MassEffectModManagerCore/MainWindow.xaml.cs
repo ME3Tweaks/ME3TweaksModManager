@@ -49,7 +49,6 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using System.Windows.Threading;
-using System.Windows.Media;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 using StarterKitContentSelector = ME3TweaksModManager.modmanager.windows.dialog.StarterKitContentSelector;
@@ -360,11 +359,14 @@ namespace ME3TweaksModManager
 
         public MainWindow()
         {
-            if (CommandLinePending.UpgradingFromME3CMM /* || true*/)
+            if (CommandLinePending.UpgradingFromME3CMM)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 //Show migration window before we load the main UI
                 M3Log.Information(@"Migrating from ME3CMM - showing migration dialog");
+                // This dialog can show before the main window is loaded (code below), but it is very
+                // unlikely this will be shown these days as ME3CMM stopped being updated around
+                // 2020.
                 new ME3CMMMigrationWindow().ShowDialog();
                 App.Current.MainWindow = this;
                 App.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -373,7 +375,6 @@ namespace ME3TweaksModManager
             InitializeSingletons();
             LoadCommands();
             SetTheme(true);
-            SetWineUIDefaults(); // Setting before anything is drawn
             InitializeComponent();
             this.ApplyDarkNetWindowTheme();
 
@@ -535,55 +536,6 @@ namespace ME3TweaksModManager
             else
             {
                 M3Log.Information(@"settings.ini is writable");
-            }
-        }
-
-        /// <summary>
-        /// Updates the default Font Family of M3
-        /// </summary>
-        /// <param name="fontName"></param>
-        /// <returns></returns>
-        public static bool UpdateFontFamily(string fontName)
-        {
-            return UpdateFontFamily(new FontFamily(fontName));
-        }
-
-        /// <summary>
-        /// Updates the default Font Family of M3
-        /// </summary>
-        /// <param name="font"></param>
-        /// <returns></returns>
-        public static bool UpdateFontFamily(FontFamily font)
-        {
-            if (Application.Current.TryFindResource("M3DefaultFont") is FontFamily defaultFont)
-            {
-                Application.Current.Resources["M3DefaultFont"] = font;
-                M3Log.Information($"Updating font to {font.Source}");
-                return true;
-            }
-            else
-            {
-                M3Log.Warning($"Failed to set font to {font.Source}");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Sets defaults 
-        /// </summary>
-        private static void SetWineUIDefaults()
-        {
-            // Override defaults if Wine is detected
-            if (WineWorkarounds.WineDetected)
-            {
-                if (Application.Current.TryFindResource(@"M3DefaultMenuItemMargin") is Thickness defMargin)
-                {
-                    // Hacky, would be nice to figure out how to get Wine to display margins (and padding) correctly
-                    defMargin.Left = defMargin.Left / 2;
-                    Application.Current.Resources[@"M3DefaultMenuItemMargin"] = defMargin;
-                    M3Log.Information($@"Wine: Setting menu category left margin to {defMargin.Left}");
-                }
-                UpdateFontFamily(@"Arial");
             }
         }
 

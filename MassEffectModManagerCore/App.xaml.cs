@@ -24,8 +24,7 @@ using Serilog;
 using ME3TweaksModManager.modmanager.telemetry;
 using SevenZip;
 using SingleInstanceCore;
-using System.Windows.Interop;
-using System.Windows.Media;
+using ME3TweaksModManager.linux;
 
 namespace ME3TweaksModManager
 {
@@ -46,11 +45,6 @@ namespace ME3TweaksModManager
         /// If we have begun loading the interface
         /// </summary>
         private static bool POST_STARTUP = false;
-
-        /// <summary>
-        /// If we should ignore that the app is running through Wine
-        /// </summary>
-        private static bool IGNORE_WINE = false;
 
         /// <summary>
         /// The link to the Discord server
@@ -124,6 +118,7 @@ namespace ME3TweaksModManager
             try
             {
                 string exeFolder = Directory.GetParent(ExecutableLocation).FullName;
+                bool ignoreWine = false; // If true we do not do wine workarounds
                 try
                 {
                     Log.Logger = M3Log.CreateLogger();
@@ -217,9 +212,8 @@ namespace ME3TweaksModManager
                         }
                         if (parsedCommandLineArgs.Value.DisableWineWorkarounds)
                         {
-                            IGNORE_WINE = true;
-                            WineWorkarounds.WineDetected = false;
-                            M3Log.Warning(@"Wine Workarounds Disabled");
+                            ignoreWine = true;
+                            WineWorkaroundsM3.DisableWineWorkarounds();
                         }
                     }
                     else
@@ -247,11 +241,10 @@ namespace ME3TweaksModManager
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
 
                 // Check if user explicitly disabled wine workarounds
-                if (!IGNORE_WINE)
+                if (!ignoreWine)
                 {
                     // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
-                    WineWorkarounds.Init();
-                    RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+                    WineWorkaroundsM3.Init();
                 }
 
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
