@@ -53,15 +53,15 @@ namespace ME3TweaksModManager.linux
         /// <returns></returns>
         public static bool UpdateFontFamily(FontFamily font)
         {
-            if (Application.Current.TryFindResource("M3DefaultFont") is FontFamily defaultFont)
+            if (Application.Current.TryFindResource(@"M3DefaultFont") is FontFamily defaultFont)
             {
-                Application.Current.Resources["M3DefaultFont"] = font;
-                M3Log.Information($"Updating font to {font.Source}");
+                Application.Current.Resources[@"M3DefaultFont"] = font;
+                M3Log.Information($@"Updating font to {font.Source}");
                 return true;
             }
             else
             {
-                M3Log.Warning($"Failed to set font to {font.Source}");
+                M3Log.Warning($@"Failed to set font to {font.Source}");
                 return false;
             }
         }

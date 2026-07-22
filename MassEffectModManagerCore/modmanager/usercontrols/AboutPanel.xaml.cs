@@ -84,8 +84,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 new LibraryCredit(@"SingleInstanceCore", @"https://github.com/soheilkd/SingleInstanceCore", M3L.GetString(M3L.string_enablesSingleinstancingOfAnApplication)),
                 new LibraryCredit(@"RoboSharp*", @"https://github.com/tjscience/RoboSharp", M3L.GetString(M3L.string_wrapperForRobocopyCommandInCSharp)),
 
-                new LibraryCredit(@"OpenTelemetry", @"https://opentelemetry.io/", "Handles telemetry data for crashes and feature usage statistics"),
-                new LibraryCredit(@"DarkNet", @"https://github.com/tjscience/RoboSharp", "Provides themeing for title bars to match the application theme"),
+                new LibraryCredit(@"OpenTelemetry", @"https://opentelemetry.io/", M3L.GetString(M3L.string_library_openTelemetry)),
+                new LibraryCredit(@"DarkNet", @"https://github.com/tjscience/RoboSharp", M3L.GetString(M3L.string_library_darkNet)),
 
             };
 

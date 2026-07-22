@@ -1949,7 +1949,6 @@
     <system:String x:Key="string_library_computerinfo">Small library for easily fetching CPU, OS, and memory information</system:String>
     <system:String x:Key="string_library_fluentnexus">Modern async HTTP client for the Nexus Mods API</system:String>
     <system:String x:Key="string_library_recyclablememorystream">Library for a recyclable pool of memory buffers</system:String>
-    <system:String x:Key="string_library_sshnet">Library for handling SSH connections</system:String>
     <system:String x:Key="string_library_watsonwebsocket">Library for handling websocket connections</system:String>
     <system:String x:Key="string_library_authenticodeexaminer">Manages inspecting Authenticode file signatures</system:String>
     <system:String x:Key="string_library_ntfsstreams">Library for reading NTFS alternate data streams</system:String>
@@ -1959,7 +1958,9 @@
     <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper for robocopy command in C#</system:String>
     <system:String x:Key="string_starMeansForked">* = ME3Tweaks forked version</system:String>
     <system:String x:Key="string_tooltip_clickToViewLicense">Click to view license</system:String>
-
+    <system:String x:Key="string_library_openTelemetry">Handles telemetry data for crashes and feature usage statistics</system:String>
+    <system:String x:Key="string_library_darkNet">Provides themeing for title bars to match the application theme</system:String>
+    
     <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->

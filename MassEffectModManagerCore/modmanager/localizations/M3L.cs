@@ -635,9 +635,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_modRequiresAMDProcessor = "string_modRequiresAMDProcessor";
 		public const string string_oodleNotFound = "string_oodleNotFound";
 		public const string string_ensureGameIsValidDiscord = "string_ensureGameIsValidDiscord";
-        public const string string_trackingMergemodChanges = "string_trackingMergemodChanges";
-        public const string string_trackingBasegameChanges = "string_trackingBasegameChanges";
-        public const string string_tooltip_optionNotApplicable = "string_tooltip_optionNotApplicable";
+		public const string string_trackingMergemodChanges = "string_trackingMergemodChanges";
+		public const string string_trackingBasegameChanges = "string_trackingBasegameChanges";
+		public const string string_tooltip_optionNotApplicable = "string_tooltip_optionNotApplicable";
 		public const string string_tooltip_optionForceApplied = "string_tooltip_optionForceApplied";
 		public const string string_textureOverrideMergeFailed = "string_textureOverrideMergeFailed";
 		public const string string_welcomeTo = "string_welcomeTo";
@@ -1471,7 +1471,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_library_computerinfo = "string_library_computerinfo";
 		public const string string_library_fluentnexus = "string_library_fluentnexus";
 		public const string string_library_recyclablememorystream = "string_library_recyclablememorystream";
-		public const string string_library_sshnet = "string_library_sshnet";
 		public const string string_library_watsonwebsocket = "string_library_watsonwebsocket";
 		public const string string_library_authenticodeexaminer = "string_library_authenticodeexaminer";
 		public const string string_library_ntfsstreams = "string_library_ntfsstreams";
@@ -1480,6 +1479,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_wrapperForRobocopyCommandInCSharp = "string_wrapperForRobocopyCommandInCSharp";
 		public const string string_starMeansForked = "string_starMeansForked";
 		public const string string_tooltip_clickToViewLicense = "string_tooltip_clickToViewLicense";
+		public const string string_library_openTelemetry = "string_library_openTelemetry";
+		public const string string_library_darkNet = "string_library_darkNet";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
 		public const string string_updateASI = "string_updateASI";
