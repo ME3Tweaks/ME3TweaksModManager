@@ -17,6 +17,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
+using ME3TweaksModManager.linux;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.deployment;
 using ME3TweaksModManager.modmanager.helpers;
@@ -376,6 +377,8 @@ namespace ME3TweaksModManager
             LoadCommands();
             SetTheme(true);
             InitializeComponent();
+            WineWorkaroundsM3.SetWineUIDefaults(); // Must be after InitializeComponent() as it is what loads MMStyles.xaml from App.xaml (no idea why so late...)
+
             this.ApplyDarkNetWindowTheme();
 
             //Change language if not INT

@@ -240,12 +240,7 @@ namespace ME3TweaksModManager
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
 
-                // Check if user explicitly disabled wine workarounds
-                if (!ignoreWine)
-                {
-                    // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
-                    WineWorkaroundsM3.Init();
-                }
+                
 
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
@@ -258,7 +253,11 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Running as " + Environment.UserName);
                 M3Log.Information(@"Executable location: " + ExecutableLocation);
                 M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
-                WineWorkarounds.LogWineInfo();
+                if (!ignoreWine)
+                {
+                    // Detect Wine earlier than ME3TweaksCore boot so workarounds can be applied sooner
+                    WineWorkaroundsM3.Init();
+                }
 
                 //Get build date
                 BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });

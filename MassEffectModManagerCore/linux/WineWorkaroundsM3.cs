@@ -1,9 +1,4 @@
-﻿using ME3TweaksCore.Diagnostics;
-using ME3TweaksCore.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using ME3TweaksCore.Helpers;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -32,8 +27,6 @@ namespace ME3TweaksModManager.linux
         {
             WineWorkarounds.Init();
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
-            SetWineUIDefaults();
-            M3Log.Information(@"Wine Workarounds (M3) Initialized");
         }
 
         /// <summary>
@@ -69,7 +62,7 @@ namespace ME3TweaksModManager.linux
         /// <summary>
         /// Sets defaults 
         /// </summary>
-        private static void SetWineUIDefaults()
+        public static void SetWineUIDefaults()
         {
             // Override defaults if Wine is detected
             if (WineWorkarounds.WineDetected)
