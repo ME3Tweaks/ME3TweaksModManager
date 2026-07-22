@@ -214,7 +214,6 @@
         <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="SingleInstanceCore" Version="2.2.2" />
-        <PackageReference Include="SSH.NET" Version="2025.1.0" />
         <PackageReference Include="WatsonWebsocket" Version="4.1.8" />
         <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
     </ItemGroup>

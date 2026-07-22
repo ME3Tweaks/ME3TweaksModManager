@@ -1,14 +1,7 @@
-﻿using LegendaryExplorerCore.Misc;
-using ME3TweaksCore.Localization;
-using ME3TweaksCoreWPF.Targets;
+﻿using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
-using Org.BouncyCastle.Asn1.X509;
-using Pathoschild.FluentNexus.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace ME3TweaksModManager.modmanager.loaders
