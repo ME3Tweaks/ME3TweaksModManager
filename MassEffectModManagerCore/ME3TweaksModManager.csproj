@@ -69,7 +69,7 @@
         </PropertyChangedAnalyzerConfiguration>
     </PropertyGroup>
 
-    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ItemGroup>
 		<AssemblyMetadata Include="BuildDateTime" Value="$([System.DateTime]::UtcNow.ToString('s'))Z" />
 	</ItemGroup>
 
@@ -240,7 +240,16 @@
         <Resource Include="images\gameicons\*.ico" />
         <Resource Include="images\ea.png" />
         <EmbeddedResource Include="modmanager\executables\vpat.exe" />
-        <Resource Include="modmanager\localizations\icons\*.png" />
+		
+		<!-- Localization icons. If langs are added these need adjusted.-->
+        <Resource Include="modmanager\localizations\icons\*.png" 
+				  Exclude="modmanager\localizations\icons\czech.png;
+						   modmanager\localizations\icons\polish.png;
+						   modmanager\localizations\icons\french.png;
+						   modmanager\localizations\icons\portuguese.png;
+						   modmanager\localizations\icons\spanish.png;
+						   modmanager\localizations\icons\korean.png" />
+
         <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
         <EmbeddedResource Include="modmanager\objects\mod\merge\v1\schema.json" />
         <EmbeddedResource Include="modmanager\objects\mod\merge\v2\schema.json" />
