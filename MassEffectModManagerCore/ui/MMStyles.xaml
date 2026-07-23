@@ -60,6 +60,8 @@
 
     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+    </Style>
+    <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource {x:Type Menu}}">
         <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
     </Style>
     <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource {x:Type ToolTip}}">
