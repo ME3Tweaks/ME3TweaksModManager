@@ -118,7 +118,7 @@ namespace ME3TweaksModManager
         /// </summary>
         private bool hasCheckedForMSVC { get; set; } = false;
 
-        public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
+        // public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
 
 
@@ -377,7 +377,14 @@ namespace ME3TweaksModManager
             LoadCommands();
             SetTheme(true);
             InitializeComponent();
-            WineWorkaroundsM3.SetWineUIDefaults(); // Must be after InitializeComponent() as it is what loads MMStyles.xaml from App.xaml (no idea why so late...)
+
+            // Must be after InitializeComponent() as it is what loads MMStyles.xaml from App.xaml (no idea why so late...)
+            if (WineWorkaroundsM3.SetWineUIDefaults())
+            {
+                // Because it may change fonts, and InitializeComponent(); sets the default text font, we need to force it to reload so it changes
+                // the used font for the description.
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText))); // Update localized tip shown
+            }
 
             this.ApplyDarkNetWindowTheme();
 
@@ -2582,7 +2589,6 @@ namespace ME3TweaksModManager
             {
                 VisitWebsiteText = "";
                 SetWebsitePanelVisibility(false);
-                CurrentDescriptionText = DefaultDescriptionText;
             }
 
             CanApplyMod(); // This sets the text. Good design MG

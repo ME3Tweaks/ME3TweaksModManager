@@ -60,9 +60,9 @@ namespace ME3TweaksModManager.linux
         }
 
         /// <summary>
-        /// Sets defaults 
+        /// Changes some app settings if running under WINE.
         /// </summary>
-        public static void SetWineUIDefaults()
+        public static bool SetWineUIDefaults()
         {
             // Override defaults if Wine is detected
             if (WineWorkarounds.WineDetected)
@@ -83,7 +83,11 @@ namespace ME3TweaksModManager.linux
                 {
                     UpdateFontFamily(@"Arial");
                 }
+                return true;
             }
+
+            // Nothing was done.
+            return false;
         }
     }
 }
