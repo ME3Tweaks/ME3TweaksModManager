@@ -291,7 +291,7 @@ namespace ME3TweaksModManager
                 {
                     try
                     {
-                        var avs = M3Utilities.GetListOfInstalledAV();
+                        var avs = MUtilities.GetListOfInstalledAV();
                         M3Log.Information(@"Detected the following antivirus products:");
                         foreach (var av in avs)
                         {

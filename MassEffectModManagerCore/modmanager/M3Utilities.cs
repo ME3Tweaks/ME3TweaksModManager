@@ -72,17 +72,6 @@ namespace ME3TweaksModManager.modmanager
         }
 
         /// <summary>
-        /// Determines if the current process is running with administrator privileges.
-        /// </summary>
-        /// <returns>True if running as administrator, false otherwise.</returns>
-        public static bool IsAdministrator()
-        {
-            var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        /// <summary>
         /// Checks if a specific major version of the .NET runtime is installed on the system.
         /// </summary>
         /// <param name="majorVersion">The major version number to check for (e.g., 6, 7, 8).</param>
@@ -108,116 +97,6 @@ namespace ME3TweaksModManager.modmanager
         }
 
         /// <summary>
-        /// Creates a directory and ensures it has write permissions for the current user. 
-        /// If necessary, uses PermissionsGranter.exe with elevated privileges to set permissions.
-        /// </summary>
-        /// <param name="directoryPath">The full path of the directory to create.</param>
-        /// <param name="forcePermissions">If true, forces use of PermissionsGranter even if the parent directory is writable.</param>
-        /// <returns>True if the directory was created successfully with write permissions, false otherwise.</returns>
-        public static bool CreateDirectoryWithWritePermission(string directoryPath, bool forcePermissions = false)
-        {
-            if (!forcePermissions && Directory.Exists(Directory.GetParent(directoryPath).FullName) && M3Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
-            {
-                Directory.CreateDirectory(directoryPath);
-                return true;
-            }
-
-            string exe = null;
-            try
-            {
-                // Telemetry shows this being in the catch block can crash the app if the directory is not writable. So we put it into the try block instead.
-                exe = M3Filesystem.GetCachedExecutablePath("PermissionsGranter.exe");
-
-                //try first without admin.
-                if (forcePermissions) throw new UnauthorizedAccessException(); //just go to the alternate case.
-                Directory.CreateDirectory(directoryPath);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                if (exe == null)
-                {
-                    // We couldn't even get to the permissions granter file
-                    M3Log.Fatal("Error accessing PermissionsGranter folder. App's data folder permissions are messed up, the app is probably going to crash.");
-                    return false;
-                }
-
-                //Must have admin rights.
-                M3Log.Information("We need admin rights to create this directory");
-                try
-                {
-                    M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error("Error extracting PermissionsGranter.exe: " + e.Message);
-
-                    M3Log.Information("Retrying with appdata temp directory instead.");
-                    try
-                    {
-                        exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
-                        M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        M3Log.Error("Retry failed! Unable to make this directory writable due to inability to extract PermissionsGranter.exe. Reason: " + ex.Message);
-                        return false;
-                    }
-                }
-
-                string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
-                try
-                {
-                    int result = M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
-                    if (result == 0)
-                    {
-                        M3Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
-                        return true;
-                    }
-                    else
-                    {
-                        M3Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
-                        return false;
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (e is Win32Exception w32e)
-                    {
-                        if (w32e.NativeErrorCode == 1223)
-                        {
-                            //Admin canceled.
-                            return false;
-                        }
-                    }
-
-                    M3Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
-                    return false;
-
-                }
-            }
-        }
-
-        /// <summary>
-        /// Calculates the total size of all files in a directory and its subdirectories.
-        /// </summary>
-        /// <param name="dir">The directory path to calculate the size for.</param>
-        /// <returns>The total size in bytes of all files in the directory tree.</returns>
-        public static long GetSizeOfDirectory(string dir)
-        {
-            String[] files = Directory.GetFiles(dir, "*", SearchOption.AllDirectories);
-            long totalSize = 0;
-            Parallel.For(0, files.Length,
-                index =>
-                {
-                    FileInfo fi = new FileInfo(files[index]);
-                    long size = fi.Length;
-                    Interlocked.Add(ref totalSize, size);
-                });
-            return totalSize;
-        }
-
-        /// <summary>
         /// Sets the read-only flag on the specified file.
         /// </summary>
         /// <param name="file">The path to the file to mark as read-only.</param>
@@ -239,101 +118,7 @@ namespace ME3TweaksModManager.modmanager
             return res;
         }
 
-        /// <summary>
-        /// Grants write permissions to the specified folders using PermissionsGranter.exe with elevated privileges.
-        /// </summary>
-        /// <param name="folders">List of folder paths that need write permissions enabled.</param>
-        /// <returns>True if permissions were successfully granted, false otherwise.</returns>
-        public static bool EnableWritePermissionsToFolders(List<string> folders)
-        {
-            string args = "";
-            if (folders.Any())
-            {
-                foreach (var target in folders)
-                {
-                    if (args != "")
-                    {
-                        args += " ";
-                    }
-
-                    args += $"\"{target}\"";
-                }
-
-                string exe = M3Filesystem.GetCachedExecutablePath("PermissionsGranter.exe");
-                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
-                args = $"\"{System.Security.Principal.WindowsIdentity.GetCurrent().Name}\" " + args;
-                //need to run write permissions program
-                if (IsAdministrator())
-                {
-                    int result = M3Utilities.RunProcess(exe, args, true, false);
-                    if (result == 0)
-                    {
-                        M3Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
-                        return true;
-                    }
-                    else
-                    {
-                        M3Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
-                        return false;
-                    }
-                }
-                else
-                {
-                    //string message = "Some game folders/registry keys are not writeable by your user account. ALOT Installer will attempt to grant access to these folders/registry with the PermissionsGranter.exe program:\n";
-                    //if (required)
-                    //{
-                    //    message = "Some game paths and registry keys are not writeable by your user account. These need to be writable or ALOT Installer will be unable to install ALOT. Please grant administrative privledges to PermissionsGranter.exe to give your account the necessary privileges to the following:\n";
-                    //}
-                    //foreach (String str in directories)
-                    //{
-                    //    message += "\n" + str;
-                    //}
-                    //if (me1ageia)
-                    //{
-                    //    message += "\nRegistry: HKLM\\SOFTWARE\\WOW6432Node\\AGEIA Technologies (Fixes an ME1 launch issue)";
-                    //}
-                    int result = M3Utilities.RunProcess(exe, args, true, true);
-                    if (result == 0)
-                    {
-                        M3Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
-                        return true;
-                    }
-                    else
-                    {
-                        M3Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
-                        return false;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Checks for write access for the given directory by attempting to create and delete a test file.
-        /// </summary>
-        /// <param name="dir">The directory path to test.</param>
-        /// <returns>True if write access is allowed, false otherwise.</returns>
-        public static bool IsDirectoryWritable(string dir)
-        {
-            try
-            {
-                System.IO.File.Create(Path.Combine(dir, "temp_m3.txt")).Close();
-                System.IO.File.Delete(Path.Combine(dir, "temp_m3.txt"));
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-            catch (Exception e)
-            {
-                M3Log.Error("Error checking permissions to folder: " + dir);
-                M3Log.Error("Directory write test had error that was not UnauthorizedAccess: " + e.Message);
-            }
-
-            return false;
-        }
+        
 
         /// <summary>
         /// Writes a value to a registry key, creating subkeys as necessary.
@@ -373,19 +158,8 @@ namespace ME3TweaksModManager.modmanager
         /// <returns>A MemoryStream containing the extracted resource data, positioned at the beginning.</returns>
         internal static MemoryStream ExtractInternalFileToStream(string internalResourceName)
         {
-            M3Log.Information("Extracting embedded file: " + internalResourceName + " to memory");
-#if DEBUG
-            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-#endif
-
-
-            using (Stream stream = M3Utilities.GetResourceStream(internalResourceName))
-            {
-                MemoryStream ms = new MemoryStream();
-                stream.CopyTo(ms);
-                ms.Position = 0;
-                return ms;
-            }
+            // Uses shared logic but passes this assembly in.
+            return MUtilities.ExtractInternalFileToStream(internalResourceName, Assembly.GetExecutingAssembly());
         }
 
         /// <summary>
@@ -436,230 +210,6 @@ namespace ME3TweaksModManager.modmanager
         internal static string GetDataDirectory()
         {
             return Directory.CreateDirectory(Path.Combine(GetMMExecutableDirectory(), "data")).FullName;
-        }
-
-        /// <summary>
-        /// Reads all text from a file that may be locked by another process.
-        /// Uses FileShare.ReadWrite to allow reading while other processes have the file open.
-        /// </summary>
-        /// <param name="file">The path to the file to read.</param>
-        /// <returns>The contents of the file as a string, or null if an error occurs.</returns>
-        public static string ReadLockedTextFile(string file)
-        {
-            try
-            {
-                using (FileStream fileStream = new FileStream(
-                    file,
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.ReadWrite))
-                {
-                    using (StreamReader streamReader = new StreamReader(fileStream))
-                    {
-                        return streamReader.ReadToEnd();
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Runs a process and does not wait for it to complete.
-        /// </summary>
-        /// <param name="exe">The path to the executable to run.</param>
-        /// <returns>Always returns -1 since the process is not waited for.</returns>
-        public static int RunProcess(string exe)
-        {
-            return RunProcess(exe, null, null, false, false, false, false, null, null);
-        }
-
-        /// <summary>
-        /// Runs a process with the specified arguments and optional configuration.
-        /// </summary>
-        /// <param name="exe">The path to the executable to run.</param>
-        /// <param name="args">The command-line arguments as a single string.</param>
-        /// <param name="waitForProcess">If true, waits for the process to exit and returns its exit code.</param>
-        /// <param name="allowReattemptAsAdmin">If true and access is denied (error 740), automatically retries with admin privileges.</param>
-        /// <param name="requireAdmin">If true, runs the process with elevated (administrator) privileges.</param>
-        /// <param name="noWindow">If true, runs the process without creating a visible window.</param>
-        /// <param name="environmentVariables">Optional dictionary of environment variables to set for the process.</param>
-        /// <param name="workingDir">Optional working directory for the process. Defaults to the executable's directory.</param>
-        /// <returns>The exit code if waitForProcess is true, otherwise -1.</returns>
-        public static int RunProcess(string exe, string args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true, Dictionary<string, string> environmentVariables = null, string workingDir = null)
-        {
-            return RunProcess(exe, null, args, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow, environmentVariables: environmentVariables, workingDir: workingDir);
-        }
-
-        /// <summary>
-        /// Runs a process with the specified arguments list and optional configuration.
-        /// </summary>
-        /// <param name="exe">The path to the executable to run.</param>
-        /// <param name="args">The command-line arguments as a list of strings.</param>
-        /// <param name="waitForProcess">If true, waits for the process to exit and returns its exit code.</param>
-        /// <param name="allowReattemptAsAdmin">If true and access is denied (error 740), automatically retries with admin privileges.</param>
-        /// <param name="requireAdmin">If true, runs the process with elevated (administrator) privileges.</param>
-        /// <param name="noWindow">If true, runs the process without creating a visible window.</param>
-        /// <param name="environmentVariables">Optional dictionary of environment variables to set for the process.</param>
-        /// <param name="workingDir">Optional working directory for the process. Defaults to the executable's directory.</param>
-        /// <returns>The exit code if waitForProcess is true, otherwise -1.</returns>
-        public static int RunProcess(string exe, List<string> args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true, Dictionary<string, string> environmentVariables = null, string workingDir = null)
-        {
-            return RunProcess(exe, args, null, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow, environmentVariables: environmentVariables, workingDir: workingDir);
-        }
-
-
-        /// <summary>
-        /// Internal implementation that runs a process with comprehensive configuration options.
-        /// Handles argument formatting, admin elevation, and error recovery.
-        /// </summary>
-        /// <param name="exe">The path to the executable to run.</param>
-        /// <param name="argsL">The command-line arguments as a list of strings (optional if argsS is provided).</param>
-        /// <param name="argsS">The command-line arguments as a single string (optional if argsL is provided).</param>
-        /// <param name="waitForProcess">If true, waits for the process to exit and returns its exit code.</param>
-        /// <param name="allowReattemptAsAdmin">If true and access is denied (error 740), automatically retries with admin privileges.</param>
-        /// <param name="requireAdmin">If true, runs the process with elevated (administrator) privileges.</param>
-        /// <param name="noWindow">If true, runs the process without creating a visible window.</param>
-        /// <param name="environmentVariables">Optional dictionary of environment variables to set for the process.</param>
-        /// <param name="workingDir">Optional working directory for the process. Defaults to the executable's directory.</param>
-        /// <returns>The exit code if waitForProcess is true, otherwise -1.</returns>
-        private static int RunProcess(string exe, List<string> argsL, string argsS, bool waitForProcess, bool allowReattemptAsAdmin, bool requireAdmin, bool noWindow, Dictionary<string, string> environmentVariables, string workingDir = null)
-        {
-            var argsStr = argsS;
-            if (argsStr == null && argsL != null)
-            {
-                argsStr = "";
-                foreach (var arg in argsL)
-                {
-                    if (arg != "" && argsStr != "") argsStr += " ";
-                    if (arg.Contains(" "))
-                    {
-                        argsStr += $"\"{arg}\"";
-                    }
-                    else
-                    {
-                        argsStr += arg;
-                    }
-                }
-            }
-
-            if (requireAdmin)
-            {
-                M3Log.Information($"Running process as admin: {exe} {argsStr}");
-                //requires elevation
-                using (Process p = new Process())
-                {
-                    p.StartInfo.FileName = exe;
-                    p.StartInfo.UseShellExecute = environmentVariables == null || !environmentVariables.Any();
-                    p.StartInfo.CreateNoWindow = noWindow;
-                    p.StartInfo.WorkingDirectory = workingDir ?? Directory.GetParent(exe).FullName;
-                    p.StartInfo.Arguments = argsStr;
-                    p.StartInfo.Verb = "runas";
-                    if (environmentVariables != null)
-                    {
-                        foreach (var ev in environmentVariables)
-                        {
-                            p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
-                        }
-                    }
-                    p.Start();
-                    if (waitForProcess)
-                    {
-                        p.WaitForExit();
-                        return p.ExitCode;
-                    }
-
-                    return -1;
-                }
-            }
-            else
-            {
-                M3Log.Information($"Running process: {exe} {argsStr}");
-                try
-                {
-                    using (Process p = new Process())
-                    {
-                        p.StartInfo.FileName = exe;
-                        p.StartInfo.UseShellExecute = environmentVariables == null || !environmentVariables.Any();
-                        p.StartInfo.CreateNoWindow = noWindow;
-                        p.StartInfo.WorkingDirectory = workingDir ?? Directory.GetParent(exe).FullName;
-                        p.StartInfo.Arguments = argsStr;
-                        if (environmentVariables != null)
-                        {
-                            foreach (var ev in environmentVariables)
-                            {
-                                p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
-                            }
-                        }
-                        p.Start();
-                        if (waitForProcess)
-                        {
-                            p.WaitForExit();
-                            return p.ExitCode;
-                        }
-
-                        return -1;
-                    }
-                }
-                catch (Win32Exception w32e)
-                {
-                    M3Log.Warning("Win32 exception running process: " + w32e.ToString());
-                    if (w32e.NativeErrorCode == 740 && allowReattemptAsAdmin)
-                    {
-                        M3Log.Information("Attempting relaunch with administrative rights.");
-                        //requires elevation
-                        using (Process p = new Process())
-                        {
-                            p.StartInfo.FileName = exe;
-                            p.StartInfo.UseShellExecute = true; // If we are running as admin, we cannot shell execute without a wrapper
-                            p.StartInfo.CreateNoWindow = noWindow;
-                            p.StartInfo.WorkingDirectory = workingDir ?? Directory.GetParent(exe).FullName;
-                            p.StartInfo.Arguments = argsStr;
-                            p.StartInfo.Verb = "runas";
-                            //if (environmentVariables != null)
-                            //{
-                            //    foreach (var ev in environmentVariables)
-                            //    {
-                            //        p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
-                            //    }
-                            //}
-                            p.Start();
-                            if (waitForProcess)
-                            {
-                                p.WaitForExit();
-                                return p.ExitCode;
-                            }
-
-                            return -1;
-                        }
-                    }
-                    else
-                    {
-                        throw; //rethrow to higher.
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Reads all lines from a file, attempting to do so even if the file is in use by another process.
-        /// Uses FileShare.ReadWrite to allow reading while other processes have the file open.
-        /// </summary>
-        /// <param name="path">The path to the file to read.</param>
-        /// <returns>An array of strings containing all lines from the file.</returns>
-        public static string[] WriteSafeReadAllLines(String path)
-        {
-            using var csv = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using var sr = new StreamReader(csv);
-            List<string> file = new List<string>();
-            while (!sr.EndOfStream)
-            {
-                file.Add(sr.ReadLine());
-            }
-
-            return file.ToArray();
         }
 
         /// <summary>
@@ -770,29 +320,6 @@ namespace ME3TweaksModManager.modmanager
         }
 
         /// <summary>
-        /// Gets a list of installed antivirus products on the system by querying Windows Security Center.
-        /// </summary>
-        /// <returns>A list of display names of installed antivirus products.</returns>
-        internal static List<string> GetListOfInstalledAV()
-        {
-            List<string> av = new List<string>();
-            // for Windows Vista and above '\root\SecurityCenter2'
-            using (var searcher = new ManagementObjectSearcher(@"\\" +
-                                                               Environment.MachineName +
-                                                               @"\root\SecurityCenter2",
-                "SELECT * FROM AntivirusProduct"))
-            {
-                var searcherInstance = searcher.Get();
-                foreach (var instance in searcherInstance)
-                {
-                    av.Add(instance["displayName"].ToString());
-                }
-            }
-
-            return av;
-        }
-
-        /// <summary>
         /// Gets the path to the Bink video codec DLL file for a game target.
         /// Different Mass Effect games use different Bink files in different locations.
         /// </summary>
@@ -900,23 +427,6 @@ namespace ME3TweaksModManager.modmanager
 
 
         /// <summary>
-        /// Recursively deletes all empty subdirectories within the specified directory.
-        /// </summary>
-        /// <param name="startLocation">The root directory to start cleaning from.</param>
-        public static void DeleteEmptySubdirectories(string startLocation)
-        {
-            foreach (var directory in Directory.GetDirectories(startLocation))
-            {
-                DeleteEmptySubdirectories(directory);
-                if (!Directory.EnumerateFileSystemEntries(directory).Any())
-                {
-                    M3Log.Information("Deleting empty directory: " + directory);
-                    Directory.Delete(directory, false);
-                }
-            }
-        }
-
-        /// <summary>
         /// Opens Windows Explorer at the specified path.
         /// </summary>
         /// <param name="path">The directory path to open in Explorer.</param>
@@ -1000,33 +510,6 @@ namespace ME3TweaksModManager.modmanager
             M3Log.Information(@"User aborted selecting executable");
             return null;
         }
-
-        /// <summary>
-        /// Converts a game number string to its corresponding MEGame enum value.
-        /// </summary>
-        /// <param name="gameNum">The game number as a string.</param>
-        /// <returns>The corresponding MEGame enum value.</returns>
-        public static MEGame GetGameFromNumber(string gameNum)
-        {
-            return GetGameFromNumber(int.Parse(gameNum));
-        }
-
-        /// <summary>
-        /// Converts a server game ID to its corresponding MEGame enum value.
-        /// </summary>
-        /// <param name="number">The game ID number (1=ME1, 2=ME2, 3=ME3, 4=LE1, 5=LE2, 6=LE3, 7=LELauncher).</param>
-        /// <returns>The corresponding MEGame enum value, or MEGame.Unknown if not recognized.</returns>
-        public static MEGame GetGameFromNumber(int number) => number switch
-        {
-            1 => MEGame.ME1,
-            2 => MEGame.ME2,
-            3 => MEGame.ME3,
-            4 => MEGame.LE1,
-            5 => MEGame.LE2,
-            6 => MEGame.LE3,
-            7 => MEGame.LELauncher,
-            _ => MEGame.Unknown
-        };
 
         /// <summary>
         /// Writes the location of this exe to the registry. This allows external tools to locate Mod Manager without having them have to specify it.

@@ -307,7 +307,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
                         if (!testRun)
                         {
-                            M3Utilities.RunProcess(vpat, args, true, false, false, true);
+                            MUtilities.RunProcess(vpat, argsS: args, waitForProcess: true, noWindow: true);
                         }
                     }
                 }

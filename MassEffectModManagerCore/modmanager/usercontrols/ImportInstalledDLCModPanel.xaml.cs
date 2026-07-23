@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (MUtilities.DriveFreeBytes(library, out var freeBytes))
             {
                 //Check enough space
-                var sourceSize = M3Utilities.GetSizeOfDirectory(sourceDir);
+                var sourceSize = MUtilities.GetSizeOfDirectory(sourceDir);
                 if (sourceSize > (long)freeBytes)
                 {
                     //Not enough space

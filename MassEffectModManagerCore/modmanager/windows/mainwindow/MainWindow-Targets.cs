@@ -392,7 +392,7 @@ namespace ME3TweaksModManager
                                                                     // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
                 args.Add(@"/f");
 
-                return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
+                return MUtilities.RunProcess(exe, argsL: args, waitForProcess: true, requireAdmin: true);
             }
 
             return -3;

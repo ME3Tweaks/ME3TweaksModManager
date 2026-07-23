@@ -662,7 +662,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         {
                             // for some reason we don't have permission to do this.
                             M3Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
-                            M3Utilities.CreateDirectoryWithWritePermission(path, true);
+                            MUtilities.CreateDirectoryWithWritePermission(path, true);
                             MUtilities.DeleteFilesAndFoldersRecursively(path);
                         }
                         catch (Exception finalException)

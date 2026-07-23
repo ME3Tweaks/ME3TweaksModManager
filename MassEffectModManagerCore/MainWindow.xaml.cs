@@ -515,7 +515,7 @@ namespace ME3TweaksModManager
                     MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
-                    bool done = M3Utilities.CreateDirectoryWithWritePermission(M3Filesystem.GetAppDataFolder(), true);
+                    bool done = MUtilities.CreateDirectoryWithWritePermission(M3Filesystem.GetAppDataFolder(), true);
                     if (done)
                     {
                         M3Log.Information(@"Granted permissions to ProgramData");
@@ -2034,7 +2034,7 @@ namespace ME3TweaksModManager
                     var configTool = M3Utilities.GetGameConfigToolPath(target);
                     try
                     {
-                        M3Utilities.RunProcess(configTool, "", false, true, false, false);
+                        MUtilities.RunProcess(configTool, allowReattemptAsAdmin: true);
                     }
                     catch (Exception e)
                     {
@@ -2276,7 +2276,7 @@ namespace ME3TweaksModManager
                             new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
+                            MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
                                 .ToList());
                         }
                         catch (Exception e)
@@ -2295,7 +2295,7 @@ namespace ME3TweaksModManager
                 {
                     TelemetryInterposer.TrackEvent(@"Granting write permissions",
                         new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
-                    M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
+                    MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
                         .ToList());
                 }
             }

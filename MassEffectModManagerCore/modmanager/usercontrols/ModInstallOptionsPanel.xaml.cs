@@ -1,4 +1,5 @@
 ﻿using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
@@ -130,7 +131,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             AlternateGroups.ClearEx();
 
             //Write check
-            var canWrite = M3Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
+            var canWrite = MUtilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
             if (!canWrite)
             {
                 M3Log.Warning($@"Directory is not writable: {SelectedGameTarget.TargetPath}");

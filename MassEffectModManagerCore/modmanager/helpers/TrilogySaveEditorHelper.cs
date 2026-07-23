@@ -1,10 +1,6 @@
-﻿using ME3TweaksModManager.modmanager.localizations;
+﻿using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.helpers
@@ -35,11 +31,11 @@ namespace ME3TweaksModManager.modmanager.helpers
                 if (saveFilePath != null)
                 {
                     // We put it in args so OS doesn't split on spaces
-                    M3Utilities.RunProcess(tseExecutable, new List<string>(new[] { saveFilePath }));
+                    MUtilities.RunProcess(tseExecutable, [saveFilePath]);
                 }
                 else
                 {
-                    M3Utilities.RunProcess(tseExecutable);
+                    MUtilities.RunProcess(tseExecutable);
                 }
             }
             else

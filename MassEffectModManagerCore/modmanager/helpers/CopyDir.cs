@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using ME3TweaksModManager.modmanager.diagnostics;
+﻿using System.ComponentModel;
+using ME3TweaksCore.Helpers;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
@@ -101,7 +98,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 if (!testrun)
                 {
                     //Will attempt to create dir, prompt for admin if necessary (not sure how this will work in the wild)
-                    M3Utilities.CreateDirectoryWithWritePermission(Directory.GetParent(dest).FullName);
+                    MUtilities.CreateDirectoryWithWritePermission(Directory.GetParent(dest).FullName);
 
                     if (File.Exists(dest))
                     {

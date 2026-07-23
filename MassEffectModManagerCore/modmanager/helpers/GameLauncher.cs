@@ -288,17 +288,19 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
             }
 
+            // Run game with command line arguments - either built (string) or passed in (list). We always build for steam games ME3/LE if we find Link2EA.
             if (commandLineArgsString != null)
             {
-                M3Utilities.RunProcess(exe, commandLineArgsString, false, true, false, false, environmentVars);
+                MUtilities.RunProcess(exe, argsS: commandLineArgsString, waitForProcess: false, allowReattemptAsAdmin: true, environmentVariables: environmentVars);
             }
             else if (commandLineArgsList != null)
             {
-                M3Utilities.RunProcess(exe, commandLineArgsList, false, true, false, false, environmentVars);
+                MUtilities.RunProcess(exe, argsL: commandLineArgsList, waitForProcess: false, allowReattemptAsAdmin: true, environmentVariables: environmentVars);
             }
             else
             {
-                M3Utilities.RunProcess(exe, @"", false, true, false, false, environmentVars);
+                // Re-attempt as admin is allowed for ME1.
+                MUtilities.RunProcess(exe, waitForProcess: false, allowReattemptAsAdmin: true, environmentVariables: environmentVars);
             }
         }
 
@@ -348,7 +350,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                     // We need to run steam or it's going to throw the application error message.
                     M3Log.Information($@"Steam not running. Launching now.");
                     startingUpSteam = true;
-                    M3Utilities.RunProcess(steamExe);
+                    MUtilities.RunProcess(steamExe);
                 }
                 else if (startingUpSteam)
                 {

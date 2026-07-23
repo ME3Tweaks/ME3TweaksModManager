@@ -1,4 +1,5 @@
-﻿using ME3TweaksCoreWPF.Targets;
+﻿using ME3TweaksCore.Helpers;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
@@ -42,7 +43,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 if (File.Exists(cacheFile))
                 {
                     // 01/16/2026 - Do not read empty lines
-                    gameCache.AddRange(M3Utilities.WriteSafeReadAllLines(cacheFile)
+                    gameCache.AddRange(MUtilities.WriteSafeReadAllLines(cacheFile)
                                         .Where(x => !string.IsNullOrWhiteSpace(x))
                                         .Distinct());
                 }
