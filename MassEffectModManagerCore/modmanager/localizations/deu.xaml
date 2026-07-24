@@ -1947,7 +1947,6 @@
     <system:String x:Key="string_library_computerinfo">Kleine Bibliothek, um einfach CPU, Betriebssystem und Speicherinformationen zu sammeln</system:String>
     <system:String x:Key="string_library_fluentnexus">Moderner async HTTP Client für die NexusMods API</system:String>
     <system:String x:Key="string_library_recyclablememorystream">Bibliothek für einen wiederverwendbaren Pool von Speicherpuffern</system:String>
-    <system:String x:Key="string_library_sshnet">Bibliothek für SSH-Verbindungen</system:String>
     <system:String x:Key="string_library_watsonwebsocket">Bibliothek für Websocket-Verbindungen</system:String>
     <system:String x:Key="string_library_authenticodeexaminer">Verwaltet Inspektion von Authenticode Dateisignaturen</system:String>
     <system:String x:Key="string_library_ntfsstreams">Bibliothek zum lesen von NTFS Alternate Data Streams</system:String>
@@ -1957,6 +1956,8 @@
     <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper für robocopy-Befehl in C#</system:String>
     <system:String x:Key="string_starMeansForked">* = ME3Tweaks-Fork-Version</system:String>
     <system:String x:Key="string_tooltip_clickToViewLicense">Lizenz anzeigen</system:String>
+    <system:String x:Key="string_library_openTelemetry">Verarbeitet Telemetriedaten für Abstürze und Statistiken zur Funktionsnutzung</system:String>
+    <system:String x:Key="string_library_darkNet">Bietet Design-Anpassung für Titelleisten passend zum Anwendungsdesign</system:String>
 
     <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">Von {0} | Version {1}</system:String>
