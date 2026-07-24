@@ -1,4 +1,6 @@
 ﻿using ME3TweaksCore.Helpers;
+using Microsoft.Win32;
+using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -67,6 +69,23 @@ namespace ME3TweaksModManager.linux
             // Override defaults if Wine is detected
             if (WineWorkarounds.WineDetected)
             {
+
+                // Remove Wine keys responsible for faking an installed "Segoe UI"
+                using (RegistryKey FontReplacements = Registry.CurrentUser.OpenSubKey(@"Software\Wine\Fonts\Replacements", true))
+                {
+                    if (FontReplacements != null) {
+                        if (FontReplacements.GetValueNames().Contains("Segoe UI"))
+                        {
+                            FontReplacements.DeleteValue("Segoe UI");
+                            M3Log.Information("Deleting Wine's replacement key for Segoe UI");
+                        }
+                        if (FontReplacements.GetValueNames().Contains("Segoe UI Semibold"))
+                        {
+                            FontReplacements.DeleteValue("Segoe UI Semibold");
+                            M3Log.Information("Deleting Wine's replacement key for Segoe UI Semibold");
+                        }
+                    }
+                }
                 if (Application.Current.TryFindResource(@"M3DefaultMenuItemMargin") is Thickness defMargin)
                 {
                     // Hacky, would be nice to figure out how to get Wine to display margins (and padding) correctly
