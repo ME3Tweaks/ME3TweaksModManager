@@ -4,14 +4,20 @@ using ME3TweaksCore.Helpers;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
+using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace ME3TweaksModManager.modmanager.telemetry
 {
     internal static class M3OpenTelemetry
     {
         private static readonly ActivitySource Source = new ActivitySource(@"ME3TweaksModManager");
+        private static readonly TimeSpan PerformanceMetricsInterval = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan PerformanceMetricsMaxDuration = TimeSpan.FromHours(1);
+        private static readonly Stopwatch PerformanceMetricsUptime = new Stopwatch();
         private static TracerProvider _tracerProvider;
+        private static Timer _performanceMetricsTimer;
 
         /// <summary>
         /// Initializes the OpenTelemetry pipeline and begins exporting to Azure Monitor / Application Insights.
@@ -34,6 +40,9 @@ namespace ME3TweaksModManager.modmanager.telemetry
                 })
 #endif
                 .Build();
+
+            PerformanceMetricsUptime.Restart();
+            StartPerformanceMetricsSampler();
         }
 
         private static void EnsureInstanceGuid()
@@ -48,6 +57,54 @@ namespace ME3TweaksModManager.modmanager.telemetry
         {
             data[@"BuildDate"] = BuildHelper.BuildDateString;
             data[@"Version"] = MLibraryConsumer.GetAppVersion().ToString();
+        }
+
+        private static void StartPerformanceMetricsSampler()
+        {
+            StopPerformanceMetricsSampler();
+            _performanceMetricsTimer = new Timer(SamplePerformanceMetrics, null, PerformanceMetricsInterval, PerformanceMetricsInterval);
+        }
+
+        private static void StopPerformanceMetricsSampler()
+        {
+            _performanceMetricsTimer?.Dispose();
+            _performanceMetricsTimer = null;
+        }
+
+        private static void SamplePerformanceMetrics(object state)
+        {
+            if (!Settings.CanSendTelemetry)
+                return;
+
+            try
+            {
+                if (PerformanceMetricsUptime.Elapsed > PerformanceMetricsMaxDuration)
+                {
+                    StopPerformanceMetricsSampler();
+                    return;
+                }
+
+                EnsureInstanceGuid();
+                using var process = Process.GetCurrentProcess();
+                process.Refresh();
+
+                var currentMemoryMebibytes = process.WorkingSet64 / 1048576d;
+                var processCpuTimeSeconds = process.TotalProcessorTime.TotalSeconds;
+                var uptimeSeconds = PerformanceMetricsUptime.Elapsed.TotalSeconds;
+
+                using var activity = Source.StartActivity(@"PerformanceMetrics", ActivityKind.Internal);
+                if (activity == null)
+                    return;
+
+                activity.SetTag(@"ai.user.id", Settings.InstanceGuid.ToString());
+                activity.SetTag(@"memory.usage.mib", currentMemoryMebibytes);
+                activity.SetTag(@"process.cpu.time.seconds", processCpuTimeSeconds);
+                activity.SetTag(@"app.uptime.seconds", uptimeSeconds);
+            }
+            catch (Exception e)
+            {
+                MLog.Warning($@"Failed to sample performance telemetry: {e.Message}");
+            }
         }
 
         /// <summary>
@@ -155,6 +212,9 @@ namespace ME3TweaksModManager.modmanager.telemetry
         /// </summary>
         public static void Shutdown()
         {
+            StopPerformanceMetricsSampler();
+            PerformanceMetricsUptime.Reset();
+
             _tracerProvider?.ForceFlush();
             _tracerProvider?.Dispose();
             _tracerProvider = null;
