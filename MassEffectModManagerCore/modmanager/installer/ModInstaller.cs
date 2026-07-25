@@ -28,6 +28,7 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
 using ME3TweaksModManager.modmanager.objects.tlk;
+using ME3TweaksModManager.modmanager.postship;
 using NickStrupat;
 using SevenZip;
 using System.Diagnostics;
@@ -864,6 +865,9 @@ namespace ME3TweaksModManager.modmanager.installer
             var installedMetaCmms = new CaseInsensitiveDictionary<MetaCMM>();
             foreach (var addedDLCFolder in addedDLCFolders)
             {
+                // Apply post ship fixes
+                PostShipFixes.ApplyPostShipDLCFixes(InstallOptionsPackage.InstallTarget, addedDLCFolder);
+
                 // Write metacmm files
                 M3Log.Information(@"Writing _metacmm file for " + addedDLCFolder);
 
