@@ -164,7 +164,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="CliWrap" Version="3.10.2" />
+        <PackageReference Include="CliWrap" Version="3.10.3" />
         <PackageReference Include="DarkNet" Version="2.3.0" />
         <PackageReference Include="Flurl" Version="4.0.0" />
         <PackageReference Include="Flurl.Http" Version="4.0.2" />
@@ -173,7 +173,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="FontAwesome5" Version="2.1.11" />
-        <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.8.2" />
+        <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.8.3" />
         <PackageReference Include="OpenTelemetry" Version="1.17.0" />
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
@@ -212,13 +212,7 @@
         <EmbeddedResource Include="modmanager\executables\vpat.exe" />
 		
 		<!-- Localization icons. If langs are added these need adjusted.-->
-        <Resource Include="modmanager\localizations\icons\*.png" 
-				  Exclude="modmanager\localizations\icons\czech.png;
-						   modmanager\localizations\icons\polish.png;
-						   modmanager\localizations\icons\french.png;
-						   modmanager\localizations\icons\portuguese.png;
-						   modmanager\localizations\icons\spanish.png;
-						   modmanager\localizations\icons\korean.png" />
+        <Resource Include="modmanager\localizations\icons\*.png" Exclude="modmanager\localizations\icons\czech.png;&#xD;&#xA;						   modmanager\localizations\icons\polish.png;&#xD;&#xA;						   modmanager\localizations\icons\french.png;&#xD;&#xA;						   modmanager\localizations\icons\portuguese.png;&#xD;&#xA;						   modmanager\localizations\icons\spanish.png;&#xD;&#xA;						   modmanager\localizations\icons\korean.png" />
 
 		<Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
         <EmbeddedResource Include="modmanager\objects\mod\merge\v1\schema.json" />
