@@ -31,11 +31,11 @@ namespace ME3TweaksModManager.modmanager.helpers
                 if (saveFilePath != null)
                 {
                     // We put it in args so OS doesn't split on spaces
-                    MUtilities.RunProcess(tseExecutable, [saveFilePath]);
+                    MUtilities.RunProcess(tseExecutable, [saveFilePath], waitForProcess: false);
                 }
                 else
                 {
-                    MUtilities.RunProcess(tseExecutable);
+                    MUtilities.RunProcess(tseExecutable, waitForProcess: false);
                 }
             }
             else

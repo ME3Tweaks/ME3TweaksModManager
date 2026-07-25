@@ -2041,7 +2041,7 @@ namespace ME3TweaksModManager
                     var configTool = M3Utilities.GetGameConfigToolPath(target);
                     try
                     {
-                        MUtilities.RunProcess(configTool, allowReattemptAsAdmin: true);
+                        MUtilities.RunProcess(configTool, allowReattemptAsAdmin: true, waitForProcess: false);
                     }
                     catch (Exception e)
                     {

@@ -350,7 +350,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                     // We need to run steam or it's going to throw the application error message.
                     M3Log.Information($@"Steam not running. Launching now.");
                     startingUpSteam = true;
-                    MUtilities.RunProcess(steamExe);
+                    MUtilities.RunProcess(steamExe, waitForProcess: false);
                 }
                 else if (startingUpSteam)
                 {
