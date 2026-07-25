@@ -1,7 +1,4 @@
 ﻿using LegendaryExplorerCore.GameFilesystem;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ME3TweaksModManager.modmanager.postship
 {
@@ -27,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.postship
         private static void ChangeALOTM3TOMounts(GameTarget target, string dlcFolder)
         {
             var folderName = Path.GetFileName(dlcFolder);
-            if (folderName == "DLC_MOD_ALOT")
+            if (folderName == @"DLC_MOD_ALOT")
             {
                 // It's the ALOT M3TO folder.
                 switch (target.Game)
@@ -41,7 +38,7 @@ namespace ME3TweaksModManager.modmanager.postship
                                 if (mount.ModMount == 9234)
                                 {
                                     mount.ModMount = 60; // Correct to mount 60, to give space above and below it.
-                                    M3Log.Information($"PostShipFixes: Correcting {target.Game} ALOT M3TO Autoload.ini mount to {mount.ModMount}");
+                                    M3Log.Information($@"PostShipFixes: Correcting {target.Game} ALOT M3TO Autoload.ini mount to {mount.ModMount}");
                                     File.WriteAllText(mountPath, mount.ToString());
                                 }
                             }
@@ -50,7 +47,7 @@ namespace ME3TweaksModManager.modmanager.postship
                     case MEGame.LE2:
                     case MEGame.LE3:
                         {
-                            var mountPath = Path.Combine(dlcFolder, @"CookedPCConsole", "mount.dlc");
+                            var mountPath = Path.Combine(dlcFolder, @"CookedPCConsole", @"mount.dlc");
                             if (File.Exists(mountPath))
                             {
                                 var mount = new MountFile(mountPath);
@@ -60,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.postship
                                     // LE3 DLC must mount above 1000 or internal exe code will block it from running. But it is fine if we mount
                                     // below official DLC which starts at 2000.
                                     mount.MountPriority = target.Game == MEGame.LE2 ? 2100 : 1500;
-                                    M3Log.Information($"PostShipFixes: Correcting {target.Game} ALOT M3TO mount.dlc mount to {mount.MountPriority}");
+                                    M3Log.Information($@"PostShipFixes: Correcting {target.Game} ALOT M3TO mount.dlc mount to {mount.MountPriority}");
                                     mount.WriteMountFile(mountPath);
                                 }
                             }
