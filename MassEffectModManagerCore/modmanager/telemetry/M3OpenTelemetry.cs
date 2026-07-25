@@ -21,7 +21,11 @@ namespace ME3TweaksModManager.modmanager.telemetry
         {
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .AddSource(Source.Name)
-                .AddAzureMonitorTraceExporter(o => o.ConnectionString = connectionString)
+                .AddAzureMonitorTraceExporter(o =>
+                {
+                    o.ConnectionString = connectionString;
+                    o.EnableLiveMetrics = false; // While kind of useful it's way too much stuff we don't care about
+                })
 #if DEBUG
                 .AddConsoleExporter(options =>
                 {
