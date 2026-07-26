@@ -25,3 +25,5 @@ If you are using a global TLK override, all `BioTlkFile` entries in the localiza
 If only the first file's `BioTlkFile` exports are marked `NotForServer`, the mod will fail deployment, as they all need to match to ensure consistent behavior across languages.
 
 To set the `NotForServer` flag, go to the Metadata tab on the BioTlkFile object and select `NotForServer` in the Object flags dropdown, and then click `Save all changes`.
+
+<img width="1051" height="250" alt="image" src="https://github.com/user-attachments/assets/cecfbe7c-c4a2-49ea-81ae-2ef71f217a38" />
