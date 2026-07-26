@@ -2847,6 +2847,8 @@
     <!-- 0={<A string>} -->
     <system:String x:Key="string_interp_mergeModAssetsSingleFolder">Inhaltsdateien für MergeMods müssen alle im selben Ordner enthalten sein. Ungültiger Datei-Name: {0}</system:String>
     <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_mergeModFileChangedReload">Die m3m-Datei '{0}' wurde seit dem Laden der Mod geändert. Bitte lade die Mod-Bibliothek neu.</system:String>
+    <!-- 0={Filename} -->
 
     <!-- Merge Mods (V2) -->
     <system:String x:Key="string_interp_classUpdateCannotNestMoreThanOne">Die Validierung ist bei {0} {1} fehlgeschlagen: Die Klasse kann nicht tiefer als ein Package verschachtelt werden.</system:String>
