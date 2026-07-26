@@ -12,6 +12,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 using Pathoschild.Http.Client;
 
@@ -136,7 +137,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             fs.Close();
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();
-                            TelemetryInterposer.TrackEvent(@"Authenticated to NexusMods");
+                            M3OpenTelemetry.TrackEvent(@"Authenticated to NexusMods");
                         }
                         else
                         {

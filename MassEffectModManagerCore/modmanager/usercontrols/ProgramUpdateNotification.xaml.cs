@@ -18,6 +18,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 using Serilog;
 using SevenZip;
@@ -216,7 +217,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 else
                 {
                     M3Log.Error(@"Error downloading update: " + updateFile.errorMessage);
-                    TelemetryInterposer.TrackEvent(@"Error downloading update",
+                    M3OpenTelemetry.TrackEvent(@"Error downloading update",
                         new Dictionary<string, string>() { { @"Error message", updateFile.errorMessage } });
                     errorMessage = updateFile.errorMessage;
                 }

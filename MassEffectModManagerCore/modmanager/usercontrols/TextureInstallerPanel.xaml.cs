@@ -10,6 +10,7 @@ using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
+using ME3TweaksModManager.modmanager.telemetry;
 
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -277,7 +278,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // Install the textures.
                     SetNextStep(M3L.GetString(M3L.string_preparingForTextureInstall)); // same message
                     var installResult = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
-                    TelemetryInterposer.TrackEvent(@"Installed texture mods", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent(@"Installed texture mods", new Dictionary<string, string>()
                     {
                         {@"Result", installResult != null ? (installResult.ExitCode == 0 ? @"OK" : $@"Error code {installResult.ExitCode}") : @"Unknown"}
                     });

@@ -2,30 +2,91 @@ using Azure.Monitor.OpenTelemetry.Exporter;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Exceptions;
 using ME3TweaksCore.Helpers;
+using NickStrupat;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using System;
 using System.Diagnostics;
 using System.Threading;
 
 namespace ME3TweaksModManager.modmanager.telemetry
 {
+    /// <summary>
+    /// Class for handling telemetry for ME3Tweaks Mod Manager
+    /// </summary>
     internal static class M3OpenTelemetry
     {
         private static readonly ActivitySource Source = new ActivitySource(@"ME3TweaksModManager");
+
+        // Performance sampling timer
         private static readonly TimeSpan PerformanceMetricsInterval = TimeSpan.FromMinutes(5);
         private static readonly TimeSpan PerformanceMetricsMaxDuration = TimeSpan.FromHours(1);
         private static readonly Stopwatch PerformanceMetricsUptime = new Stopwatch();
         private static TracerProvider _tracerProvider;
         private static Timer _performanceMetricsTimer;
 
+        #region Telemetry event queuing
+        /// <summary>
+        /// Telemetry events that are queued for submission; items are stored here if the preview panel hasn't been shown as user
+        /// would not have had choice to turn it off yet.
+        /// </summary>
+        private static List<(string, Dictionary<string, string>)> QueuedTelemetryItems = new List<(string, Dictionary<string, string>)>();
+
+        /// <summary>
+        /// If telemetry has been flushed after checking if it is enabled. Once flushed items won't be queued anymore
+        /// </summary>
+        private static bool FlushedTelemetry;
+
+        /// <summary>
+        /// Flushes the startup telemetry events and disables the queue.
+        /// </summary>
+        public static void FlushTelemetryItems()
+        {
+            FlushedTelemetry = true;
+            if (Settings.EnableTelemetry && QueuedTelemetryItems != null)
+            {
+                foreach (var v in QueuedTelemetryItems)
+                {
+                    M3OpenTelemetry.TrackEvent(v.Item1, v.Item2);
+                }
+            }
+
+            QueuedTelemetryItems = null; // Just release the memory. This variable is never used again
+        }
+        #endregion
+
+        internal static void InitOpenTelemetry()
+        {
+#if !DEBUG
+            if (APIKeys.HasAppInsightsConnectionString)
+            {
+                M3Log.Information(@"Initializing Application Insights telemetry");
+                InternalInitialize(APIKeys.AppInsightsConnectionString);
+            }
+            else
+            {
+                M3Log.Error(@"This build is not configured correctly for Application Insights!");
+            }
+#else
+            if (!APIKeys.HasAppInsightsConnectionString)
+            {
+                Debug.WriteLine(@" >>> This build is missing an Application Insights connection string!");
+            }
+            else
+            {
+                Debug.WriteLine(@"This build has an Application Insights connection string");
+                InternalInitialize(APIKeys.AppInsightsConnectionString);
+            }
+#endif
+        }
+
+
         /// <summary>
         /// Initializes the OpenTelemetry pipeline and begins exporting to Azure Monitor / Application Insights.
         /// </summary>
         /// <param name="connectionString">The Application Insights connection string.</param>
-        public static void Initialize(string connectionString)
+        private static void InternalInitialize(string connectionString)
         {
             EnsureInstanceGuid();
 
@@ -33,9 +94,10 @@ namespace ME3TweaksModManager.modmanager.telemetry
                 .AddService(serviceName: @"ME3TweaksModManager")
                 .AddAttributes(new Dictionary<string, object>
                 {
-                    [@"BuildDate"] = BuildHelper.BuildDateString,
-                    [@"Version"] = MLibraryConsumer.GetAppVersion().ToString(),
-                    [@"ai.user.id"] = Settings.InstanceGuid.ToString()
+                    [@"BuildDate"] = BuildHelper.BuildDateString,               // For tracking minor re-release permeation
+                    [@"Version"] = MLibraryConsumer.GetAppVersion().ToString(), // For filtering the version in dashboards
+                    [@"Environment"] = new ComputerInfo().OSFullName,       // For determining if the issue is on supported platforms
+                    [@"ai.user.id"] = Settings.InstanceGuid.ToString()          // For determining how widespread an event or exception is that shows up many times
                 });
 
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
@@ -61,6 +123,9 @@ namespace ME3TweaksModManager.modmanager.telemetry
             StartPerformanceMetricsSampler();
         }
 
+        /// <summary>
+        /// Ensures instance guid has been set
+        /// </summary>
         private static void EnsureInstanceGuid()
         {
             if (Settings.InstanceGuid == Guid.Empty)
@@ -69,6 +134,7 @@ namespace ME3TweaksModManager.modmanager.telemetry
             }
         }
 
+        #region Performance sampling
         private static void StartPerformanceMetricsSampler()
         {
             StopPerformanceMetricsSampler();
@@ -115,13 +181,26 @@ namespace ME3TweaksModManager.modmanager.telemetry
             }
         }
 
+        #endregion
+
         /// <summary>
         /// Tracks a named event with optional property bag.
         /// </summary>
         public static void TrackEvent(string name, Dictionary<string, string> properties = null)
         {
-            if (!Settings.CanSendTelemetry)
+            if (!Settings.ShowedPreviewPanel && !FlushedTelemetry && QueuedTelemetryItems != null)
+            {
+                // Queue a telemetry item until user consent completes
+                QueuedTelemetryItems.Add((name, properties));
                 return;
+            }
+
+            if (!Settings.CanSendTelemetry)
+            {
+                // Telemetry is disabled
+                return;
+            }
+
             using var activity = Source.StartActivity(name, ActivityKind.Internal);
             if (activity != null)
             {
@@ -139,7 +218,11 @@ namespace ME3TweaksModManager.modmanager.telemetry
         public static void TrackError(Exception exception, Dictionary<string, string> properties = null)
         {
             if (!Settings.CanSendTelemetry)
+            {
+                // Telemetry is disabled
                 return;
+            }
+
             if (exception is NoTelemetryException)
                 return; // This exception doesn't trigger telemetry submission for it
             using var activity = Source.StartActivity(exception?.GetType().Name ?? @"Error", ActivityKind.Internal);
@@ -162,7 +245,10 @@ namespace ME3TweaksModManager.modmanager.telemetry
         public static void TrackCrash(Exception exception, Dictionary<string, string> properties = null)
         {
             if (!Settings.CanSendTelemetry)
+            {
+                // Telemetry is disabled
                 return;
+            }
             var activityName = @"Crash";
             if (exception?.GetType() != null)
             {

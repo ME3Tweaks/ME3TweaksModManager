@@ -15,6 +15,7 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
@@ -204,7 +205,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             M3Log.Information($"Installing batch group '{SelectedBatchQueue.ModName}': {batchModCount} mods, {asiModCount} ASI mods, {textureModCount} texture mods, game restore: {SelectedBatchQueue.RestoreBeforeInstall}");
 
-            TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.ModName},
                 {@"Group size", SelectedBatchQueue.AllModsToInstall.Count.ToString()},
@@ -412,11 +413,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     catch (Exception e)
                     {
                         M3Log.Exception(e, @"Error occurred parsing batch queue file:");
-                        TelemetryInterposer.TrackError(new Exception(@"Error parsing batch queue file", e), new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(new Exception(@"Error parsing batch queue file", e), new Dictionary<string, string>()
                         {
                             {@"Filename", file}
                         });
-                        App.SubmitAnalyticTelemetryEvent("");
                     }
                 }
             }

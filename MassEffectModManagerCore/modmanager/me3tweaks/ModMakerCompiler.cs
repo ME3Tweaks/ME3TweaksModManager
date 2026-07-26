@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
@@ -112,7 +113,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 Debug.WriteLine($@"Progress at end of coalesceds: {OverallProgressValue}");
                 finalizeModdesc(xmlDoc, mod);
                 MixinHandler.AttemptResetMemoryManager();
-                TelemetryInterposer.TrackEvent(@"Downloaded ModMaker Mod", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Downloaded ModMaker Mod", new Dictionary<string, string>()
                 {
                     {@"Code", code.ToString() },
                     {@"Mod Name", modName }

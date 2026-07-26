@@ -15,6 +15,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using System.ComponentModel;
 using System.Windows;
 using Microsoft.Win32;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager
 {
@@ -311,7 +312,7 @@ namespace ME3TweaksModManager
                             SelectedGameTarget.UpdateLODs(Settings.AutoUpdateLODs2K);
                         }
 
-                        TelemetryInterposer.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
                         {
                             { @"New target", SelectedGameTarget.Game.ToString() },
                         });
@@ -462,7 +463,7 @@ namespace ME3TweaksModManager
 
                     if (failureReason == null)
                     {
-                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
                         {
                             { @"Game", pendingTarget.Game.ToString() },
                             { @"Result", @"Success" },
@@ -474,7 +475,7 @@ namespace ME3TweaksModManager
                     }
                     else
                     {
-                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
                         {
                             { @"Game", pendingTarget.Game.ToString() },
                             { @"Result", @"Failed, " + failureReason },

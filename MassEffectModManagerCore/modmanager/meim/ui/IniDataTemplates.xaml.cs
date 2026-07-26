@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.telemetry;
 namespace ME3TweaksModManager.modmanager.meim.ui
 {
     public partial class IniDataTemplates : ResourceDictionary
@@ -47,7 +48,7 @@ namespace ME3TweaksModManager.modmanager.meim.ui
             }
             else
             {
-                TelemetryInterposer.TrackError(new Exception(@"MEIM: LVI was null on ResetToDefault. Sender name: " + (sender as Button)?.Name));
+                M3OpenTelemetry.TrackError(new Exception(@"MEIM: LVI was null on ResetToDefault. Sender name: " + (sender as Button)?.Name));
             }
         }
 

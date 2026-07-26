@@ -14,6 +14,7 @@ using ME3TweaksModManager.modmanager.objects.deployment;
 using ME3TweaksModManager.modmanager.objects.deployment.checks;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.tlk;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
@@ -45,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ArchiveDeploymentPanel(Mod mod)
         {
             M3Log.Information($@"Initiating deployment for mod {mod.ModName} {mod.ModVersionString}");
-            TelemetryInterposer.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
             });
@@ -190,14 +191,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     else if (ModsInDeployment.Count == 1)
                     {
-                        TelemetryInterposer.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
                         {
                             { @"Mod name" , $@"{ModsInDeployment[0].ModBeingDeployed.ModName} {ModsInDeployment[0].ModBeingDeployed.ParsedModVersion}"}
                         });
                     }
                     else
                     {
-                        TelemetryInterposer.TrackEvent(@"Deployed multipack of mods", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Deployed multipack of mods", new Dictionary<string, string>()
                         {
                             { @"Included mods" , string.Join(';', ModsInDeployment.Select(x=>$@"{x.ModBeingDeployed.ModName} {x.ModBeingDeployed.ParsedModVersion}"))}
                         });

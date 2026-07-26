@@ -18,6 +18,7 @@ using System.Xml.Linq;
 using ME3TweaksCore.TextureOverride;
 using Microsoft.Win32;
 using ME3TweaksCore.Objects;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager
 {
@@ -117,7 +118,7 @@ namespace ME3TweaksModManager
                         case @".7z":
                         case @".zip":
                         case @".exe":
-                            TelemetryInterposer.TrackEvent(@"User opened mod archive for import",
+                            M3OpenTelemetry.TrackEvent(@"User opened mod archive for import",
                                 new Dictionary<string, string>
                                 {
                                     { @"Method", @"Drag & drop" },
@@ -129,8 +130,7 @@ namespace ME3TweaksModManager
                         case @".mem"
                             when ModFileFormats.GetGameMEMFileIsFor(file) is var memGame &&
                                  memGame.IsLEGame(): // For LE
-                            App.SubmitAnalyticTelemetryEvent(@"User dropped LE mem file",
-                                new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
+                            M3OpenTelemetry.TrackEvent(@"User dropped LE mem file", new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
 
                             continueLoop = false; // Do not parse other files in drop, we handle them here
                             var memFiles = new List<string>(files.Length);
@@ -197,7 +197,7 @@ namespace ME3TweaksModManager
                         case @".tpf":
                         case @".mod":
                         case @".mem":
-                            App.SubmitAnalyticTelemetryEvent(@"User redirected to MEM/ALOT Installer",
+                            M3OpenTelemetry.TrackEvent(@"User redirected to MEM/ALOT Installer",
                                 new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
                             M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_installingTextureMod, ext),
                                 M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK,
@@ -205,7 +205,7 @@ namespace ME3TweaksModManager
                             break;
 
                         case @".me2mod":
-                            App.SubmitAnalyticTelemetryEvent(@"User opened me2mod file",
+                            M3OpenTelemetry.TrackEvent(@"User opened me2mod file",
                                 new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
                             openModImportUI(file);
                             break;
@@ -766,7 +766,7 @@ namespace ME3TweaksModManager
                             M3Utilities.HighlightInExplorer(dest);
                         }
 
-                        TelemetryInterposer.TrackEvent(@"Compiled Coalesced (menu)");
+                        M3OpenTelemetry.TrackEvent(@"Compiled Coalesced (menu)");
                         BackgroundTaskEngine.SubmitJobCompletion(task);
                     }).ContinueWithOnUIThread(x =>
                     {
@@ -828,7 +828,7 @@ namespace ME3TweaksModManager
                             LECoalescedConverter.Unpack(ofd.FileName, dir);
                         }
 
-                        TelemetryInterposer.TrackEvent(@"Decompiled Coalesced (menu)");
+                        M3OpenTelemetry.TrackEvent(@"Decompiled Coalesced (menu)");
                         M3Utilities.HighlightInExplorer(dir);
                         BackgroundTaskEngine.SubmitJobCompletion(task);
                     }).ContinueWithOnUIThread(x =>

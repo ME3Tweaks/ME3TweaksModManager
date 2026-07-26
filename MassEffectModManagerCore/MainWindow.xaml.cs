@@ -32,6 +32,7 @@ using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.textures;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
@@ -239,7 +240,7 @@ namespace ME3TweaksModManager
         public void ShowModArchiveImportForDownload(ModDownload downloadedMod, bool priority = true)
         {
             downloadedMod.DownloadedStream.Position = 0;
-            App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import",
+            M3OpenTelemetry.TrackEvent(@"User opened mod archive for import",
                 new Dictionary<string, string>
                 {
                     { @"Filename", downloadedMod.FileName }
@@ -1483,7 +1484,7 @@ namespace ME3TweaksModManager
             var result = m.ShowDialog(this);
             if (result.Value)
             {
-                TelemetryInterposer.TrackEvent(@"User opened mod archive for import",
+                M3OpenTelemetry.TrackEvent(@"User opened mod archive for import",
                     new Dictionary<string, string>
                         { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
                 var archiveFile = m.FileName;
@@ -1829,7 +1830,7 @@ namespace ME3TweaksModManager
 
                     control.Close += (a, b) => { ReleaseBusyControl(); };
                     ShowBusyControl(control);
-                    TelemetryInterposer.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
                     {
                         { @"Invocation method", @"Installation Information" }
                     });
@@ -2199,7 +2200,7 @@ namespace ME3TweaksModManager
             {
                 if (forcedTarget == null && SelectedGameTarget == null)
                 {
-                    TelemetryInterposer.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
+                    M3OpenTelemetry.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
                 }
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
                 var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod);
@@ -2279,7 +2280,7 @@ namespace ME3TweaksModManager
                     });
                     if (result)
                     {
-                        TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                        M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                             new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
@@ -2294,13 +2295,13 @@ namespace ME3TweaksModManager
                     else
                     {
                         M3Log.Warning(@"User denied permission to grant write permissions");
-                        TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                        M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                             new Dictionary<string, string>() { { @"Granted?", @"No" } });
                     }
                 }
                 else
                 {
-                    TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                    M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                         new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
                     MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
                         .ToList());
@@ -2431,7 +2432,7 @@ namespace ME3TweaksModManager
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
                     data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
 
-                    App.SubmitAnalyticTelemetryEvent(@"Version and Hardware Info", data);
+                    M3OpenTelemetry.TrackEvent(@"Version and Hardware Info", data);
                 }
                 catch //(Exception e)
                 {
@@ -3253,7 +3254,7 @@ namespace ME3TweaksModManager
         {
             if (tool != null)
             {
-                TelemetryInterposer.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
                 {
                     { @"Tool name", tool },
                     { @"Arguments", arguments }
@@ -3266,7 +3267,7 @@ namespace ME3TweaksModManager
 
         private void OpenASIManager()
         {
-            TelemetryInterposer.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
             {
                 { @"Invocation method", @"Menu" }
             });

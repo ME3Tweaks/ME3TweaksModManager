@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
@@ -11,7 +9,10 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.save.shared;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.windows.input;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
@@ -131,7 +132,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
             LaunchGame(target, args);
 
-            App.SubmitAnalyticTelemetryEvent(@"LE Game Launch", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"LE Game Launch", new Dictionary<string, string>()
             {
                 {@"Game", target.Game.ToString()},
                 {@"LaunchConfig", (!LaunchPackage.IsCustomOption).ToString()},

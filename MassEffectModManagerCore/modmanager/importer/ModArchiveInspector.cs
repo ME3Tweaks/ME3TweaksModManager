@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols;
 using SevenZip;
 
@@ -299,7 +300,7 @@ namespace ME3TweaksModManager.modmanager.importer
                         else
                         {
                             M3Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
-                            TelemetryInterposer.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
                                 {
                                     {@"moddesc.ini name", importingInfo.servermoddescname ?? transform.PostTransformModdesc}
                                 });
@@ -367,7 +368,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     else
                     {
                         M3Log.Information(@"ME3Tweaks does not have additional version information for this file.");
-                        TelemetryInterposer.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
                                 {@"Filename", Path.GetFileName(filepath)},
                                 {@"MD5", md5}
@@ -383,7 +384,7 @@ namespace ME3TweaksModManager.modmanager.importer
                 {
                     //Try straight up TPMI import?
                     M3Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
-                    TelemetryInterposer.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                         {
                             {@"Filename", Path.GetFileName(filepath)},
                             {@"MD5", md5}

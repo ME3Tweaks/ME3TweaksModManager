@@ -12,6 +12,7 @@ using IniParser.Model;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager
 {
@@ -947,13 +948,12 @@ namespace ME3TweaksModManager.modmanager
                         // all bytes are zero. The ini file has become corrupt. 
                         // This issue has been observed but not replicated
                         // Delete the settings.ini
-                        App.SubmitAnalyticTelemetryEvent(@"Corrupted settings.ini detected",
+                        M3OpenTelemetry.TrackEvent(@"Corrupted settings.ini detected",
                             new Dictionary<string, string>()
                             {
                                 {@"Filesize", bytes.Length.ToString()}
                             });
-                        M3Log.Fatal(
-                            @"DETECTED CORRUPT SETTINGS.INI FILE. This file will be deleted and reset to defaults.");
+                        M3Log.Fatal(@"DETECTED CORRUPT SETTINGS.INI FILE. This file will be deleted and reset to defaults.");
                         File.Delete(SettingsPath);
                     }
                 }

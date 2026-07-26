@@ -76,11 +76,6 @@ namespace ME3TweaksModManager
         /// </summary>
         public const double HighestSupportedModDesc = 9.2;
 
-        /// <summary>
-        /// If telemetry has been flushed after checking if it is enabled.
-        /// </summary>
-        public static bool FlushedTelemetry;
-
         public void OnInstanceInvoked(string[] args)
         {
             // Another exe was launched
@@ -248,11 +243,11 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;
-                M3Log.Information(@"ME3Tweaks Mod Manager " + version);
-                M3Log.Information(@"Application boot: " + DateTime.UtcNow);
-                M3Log.Information(@"Running as " + Environment.UserName);
-                M3Log.Information(@"Executable location: " + ExecutableLocation);
-                M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
+                M3Log.Information($@"ME3Tweaks Mod Manager {version}");
+                M3Log.Information($@"Application boot: {DateTime.UtcNow}");
+                M3Log.Information($@"Running as {Environment.UserName}");
+                M3Log.Information($@"Executable location: {ExecutableLocation}");
+                M3Log.Information($@"Operating system: {RuntimeInformation.OSDescription}");
                 if (!ignoreWine)
                 {
                     // Detect Wine earlier than ME3TweaksCore boot so workarounds can be applied sooner
@@ -274,7 +269,7 @@ namespace ME3TweaksModManager
                     if (CommandLinePending.PendingNXMLink != null && NexusDomainHandler.HandleExternalLink(CommandLinePending.PendingNXMLink))
                     {
                         // Externally handled
-                        M3Log.Information(@"Exiting application");
+                        M3Log.Information(@"Exiting application - nxm handled");
                         Environment.Exit(0);
                         return; // Nothing else to do
                     }
@@ -351,7 +346,9 @@ namespace ME3TweaksModManager
                 else if (Settings.ShowedPreviewPanel)
                 {
                     // Telemetry is on and we've shown the preview panel. Initialize OpenTelemetry.
-                    InitOpenTelemetry();
+                    // Note - you cannot use TelemetryInterposer until ME3TweaksCore boots
+                    // so in the M3 project you should directly call M3OpenTelemetry
+                    M3OpenTelemetry.InitOpenTelemetry();
                 }
                 else
                 {
@@ -373,7 +370,7 @@ namespace ME3TweaksModManager
                     if (IsLanguageSupported(@"pol") && currentCultureLang.StartsWith(@"pl")) InitialLanguage = Settings.Language = @"pol";
                     if (IsLanguageSupported(@"bra") && currentCultureLang.StartsWith(@"pt")) InitialLanguage = Settings.Language = @"bra";
                     if (IsLanguageSupported(@"ita") && currentCultureLang.StartsWith(@"it")) InitialLanguage = Settings.Language = @"ita";
-                    SubmitAnalyticTelemetryEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
+                    M3OpenTelemetry.TrackEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
                     M3Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
@@ -397,7 +394,7 @@ namespace ME3TweaksModManager
                     {
                         if (!File.Exists(sevenZpath))
                         {
-                            SubmitAnalyticTelemetryEvent("7z dll not found", new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackEvent("7z dll not found", new Dictionary<string, string>()
                             {
                                 {@"Library path", sevenZpath}
                             });
@@ -480,69 +477,6 @@ namespace ME3TweaksModManager
 
             if (lang == @"int") return true; // Just in case
             return false;
-        }
-
-        private static List<(string, Dictionary<string, string>)> QueuedTelemetryItems = new List<(string, Dictionary<string, string>)>();
-
-        /// <summary>
-        /// Submits a telemetry event. Queues them if the first run panel has not shown yet. All calls to TrackEvent should route through here to respect user settings.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="data"></param>
-        public static void SubmitAnalyticTelemetryEvent(string name, Dictionary<string, string> data = null)
-        {
-            if (!Settings.ShowedPreviewPanel && !FlushedTelemetry && QueuedTelemetryItems != null)
-            {
-                // Queue a telemetry item until the panel has closed
-                QueuedTelemetryItems.Add((name, data));
-            }
-            else
-            {
-                // if telemetry is not enabled this will not do anything.
-                M3OpenTelemetry.TrackEvent(name, data);
-            }
-        }
-
-        /// <summary>
-        /// Flushes the startup telemetry events and disables the queue.
-        /// </summary>
-        public static void FlushTelemetryItems()
-        {
-            FlushedTelemetry = true;
-            if (Settings.EnableTelemetry && QueuedTelemetryItems != null)
-            {
-                foreach (var v in QueuedTelemetryItems)
-                {
-                    TelemetryInterposer.TrackEvent(v.Item1, v.Item2);
-                }
-            }
-
-            QueuedTelemetryItems = null; // Just release the memory. This variable is never used again
-        }
-
-        internal static void InitOpenTelemetry()
-        {
-#if !DEBUG
-            if (APIKeys.HasAppInsightsConnectionString)
-            {
-                M3Log.Information(@"Initializing Application Insights telemetry");
-                M3OpenTelemetry.Initialize(APIKeys.AppInsightsConnectionString);
-            }
-            else
-            {
-                M3Log.Error(@"This build is not configured correctly for Application Insights!");
-            }
-#else
-            if (!APIKeys.HasAppInsightsConnectionString)
-            {
-                Debug.WriteLine(@" >>> This build is missing an Application Insights connection string!");
-            }
-            else
-            {
-                Debug.WriteLine(@"This build has an Application Insights connection string");
-                M3OpenTelemetry.Initialize(APIKeys.AppInsightsConnectionString);
-            }
-#endif
         }
 
         /// <summary>

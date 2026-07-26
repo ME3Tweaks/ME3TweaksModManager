@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -109,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     if (b.Error == null && b.Result != null)
                     {
-                        TelemetryInterposer.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
                         {
                             {@"Game", SelectedTarget.Game.ToString()},
                             {@"Folder", SelectedDLCFolder.DLCFolderName}

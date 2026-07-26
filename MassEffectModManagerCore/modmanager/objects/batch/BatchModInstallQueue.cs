@@ -6,6 +6,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -268,7 +269,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             catch (Exception e)
             {
                 M3Log.Exception(e, @"Failure reading modern batch queue:");
-                TelemetryInterposer.TrackError(new Exception(@"Failed to read modern batch queue", e), new Dictionary<string, string>()
+                M3OpenTelemetry.TrackError(new Exception(@"Failed to read modern batch queue", e), new Dictionary<string, string>()
                 {
                     {@"Filename", queueFilename},
                     {@"Queue Text", queueJson}

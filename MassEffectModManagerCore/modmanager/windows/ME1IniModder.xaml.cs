@@ -8,6 +8,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.meim;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -24,7 +25,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public ME1IniModder()
         {
-            TelemetryInterposer.TrackEvent(@"Launched MEIM");
+            M3OpenTelemetry.TrackEvent(@"Launched MEIM");
             DataContext = this;
             InitializeComponent();
             this.ApplyDarkNetWindowTheme();
@@ -231,7 +232,7 @@ namespace ME3TweaksModManager.modmanager.windows
                             M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_propertyNotSaved, prop.FriendlyPropertyName, validation), M3L.GetString(M3L.string_errorSavingProperties), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
-                    TelemetryInterposer.TrackEvent(@"Saved game config in MEIM");
+                    M3OpenTelemetry.TrackEvent(@"Saved game config in MEIM");
                     File.WriteAllText(configFileBeingUpdated, ini.ToString());
                     ShowMessage(M3L.GetString(M3L.string_saved));
                 }

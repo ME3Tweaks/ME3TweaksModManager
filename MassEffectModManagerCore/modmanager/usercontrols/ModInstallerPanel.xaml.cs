@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -229,7 +230,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 telemetryInfo[@"Alternate Options Selected"] = alternateOptionsPicked;
             }
 
-            TelemetryInterposer.TrackEvent(@"Installed a mod", telemetryInfo);
+            M3OpenTelemetry.TrackEvent(@"Installed a mod", telemetryInfo);
             OnClosing(DataEventArgs.Empty);
         }
 

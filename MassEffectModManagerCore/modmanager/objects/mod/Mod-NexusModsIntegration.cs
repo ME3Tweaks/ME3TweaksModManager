@@ -7,6 +7,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.telemetry;
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
@@ -133,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 checkedEndorsementStatus = false;
                 IsEndorsed = GetEndorsementStatus().Result ?? false;
-                TelemetryInterposer.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
+                M3OpenTelemetry.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
                     {@"Endorsed", endorse.ToString() },
                     {@"Succeeded", telemetryOverride ?? (endorse == IsEndorsed).ToString() }

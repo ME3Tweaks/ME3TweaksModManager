@@ -9,6 +9,7 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 using System.Diagnostics;
 using System.IO.Hashing;
@@ -303,7 +304,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {
                     // This shouldn't happen!
                     Debug.WriteLine($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen.");
-                    TelemetryInterposer.TrackError(new Exception($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen."));
+                    M3OpenTelemetry.TrackError(new Exception($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen."));
                     continue;
                 }
 

@@ -10,6 +10,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksModManager.modmanager.telemetry;
 using SevenZip;
 using SevenZip.EventArguments;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
@@ -390,7 +391,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             else
             {
                 M3Log.Error(@"Tried to extract RCW mod to M3 mod but the job was empty.");
-                TelemetryInterposer.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
+                M3OpenTelemetry.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
             }
         }
     }

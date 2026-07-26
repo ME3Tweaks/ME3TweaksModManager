@@ -7,6 +7,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 using Pathoschild.Http.Client;
 
@@ -70,13 +71,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (Settings.EnableTelemetry)
             {
                 // Initialize OpenTelemetry / Application Insights
-                App.InitOpenTelemetry();
+                M3OpenTelemetry.InitOpenTelemetry();
             }
-            App.FlushTelemetryItems(); // Push through any pending telemetry items
+            M3OpenTelemetry.FlushTelemetryItems(); // Push through any pending telemetry items
             Result.ReloadMods = true; // User has now chosen their mod library
             OnClosing(new DataEventArgs(true));
             Settings.ShowedPreviewPanel = true;
-            //Settings.Save();
         }
 
         public override void OnPanelVisible()
@@ -195,7 +195,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();
                             AuthorizedToNexusUsername = authInfo.Name;
-                            TelemetryInterposer.TrackEvent(@"Authenticated to NexusMods");
+                            M3OpenTelemetry.TrackEvent(@"Authenticated to NexusMods");
                         }
                         else
                         {

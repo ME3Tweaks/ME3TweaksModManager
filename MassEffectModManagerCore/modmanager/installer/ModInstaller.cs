@@ -29,6 +29,7 @@ using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
 using ME3TweaksModManager.modmanager.objects.tlk;
 using ME3TweaksModManager.modmanager.postship;
+using ME3TweaksModManager.modmanager.telemetry;
 using NickStrupat;
 using SevenZip;
 using System.Diagnostics;
@@ -774,7 +775,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 catch (Exception ex)
                 {
                     M3Log.Error(@"Error extracting files: " + ex.Message);
-                    TelemetryInterposer.TrackError(ex, new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackError(ex, new Dictionary<string, string>()
                     {
                         {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName },
                         {@"Version", InstallOptionsPackage.ModBeingInstalled.ModVersionString}
@@ -838,7 +839,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     catch (Exception ex)
                     {
                         M3Log.Error(@"Error extracting files: " + ex.Message);
-                        TelemetryInterposer.TrackError(ex, new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(ex, new Dictionary<string, string>()
                         {
                             {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName},
                             {@"Filename", InstallOptionsPackage.ModBeingInstalled.Archive.FileName},
@@ -1366,7 +1367,7 @@ namespace ME3TweaksModManager.modmanager.installer
             }
             catch (Exception e)
             {
-                TelemetryInterposer.TrackError(e);
+                M3OpenTelemetry.TrackError(e);
                 M3Log.Error($@"Error parsing ME2Coalesced: {e.Message}. We are aborting this installation");
                 InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_BAD_ME2_COALESCED;
                 InstallationResult.ErrorMessage = M3L.GetString(M3L.string_dialogInvalidME2Coalesced);
@@ -1386,7 +1387,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 if (me2cF.Key == null)
                 {
                     M3Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF.FileName);
-                    TelemetryInterposer.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
                     {
                         { @"me2mod mod name", rcw.ModName },
                         { @"Missing file", rcwF.FileName }
@@ -1401,7 +1402,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     if (section == null)
                     {
                         M3Log.Error($@"RCW mod specifies a section in {rcwF.FileName} that does not exist in the local coalesced: {rcwS.SectionName}");
-                        TelemetryInterposer.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
                         {
                             { @"me2mod mod name", rcw.ModName },
                             { @"File", rcwF.FileName },
@@ -1421,7 +1422,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     if (section == null)
                     {
                         M3Log.Error($@"RCW section is null! We didn't find {rcwS.SectionName}");
-                        TelemetryInterposer.TrackEvent(@"RCW Section Null", new Dictionary<string, string>
+                        M3OpenTelemetry.TrackEvent(@"RCW Section Null", new Dictionary<string, string>
                         {
                             {@"MissingSection", rcwS.SectionName},
                             {@"InFile", rcwF.FileName}
@@ -1445,7 +1446,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         }
                         catch (Exception e)
                         {
-                            TelemetryInterposer.TrackError(e, new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackError(e, new Dictionary<string, string>()
                             {
                                 {@"FailingEntry", key.RawText},
                                 {@"Failing mod", InstallOptionsPackage.ModBeingInstalled.ModName}
@@ -1591,7 +1592,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     {
                         Debugger.Break();
                         M3Log.Fatal(@"Installing a NEW file into TESTPATCH! This will break the game. This should be immediately reported to Mgamerz on Discord.");
-                        TelemetryInterposer.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
                         {
                             {@"Mod name", mod.ModName}
                         });

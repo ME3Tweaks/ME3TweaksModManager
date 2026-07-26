@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
@@ -26,18 +25,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 // We will manually load auxiliary services
                 LoadAuxiliaryServices = false,
                 RunOnUiThreadDelegate = action => Application.Current.Dispatcher.Invoke(action),
-                // This uses just EnableTelemetry as it uses the queue system which will check if the telemetry witholding gate has been witheld.
-                TrackEventCallback = (eventName, properties) => { if (Settings.EnableTelemetry) { App.SubmitAnalyticTelemetryEvent(eventName, properties); } },
-                // This uses CanSendTelemetry to ensure gating any bootup telemetry
-                TrackErrorCallback = (e, properties) =>
-                {
-                    if (Settings.CanSendTelemetry)
-                    {
-                        M3OpenTelemetry.TrackError(e, properties);
-                    }
-                },
+                TrackEventCallback = M3OpenTelemetry.TrackEvent,
+                TrackErrorCallback = M3OpenTelemetry.TrackError,
                 UploadErrorLogCallback = (e, data) =>
                 {
+                    // This uses gating to to improve performance - log collection doesn't need to happen if its disabled
                     if (Settings.CanSendTelemetry)
                     {
                         var properties = data != null ? new Dictionary<string, string>(data) : new Dictionary<string, string>();

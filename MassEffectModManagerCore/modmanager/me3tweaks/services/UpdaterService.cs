@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
@@ -387,12 +388,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     eparams[$@"NexusRequestsGame{game.Key}"] = string.Join(@",", game.Value);
                 }
                 eparams[@"Response"] = updatexml;
-
-                // 03/28/2025 - Disable extra appcenter params since it's not worth the hassle for this one use case.
-                //var requestForDebug = ErrorAttachmentLog.AttachmentWithText(JsonConvert.SerializeObject(requestData), @"request.json");
-                //var responseForDebug = ErrorAttachmentLog.AttachmentWithText(updatexml, @"response.xml");
-                // TelemetryInterposer.TrackError(e, eparams, requestForDebug, responseForDebug);
-                TelemetryInterposer.TrackError(e, eparams);
+                M3OpenTelemetry.TrackError(e, eparams);
             }
 
             return null;

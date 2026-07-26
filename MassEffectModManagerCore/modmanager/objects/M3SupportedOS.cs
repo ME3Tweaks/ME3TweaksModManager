@@ -52,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public static M3SupportedOS[] GetSupportedOperatingSystems()
         {
             return [
-                // Windows 10 22H2 - until October 2026
+                // Windows 10 22H2 - until October 2027
                 new M3SupportedOS() { Name = @"Windows 10 22H2", MajorVersion = 10, BuildNumber = 19045, FixedVersion = true },
                 new M3SupportedOS() { Name = @"Windows 11 24H2", MajorVersion = 10, BuildNumber = 26100, FixedVersion = false },
             ];

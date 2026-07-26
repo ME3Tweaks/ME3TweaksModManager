@@ -804,7 +804,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
                         }
                     } catch (Exception e)
                     {
-                        TelemetryInterposer.TrackEvent(@"Found malformed areadata entry", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Found malformed areadata entry", new Dictionary<string, string>()
                         {
                             {@"Game", Target.Game.ToString()},
                             {@"Entry", mapEntry.Value},
@@ -847,7 +847,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
                         }
                         catch (Exception e)
                         {
-                            TelemetryInterposer.TrackEvent(@"Found malformed DLM", new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackEvent(@"Found malformed DLM", new Dictionary<string, string>()
                             {
                                 {@"Game", Target.Game.ToString()},
                                 {@"Entry", dlm.Value},

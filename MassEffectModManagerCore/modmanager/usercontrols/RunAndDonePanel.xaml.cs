@@ -5,6 +5,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -79,7 +80,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     // Logging is handled in nbw
                     Result.Error = b.Error;
-                    TelemetryInterposer.TrackError(b.Error);
+                    M3OpenTelemetry.TrackError(b.Error);
                 }
                 else if (b.Result is string finalStatus && BGTask != null)
                 {
