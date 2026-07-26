@@ -31,6 +31,9 @@ namespace ME3TweaksModManager.modmanager.telemetry
                 {
                     o.ConnectionString = connectionString;
                     o.EnableLiveMetrics = false; // While kind of useful it's way too much stuff we don't care about
+                    o.EnableStandardMetrics = false; // We don't need the standard metrics, we only want our custom performance metrics
+                    o.EnablePerformanceCounters = false; // Generates too much logs, but actually would be useful for performance
+
                 })
 #if DEBUG
                 .AddConsoleExporter(options =>
@@ -84,7 +87,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
                     return;
                 }
 
-                EnsureInstanceGuid();
                 using var process = Process.GetCurrentProcess();
                 process.Refresh();
 
