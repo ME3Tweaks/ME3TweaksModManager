@@ -95,10 +95,10 @@ This double typed property does the following:
 An example m3cd file from LE3 is shown below.
 ```ini
 [BioUI.ini sfxgame.biosfhandler_browserwheel]
-; Add an array clear to the the ini - we use double typing here + and !:
+; Add an array clear to the ini - we use double typing here + and !:
 ; + to add the rest of the string to the config file
 ; ! as the actual type set.
-; Double typing like this prevents actual property merge from occuring and simply adds the value
+; Double typing like this prevents actual property merge from occurring and simply adds the value
 ; to the ini
 +!lstpages=null
 

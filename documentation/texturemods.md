@@ -4,7 +4,7 @@
 
 ME3Tweaks Mod Manager, starting with Build 128/Version 8.1, supports installation of texture mods (*.mem) for Legendary Edition games. Support for installing texture mods to Original Trilogy games is not planned.
 
-Installation of .mem texture texture mods through Mod Manager can be facilitated in two different ways:
+Installation of .mem texture mods through Mod Manager can be facilitated in two different ways:
 
 - Manual selection (user selects file from the file system, and it applies the correct game, based on the default target that matches that game)
    - This menu option is under the 'Mod Management' menu

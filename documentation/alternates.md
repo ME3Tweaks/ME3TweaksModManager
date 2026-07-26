@@ -66,7 +66,7 @@ ImageHeight=221))
 This altfile allows the user to select if they want branding on the splash screen in ME3's SP Controller Support mod. This is acheived by setting the condition to `COND_MANUAL`, and specifying the operation is `OP_SUBSTITUTE`. The file that will be installed instead is defined in `AltFile` and will be installed to `ModFile`. It also specifies an image asset to show the user named `alt_nobranding.jpg`, which is located in the M3Images folder. It is displayed at a height of 221px.
 
 ## altdlc specification
-altdlc allows you to add a folder of files to a CustomDLC based on the installed game state. You can alternatively add an entire Custom DLC folder to the game using this specification, or using multilists you can cherry pick files from multiple folders to add to your DLC folder. The altdlc descriptor is mainly used for for automatically applying compatibility packs if your mod has known incompatibilities with another, as you can detect that and automatically reconfigure your mod to work around it. You can also have manual options to allow users to add their own developer-provided options, like lower resolution asset files.
+altdlc allows you to add a folder of files to a CustomDLC based on the installed game state. You can alternatively add an entire Custom DLC folder to the game using this specification, or using multilists you can cherry pick files from multiple folders to add to your DLC folder. The altdlc descriptor is mainly used for automatically applying compatibility packs if your mod has known incompatibilities with another, as you can detect that and automatically reconfigure your mod to work around it. You can also have manual options to allow users to add their own developer-provided options, like lower resolution asset files.
 
 The altdlc descriptor only works on the CUSTOMDLC job.
 
@@ -117,7 +117,7 @@ For DLCOptionKey structs, the PlusMinus values mean different things:
 `+` means the option WAS chosen
 `<blank>` means 'any installed'. If you provide 4 options with blank values, any one of them being chosen will cause the condition to match. There is no opposite version of this, e.g. any option not chosen
 
-Paramters for DLCOptionKey are defined below.
+Parameters for DLCOptionKey are defined below.
 
 | Descriptor | Value type              | Purpose                                                                                                                                                                                           | Min supported cmmver |
 |------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
@@ -240,7 +240,7 @@ replacefiles = BIOGame\CookedPC\SFXGame.pcc;BIOGame\CookedPC\Startup_BRA.pcc;BIO
 multilist1=SFXGame.pcc;Startup_BRA.pcc;Startup_DEU.pcc;Startup_FRA.pcc;Startup_INT.pcc;Startup_ITA.pcc;Startup_POL.pcc
 
 ; The first alternate file group does nothing to provide user the default choice.
-; The second one uses the controller version by applying the files specified in multilist1 which fully supercedes the fileset
+; The second one uses the controller version by applying the files specified in multilist1 which fully supersedes the fileset
 altfiles=(
 (Condition=COND_MANUAL, 
 FriendlyName="No Mini Games - Keyboard/Mouse", Description="Select this option if you're playing on keyboard and mouse.", ModOperation=OP_NOTHING, OptionGroup=InputMethod, CheckedByDefault = true),
@@ -254,4 +254,4 @@ MultiListId=1,
 OptionGroup=InputMethod))
 ```
 
-The `ModOperation` specifies that you wil lbe adding a list of files from a multilist to task. The `MultiListId` is used to select which list you are going to be using for filepaths. `MultiListRootPath` is a relative path from the root of the mod folder to where your alternate files are stored. This path plus the paths in the multilist determine the source path of each file that M3 will add to the mod at install time. `MultiListTargetPath` is the in-game path that will be installed to - the filepath for each item in the multilist is appended to this.
+The `ModOperation` specifies that you will be adding a list of files from a multilist to task. The `MultiListId` is used to select which list you are going to be using for filepaths. `MultiListRootPath` is a relative path from the root of the mod folder to where your alternate files are stored. This path plus the paths in the multilist determine the source path of each file that M3 will add to the mod at install time. `MultiListTargetPath` is the in-game path that will be installed to - the filepath for each item in the multilist is appended to this.

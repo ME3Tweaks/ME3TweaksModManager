@@ -29,7 +29,7 @@ This ASI adds new features for texture loading to the game:
  - LE2/LE3: DLC TFCs now load earlier, allowing you to override textures that load before DLC mount, such as EntryMenu, Human male Eye Diff, etc. Prior to this, you'd have to ship the TFC in the basegame, otherwise the higher mips would turn black.
  -  LE3: You can now use multiple TFCs in your DLC mod instead of just `Textures_DLC_MOD_XYZ.tfc`
 
-Mods can ship a pre-compiled BTP file, or add .m3to files to the DLC folder. You can add multiple .m3to files, and all will be combined into a single BTP file for your mod at install time, allowing you to add customization options that can be added through the conditionals system in Mod Manager, allowing users to pick texture overrides. Texture overrides follow the standard DLC mount priority system, so higher mounting texture overrides will supercede lower tier ones.
+Mods can ship a pre-compiled BTP file, or add .m3to files to the DLC folder. You can add multiple .m3to files, and all will be combined into a single BTP file for your mod at install time, allowing you to add customization options that can be added through the conditionals system in Mod Manager, allowing users to pick texture overrides. Texture overrides follow the standard DLC mount priority system, so higher mounting texture overrides will supersede lower tier ones.
 
 
 ### Differences from using .mem

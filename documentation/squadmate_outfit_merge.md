@@ -37,7 +37,7 @@ There are several packages that must be included:
 
 **LE2**
  - Your squadmate's outfit(s), including the \_END version, and the localization files for each. Do not simply rename the standard `BioH_` to `BioH_END_`, you WILL break the final mission of the game. 
-    - These need to be uniquely named as `BioH_\[Squadmate Base Name]\_[DLC Folder Name]\_[Number].pcc`. This ensures that a developer doesn't produce a same named package as another mod might. The END version must be named `BioH_\[Squadmate Base Name]\_[DLC Folder Name]\_[Number].pcc`. Due to these requirements, you may want to choose a short DLC mod folder name, as it will significant eat into the 260 character limit for filepaths Windows has by default.
+    - These need to be uniquely named as `BioH_\[Squadmate Base Name]\_[DLC Folder Name]\_[Number].pcc`. This ensures that a developer doesn't produce a same named package as another mod might. The END version must be named `BioH_\[Squadmate Base Name]\_[DLC Folder Name]\_[Number].pcc`. Due to these requirements, you may want to choose a short DLC mod folder name, as it will significantly eat into the 260 character limit for filepaths Windows has by default.
     - The localizations don't need to be modified except for renaming them to match the base filename.
     - Memory instances in package should probably be renamed to match your DLC, such as `SFXGameContent_DLC_MOD_MyOutfit`
  - A package file containing the images to use for the squad selection UI must be present. This file must be named `SFXHenchImages_\[DLC Folder Name].pcc`. Textures from this package will be copied to the locations where the squad selection screen are present, the file itself will not be used by the game

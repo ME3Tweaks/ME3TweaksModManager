@@ -58,10 +58,10 @@ outdatedcustomdlc=DLC_MOD_OldMod1;DLC_MOD_OldMod2;DLC_MOD_OldMod3
 ```
 
 ### Comments
-Comments are lines that being with `;`. They are essentially ignored. Note that if a line is setup like requireddlc=DLC_MOD_EGM;DLC_MOD_EGM_Squad, this is not a comment. Only ; at the start of a line is considered a comment. You cannot put a ; on the end of another line for comments, if you wish to add comments, you should ensure they are on their own lines.
+Comments are lines that begin with `;`. They are essentially ignored. Note that if a line is setup like requireddlc=DLC_MOD_EGM;DLC_MOD_EGM_Squad, this is not a comment. Only ; at the start of a line is considered a comment. You cannot put a ; on the end of another line for comments, if you wish to add comments, you should ensure they are on their own lines.
 
 ### Value types
-Some descriptors use value types (sometimes called data types). They are pretty much the same across sane programming langauges.
+Some descriptors use value types (sometimes called data types). They are pretty much the same across sane programming languages.
 
  - **Integer**: 1, 2, 3, 0
  - **Float**: 1.0, 2.1, 3.333

@@ -13,7 +13,7 @@ ME3Tweaks Mod Manager will automatically scan DLC mods for `.m3da` files, and me
 ![image](https://github.com/ME3Tweaks/ME3TweaksModManager/assets/2738836/097bf9c9-181f-4a1d-9706-4aa611703b3c)
 
 
-There are at minimum two files required for the LE1 2DA Merge feature to work; a `package file` containing tables with your customized rows, and a `m3da` file that descibes what to install.
+There are at minimum two files required for the LE1 2DA Merge feature to work; a `package file` containing tables with your customized rows, and a `m3da` file that describes what to install.
 ![image](https://github.com/ME3Tweaks/ME3TweaksModManager/assets/2738836/68a9e7df-a3cb-496d-9483-2308ad2c4a19)
 
 The only restriction on the `.m3da` filename(s) are that they must start with your DLC foldername, followed by a dash, and at least one more character.
