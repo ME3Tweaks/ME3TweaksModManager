@@ -99,7 +99,6 @@
                         Text="{DynamicResource string_desc_extendedDiagnostics}"
                         TextWrapping="Wrap" />
                     <CheckBox
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}"
                         BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
                         Content="{DynamicResource string_checkbox_extendedDiagnostics}"
                         ToolTip="{DynamicResource string_tooltip_extendedDiagnostics}"
