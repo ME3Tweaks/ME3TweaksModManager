@@ -2849,6 +2849,8 @@
     <!-- 0={<A string>} -->
     <system:String x:Key="string_interp_mergeModAssetsSingleFolder">Asset files for mergemods must all be contained in the same folder. Invalid asset name: {0}</system:String>
     <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_mergeModFileChangedReload">m3m file '{0}' has changed since the mod was loaded. Please reload the mod library</system:String>
+    <!-- 0={Filename} -->
 
     <!-- Merge Mods (V2) -->
     <system:String x:Key="string_interp_classUpdateCannotNestMoreThanOne">Validation failed on {0} {1}: class cannot be nested more than one package deep.</system:String>

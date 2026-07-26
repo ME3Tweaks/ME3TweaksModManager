@@ -2140,6 +2140,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_incompleteStaticArrayIndex = "string_interp_incompleteStaticArrayIndex";
 		public const string string_interp_updatingX = "string_interp_updatingX";
 		public const string string_interp_mergeModAssetsSingleFolder = "string_interp_mergeModAssetsSingleFolder";
+		public const string string_interp_mergeModFileChangedReload = "string_interp_mergeModFileChangedReload";
 		public const string string_interp_classUpdateCannotNestMoreThanOne = "string_interp_classUpdateCannotNestMoreThanOne";
 		public const string string_interp_classUpdateCannotUpdateVanillaClass = "string_interp_classUpdateCannotUpdateVanillaClass";
 		public const string string_me3tweaksModManagerOptions = "string_me3tweaksModManagerOptions";

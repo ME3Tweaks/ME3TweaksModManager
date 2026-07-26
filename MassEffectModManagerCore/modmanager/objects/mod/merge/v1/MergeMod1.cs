@@ -113,6 +113,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             if (mergeFileStream is FileStream fs)
             {
                 mm.LoadedFromPath = fs.Name;
+                mm.SizeAtLoadTime = fs.Length;
             }
 
             // setup links
@@ -551,6 +552,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
         private static string GetSchemaPath(int mergeModVersion) => $@"ME3TweaksModManager.modmanager.objects.mod.merge.v{mergeModVersion}.schema.json";
 
+        /// <summary>
+        /// Allows for user-made comments.
+        /// </summary>
         [JsonProperty(@"comment")]
         public string Comment { get; set; }
 
@@ -559,5 +563,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         /// </summary>
         [JsonIgnore]
         public string LoadedFromPath { get; set; }
+
+        /// <summary>
+        /// The size of the m3m file on disk when it was originally loaded.
+        /// </summary>
+        [JsonIgnore]
+        public long SizeAtLoadTime { get; internal set; }
     }
 }
