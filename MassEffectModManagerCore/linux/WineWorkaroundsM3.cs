@@ -74,15 +74,15 @@ namespace ME3TweaksModManager.linux
                 using (RegistryKey FontReplacements = Registry.CurrentUser.OpenSubKey(@"Software\Wine\Fonts\Replacements", true))
                 {
                     if (FontReplacements != null) {
-                        if (FontReplacements.GetValueNames().Contains("Segoe UI"))
+                        if (FontReplacements.GetValueNames().Contains(@"Segoe UI"))
                         {
-                            FontReplacements.DeleteValue("Segoe UI");
-                            M3Log.Information("Deleting Wine's replacement key for Segoe UI");
+                            FontReplacements.DeleteValue(@"Segoe UI");
+                            M3Log.Information(@"Deleting Wine's replacement key for Segoe UI");
                         }
-                        if (FontReplacements.GetValueNames().Contains("Segoe UI Semibold"))
+                        if (FontReplacements.GetValueNames().Contains(@"Segoe UI Semibold"))
                         {
-                            FontReplacements.DeleteValue("Segoe UI Semibold");
-                            M3Log.Information("Deleting Wine's replacement key for Segoe UI Semibold");
+                            FontReplacements.DeleteValue(@"Segoe UI Semibold");
+                            M3Log.Information(@"Deleting Wine's replacement key for Segoe UI Semibold");
                         }
                     }
                 }
