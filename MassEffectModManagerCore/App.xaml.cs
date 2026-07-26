@@ -522,11 +522,6 @@ namespace ME3TweaksModManager
 
         internal static void InitOpenTelemetry()
         {
-            if (!new NickStrupat.ComputerInfo().ActuallyPlatform)
-            {
-                M3Log.Warning(@"This does not appear to be an actually supported platform, disabling telemetry");
-                return;
-            }
 #if !DEBUG
             if (APIKeys.HasAppInsightsConnectionString)
             {

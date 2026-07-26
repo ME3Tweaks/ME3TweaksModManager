@@ -27,7 +27,6 @@
 	<system:String x:Key="string_library_computerinfo">Piccola libreria per raccogliere facilmente informazioni su CPU, SO e informazioni sulla memoria</system:String>
 	<system:String x:Key="string_library_fluentnexus">Client HTTP moderno e asincrono per l'API di NexusMods</system:String>
 	<system:String x:Key="string_library_recyclablememorystream">Libreria per un pool riciclabile di buffer di memoria</system:String>
-	<system:String x:Key="string_library_sshnet">Libreria per gestire connessioni SSH</system:String>
 	<system:String x:Key="string_library_watsonwebsocket">Libreria per gestire connessioni websocket</system:String>
 	<system:String x:Key="string_library_authenticodeexaminer">Gestisce l'ispezione delle firme del file Authenticode</system:String>
 	<system:String x:Key="string_library_ntfsstreams">Libreria per leggere NTFS Alternate Data Streams</system:String>
@@ -36,6 +35,8 @@
 	<system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper in C# per il comando robocopy</system:String>
 	<system:String x:Key="string_starMeansForked">* = Versione fork di ME3Tweaks</system:String>
 	<system:String x:Key="string_tooltip_clickToViewLicense">Clicca per vedere la licenza</system:String>
+	<system:String x:Key="string_library_openTelemetry">Gestisce i dati della telemetria sui crash e sulle statistiche sull'utilizzo</system:String>
+	<system:String x:Key="string_library_darkNet">Rende disponibile il tema che rende le barre del titolo coerenti con il tema dell'applicazione</system:String>
 	<system:String x:Key="string_textureModded">Texture moddata</system:String>
 	<system:String x:Key="string_interp_modNameByAuthorName">{0} di {1}</system:String>
 	<system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">Almeno un DLC Alternativo indicato non specifica un FriendlyName, il quale è richiesto per le mod che richiedono cmmver >= 6.0.</system:String>
@@ -1700,7 +1701,8 @@
 	<system:String x:Key="string_modRequiresAMDProcessor">Questa mod può essere installata solo su un sistema con processore AMD.</system:String>
 	<system:String x:Key="string_oodleNotFound">Non è stato possibile individuare la libreria di compressione per l'apertura e il salvataggio dei package della Legendary Edition.</system:String>
 	<system:String x:Key="string_ensureGameIsValidDiscord">Assicurati che il gioco sia installato correttamente e che sia stato eseguito una volta. Se continui ad avere problemi, vieni sul server Discord di ME3Tweaks.</system:String>
-	<system:String x:Key="string_trackingMergemodChanges">Tracciamento delle modifiche di mergemod</system:String>
+	<system:String x:Key="string_trackingMergemodChanges">Monitoraggio delle modifiche di mergemod in corso</system:String>
+	<system:String x:Key="string_trackingBasegameChanges">Monitoraggio delle modifiche al gioco base in corso</system:String>
 	<system:String x:Key="string_tooltip_optionNotApplicable">In base alle condizioni stabilite dallo sviluppatore della mod, questa opzione NON è applicabile in base alla configurazione attuale del gioco.</system:String>
 	<system:String x:Key="string_tooltip_optionForceApplied">In base alle condizioni stabilite dallo sviluppatore della mod, questa opzione DEVE essere applicata in base alla configurazione attuale del gioco.</system:String>
 	<system:String x:Key="string_textureOverrideMergeFailed">Merge dei texture override fallito</system:String>

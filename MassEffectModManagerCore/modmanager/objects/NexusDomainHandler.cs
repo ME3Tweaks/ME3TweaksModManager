@@ -60,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.objects
             {
                 if (File.Exists(ProgramPath))
                 {
-                    MUtilities.RunProcess(ProgramPath, argsS: Arguments.Replace(@"%1", nxmLink));
+                    MUtilities.RunProcess(ProgramPath, argsS: Arguments.Replace(@"%1", nxmLink), waitForProcess: false);
                     return null;
                 }
                 else
