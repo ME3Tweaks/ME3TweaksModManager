@@ -328,7 +328,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <exception cref="Exception">Always thrown to indicate a simulated crash during the execution of the method.</exception>
         private static void CrashTest(MainWindow window)
         {
-            throw new Exception(@"CrashTest");
+            throw new Exception(@"The application is crashing with a test message");
         }
 #endif
     }

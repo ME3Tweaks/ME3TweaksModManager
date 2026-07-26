@@ -135,8 +135,6 @@
                 ToolTip="{DynamicResource string_tooltip_useLocalLogViewer}"
                 IsChecked="{Binding UseLocalLogViewer}"
                 IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
-
-
         </StackPanel>
     </DockPanel>
 </usercontrols:MMBusyPanelBase>
