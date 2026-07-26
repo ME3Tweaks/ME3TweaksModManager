@@ -989,7 +989,15 @@
     <!-- 0={expectedModCount} 1={foundCount} -->
     <system:String x:Key="string_interp_finalizingArchive">Finalizing archive...</system:String>
     <!-- This indicates an archive is being copied across disks. Not sure what a good text to put here was, as there is not much horizontal space -->
-    
+    <system:String x:Key="string_interp_tlkNotForServerMismatch">Mismatched global override flag 'NotForServer' detected across TLK exports. {0} in {1} ({2}) has 'NotForServer' {3}, but {4} has 'NotForServer' {5}</system:String>
+    <!-- Shown when two TLK objects across langauges have differing override flags. 0={BioTlkFile export name} 1={Filename} 2={Language code (likely INT)} 3={"set" or "not set" (localized)} 4={language code} 5={langStatus (set or not set)} -->
+    <system:String x:Key="string_interp_tlkExportMissingInLocalization">Missing expected BioTlkFile export {0} in package {1} for language {2}</system:String>
+    <!-- When an expected localization object in the file is not present. 0={BioTlkFile export name} 1={Package} 2={Language} -->
+    <system:String x:Key="string_undercaseSet">set</system:String>
+    <!-- interpolated into string above. -->
+    <system:String x:Key="string_undercaseNotSet">not set</system:String>
+    <!-- interpolated into string above. -->
+
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
     <!-- 0={Filepath} -->

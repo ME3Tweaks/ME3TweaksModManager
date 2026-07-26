@@ -824,6 +824,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deploymentFailed = "string_deploymentFailed";
 		public const string string_interp_dialog_deploymentFailedWrongNumMods = "string_interp_dialog_deploymentFailedWrongNumMods";
 		public const string string_interp_finalizingArchive = "string_interp_finalizingArchive";
+		public const string string_interp_tlkNotForServerMismatch = "string_interp_tlkNotForServerMismatch";
+		public const string string_interp_tlkExportMissingInLocalization = "string_interp_tlkExportMissingInLocalization";
+		public const string string_undercaseSet = "string_undercaseSet";
+		public const string string_undercaseNotSet = "string_undercaseNotSet";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
 		public const string string_interp_detectedTFCFromAnotherModTPMI = "string_interp_detectedTFCFromAnotherModTPMI";
 		public const string string_interp_detectedTFCFromAnotherModUnknown = "string_interp_detectedTFCFromAnotherModUnknown";
