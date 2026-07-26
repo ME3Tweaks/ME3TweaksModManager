@@ -46,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 #if DEBUG
             if (ActionText == null && TitleText == null)
             {
-                throw new Exception(@"Action and Title text are null for RunAnddonePanel!");
+                throw new Exception(@"Action and Title text are null for RunAndDonePanel!");
             }
 #endif
             this.runAndDoneDelegate = runAndDoneDelegate;

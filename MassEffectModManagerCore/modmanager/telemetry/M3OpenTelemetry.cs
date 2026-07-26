@@ -1,5 +1,6 @@
 using Azure.Monitor.OpenTelemetry.Exporter;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Exceptions;
 using ME3TweaksCore.Helpers;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -145,6 +146,8 @@ namespace ME3TweaksModManager.modmanager.telemetry
         {
             if (!Settings.CanSendTelemetry)
                 return;
+            if (exception is NoTelemetryException)
+                return; // This exception doesn't trigger telemetry submission for it
             using var activity = Source.StartActivity(exception?.GetType().Name ?? @"Error", ActivityKind.Internal);
             if (activity != null)
             {
