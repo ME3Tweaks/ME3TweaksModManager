@@ -987,7 +987,15 @@
     <!-- 0={expectedModCount} 1={foundCount} -->
     <system:String x:Key="string_interp_finalizingArchive">Archiv wird finalisiert...</system:String>
     <!-- This indicates an archive is being copied across disks. Not sure what a good text to put here was, as there is not much horizontal space -->
-    
+    <system:String x:Key="string_interp_tlkNotForServerMismatch">Widersprüchliches globales Override-Flag 'NotForServer' bei TLK-Exporten erkannt. {0} in {1} ({2}) hat 'NotForServer' {3}, aber {4} hat 'NotForServer' {5}</system:String>
+    <!-- Shown when two TLK objects across langauges have differing override flags. 0={BioTlkFile export name} 1={Filename} 2={Language code (likely INT)} 3={"set" or "not set" (localized)} 4={language code} 5={langStatus (set or not set)} -->
+    <system:String x:Key="string_interp_tlkExportMissingInLocalization">Erwarteter BioTlkFile-Export {0} in Package {1} für Sprache {2} fehlt</system:String>
+    <!-- When an expected localization object in the file is not present. 0={BioTlkFile export name} 1={Package} 2={Language} -->
+    <system:String x:Key="string_undercaseSet">gesetzt</system:String>
+    <!-- interpolated into string above. -->
+    <system:String x:Key="string_undercaseNotSet">nicht gesetzt</system:String>
+    <!-- interpolated into string above. -->
+
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">TFC {0} kann nicht in /BIOGame/CookedPCConsole in LE1 installiert werden. Zusätzliche Spiel-TFCs müssen über einen benutzerdefinierten DLC-Ordner hinzugefügt werden.</system:String>
     <!-- 0={Filepath} -->
@@ -2846,6 +2854,8 @@
     <system:String x:Key="string_interp_updatingX">{0} wird aktualisiert</system:String>
     <!-- 0={<A string>} -->
     <system:String x:Key="string_interp_mergeModAssetsSingleFolder">Inhaltsdateien für MergeMods müssen alle im selben Ordner enthalten sein. Ungültiger Datei-Name: {0}</system:String>
+    <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_mergeModFileChangedReload">Die m3m-Datei '{0}' wurde seit dem Laden der Mod geändert. Bitte lade die Mod-Bibliothek neu.</system:String>
     <!-- 0={Filename} -->
 
     <!-- Merge Mods (V2) -->
