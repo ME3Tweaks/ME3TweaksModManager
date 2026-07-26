@@ -3,6 +3,7 @@ using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
 
@@ -19,13 +20,24 @@ namespace ME3TweaksModManager.modmanager.telemetry
         /// <param name="connectionString">The Application Insights connection string.</param>
         public static void Initialize(string connectionString)
         {
+            EnsureInstanceGuid();
+
+            var resourceBuilder = ResourceBuilder.CreateDefault()
+                .AddService(serviceName: @"ME3TweaksModManager")
+                .AddAttributes(new Dictionary<string, object>
+                {
+                    [@"BuildDate"] = BuildHelper.BuildDateString,
+                    [@"Version"] = MLibraryConsumer.GetAppVersion().ToString(),
+                    [@"ai.user.id"] = Settings.InstanceGuid.ToString()
+                });
+
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
+                .SetResourceBuilder(resourceBuilder)
                 .AddSource(Source.Name)
                 .AddAzureMonitorTraceExporter(o => o.ConnectionString = connectionString)
 #if DEBUG
                 .AddConsoleExporter(options =>
                 {
-                    // This line directs the output specifically to the Debug console
                     options.Targets = ConsoleExporterOutputTargets.Debug;
                 })
 #endif
@@ -40,12 +52,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
             }
         }
 
-        private static void AddBuildInfo(Dictionary<string, string> data)
-        {
-            data[@"BuildDate"] = BuildHelper.BuildDateString;
-            data[@"Version"] = MLibraryConsumer.GetAppVersion().ToString();
-        }
-
         /// <summary>
         /// Tracks a named event with optional property bag.
         /// </summary>
@@ -53,7 +59,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
         {
             if (!Settings.CanSendTelemetry)
                 return;
-            EnsureInstanceGuid();
             using var activity = Source.StartActivity(name, ActivityKind.Internal);
             if (activity != null)
             {
@@ -64,7 +69,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
 
                 if (properties != null)
                 {
-                    AddBuildInfo(properties);
                     foreach (var kvp in properties)
                         activity.SetTag(kvp.Key, kvp.Value);
                 }
@@ -78,7 +82,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
         {
             if (!Settings.CanSendTelemetry)
                 return;
-            EnsureInstanceGuid();
             using var activity = Source.StartActivity(exception?.GetType().Name ?? @"Error", ActivityKind.Internal);
             if (activity != null)
             {
@@ -90,7 +93,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
                 activity.SetStatus(ActivityStatusCode.Error, exception?.Message);
                 if (properties != null)
                 {
-                    AddBuildInfo(properties);
                     foreach (var kvp in properties)
                         activity.SetTag(kvp.Key, kvp.Value);
                 }
@@ -105,7 +107,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
         {
             if (!Settings.CanSendTelemetry)
                 return;
-            EnsureInstanceGuid();
             var activityName = @"Crash";
             if (exception?.GetType() != null)
             {
