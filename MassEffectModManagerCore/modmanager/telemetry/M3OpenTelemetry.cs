@@ -105,7 +105,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
                 if (activity == null)
                     return;
 
-                activity.SetTag(@"ai.user.id", Settings.InstanceGuid.ToString());
                 activity.SetTag(@"memory.usage.mib", currentMemoryMebibytes);
                 activity.SetTag(@"process.cpu.time.seconds", processCpuTimeSeconds);
                 activity.SetTag(@"app.uptime.seconds", uptimeSeconds);
@@ -126,11 +125,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
             using var activity = Source.StartActivity(name, ActivityKind.Internal);
             if (activity != null)
             {
-                // Use anonymous user id so Azure Monitor / Application Insights can differentiate users for user count metrics
-                // e.g. how many unique users have the same error
-                // Not sure this is accurate right now
-                activity.SetTag(@"ai.user.id", Settings.InstanceGuid.ToString());
-
                 if (properties != null)
                 {
                     foreach (var kvp in properties)
@@ -151,10 +145,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
             using var activity = Source.StartActivity(exception?.GetType().Name ?? @"Error", ActivityKind.Internal);
             if (activity != null)
             {
-                // Use anonymous user id so Azure Monitor / Application Insights can differentiate users for user count metrics
-                // e.g. how many unique users have the same error
-                activity.SetTag(@"ai.user.id", Settings.InstanceGuid.ToString());
-
                 activity.AddException(exception);
                 activity.SetStatus(ActivityStatusCode.Error, exception?.Message);
                 if (properties != null)
@@ -182,7 +172,6 @@ namespace ME3TweaksModManager.modmanager.telemetry
             {
                 if (activity != null)
                 {
-                    activity.SetTag(@"ai.user.id", Settings.InstanceGuid.ToString());
                     activity.AddException(exception);
                     activity.SetStatus(ActivityStatusCode.Error, exception?.Message);
 
