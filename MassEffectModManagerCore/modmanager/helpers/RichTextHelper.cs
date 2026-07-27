@@ -28,12 +28,7 @@ namespace ME3TweaksModManager.modmanager.helpers
             var fontFamilyToUse = @"Segoe UI";
             if (Application.Current.TryFindResource(@"M3DefaultFont") is FontFamily defaultM3Font)
             {
-                M3Log.Information($@"Found rich text font - {defaultM3Font.Source}");
                 fontFamilyToUse = defaultM3Font.Source;
-            }
-            else
-            {
-                M3Log.Error(@"Failed to get rich text font");
             }
 
             // Apply Windows text scale factor (from Accessibility settings)
