@@ -487,6 +487,10 @@
 	<system:String x:Key="string_deploymentFailed">Distribuzione fallita</system:String>
 	<system:String x:Key="string_interp_dialog_deploymentFailedWrongNumMods" xml:space="preserve">Distribuzione della mod fallita: il numero di mod attese all'interno dell'archivio non corrisponde al numero di mod trovate.\nAttese: {0}\nTrovate: {1}\n\nPer favore, segnala l'accaduto a Mgamerz sul server Discord ME3Tweaks</system:String>
 	<system:String x:Key="string_interp_finalizingArchive">Finalizzazione archivio...</system:String>
+	<system:String x:Key="string_interp_tlkNotForServerMismatch">È stato individuato un conflitto per la flag dell'override globale 'NotForServer' tra gli export TLK. {0} in {1} ({2}) ha 'NotForServer' {3}, ma {4} ha 'NotForServer' {5}</system:String>
+	<system:String x:Key="string_interp_tlkExportMissingInLocalization">Manca l'export del BioTlkFile {0} atteso nel package {1} per la lingua {2}</system:String>
+	<system:String x:Key="string_undercaseSet">impostato</system:String>
+	<system:String x:Key="string_undercaseNotSet">non impostato</system:String>
 	<system:String x:Key="string_importFailed">Importo fallito</system:String>
 	<system:String x:Key="string_scanning">Scansione</system:String>
 	<system:String x:Key="string_importQueued">Importazione in coda</system:String>
@@ -1474,6 +1478,7 @@
 	<system:String x:Key="string_interp_incompleteStaticArrayIndex">Indice di vettore statico incompleto in propertyname: {0}</system:String>
 	<system:String x:Key="string_interp_updatingX">Aggiornamento di {0}</system:String>
 	<system:String x:Key="string_interp_mergeModAssetsSingleFolder">I file delle risorse per le mergemod devono essere tutti contenuti nella stessa cartella. Nome risorsa non valido: {0}</system:String>
+	<system:String x:Key="string_interp_mergeModFileChangedReload">Il file m3m '{0}' è cambiato da quando la mod è stata caricata. Ricarica la libreria delle mod</system:String>
 	<system:String x:Key="string_interp_classUpdateCannotNestMoreThanOne">Convalida fallita su {0} {1}: la classe non può essere annidata in più di un package di profondità.</system:String>
 	<system:String x:Key="string_interp_classUpdateCannotUpdateVanillaClass">Convalida fallita su {0} {1}: ClassUpdate non può essere usato per modificare alcuna classe vanilla</system:String>
 	<system:String x:Key="string_no">No</system:String>
