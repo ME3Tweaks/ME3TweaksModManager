@@ -13,6 +13,34 @@ using System.Threading;
 namespace ME3TweaksModManager.modmanager.telemetry
 {
     /// <summary>
+    /// Enriching activty class
+    /// </summary>
+    public class GlobalAttributeEnrichingProcessor : BaseProcessor<Activity>
+    {
+        private readonly string _buildDate;
+        private readonly string _version;
+        private readonly string _environment;
+        private readonly string _userId;
+
+        public GlobalAttributeEnrichingProcessor(string buildDate, string version, string environment, string userId)
+        {
+            _buildDate = buildDate;
+            _version = version;
+            _environment = environment;
+            _userId = userId;
+        }
+
+        public override void OnStart(Activity activity)
+        {
+            activity.SetTag("BuildDate", _buildDate);
+            activity.SetTag("Version", _version);
+            activity.SetTag("Environment", _environment);
+            // Use OTel's own semantic convention for user id, not "ai.user.id"
+            activity.SetTag("enduser.id", _userId);
+        }
+    }
+
+    /// <summary>
     /// Class for handling telemetry for ME3Tweaks Mod Manager
     /// </summary>
     internal static class M3OpenTelemetry
@@ -90,26 +118,22 @@ namespace ME3TweaksModManager.modmanager.telemetry
         {
             EnsureInstanceGuid();
 
-            var resourceBuilder = ResourceBuilder.CreateDefault()
-                .AddService(serviceName: @"ME3TweaksModManager")
-                .AddAttributes(new Dictionary<string, object>
-                {
-                    [@"BuildDate"] = BuildHelper.BuildDateString,               // For tracking minor re-release permeation
-                    [@"Version"] = MLibraryConsumer.GetAppVersion().ToString(), // For filtering the version in dashboards
-                    [@"Environment"] = new ComputerInfo().OSFullName,       // For determining if the issue is on supported platforms
-                    [@"ai.user.id"] = Settings.InstanceGuid.ToString()          // For determining how widespread an event or exception is that shows up many times
-                });
-
+            var resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName: @"ME3TweaksModManager");
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .SetResourceBuilder(resourceBuilder)
                 .AddSource(Source.Name)
+                .AddProcessor(new GlobalAttributeEnrichingProcessor(
+                    BuildHelper.BuildDateString,                 // For more accurate version filtering
+                    MLibraryConsumer.GetAppVersion().ToString(), // For version filtering
+                    new ComputerInfo().OSFullName,               // for platform-specific analysis
+                    Settings.InstanceGuid.ToString())            // For determining how widespread issues may be
+                )
                 .AddAzureMonitorTraceExporter(o =>
                 {
                     o.ConnectionString = connectionString;
                     o.EnableLiveMetrics = false; // While kind of useful it's way too much stuff we don't care about
                     o.EnableStandardMetrics = false; // We don't need the standard metrics, we only want our custom performance metrics
                     o.EnablePerformanceCounters = false; // Generates too much logs, but actually would be useful for performance
-
                 })
 #if DEBUG
                 .AddConsoleExporter(options =>
