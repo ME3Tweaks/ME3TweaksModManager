@@ -162,7 +162,8 @@ namespace ME3TweaksModManager.modmanager.helpers
             {
 
                 // IS GAME STEAM BASED?
-                if (target.GameSource.Contains(@"Steam"))
+                // 07/26/2026 - Do not run if app is under WINE as steam will never actually be running in the prefix.
+                if (target.GameSource.Contains(@"Steam") && !WineWorkarounds.WineDetected)
                 {
                     var steamInstallPath = M3Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", @"InstallPath");
                     if (steamInstallPath != null && Directory.Exists(steamInstallPath))
