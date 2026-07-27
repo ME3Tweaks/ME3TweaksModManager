@@ -290,7 +290,7 @@
 	<!-- Single File Bundle Size Optimizations -->
 	<Target Name="TrimPublishOutput" AfterTargets="ComputeResolvedFilesToPublishList">
 		<ItemGroup>
-			<ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="&#xD;&#xA;				$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\win-x86\')) or&#xD;&#xA;				$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\win-arm64\')) or&#xD;&#xA;				'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'ISACTTools.dll'&#xD;&#xA;			" />
+			<ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="&#xD;&#xA;			$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\win-x86\')) or&#xD;&#xA;			$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\win-arm64\')) or&#xD;&#xA;			'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'ISACTTools.dll' or&#xD;&#xA;			'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'System.Windows.Forms.dll'&#xD;&#xA;		" />
 		</ItemGroup>
 	</Target>
 </Project>
