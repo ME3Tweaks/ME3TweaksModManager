@@ -27,7 +27,6 @@
 	<system:String x:Key="string_library_computerinfo">Небольшая библиотека для легкой выгрузки информации о CPU, ОС и пямяти</system:String>
 	<system:String x:Key="string_library_fluentnexus">Современный асинхронный HTTP-клиент для Nexus Mods API</system:String>
 	<system:String x:Key="string_library_recyclablememorystream">Библиотека для рециркулируемого пула буферов памяти</system:String>
-	<system:String x:Key="string_library_sshnet">Библиотека для обработки соединений SSH</system:String>
 	<system:String x:Key="string_library_watsonwebsocket">Библиотека для обработки соединений WebSocket</system:String>
 	<system:String x:Key="string_library_authenticodeexaminer">Управляет проверкой Authenticode-подписей файлов</system:String>
 	<system:String x:Key="string_library_ntfsstreams">Библиотека для чтения альтернативных потоков данных NTFS</system:String>
@@ -36,6 +35,8 @@
 	<system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Враппер для команды robocopy в C#</system:String>
 	<system:String x:Key="string_starMeansForked">* = Форк-версия ME3Tweaks</system:String>
 	<system:String x:Key="string_tooltip_clickToViewLicense">Нажмите для просмотра лицензии</system:String>
+	<system:String x:Key="string_library_openTelemetry">Управляет данными телеметрии при падениях и предоставляет статистику использования</system:String>
+	<system:String x:Key="string_library_darkNet">Обеспечивает соответствие заголовков теме приложения</system:String>
 	<system:String x:Key="string_textureModded">Текстура модифицирована</system:String>
 	<system:String x:Key="string_interp_modNameByAuthorName">{0} от {1}</system:String>
 	<system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">Как минимум в одном указанном Alternate DLC не задан параметр FriendlyName, который требуется модам, предназначенным для cmmver >= 6.0.</system:String>
@@ -486,6 +487,10 @@
 	<system:String x:Key="string_deploymentFailed">Ошибка преобразования</system:String>
 	<system:String x:Key="string_interp_dialog_deploymentFailedWrongNumMods" xml:space="preserve">Преобразование мода не удалось: Количество модов в архиве не совпадает с количеством прошедших парсинг.\nОжидалось: {0}\nОбнаружено: {1}Пожалуйста, сообщите об этом Mgamerz на ME3Tweaks Discord</system:String>
 	<system:String x:Key="string_interp_finalizingArchive">Финализация архива...</system:String>
+	<system:String x:Key="string_interp_tlkNotForServerMismatch">Обнаружено несовпадение глобального пеереопределяющего флага 'NotForServer' среди экспортов TLK. {0} в {1} ({2}) c 'NotForServer' в значении {3}, а {4} c 'NotForServer' в значении {5}</system:String>
+	<system:String x:Key="string_interp_tlkExportMissingInLocalization">Пропущен ожидаемый экспорт BioTlkFile {0} в пакетном файле {1} для языка {2}</system:String>
+	<system:String x:Key="string_undercaseSet">установлен</system:String>
+	<system:String x:Key="string_undercaseNotSet">не установлен</system:String>
 	<system:String x:Key="string_importFailed">Ошибка импорта</system:String>
 	<system:String x:Key="string_scanning">Сканирование</system:String>
 	<system:String x:Key="string_importQueued">Импорт в очереди</system:String>
@@ -1473,6 +1478,7 @@
 	<system:String x:Key="string_interp_incompleteStaticArrayIndex">Неполный индекс статического массива в propertyname: {0}</system:String>
 	<system:String x:Key="string_interp_updatingX">Обновление {0}</system:String>
 	<system:String x:Key="string_interp_mergeModAssetsSingleFolder">Все ресурсные файлы mergemod должны содержаться в одной папке. Недопустимое имя ресурса: {0}</system:String>
+	<system:String x:Key="string_interp_mergeModFileChangedReload">Файл m3m '{0}' изменился с момента загрузки мода. Пожалуйста, перезагрузите библиотеку модов</system:String>
 	<system:String x:Key="string_interp_classUpdateCannotNestMoreThanOne">Ошибка валидации на {0} {1}: класс не может располагаться глубще одного пакетного файла</system:String>
 	<system:String x:Key="string_interp_classUpdateCannotUpdateVanillaClass">Ошибка валидации на {0} {1}: ClassUpdate не может быть использован для модификации любых исходных классов</system:String>
 	<system:String x:Key="string_no">Нет</system:String>
@@ -1701,6 +1707,7 @@
 	<system:String x:Key="string_oodleNotFound">Библиотека сжатия для открытия и сохрания пакетных файлов Legendary Edition не обнаружена.</system:String>
 	<system:String x:Key="string_ensureGameIsValidDiscord">Удостоверьтесь, что ваша игра корректно установлена и запущена хотя бы раз. Если проблемы продолжатся, пожалуйста, обратитесь на ME3Tweaks Discord.</system:String>
 	<system:String x:Key="string_trackingMergemodChanges">Отслеживание изменений mergemod</system:String>
+	<system:String x:Key="string_trackingBasegameChanges">М3 проверяет файлы на изменения, т.е. 'отслеживает' их</system:String>
 	<system:String x:Key="string_tooltip_optionNotApplicable">Исходя из условий, поставленных разработчиком мода, данная опция не применима в текущей конфигурации вашей игры</system:String>
 	<system:String x:Key="string_tooltip_optionForceApplied">Исходя из условий, поставленных разработчиком мода, данная опция должна быть применена в текущей конфигурации вашей игры</system:String>
 	<system:String x:Key="string_textureOverrideMergeFailed">Ошибка Texture Override Merge</system:String>
