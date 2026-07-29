@@ -17,8 +17,6 @@ using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using static ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using ME3TweaksModManager.modmanager.telemetry;
 

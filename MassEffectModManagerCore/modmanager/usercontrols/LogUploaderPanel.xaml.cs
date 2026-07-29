@@ -1,21 +1,17 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Diagnostics.Support;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
-using ME3TweaksCoreWPF.LogViewer;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save.shared;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.modmanager.windows.input;
 using ME3TweaksModManager.ui;
-using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {

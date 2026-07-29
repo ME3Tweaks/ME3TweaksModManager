@@ -9,7 +9,6 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.usercontrols.options;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -239,30 +238,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
-                    if (WineWorkarounds.WineDetected)
+                    var m = new OpenFolderDialog
                     {
-                        var m = new OpenFolderDialog
-                        {
-                            ValidateNames = true,
-                            Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
-                        };
-                        if (m.ShowDialog(window) == true)
-                        {
-                            Settings.ModDownloadCacheFolder = m.FolderName;
-                        }
-                    }
-                    else
+                        ValidateNames = true,
+                        Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
+                    };
+                    if (m.ShowDialog(window) == true)
                     {
-                        CommonOpenFileDialog m = new CommonOpenFileDialog
-                        {
-                            IsFolderPicker = true,
-                            EnsurePathExists = true,
-                            Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
-                        };
-                        if (m.ShowDialog(window) == CommonFileDialogResult.Ok)
-                        {
-                            Settings.ModDownloadCacheFolder = m.FileName;
-                        }
+                        Settings.ModDownloadCacheFolder = m.FolderName;
                     }
                 }
 

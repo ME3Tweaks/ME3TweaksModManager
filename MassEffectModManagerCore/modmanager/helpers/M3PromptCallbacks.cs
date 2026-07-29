@@ -2,7 +2,6 @@
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.windows;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -199,15 +198,13 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
                 else
                 {
-                    CommonOpenFileDialog ofd = new CommonOpenFileDialog
+                    var ofd = new OpenFolderDialog
                     {
                         Title = dialogTitle,
-                        IsFolderPicker = true,
-                        EnsurePathExists = true
                     };
-                    if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                    if (ofd.ShowDialog() == true)
                     {
-                        selectedPath = ofd.FileName;
+                        selectedPath = ofd.FolderName;
                     }
                 }
             });

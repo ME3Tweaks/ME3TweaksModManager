@@ -11,7 +11,6 @@ using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.telemetry;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Windows;
@@ -627,42 +626,20 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (libraryType == MessageBoxResult.Yes)
             {
                 // Shared
-                if (WineWorkarounds.WineDetected)
+                var m = new OpenFolderDialog
                 {
-                    var m = new OpenFolderDialog
-                    {
-                        ValidateNames = true,
-                        Title = M3L.GetString(M3L.string_selectModLibraryFolder)
-                    };
-                    if (m.ShowDialog(centeringWindow) == true)
-                    {
-                        Settings.ModLibraryPath = m.FolderName;
-                        if (loadModsAfterSelecting)
-                        {
-                            Instance.LoadMods();
-                        }
-
-                        return true;
-                    }
-                }
-                else
+                    ValidateNames = true,
+                    Title = M3L.GetString(M3L.string_selectModLibraryFolder)
+                };
+                if (m.ShowDialog(centeringWindow) == true)
                 {
-                    CommonOpenFileDialog m = new CommonOpenFileDialog
+                    Settings.ModLibraryPath = m.FolderName;
+                    if (loadModsAfterSelecting)
                     {
-                        IsFolderPicker = true,
-                        EnsurePathExists = true,
-                        Title = M3L.GetString(M3L.string_selectModLibraryFolder)
-                    };
-                    if (m.ShowDialog(centeringWindow) == CommonFileDialogResult.Ok)
-                    {
-                        Settings.ModLibraryPath = m.FileName;
-                        if (loadModsAfterSelecting)
-                        {
-                            Instance.LoadMods();
-                        }
-
-                        return true;
+                        Instance.LoadMods();
                     }
+
+                    return true;
                 }
             }
 
