@@ -38,6 +38,7 @@ using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
+using NickStrupat;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -2417,8 +2418,10 @@ namespace ME3TweaksModManager
                 var data = new Dictionary<string, string>();
                 try
                 {
-                    ManagementObjectSearcher mosProcessor =
-                        new ManagementObjectSearcher(@"SELECT * FROM Win32_Processor");
+                    // Needs updated for Linux.
+
+
+                    ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher(@"SELECT * FROM Win32_Processor");
                     foreach (ManagementObject moProcessor in mosProcessor.Get())
                     {
                         // For seeing AMD vs Intel (for ME1 lighting)
@@ -2426,12 +2429,13 @@ namespace ME3TweaksModManager
                         {
                             data[@"Processor"] = moProcessor[@"name"].ToString();
                             App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD");
+                            break; // Don't care past the first one honestly
                         }
                     }
 
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
                     data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
-
+                    data[@"Memory"] = new ComputerInfo().TotalPhysicalMemory.ToString(); // 07/27/2026 probably would be nice to know what average size of userbase memory is for optimizing
                     M3OpenTelemetry.TrackEvent(@"Version and Hardware Info", data);
                 }
                 catch //(Exception e)
