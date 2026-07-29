@@ -34,7 +34,7 @@ import os
 import re
 from hashlib import sha1
 from struct import pack, unpack
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 
 APPINFO_29 = 0x107564429
@@ -365,6 +365,177 @@ OPTION_NAME = "Run ME3Tweaks Mod Manager"
 DEFAULT_WINDOWS_STEAM_PATH = r".steam/steam"
 
 
+def strip_vdf_comments(text: str) -> str:
+    lines: List[str] = []
+    for line in text.splitlines():
+        out: List[str] = []
+        in_quote = False
+        escaped = False
+        i = 0
+        while i < len(line):
+            ch = line[i]
+            if escaped:
+                out.append(ch)
+                escaped = False
+                i += 1
+                continue
+
+            if ch == "\\":
+                out.append(ch)
+                escaped = True
+                i += 1
+                continue
+
+            if ch == '"':
+                in_quote = not in_quote
+                out.append(ch)
+                i += 1
+                continue
+
+            if not in_quote and ch == "/" and i + 1 < len(line) and line[i + 1] == "/":
+                break
+
+            out.append(ch)
+            i += 1
+
+        lines.append("".join(out))
+
+    return "\n".join(lines)
+
+
+def tokenize_vdf(text: str) -> List[Tuple[str, str]]:
+    cleaned = strip_vdf_comments(text)
+    tokens: List[Tuple[str, str]] = []
+    pattern = re.compile(r'"((?:\\.|[^"\\])*)"|([{}])')
+
+    for match in pattern.finditer(cleaned):
+        if match.group(1) is not None:
+            raw = match.group(1)
+            value = bytes(raw, "utf-8").decode("unicode_escape")
+            tokens.append(("STRING", value))
+        else:
+            brace = match.group(2)
+            tokens.append((brace, brace))
+
+    return tokens
+
+
+def parse_vdf_object(tokens: List[Tuple[str, str]], index: int) -> Tuple[dict, int]:
+    obj: dict = {}
+
+    while index < len(tokens):
+        token_type, token_value = tokens[index]
+        if token_type == "}":
+            return obj, index + 1
+
+        if token_type != "STRING":
+            raise ValueError(f"Unexpected token '{token_type}' while parsing key")
+
+        key = token_value
+        index += 1
+        if index >= len(tokens):
+            raise ValueError("Unexpected end of VDF while parsing value")
+
+        value_type, value_token = tokens[index]
+        if value_type == "STRING":
+            obj[key] = value_token
+            index += 1
+            continue
+
+        if value_type == "{":
+            child, index = parse_vdf_object(tokens, index + 1)
+            obj[key] = child
+            continue
+
+        raise ValueError(f"Unexpected token '{value_type}' while parsing value")
+
+    return obj, index
+
+
+def parse_vdf_text(text: str) -> dict:
+    tokens = tokenize_vdf(text)
+    if not tokens:
+        return {}
+
+    parsed, index = parse_vdf_object(tokens, 0)
+    if index != len(tokens):
+        raise ValueError("Trailing tokens found in VDF")
+    return parsed
+
+
+def vdf_escape(value: str) -> str:
+    return value.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def dump_vdf(data: dict, indent: int = 0) -> str:
+    lines: List[str] = []
+    tabs = "\t" * indent
+
+    for key, value in data.items():
+        escaped_key = vdf_escape(str(key))
+        if isinstance(value, dict):
+            lines.append(f'{tabs}"{escaped_key}"')
+            lines.append(f"{tabs}{{")
+            nested = dump_vdf(value, indent + 1)
+            if nested:
+                lines.append(nested)
+            lines.append(f"{tabs}}}")
+        else:
+            escaped_value = vdf_escape(str(value))
+            lines.append(f'{tabs}"{escaped_key}"\t\t"{escaped_value}"')
+
+    return "\n".join(lines)
+
+
+def ensure_dict(parent: dict, key: str) -> dict:
+    value = parent.get(key)
+    if not isinstance(value, dict):
+        value = {}
+        parent[key] = value
+    return value
+
+
+def update_compat_tool_mapping(
+    config_vdf_path: str,
+    app_ids: List[int],
+    compat_tool: str,
+    reset: bool = False,
+) -> List[int]:
+    if not os.path.isfile(config_vdf_path):
+        return []
+
+    with open(config_vdf_path, "r", encoding="utf-8", errors="ignore") as fh:
+        content = fh.read()
+
+    data = parse_vdf_text(content)
+    install_config_store = ensure_dict(data, "InstallConfigStore")
+    software = ensure_dict(install_config_store, "Software")
+    valve = ensure_dict(software, "Valve")
+    steam = ensure_dict(valve, "Steam")
+    compat_mapping = ensure_dict(steam, "CompatToolMapping")
+
+    updated: List[int] = []
+    for app_id in app_ids:
+        app_id_key = str(app_id)
+        if reset:
+            if app_id_key in compat_mapping:
+                del compat_mapping[app_id_key]
+                updated.append(app_id)
+            continue
+
+        compat_mapping[app_id_key] = {
+            "name": compat_tool,
+            "config": "",
+            "priority": "250",
+        }
+        updated.append(app_id)
+
+    with open(config_vdf_path, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(dump_vdf(data) + "\n")
+
+    return updated
+
+
 def parse_id_tokens(tokens: Iterable[str]) -> List[int]:
     ids: List[int] = []
     for token in tokens:
@@ -460,6 +631,31 @@ def upsert_launch_option(
     }
 
 
+def remove_launch_option(app_sections: dict) -> bool:
+    appinfo_section = app_sections.get("appinfo")
+    if not isinstance(appinfo_section, dict):
+        return False
+
+    config_section = appinfo_section.get("config")
+    if not isinstance(config_section, dict):
+        return False
+
+    launch = config_section.get("launch")
+    if not isinstance(launch, dict):
+        return False
+
+    removed_keys = [
+        key
+        for key, value in launch.items()
+        if isinstance(value, dict) and value.get("description") == OPTION_NAME
+    ]
+
+    for key in removed_keys:
+        del launch[key]
+
+    return bool(removed_keys)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
@@ -475,13 +671,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--exe",
-        required=True,
         help="Path to the ME3Tweaks Mod Manager executable.",
     )
     parser.add_argument(
         "--steam-path",
         default=DEFAULT_WINDOWS_STEAM_PATH,
         help="Steam root path (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--config-vdf",
+        default="",
+        help="Path to Steam config.vdf (default: <steam-path>/config/config.vdf).",
+    )
+    parser.add_argument(
+        "--compat-tool",
+        default="proton_11",
+        help="Compat tool identifier to write into CompatToolMapping entries.",
+    )
+    parser.add_argument(
+        "--reset",
+        action="store_true",
+        help="Remove injected launch option and CompatToolMapping entries for target app IDs.",
     )
     return parser
 
@@ -501,10 +711,15 @@ def main() -> int:
         print(f"Error: appinfo.vdf not found at: {vdf_path}")
         return 2
 
-    exe_input = os.path.abspath(args.exe)
-    if not os.path.isfile(exe_input):
-        print(f"Error: executable not found: {exe_input}")
-        return 2
+    exe_input = ""
+    if not args.reset:
+        if not args.exe:
+            print("Error: --exe is required unless --reset is used.")
+            return 2
+        exe_input = os.path.abspath(args.exe)
+        if not os.path.isfile(exe_input):
+            print(f"Error: executable not found: {exe_input}")
+            return 2
 
     try:
         appinfo = Appinfo(vdf_path)
@@ -529,6 +744,12 @@ def main() -> int:
         )
         install_path = find_install_path(libraries, install_dir) if install_dir else None
 
+        if args.reset:
+            if remove_launch_option(sections):
+                appinfo.update_app(app_id)
+                updated.append(app_id)
+            continue
+
         launch_exe = to_launch_path(exe_input, install_path)
         launch_workingdir = to_launch_path(os.path.dirname(exe_input), install_path)
 
@@ -539,11 +760,33 @@ def main() -> int:
     if updated:
         appinfo.write_data()
 
-    print(f"Updated apps: {updated if updated else 'none'}")
+    config_vdf_path = args.config_vdf.strip() or os.path.join(steam_path, "config", "config.vdf")
+    compat_updated: List[int] = []
+    try:
+        compat_updated = update_compat_tool_mapping(
+            config_vdf_path,
+            target_ids,
+            args.compat_tool,
+            reset=args.reset,
+        )
+    except ValueError as exc:
+        print(f"Warning: failed to parse config.vdf '{config_vdf_path}': {exc}")
+    except OSError as exc:
+        print(f"Warning: failed to update config.vdf '{config_vdf_path}': {exc}")
+
+    action_label = "Reset" if args.reset else "Updated"
+    print(f"{action_label} apps: {updated if updated else 'none'}")
+    if compat_updated:
+        if args.reset:
+            print(f"Removed compat mappings: {compat_updated}")
+        else:
+            print(f"Updated compat mappings ({args.compat_tool}): {compat_updated}")
+    else:
+        print(f"Compat mappings not changed (config.vdf not found or not writable): {config_vdf_path}")
     if missing:
         print(f"Missing app IDs: {missing}")
 
-    return 0 if updated else 1
+    return 0
 
 
 if __name__ == "__main__":
