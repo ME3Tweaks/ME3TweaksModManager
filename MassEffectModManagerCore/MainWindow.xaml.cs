@@ -2418,20 +2418,8 @@ namespace ME3TweaksModManager
                 var data = new Dictionary<string, string>();
                 try
                 {
-                    // Needs updated for Linux.
-
-
-                    ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher(@"SELECT * FROM Win32_Processor");
-                    foreach (ManagementObject moProcessor in mosProcessor.Get())
-                    {
-                        // For seeing AMD vs Intel (for ME1 lighting)
-                        if (moProcessor[@"name"] != null)
-                        {
-                            data[@"Processor"] = moProcessor[@"name"].ToString();
-                            App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD");
-                            break; // Don't care past the first one honestly
-                        }
-                    }
+                    data[@"Processor"] = new ComputerInfo().CPUName;
+                    App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD"); // For seeing AMD vs Intel (for ME1 lighting)
 
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
                     data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
