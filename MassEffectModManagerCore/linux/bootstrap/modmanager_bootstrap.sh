@@ -2,28 +2,56 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+M3_CONFIG_DIR="${HOME}/.config/ME3TweaksModManager"
 TMP_DIR="$(mktemp -d)"
-
-DEFAULT_APP_IDS=(17460 24980 2362420 1238020 1328670)
+# xdg-open ~/Documents > /dev/null
+DEFAULT_APP_IDS=(
+    "1328670" # MELE
+    "1238020" # OT3
+    "2362420" # OT2 New Steam page
+    "24980"   # OT2 Original
+    "47760"   # OT2 Demo
+    "17460"   # OT1
+)
 STEAM_PATH_OVERRIDE=""
 CUSTOM_APP_IDS=()
 RECONFIGURE_EXE_PATH=""
 RESET_MODE="false"
+SHARED_CONFIG="false"
+SHOULD_RESTART_STEAM="false"
+DEBUG="false"
+NIXOS="false"
+SAVED_OPTIONS="$@" # Save options so they can be passed down in case the script needs to restart itself
+# NixOS is special and has special considerations
+if command -v nix-shell >/dev/null 2>&1; then
+    NIXOS="true"
+fi
+
 
 usage() {
     cat <<'EOF'
-Usage: modmanager_bootstrap.sh [--steam-path PATH] [--app-ids IDS] [--reconfigure PATH] [--reset]
+Usage: modmanager_bootstrap.sh [--steam-path PATH] [--app-ids IDS] [--reconfigure PATH] [--reset] [--shared-config] [--debug]
 
 Options:
   --steam-path PATH   Explicit Steam root directory (contains steamapps and appcache).
   --app-ids IDS       Comma-separated or space-separated AppIDs. May be passed multiple times.
     --reconfigure PATH  Use an existing ME3TweaksModManager.exe and skip download/extract.
     --reset             Skip download and remove launch option + CompatToolMapping for target AppIDs.
+    --shared-config     Mod manager configuration will persist across different titles, e.g. ME1 and MELE (Experimental).
+    --debug             Adds extra detail to what the script is doing.
   -h, --help          Show this help message.
 
 If no --app-ids values are provided, defaults are used:
   17460, 24980, 2362420, 1238020, 1328670
 EOF
+}
+
+# Print if DEBUG is true
+debug() {
+    local text="$@"
+    if [[ "${DEBUG}" == "true" ]]; then
+        echo "DEBUG: ${text}"
+    fi
 }
 
 parse_args() {
@@ -57,6 +85,14 @@ parse_args() {
                 RESET_MODE="true"
                 shift
                 ;;
+            --shared-config)
+                SHARED_CONFIG="true"
+                shift
+                ;;
+            --debug)
+                DEBUG="true"
+                shift
+                ;;
             -h|--help)
                 usage
                 exit 0
@@ -73,6 +109,104 @@ cleanup_tmp() {
     rm -rf "$TMP_DIR"
 }
 trap cleanup_tmp EXIT
+
+# Copies M3 data directories from the prefix the user selects, removes these directories
+# from each ME prefix and replaces them with symlinks to the copied dirs
+shared_m3_config() {
+    debug "--- $FUNCNAME ---"
+    local -n pfx_paths=$1
+    local -n pfx_ids=$2
+    local -a existing_m3_configs=()
+    local -a existing_m3_configs_ids=()
+    local programdata_dir="./drive_c/ProgramData/ME3TweaksModManager"
+    local appdata_dir="./drive_c/users/steamuser/AppData/Local/ME3Tweaks"
+    local m3_config_source=""
+    mkdir -p "${M3_CONFIG_DIR}"
+    mkdir -p "${M3_CONFIG_DIR}/data/ProgramData"
+    mkdir -p "${M3_CONFIG_DIR}/data/Appdata/Local"
+
+    replace_m3_dirs() {
+        debug "--- $FUNCNAME ---"
+        local pfx_path="$1"
+        local is_config_source="$2"
+        if [[ -z "${pfx_path}" || -z "${is_config_source}" ]]; then
+            echo "Error: Incomplete arguments in $FUNCNAME!"
+            exit 1
+        fi
+
+        if [[ "${is_config_source}" == "true" ]]; then
+            debug "sourcing config from ${pfx_path}"
+            if [[ ! "$(readlink -f "${pfx_path}/${programdata_dir}")" == "${M3_CONFIG_DIR}/data/ProgramData" ]]; then
+                cp -rT "${pfx_path}/${programdata_dir}" "${M3_CONFIG_DIR}/data/ProgramData"
+            fi
+            if [[ ! "$(readlink -f "${pfx_path}/${appdata_dir}")" == "${M3_CONFIG_DIR}/data/Appdata/Local" ]]; then
+                cp -rT "${pfx_path}/${appdata_dir}" "${M3_CONFIG_DIR}/data/Appdata/Local"
+            fi
+        fi
+
+        debug "Removing M3 directories from ${pfx_path}"
+        rm -rf "${pfx_path}/${programdata_dir}"
+        rm -rf "${pfx_path}/${appdata_dir}"
+
+        debug "Linking M3 directories from ${M3_CONFIG_DIR} to ${pfx_path}"
+        ln -s "${M3_CONFIG_DIR}/data/ProgramData" "${pfx_path}/${programdata_dir}"
+        ln -s "${M3_CONFIG_DIR}/data/Appdata/Local" "${pfx_path}/${appdata_dir}"
+    }
+
+    debug "Iterating over pfx_paths to find configs"
+    for i in "${!pfx_paths[@]}"; do
+        if [[ -d "${pfx_paths[$i]}/${programdata_dir}" && -d "${pfx_paths[$i]}/${appdata_dir}" ]]; then
+            # skip if the directories are symlinked already
+            if [[ -L "${pfx_paths[$i]}/${programdata_dir}" && -L "${pfx_paths[$i]}/${appdata_dir}" ]]; then
+                debug "Skipping ${pfx_paths[$i]} as it's a symlink"
+                continue
+            fi
+            existing_m3_configs+=("${pfx_paths[$i]}")
+            existing_m3_configs_ids+=("${pfx_ids[$i]}")
+        fi
+    done
+
+    if [[ "${#existing_m3_configs[@]}" -gt "0" ]]; then
+        debug "Found existing configs, getting user input on which to source"
+
+        local -a user_options=("Keep as is")
+        for i in "${!existing_m3_configs[@]}"; do
+            user_options+=("$(game_name_for_appid ${existing_m3_configs_ids[$i]}) (${existing_m3_configs[$i]})")
+        done
+        echo "Multiple configurations detected:"
+        PS3="Choice) "
+        select choice in "${user_options[@]}"; do
+            case $choice in
+            "Keep as is")
+                echo "Keeping mod manager configuration as-is, each title on Steam will have different settings."
+                return 0
+            ;;
+            *)
+                if [[ $choice == "" ]]; then
+                    echo "Invalid choice - ${REPLY}"
+                    continue
+                else
+                    # select is 1 indexed, plus we have the "Keep as is" option in index 1 already, so we offset by 2
+                    debug "Config source chosen - ${existing_m3_configs[(( $REPLY - 2 ))]}"
+                    m3_config_source="${existing_m3_configs[(( $REPLY - 2 ))]}"
+                    break
+                fi
+            ;;
+            esac
+        done
+    fi
+
+    for i in "${!pfx_paths[@]}"; do
+        debug "Setting up ${pfx_paths[$i]}"
+        if [[ "${pfx_paths[$i]}" == "${m3_config_source}" ]]; then
+            echo "==> Copying config from $(game_name_for_appid "${pfx_ids[$i]}")"
+            replace_m3_dirs ${pfx_paths[$i]} true
+        else
+            replace_m3_dirs ${pfx_paths[$i]} false
+        fi
+    done
+    echo "==> Mod manager data directories are located in ${M3_CONFIG_DIR}"
+}
 
 normalize_steam_root() {
     local candidate="$1"
@@ -120,8 +254,8 @@ discover_steam_root() {
 
 steam_command() {
     local steam_root="$1"
-
-    if [[ -x "$steam_root/steam.sh" ]]; then
+    # NixOS: steam.sh can't find some of the commands, so we just skip to the binary directly
+    if [[ -x "$steam_root/steam.sh" && ! "$NIXOS" ]]; then
         printf '%s\n' "$steam_root/steam.sh"
         return 0
     fi
@@ -134,12 +268,17 @@ steam_command() {
     return 1
 }
 
+
+# Return codes:
+# 0 Steam shut down successfully
+# 1 Steam is not running
+# 2 Steam still running after max_wait (default 60s)
 shutdown_steam() {
     local steam_bin="$1"
 
     if ! pgrep -x 'steam|steamwebhelper|steam.sh' >/dev/null 2>&1; then
         echo "==> Steam is not running, skipping shutdown."
-        return 0
+        return 1
     fi
 
     echo "==> Requesting Steam shutdown..."
@@ -150,7 +289,7 @@ shutdown_steam() {
     while pgrep -x 'steam|steamwebhelper|steam.sh' >/dev/null 2>&1; do
         if (( elapsed >= max_wait )); then
             echo "Warning: Steam processes are still running after ${max_wait}s." >&2
-            break
+            return 2
         fi
         sleep 1
         elapsed=$((elapsed + 1))
@@ -159,6 +298,7 @@ shutdown_steam() {
     if (( elapsed < max_wait )); then
         echo "==> Steam shutdown complete."
     fi
+    return 0
 }
 
 collect_library_paths() {
@@ -334,8 +474,15 @@ validate_reconfigure_exe() {
 
 ensure_python3() {
     if ! command -v python3 >/dev/null 2>&1; then
-        echo "Error: python3 must be installed for setup to continue." >&2
-        exit 1
+        # if nix, add python3 to environment and rerun the script
+        if "${NIXOS}"; then
+            echo "==> Found nix-shell, adding python3 and restarting script..."
+            nix-shell -p python3 --command "bash $0 $SAVED_OPTIONS"
+            exit 0
+        else
+            echo "Error: python3 must be installed for setup to continue." >&2
+            exit 1
+        fi
     fi
 }
 
@@ -370,7 +517,13 @@ main() {
         echo "Error: could not locate Steam executable to perform shutdown." >&2
         exit 1
     fi
-    shutdown_steam "$steam_bin"
+
+    # Catch non 0 return code
+    rc=0
+    ret=$(shutdown_steam "$steam_bin") || rc=$?
+    if [[ $rc == 0 ]]; then
+        SHOULD_RESTART_STEAM="true"
+    fi
 
     local libraries
     collect_library_paths "$steam_root" libraries
@@ -387,6 +540,10 @@ main() {
             game_name="$(game_name_for_appid "${found_ids[$i]}")"
             echo "  - AppID ${found_ids[$i]} (${game_name}): ${found_paths[$i]}"
         done
+    fi
+
+    if [[ "$SHARED_CONFIG" == "true" ]]; then
+        shared_m3_config found_paths found_ids
     fi
 
     local mm_exe
@@ -434,6 +591,10 @@ main() {
             --config-vdf "$config_vdf"
     fi
 
+    if [[ "$SHOULD_RESTART_STEAM" == "true" ]]; then
+        echo "==> Restarting Steam..."
+        nohup "$steam_bin" > /dev/null 2>&1 &
+    fi
     echo "==> Done."
 }
 
