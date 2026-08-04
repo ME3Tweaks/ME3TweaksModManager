@@ -1106,7 +1106,7 @@ namespace ME3TweaksModManager.modmanager.save.le1
             public void Serialize(IUnrealStream stream)
             {
                 stream.Serialize(ref Name);
-                Debug.WriteLine($"Read {Name} ending at 0x{stream.Stream.Position:X8}");
+                Debug.WriteLine($@"Read {Name} ending at 0x{stream.Stream.Position:X8}");
                 stream.Serialize(ref LevelObjects);
                 stream.Stream.ReadInt32(); // Not sure what this integer is...
             }

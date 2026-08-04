@@ -44,5 +44,23 @@ namespace ME3TweaksModManager.modmanager.objects.installer
         /// If this is the first content mod that will be installed. Things such as bink bypass will be installed
         /// </summary>
         public bool IsFirstBatchMod { get; set; }
+
+        /// <summary>
+        /// Used for batch mode; if this flag has been set then we don't do a backup check, this way we don't waste time
+        /// doing it over and over when the user already declined.
+        /// </summary>
+        public bool HasDoneBackupCheck { get; set; }
+
+        /// <summary>
+        /// Makes empty selection options items
+        /// </summary>
+        internal void SetNoOptions()
+        {
+            SelectedOptions.Clear();
+            foreach(var job in ModBeingInstalled.InstallationJobs)
+            {
+                SelectedOptions[job.Header] = new List<AlternateOption>();
+            }
+        }
     }
 }

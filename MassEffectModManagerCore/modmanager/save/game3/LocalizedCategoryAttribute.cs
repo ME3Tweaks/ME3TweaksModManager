@@ -31,7 +31,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         private readonly LocalizedString _Category = new LocalizedString();
 
         public LocalizedCategoryAttribute(string propertyName, Type resourceType)
-            : this(propertyName != null ? "[FIX ME] " + propertyName : null, propertyName, resourceType)
+            : this(propertyName != null ? @"[FIX ME] " + propertyName : null, propertyName, resourceType)
         {
         }
 
@@ -40,16 +40,16 @@ namespace ME3TweaksModManager.modmanager.save.game3
         {
             if (resourceType == null)
             {
-                throw new ArgumentNullException("resourceType");
+                throw new ArgumentNullException(@"resourceType");
             }
 
             if (string.IsNullOrEmpty(propertyName) == true)
             {
-                throw new ArgumentNullException("propertyName");
+                throw new ArgumentNullException(@"propertyName");
             }
 
             this._Category.ResourceType = resourceType;
-            this._Category.PropertyName = propertyName + "_Category";
+            this._Category.PropertyName = propertyName + @"_Category";
         }
 
         // why does this function have an argument? :wtc:

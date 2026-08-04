@@ -6,29 +6,29 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
     public partial class Weapon : IUnrealSerializable
     {
         [UnrealFieldOffset(0x00)]
-        [UnrealFieldDisplayName("Class Name")]
+        [UnrealFieldDisplayName(@"Class Name")]
         public string WeaponClassName;
 
         [UnrealFieldOffset(0x0C)]
-        [UnrealFieldDisplayName("Ammo Used Count")]
+        [UnrealFieldDisplayName(@"Ammo Used Count")]
         public int AmmoUsedCount;
 
         [UnrealFieldOffset(0x10)]
-        [UnrealFieldDisplayName("Ammo Total")]
+        [UnrealFieldDisplayName(@"Ammo Total")]
         public int TotalAmmo;
 
         [UnrealFieldOffset(0x14)]
         [UnrealFieldIndex(0)]
-        [UnrealFieldDisplayName("Current Weapon")]
+        [UnrealFieldDisplayName(@"Current Weapon")]
         public bool CurrentWeapon;
 
         [UnrealFieldOffset(0x14)]
         [UnrealFieldIndex(1)]
-        [UnrealFieldDisplayName("Last Weapon")]
+        [UnrealFieldDisplayName(@"Last Weapon")]
         public bool LastWeapon;
 
         [UnrealFieldOffset(0x18)]
-        [UnrealFieldDisplayName("Ammo Power Name")]
+        [UnrealFieldDisplayName(@"Ammo Power Name")]
         public string AmmoPowerName;
 
         public void Serialize(IUnrealStream stream)

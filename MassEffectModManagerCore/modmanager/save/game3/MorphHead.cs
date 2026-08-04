@@ -27,41 +27,41 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("MorphHeadSaveRecord")]
+    [OriginalName(@"MorphHeadSaveRecord")]
     public class MorphHead : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("HairMesh")]
+        [OriginalName(@"HairMesh")]
         private string _HairMesh;
 
-        [OriginalName("AccessoryMeshes")]
+        [OriginalName(@"AccessoryMeshes")]
         private List<string> _AccessoryMeshes = new List<string>();
 
-        [OriginalName("MorphFeatures")]
+        [OriginalName(@"MorphFeatures")]
         private List<MorphFeature> _MorphFeatures = new List<MorphFeature>();
 
-        [OriginalName("OffsetBones")]
+        [OriginalName(@"OffsetBones")]
         private List<OffsetBone> _OffsetBones = new List<OffsetBone>();
 
-        [OriginalName("LOD0Vertices")]
+        [OriginalName(@"LOD0Vertices")]
         private List<Vector> _Lod0Vertices = new List<Vector>();
 
-        [OriginalName("LOD1Vertices")]
+        [OriginalName(@"LOD1Vertices")]
         private List<Vector> _Lod1Vertices = new List<Vector>();
 
-        [OriginalName("LOD2Vertices")]
+        [OriginalName(@"LOD2Vertices")]
         private List<Vector> _Lod2Vertices = new List<Vector>();
 
-        [OriginalName("LOD3Vertices")]
+        [OriginalName(@"LOD3Vertices")]
         private List<Vector> _Lod3Vertices = new List<Vector>();
 
-        [OriginalName("ScalarParameters")]
+        [OriginalName(@"ScalarParameters")]
         private List<ScalarParameter> _ScalarParameters = new List<ScalarParameter>();
 
-        [OriginalName("VectorParameters")]
+        [OriginalName(@"VectorParameters")]
         private BindingList<VectorParameter> _VectorParameters = new BindingList<VectorParameter>();
 
-        [OriginalName("TextureParameters")]
+        [OriginalName(@"TextureParameters")]
         private List<TextureParameter> _TextureParameters = new List<TextureParameter>();
         #endregion
 
@@ -89,13 +89,13 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._HairMesh)
                 {
                     this._HairMesh = value;
-                    this.NotifyPropertyChanged("HairMesh");
+                    this.NotifyPropertyChanged(@"HairMesh");
                 }
             }
         }
 
         [Editor(
-            "System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+            @"System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
             , typeof(System.Drawing.Design.UITypeEditor))]
         public List<string> AccessoryMeshes
         {
@@ -105,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._AccessoryMeshes)
                 {
                     this._AccessoryMeshes = value;
-                    this.NotifyPropertyChanged("AccessoryMeshes");
+                    this.NotifyPropertyChanged(@"AccessoryMeshes");
                 }
             }
         }
@@ -118,7 +118,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MorphFeatures)
                 {
                     this._MorphFeatures = value;
-                    this.NotifyPropertyChanged("MorphFeatures");
+                    this.NotifyPropertyChanged(@"MorphFeatures");
                 }
             }
         }
@@ -131,7 +131,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._OffsetBones)
                 {
                     this._OffsetBones = value;
-                    this.NotifyPropertyChanged("OffsetBones");
+                    this.NotifyPropertyChanged(@"OffsetBones");
                 }
             }
         }
@@ -144,7 +144,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Lod0Vertices)
                 {
                     this._Lod0Vertices = value;
-                    this.NotifyPropertyChanged("Lod0Vertices");
+                    this.NotifyPropertyChanged(@"Lod0Vertices");
                 }
             }
         }
@@ -157,7 +157,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Lod1Vertices)
                 {
                     this._Lod1Vertices = value;
-                    this.NotifyPropertyChanged("Lod1Vertices");
+                    this.NotifyPropertyChanged(@"Lod1Vertices");
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Lod2Vertices)
                 {
                     this._Lod2Vertices = value;
-                    this.NotifyPropertyChanged("Lod2Vertices");
+                    this.NotifyPropertyChanged(@"Lod2Vertices");
                 }
             }
         }
@@ -183,7 +183,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Lod3Vertices)
                 {
                     this._Lod3Vertices = value;
-                    this.NotifyPropertyChanged("Lod3Vertices");
+                    this.NotifyPropertyChanged(@"Lod3Vertices");
                 }
             }
         }
@@ -196,7 +196,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ScalarParameters)
                 {
                     this._ScalarParameters = value;
-                    this.NotifyPropertyChanged("ScalarParameters");
+                    this.NotifyPropertyChanged(@"ScalarParameters");
                 }
             }
         }
@@ -209,7 +209,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._VectorParameters)
                 {
                     this._VectorParameters = value;
-                    this.NotifyPropertyChanged("VectorParameters");
+                    this.NotifyPropertyChanged(@"VectorParameters");
                 }
             }
         }
@@ -222,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._TextureParameters)
                 {
                     this._TextureParameters = value;
-                    this.NotifyPropertyChanged("TextureParameters");
+                    this.NotifyPropertyChanged(@"TextureParameters");
                 }
             }
         }
@@ -240,14 +240,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
         #region Children
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        [OriginalName("MorphFeatureSaveRecord")]
+        [OriginalName(@"MorphFeatureSaveRecord")]
         public class MorphFeature : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Feature")]
+            [OriginalName(@"Feature")]
             private string _Feature;
 
-            [OriginalName("Offset")]
+            [OriginalName(@"Offset")]
             private float _Offset;
             #endregion
 
@@ -266,7 +266,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -278,7 +278,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Feature)
                     {
                         this._Feature = value;
-                        this.NotifyPropertyChanged("Feature");
+                        this.NotifyPropertyChanged(@"Feature");
                     }
                 }
             }
@@ -291,7 +291,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (Equals(value, this._Offset) == false)
                     {
                         this._Offset = value;
-                        this.NotifyPropertyChanged("Offset");
+                        this.NotifyPropertyChanged(@"Offset");
                     }
                 }
             }
@@ -309,14 +309,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        [OriginalName("OffsetBoneSaveRecord")]
+        [OriginalName(@"OffsetBoneSaveRecord")]
         public class OffsetBone : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Name")]
+            [OriginalName(@"Name")]
             private string _Name;
 
-            [OriginalName("Name")]
+            [OriginalName(@"Name")]
             private Vector _Offset = new Vector();
             #endregion
 
@@ -329,7 +329,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
             // for CollectionEditor
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -341,7 +341,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Name)
                     {
                         this._Name = value;
-                        this.NotifyPropertyChanged("Name");
+                        this.NotifyPropertyChanged(@"Name");
                     }
                 }
             }
@@ -354,7 +354,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Offset)
                     {
                         this._Offset = value;
-                        this.NotifyPropertyChanged("Offset");
+                        this.NotifyPropertyChanged(@"Offset");
                     }
                 }
             }
@@ -372,14 +372,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        [OriginalName("ScalarParameterSaveRecord")]
+        [OriginalName(@"ScalarParameterSaveRecord")]
         public class ScalarParameter : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Name")]
+            [OriginalName(@"Name")]
             private string _Name;
 
-            [OriginalName("Value")]
+            [OriginalName(@"Value")]
             private float _Value;
             #endregion
 
@@ -392,7 +392,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
             // for CollectionEditor
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -404,7 +404,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Name)
                     {
                         this._Name = value;
-                        this.NotifyPropertyChanged("Name");
+                        this.NotifyPropertyChanged(@"Name");
                     }
                 }
             }
@@ -417,7 +417,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (Equals(value, this._Value) == false)
                     {
                         this._Value = value;
-                        this.NotifyPropertyChanged("Value");
+                        this.NotifyPropertyChanged(@"Value");
                     }
                 }
             }
@@ -435,14 +435,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        [OriginalName("VectorParameterSaveRecord")]
+        [OriginalName(@"VectorParameterSaveRecord")]
         public class VectorParameter : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Name")]
+            [OriginalName(@"Name")]
             private string _Name;
 
-            [OriginalName("Value")]
+            [OriginalName(@"Value")]
             private LinearColor _Value = new LinearColor();
             #endregion
 
@@ -455,7 +455,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
             // for CollectionEditor
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -467,7 +467,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Name)
                     {
                         this._Name = value;
-                        this.NotifyPropertyChanged("Name");
+                        this.NotifyPropertyChanged(@"Name");
                     }
                 }
             }
@@ -480,7 +480,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Value)
                     {
                         this._Value = value;
-                        this.NotifyPropertyChanged("Value");
+                        this.NotifyPropertyChanged(@"Value");
                     }
                 }
             }
@@ -498,14 +498,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        [OriginalName("TextureParameterSaveRecord")]
+        [OriginalName(@"TextureParameterSaveRecord")]
         public class TextureParameter : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Name")]
+            [OriginalName(@"Name")]
             private string _Name;
 
-            [OriginalName("Value")]
+            [OriginalName(@"Value")]
             private string _Value;
             #endregion
 
@@ -518,7 +518,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
             // for CollectionEditor
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -530,7 +530,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Name)
                     {
                         this._Name = value;
-                        this.NotifyPropertyChanged("Name");
+                        this.NotifyPropertyChanged(@"Name");
                     }
                 }
             }
@@ -543,7 +543,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Value)
                     {
                         this._Value = value;
-                        this.NotifyPropertyChanged("Value");
+                        this.NotifyPropertyChanged(@"Value");
                     }
                 }
             }

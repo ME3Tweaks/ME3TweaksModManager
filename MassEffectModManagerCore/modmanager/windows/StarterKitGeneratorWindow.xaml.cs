@@ -21,6 +21,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.windows.dialog;
 using ME3TweaksModManager.ui;
 using MvvmValidation;
@@ -552,7 +553,7 @@ namespace ME3TweaksModManager.modmanager.windows
                     if (turnOnDevMode == MessageBoxResult.Yes)
                     {
                         Settings.DeveloperMode = true;
-                        TelemetryInterposer.TrackEvent(@"Turned on developer mode after starter kit");
+                        M3OpenTelemetry.TrackEvent(@"Turned on developer mode after starter kit");
                         //Settings.Save();
                     }
                 }
@@ -748,7 +749,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public bool AskToClose()
         {
-            if (M3L.ShowDialog(this, "Close without generating the mod?", "Application closing", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            if (M3L.ShowDialog(this, M3L.GetString(M3L.string_closeWithoutGeneratingTheModQuestion), M3L.GetString(M3L.string_applicationClosing), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
             {
                 Close();
                 return true;

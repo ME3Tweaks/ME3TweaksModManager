@@ -177,6 +177,9 @@
     <system:String x:Key="string_interp_unendorseMod">Unendorse {0}?</system:String>
     <system:String x:Key="string_interp_unableToModifyBioinputIni">Unable to modify BioInput.ini: {0}</system:String>
     <system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">Delete {0} from your mod library? This only deletes the mod from your local Mod Manager library, it does not remove it from any game installations.</system:String>
+    <system:String x:Key="string_interp_deletingModFromLibrary">Deleting {0} from library</system:String>
+    <system:String x:Key="string_interp_deletedModFromLibrary">Deleted {0} from library</system:String>
+    <system:String x:Key="string_interp_failedToDeleteModFromLibrary">Failed to delete {0} from library</system:String>
     <system:String x:Key="string_interp_launching">Launching {0}</system:String>
     <system:String x:Key="string_interp_launched">Launched {0}</system:String>
     <system:String x:Key="string_interp_cannotInstallModGameNotInstalled">Cannot install mod: {0} is not installed.</system:String>
@@ -296,7 +299,7 @@
     <system:String x:Key="string_programDataAccessDenied">ProgramData access denied</system:String>
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Auto-add controller Mixins to ModMaker mods</system:String>
     <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods. Do not select this if you play with a keyboard/mouse.</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_dialog_unsupportedOS">This operating system is not supported. This application has only been validated for use on the following operating systems: \n - {0}. This application may not function correctly on this operating system.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_unsupportedOS">This operating system is not supported. This application's minimum supported operating systems are:\n{0}\n\nUnsupported operating systems may run this software without issue, they simply are not tested against and won't receive updates to fix issues specific to them.</system:String>
     <!-- 0= bulleted list of supported operating system names -->
     <system:String x:Key="string_unsupportedOperatingSystem">Unsupported operating system</system:String>
     <system:String x:Key="string_errorCompilingCoalesced">Error compiling Coalesced</system:String>
@@ -548,8 +551,8 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_targetMerge">Target Merge runs all merge operations for all DLC mods, bringing them all in sync.&#10;You shouldn't need to do this manually, Mod Manager will perform it as necessary</system:String>
     <system:String x:Key="string_diagnosticTool_OpenAllPackages">Diagnostic tool: Open all packages from current target game</system:String>
     <system:String x:Key="string_tooltip_diagnosticTool_OpenAllPackages">Makes Mod Manager open all packages from the current game and report which files (if any) had issues being opened. May detect corrupted packages</system:String>
-    <system:String x:Key="string_showModInstallationStatusInLbrary">Beta setting: Show mod installation status in library</system:String>
-    <system:String x:Key="string_tooltip_notReliableForAllMods">WARNING: THIS WILL NOT BE RELIABLE FOR ALL MODS</system:String>
+    <system:String x:Key="string_showModInstallationStatusInLbrary">Show mod installation status in library</system:String>
+    <system:String x:Key="string_description_showInstalledModsInLibrary">Show a checkmark next to mods that can be detected as installed in the current target. NOTE: This is not reliable due to how mods are installed, only DLC mods will be detected as installed.</system:String>
     <system:String x:Key="string_suppressTargetMerges">SESSION ONLY Beta setting: Suppress target merges</system:String>
     <system:String x:Key="string_tooltip_suppressTargetMerges">DANGER: DO NOT TURN THIS ON IF YOU DON'T KNOW WHAT IT MEANS. YOU WILL BREAK THINGS</system:String>
     <system:String x:Key="string_runDetermineIfInstalled">Run DetermineIfInstalled</system:String>
@@ -565,7 +568,34 @@
     <!-- 0={Error Message} -->
     <system:String x:Key="string_interp_mergemodAssetIsZeroBytes">Mergemod asset is zero bytes: {0}. Assets cannot be empty.</system:String>
     <!-- 0={Filename} -->
-
+    <system:String x:Key="string_downloadManager">Download Manager</system:String>
+    <system:String x:Key="string_tooltip_showCurrentRunningDownloads">Show current running downloads</system:String>
+    <system:String x:Key="string_convertMemToM3TextureOverride">Convert .mem to M3 Texture Override</system:String>
+    <system:String x:Key="string_tooltip_convertMemtoM3TextureOverride">Converts a .mem file to a texture override version by installing the .mem, inspecting the changes, and then pulling them to a chosen DLC mod.</system:String>
+    <system:String x:Key="string_alpha">Alpha</system:String>
+    <!-- Similar to how Beta is done for menu -->
+    <system:String x:Key="string_interp_errorOpeningModdesciniFileResult">Error opening moddesc.ini file: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_dialog_exitWhileDownloading">There are currently mods downloading. Are you sure you want to quit?</system:String>
+    <system:String x:Key="string_downloadsInProgress">Downloads in progress</system:String>
+    <system:String x:Key="string_dialog_exitWhileImporting">There are currently mods importing into the library. Please wait until they are finished as aborting import may leave library mods in a broken state.</system:String>
+    <system:String x:Key="string_modsCurrentlyImporting">Mods currently importing</system:String>
+    <system:String x:Key="string_mergingGlobalShaders">Merging global shaders</system:String>
+    <system:String x:Key="string_mergedGlobalShaders">Merged global shaders</system:String>
+    <system:String x:Key="string_interp_errorMergingGlobalShadersXMessage">Error merging global shaders: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_interp_installingASIMod">Installing ASI mod</system:String>
+    <system:String x:Key="string_dialog_msvcVersionMissing">ASI mods require installing Microsoft Visual C++ Redistributable x64 14.50 or higher. ASI mods are required for Legendary Edition modding to work properly.</system:String>
+    <system:String x:Key="string_mSVCPPRequired">MSVC++ Required</system:String>
+    <system:String x:Key="string_installForMe">Install for me</system:String>
+    <system:String x:Key="string_installManually">Install manually</system:String>
+    <system:String x:Key="string_doNotInstall">Do not install</system:String>
+    <system:String x:Key="string_dialog_msvcManualDirections">Install the downloaded executable file to install the latest version of Microsoft Visual C++ 14. Click OK when done to continue.</system:String>
+    <system:String x:Key="string_installedMicrosoftVisualCPPRedistributable">Installed Microsoft Visual C++ Redistributable</system:String>
+    <system:String x:Key="string_failedToInstallMicrosoftVisualCPPRedistributable">Failed to install Microsoft Visual C++ Redistributable</system:String>
+    <system:String x:Key="string_testMicrosoftVisualCppInstaller">Test Microsoft Visual C++ Installer</system:String>
+    <!-- This is in the Debug Menu -->
+    
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
@@ -587,6 +617,11 @@
     <system:String x:Key="string_autobootLE2Test">Autoboot LE2 test</system:String>
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <system:String x:Key="string_showBasegameFileIdentificationServiceViewer">Show Basegame File Identification Service Viewer</system:String>
+    <system:String x:Key="string_triggerBTPBuildOnModFolderInstalled">Trigger BTP build on mod folder (installed)</system:String>
+    <system:String x:Key="string_showTestDialog">Show test dialog</system:String>
+    <system:String x:Key="string_wineDetected">Wine detected</system:String>
+    <!-- Wine is a noun, it is 'Wine Is Not an Emulator'. It is for running Windows apps on Linux -->
+    <system:String x:Key="string_dialog_wineDetected">It appears ME3Tweaks Mod Manager is running under Linux or MacOS, please note that this is unsupported and you will not receive official support.</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
@@ -660,7 +695,6 @@
     <system:String x:Key="string_interp_thisModShouldBeReinstalled">This mod ({0}) should be reinstalled.</system:String>
     <!-- 0={Mod name} -->
     <system:String x:Key="string_thisModShouldBeReinstalled">This mod should be reinstalled.</system:String>
-    <system:String x:Key="string_invalidCompatibilityPack">Invalid compatibility pack</system:String>
     <system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">An error occurred building installation queues: {0}</system:String>
     <!-- 0={Exception message} -->
     <system:String x:Key="string_interp_optionGroupX">Option group: {0}</system:String>
@@ -688,8 +722,11 @@
     <system:String x:Key="string_ensureGameIsValidDiscord">Ensure your game is properly installed and has been run once. If you continue to have issues, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_trackingMergemodChanges">Tracking mergemod changes</system:String>
     <!-- M3 is inventorying files for changes, hence 'tracking' them -->
+    <system:String x:Key="string_trackingBasegameChanges">Tracking basegame changes</system:String>
+    <!-- M3 is inventorying files for changes, hence 'tracking' them -->
     <system:String x:Key="string_tooltip_optionNotApplicable">Based on conditions set by the mod developer, this option is not applicable based on your game's current setup</system:String>
     <system:String x:Key="string_tooltip_optionForceApplied">Based on conditions set by the mod developer, this option must be applied based on your game's current setup</system:String>
+    <system:String x:Key="string_textureOverrideMergeFailed">Texture override merge failed</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_welcomeTo">Welcome to</system:String>
@@ -858,7 +895,7 @@
     <system:String x:Key="string_noReferenceIssuesWereDetected">No reference issues were detected</system:String>
     <system:String x:Key="string_referencesCheckDetectedIssues">References check detected issues</system:String>
     <system:String x:Key="string_modsNotInThirdPartyIdentificationService">Mod(s) not in Third Party Identification Service</system:String>
-    <system:String x:Key="string_interp_infoModNameTooLong">The mod name '{0}' is more than 40 characters long ({1} characters). Consider shortening the name of this mod so it can be easily read by the user in the mod library.</system:String>
+    <system:String x:Key="string_interp_infoModNameTooLong">The mod name '{0}' is more than 35 characters long ({1} characters). Consider shortening the name of this mod so it can be easily read by the user in the mod library.</system:String>
     <!-- 0={ModName} 1={integer} -->
     <system:String x:Key="string_interp_fatalMissingNeverstreamFlag">{0} texture {1} {2} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If texture LODs are raised, this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.</system:String>
     <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
@@ -950,6 +987,16 @@
     <system:String x:Key="string_deploymentFailed">Deployment failed</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialog_deploymentFailedWrongNumMods">Mod deployment failed: The amount of mods expected in the archive did not match the amount that were parsed.\nExpected: {0}\nDetected: {1}\n\nPlease report this to Mgamerz on the ME3Tweaks Discord.</system:String>
     <!-- 0={expectedModCount} 1={foundCount} -->
+    <system:String x:Key="string_interp_finalizingArchive">Finalizing archive...</system:String>
+    <!-- This indicates an archive is being copied across disks. Not sure what a good text to put here was, as there is not much horizontal space -->
+    <system:String x:Key="string_interp_tlkNotForServerMismatch">Mismatched global override flag 'NotForServer' detected across TLK exports. {0} in {1} ({2}) has 'NotForServer' {3}, but {4} has 'NotForServer' {5}</system:String>
+    <!-- Shown when two TLK objects across langauges have differing override flags. 0={BioTlkFile export name} 1={Filename} 2={Language code (likely INT)} 3={"set" or "not set" (localized)} 4={language code} 5={langStatus (set or not set)} -->
+    <system:String x:Key="string_interp_tlkExportMissingInLocalization">Missing expected BioTlkFile export {0} in package {1} for language {2}</system:String>
+    <!-- When an expected localization object in the file is not present. 0={BioTlkFile export name} 1={Package} 2={Language} -->
+    <system:String x:Key="string_undercaseSet">set</system:String>
+    <!-- interpolated into string above. -->
+    <system:String x:Key="string_undercaseNotSet">not set</system:String>
+    <!-- interpolated into string above. -->
 
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
@@ -1008,6 +1055,26 @@
     <!-- 0={filepath} 1={integer} 2={floating point number (cmmver)} -->
     <system:String x:Key="string_interp_mergeModFailedToLoadUnknownFeatureLevel">MergeMod {0} failed to load. It may not compatible with cmmver {1}</system:String>
     <!-- 0={filepath} 1={floating point number (cmmver)} -->
+    <system:String x:Key="string_deployment_bannerImageInvalidAspectRatio">Banner image '{0}' has an invalid aspect ratio. The banner image must have an aspect ratio of approximately 580x47 (12.34:1). The current image is {1}x{2}.</system:String>
+    <system:String x:Key="string_deployment_asiNotFoundInManifest">ASI group ID {0} is not available in the ASI manifest for {1}. This ASI will not install unless it is available in the manifest.</system:String>
+    <!-- 0={ASI Group ID} 1={Game} -->
+    <system:String x:Key="string_deployment_asiVersionNotFoundInManifest">ASI group ID {0} version {1} is not available in the ASI manifest for {2}. This ASI will not install unless it is available in the manifest.</system:String>
+    <!-- 0={ASI Group ID} 1={Version} 2={Game} -->
+    <system:String x:Key="string_deployment_inconsistentForcedExport">{0} has inconsistent ForcedExport flag usage that must be fixed before deployment. Use the Forced Export experiments in Legendary Explorer's package editor (Experiments &gt; Mgamerz &gt; Useful for developers) to find and correct this issue.</system:String>
+    <!-- 0={Package file path} -->
+    <system:String x:Key="string_deployment_missingRequiredBTM">Mod ships precompiled texture override file but is missing required metadata file {0} next to it</system:String>
+    <!-- 0={BTP_METADATA_FILENAME} -->
+    <system:String x:Key="string_deployment_unableToParsePrecompiledBTPX">Unable to parse precompiled BTP: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_deployment_foundM3toWithPrecompileBTP">This mod is using a precompiled BTP file; the included .m3to files will not be used and should be removed</system:String>
+    <system:String x:Key="string_deployment_incorrectGameForBTP">Included texture override manifest file {0} is for the wrong game: {1}</system:String>
+    <!-- 0={Relative file path} 1={Game} -->
+    <system:String x:Key="string_deployment_invalidSourcePackageReferenceForBTP">Included texture override manifest file {0} references source package '{1}' which is not referenced by the mod and will never be able able to be compiled</system:String>
+    <!-- 0={Relative file path} 1={Filename} -->
+    <system:String x:Key="string_deployment_cannotShipDLCOverridesOfMerge2DATargets">Cannot ship DLC override of Bio2DA merge target {0}, use merge mods and Bio2DA merge instead</system:String>
+    <!-- 0={Filename} -->
+    <system:String x:Key="string_deployment_btpHashCheckFailed">BTP appears to be for a different DLC or different game, hash check failed. The BTP must be rebuilt</system:String>
+    <system:String x:Key="string_deployment_invalidBTPMetadata">Included BTP metadata file (BTPMetadata.btm) is invalid, the BTP must be rebuilt</system:String>
 
     <!-- Language checks -->
     <system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Localized TLK package {0} was not found. Users who play the game with their language/voiceover set to {1} ({2}) will have blank strings from this mod. See the Mod Manager documentation for more information.</system:String>
@@ -1238,6 +1305,13 @@
     <system:String x:Key="string_saveFile">Save file</system:String>
     <system:String x:Key="string_description_saveFile">You can optionally include a save file in your game diagnostic. Only select a save if requested.</system:String>
     <system:String x:Key="string_selectSaveFile">Select save file</system:String>
+    <system:String x:Key="string_extendedDiagnostics">Extended diagnostics</system:String>
+    <system:String x:Key="string_desc_extendedDiagnostics">Extended diagnostics perform additional checks on your game, but take a significant amount of additional time. Select this if requested by a developer.</system:String>
+    <system:String x:Key="string_tooltip_extendedDiagnostics">Check to enable additional diagnostic tests</system:String>
+    <system:String x:Key="string_checkbox_extendedDiagnostics">Perform extended diagnostics</system:String>
+    <system:String x:Key="string_tooltip_useLocalLogViewer">View in the local log viewer without uploading</system:String>
+    <system:String x:Key="string_checkbox_useLocalLogViewer">Use local log viewer</system:String>
+    <system:String x:Key="string_viewInLogViewer">View in log viewer</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>
@@ -1343,7 +1417,9 @@
     <system:String  x:Key="string_downloadAll">Download all</system:String>
     <system:String x:Key="string_interp_checkingForModUpdatesX">Checking for mod updates ({0})</system:String>
     <!-- 0={Mod name} -->
-
+    <system:String x:Key="string_useInappUpdater">Use in-app updater*</system:String>
+    <system:String x:Key="string_tooltip_useInAppUpdater">NexusMods Premium users only: Clicking update will download and automatically import the mod to the library.</system:String>
+    <system:String x:Key="string_tooltip_turnOffIfUndesirable">Turn this off if this causes issues or is undesirable.</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
@@ -1653,20 +1729,20 @@
     <!-- 0={Filepath} 1={Instanced full path of export in package} -->
 
     <!-- Mod-Parsing -->
-    <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String>
+    <system:String x:Key="string_modparsing_modVersion">Mod version</system:String>
     <!-- 0 = version number -->
-    <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String>
+    <system:String x:Key="string_modparsing_modDeveloper">Mod developer</system:String>
     <!-- 0 = name-->
-    <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {0}</system:String>
+    <system:String x:Key="string_modparsing_modMakerCode">ModMaker code</system:String>
     <!-- 0 = number-->
-    <system:String x:Key="string_interp_modparsing_updateCode">Update code: {0}</system:String>
+    <system:String x:Key="string_modparsing_updateCode">Update code</system:String>
     <!-- 0 = number-->
     <system:String x:Key="string_modparsing_installationInformationSplitter">-------Installation information--------</system:String>
     <system:String x:Key="string_interp_modparsing_targetsModDesc">Targets ModDesc {0}</system:String>
     <!-- 0 = number -->
-    <system:String x:Key="string_interp_modparsing_modifies">Modifies: {0}</system:String>
+    <system:String x:Key="string_modparsing_modifies">Modifies</system:String>
     <!-- 0 = List of human readable DLC names (like bring down the sky)-->
-    <system:String x:Key="string_interp_modparsing_addCustomDLCs">Add Custom DLCs: {0}</system:String>
+    <system:String x:Key="string_modparsing_addCustomDLCs">Add Custom DLCs</system:String>
     <!-- 0 = list of dlc foldernames -->
     <system:String x:Key="string_modparsing_configCanChangeIfOtherDLCFound">Configuration of this mod can change if any of the following DLC are present at installation time:</system:String>
     <system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Requires the following DLC to install:</system:String>
@@ -1881,7 +1957,6 @@
     <system:String x:Key="string_library_computerinfo">Small library for easily fetching CPU, OS, and memory information</system:String>
     <system:String x:Key="string_library_fluentnexus">Modern async HTTP client for the Nexus Mods API</system:String>
     <system:String x:Key="string_library_recyclablememorystream">Library for a recyclable pool of memory buffers</system:String>
-    <system:String x:Key="string_library_sshnet">Library for handling SSH connections</system:String>
     <system:String x:Key="string_library_watsonwebsocket">Library for handling websocket connections</system:String>
     <system:String x:Key="string_library_authenticodeexaminer">Manages inspecting Authenticode file signatures</system:String>
     <system:String x:Key="string_library_ntfsstreams">Library for reading NTFS alternate data streams</system:String>
@@ -1889,8 +1964,11 @@
     <!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
     <system:String x:Key="string_enablesSingleinstancingOfAnApplication">Enables single-instancing of an application</system:String>
     <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper for robocopy command in C#</system:String>
-
-
+    <system:String x:Key="string_starMeansForked">* = ME3Tweaks forked version</system:String>
+    <system:String x:Key="string_tooltip_clickToViewLicense">Click to view license</system:String>
+    <system:String x:Key="string_library_openTelemetry">Handles telemetry data for crashes and feature usage statistics</system:String>
+    <system:String x:Key="string_library_darkNet">Provides themeing for title bars to match the application theme</system:String>
+    
     <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->
@@ -1913,6 +1991,10 @@
     <system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">An error occurred deleting the ASI: {0}</system:String>
     <!-- 0={Error Message} -->
     <system:String x:Key="string_errorDeletingASI">Error deleting ASI</system:String>
+    <system:String x:Key="string_interp_anErrorOccurredInstallingTheASI">An error occurred installing the ASI: {0}</system:String>
+    <!-- 0={Exception message} -->
+    <system:String x:Key="string_interp_groupIDX">Group ID: {0}</system:String>
+    <!-- 0={Number} - Group ID is for "ASI Group ID", a technical term that describes a group of ASIs (e.g. DebugLogger for LE1 is Group ID 71) -->
 
     <!-- Starter Kit Window-->
     <system:String x:Key="string_title_starterkit">DLC Mod Starter Kit Generator</system:String>
@@ -1995,6 +2077,7 @@
     <system:String x:Key="string_modNameCannotStartWithSlash">Mod name cannot start with /</system:String>
     <system:String x:Key="string_sk_modNameTooLong">Mod name cannot be longer than 50 characters, or it will not reliably fit on user filesystems</system:String>
     <system:String x:Key="string_sk_modFoldernameTooLong">Mod foldername cannot be longer than 25 characters, or it will not reliably fit on user filesystems</system:String>
+    <system:String x:Key="string_closeWithoutGeneratingTheModQuestion">Close without generating the mod?</system:String>
 
     <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
@@ -2095,6 +2178,13 @@
     <!-- 0={Mod name} 1={Integer} -->
     <system:String x:Key="string_inRestoreMode">In restore mode</system:String>
     <!-- Shown when a mod that failed to load is forced into checking for updates. This is called 'restore mode' and will always return an update if possible -->
+    <system:String x:Key="string_updateFailed">Update failed</system:String>
+    <system:String x:Key="string_updating">Updating</system:String>
+    <system:String x:Key="string_initializing">Initializing</system:String>
+    <system:String x:Key="string_initializationFailed">Initialization failed</system:String>
+    <system:String x:Key="string_downloadUnavailable">Download unavailable</system:String>
+    <system:String x:Key="string_tooltip_clearCompleted">Clears completed updates from the list</system:String>
+    <system:String x:Key="string_clearCompleted">Clear completed</system:String>
 
     <!-- Mixin Class-->
     <system:String x:Key="string_interp_appliesToX">Applies to file {0}</system:String>
@@ -2160,6 +2250,12 @@
     <system:String x:Key="string_withMinimumVersion">with minimum version</system:String>
     <!-- Can be appended mid string -->
     <system:String x:Key="string_tooltip_addMemFilesFromFilesystem">Add .mem files from filesystem</system:String>
+    <system:String x:Key="string_savingInstallGroup">Saving install group...</system:String>
+    <system:String x:Key="string_interp_errorSavingInstallGroup">Error saving install group</system:String>
+    <!-- Used as both title of dialog and with : [error message] suffix in the dialog content -->
+    <system:String x:Key="string_errorSavingInstallGroup">Error saving install group</system:String>
+    <system:String x:Key="string_closeWithoutSavingChangesQuestion">Close without saving changes?</system:String>
+    <system:String x:Key="string_applicationClosing">Application closing</system:String>
 
     <!-- Backup File Fetcher (Devs only) -->
     <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
@@ -2393,6 +2489,8 @@
     <system:String x:Key="string_selectDeploymentDestination">Select deployment destination</system:String>
     <system:String x:Key="string_tooltip_createSharableVersionOfThisInstallGroup">Create sharable version of this install group</system:String>
     <system:String x:Key="string_shareGroup">Share group</system:String>
+    <system:String x:Key="string_interp_hashingXYpercent">Hashing {0} {1}%</system:String>
+    <!-- 0={Filename} 1={Progress number (may contain decimal places)} -->
 
     <!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
@@ -2686,10 +2784,10 @@
     <!-- 0={i+1} -->
     <system:String x:Key="string_startingDownload">Starting download</system:String>
     <system:String x:Key="string_downloadComplete">Download complete</system:String>
+    <system:String x:Key="string_canceled">Canceled</system:String>
 
     <!-- Mod Downloader -->
     <system:String x:Key="string_modDownloader">Download Manager</system:String>
-    <system:String x:Key="string_initializing">Initializing</system:String>
     <system:String x:Key="string_cancelDownload">Cancel download</system:String>
     <system:String x:Key="string_downloadError">Download error</system:String>
     <system:String x:Key="string_interp_nexusModNotCompatible">{0} is not compatible with ME3Tweaks Mod Manager. If this is a texture mod, install it with ALOT Installer.</system:String>
@@ -2698,10 +2796,16 @@
     <!-- 0={Drive letter (C:\, D:\ etc)} 1={Mod downloaded filename} 2={Filesize (human readable)} 3={Free spaced (human readable)} -->
     <system:String x:Key="string_verifyingDownload">Verifying download</system:String>
     <system:String x:Key="string_fileDidNotVerifyDownloadMayBeCorrupt">File did not verify, download may be corrupt.</system:String>
+    <system:String x:Key="string_downloadQueued">Download queued</system:String>
+    <system:String x:Key="string_modsAreDownloading">Mods are downloading</system:String>
+    <system:String x:Key="string_modDownloadsComplete">Mod downloads complete</system:String>
 
     <!-- Plot Manager Sync Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
     <!-- Message that comes up telling user what's happening. Plot Manager is something M3 keeps up to date (as mods override and/or add plot flags) and is used to track plot events -->
+    <system:String xml:space="preserve" x:Key="string_dialog_errorMergingPlotManagerFiles">An error occurred merging plot manager update files: {0}.\n\nPlot Manager Sync was not run.</system:String>
+    <!-- 0={b.Error.Message} -->
+    <system:String x:Key="string_errorSyncingPlotManager">Error syncing Plot Manager</system:String>
 
     <!-- Merge Mods (V1) -->
     <system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Mergemod file does not have correct magic header</system:String>
@@ -2753,6 +2857,8 @@
     <!-- 0={<A string>} -->
     <system:String x:Key="string_interp_mergeModAssetsSingleFolder">Asset files for mergemods must all be contained in the same folder. Invalid asset name: {0}</system:String>
     <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_mergeModFileChangedReload">m3m file '{0}' has changed since the mod was loaded. Please reload the mod library</system:String>
+    <!-- 0={Filename} -->
 
     <!-- Merge Mods (V2) -->
     <system:String x:Key="string_interp_classUpdateCannotNestMoreThanOne">Validation failed on {0} {1}: class cannot be nested more than one package deep.</system:String>
@@ -2775,6 +2881,8 @@
     <system:String x:Key="string_applicationTheme">Application theme</system:String>
     <system:String x:Key="string_doubleClickModInLibraryToInstall">Double click mod in library to install</system:String>
     <system:String x:Key="string_description_doubleClickModInLibraryToInstall">When double-clicking a mod in the mod library list, perform the same action as pressing 'Apply Mod'. If the correct game is not currently the installation target, the current active one will be used. For mods that don't have options this will immediately trigger an installation.</system:String>
+    <system:String x:Key="string_playDialogSounds">Play dialog sounds</system:String>
+    <system:String x:Key="string_description_playDialogSounds">When enabled, Messagebox dialogs will play a sound when they open</system:String>
     <system:String x:Key="string_nexusModsDownloadFolder">NexusMods download folder</system:String>
     <system:String x:Key="string_description_nexusModsDownloadFolder">You can specify a custom location to store downloaded mod archives in. These archives are not necessary to keep once a mod is imported into the mod library. If you don't specify one, a temporary directory is used on the C:\ drive and mod downloads will be deleted every time the application closes.</system:String>
     <system:String x:Key="string_defaultTemporaryDownloadCache">Default: Temporary download cache</system:String>
@@ -2792,6 +2900,14 @@
     <system:String x:Key="string_logAllFilesCopiedDuringRestore">Log all files copied during restore</system:String>
     <system:String x:Key="string_description_logOptionLotsa">This will generate a large amount of logs. Only turn this on if requested.</system:String>
     <system:String x:Key="string_localLibraryWatermark">Default: Local instance library ('mods' folder)</system:String>
+    <system:String x:Key="string_betaModeSettings">Beta mode settings</system:String>
+    <system:String x:Key="string_theseSettingsAreAvailableWhenTheApplicationIsInBetaMode">These settings are available when the application is in Beta mode.</system:String>
+    <system:String x:Key="string_downgradeModManagerToTheCurrentStableVersionQuestion">Downgrade Mod Manager to the current stable version?</system:String>
+    <system:String x:Key="string_disablingBetaMode">Disabling Beta mode</system:String>
+    <system:String x:Key="string_originalTrilogySettings">Original Trilogy Settings</system:String>
+    <system:String x:Key="string_description_originalTrilogySettings">These options only apply when modding the Original Trilogy.</system:String>
+    <system:String x:Key="string_preferCompressingPackages">Prefer compressing packages on import</system:String>
+    <system:String x:Key="string_description_preferCompressingPackages">Package files in the original trilogy were modded and distributed uncompressed. Turning this option on will compress them on import, saving disk space, at the cost of additional import time.</system:String>
 
     <!-- Check Box Combo Box Control -->
     <system:String x:Key="string_noItemsSelected">No items selected</system:String>
@@ -2853,8 +2969,10 @@
     <system:String x:Key="string_dialog_cannotDownloadMEMCannotProceed">Could not download MassEffectModderNoGui - texture installation cannot proceed. See Mod Manager logs for more information.</system:String>
     <system:String x:Key="string_inventoryingGameStateBeforeTextureInstall">Inventorying game state before texture install</system:String>
     <system:String x:Key="string_inventoryingGameStateAfterTextureInstall">Inventorying game state after texture install</system:String>
+    <system:String x:Key="string_dialog_unableToWriteMFL">Unable to set the list of files for MEM to install: {0}. Aborting installation of textures.</system:String>
+    <!-- 0={Error message} -->
 
-<!-- Launch Option Selector Dialog -->
+    <!-- Launch Option Selector Dialog -->
     <system:String x:Key="string_launchOptionSelector">Launch Option Selector</system:String>
     <system:String x:Key="string_selectLaunchOption">Select launch option</system:String>
     <system:String x:Key="string_createNewLaunchOption">Create new launch option</system:String>
@@ -3008,7 +3126,9 @@
     <!-- MEMMod -->
     <system:String x:Key="string_textureExportsNotListedInThisMemFile">[texture exports not listed in this .mem file]</system:String>
     <system:String x:Key="string_textureModsMustBeImportedBeforeUse">Texture mods must be imported before they can be used</system:String>
-
+    <system:String x:Key="string_listTruncatedTo100Entries">(list truncated to 100 entries)</system:String>
+    <!-- Undercase cause this appears after 100 entries show up in a list -->
+    
     <!-- M3HeadMorph -->
     <system:String x:Key="string_interp_valueMustBeIntegerGreaterThanZero">{0} value must be an integer greater than 0.</system:String>
     <!-- 0={Parameter name} -->
@@ -3063,6 +3183,14 @@
     <system:String x:Key="string_importQueued">Import queued</system:String>
     <system:String x:Key="string_importingMods">Importing mods</system:String>
     <system:String x:Key="string_importComplete">Import complete</system:String>
+    <system:String x:Key="string_dlmgr_subTempCache">Downloads will automatically be deleted when Mod Manager closes. Mods imported into the library will be unaffected. You can change this in the application settings.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dlmgr_subPermCache">Downloaded files are saved to the following location, which can be changed in the settings:\n{0}</system:String>
+    <!-- 0={Folder path} -->
+    <system:String x:Key="string_failedDownloads">Failed downloads</system:String>
+    <system:String x:Key="string_clearAll">Clear all</system:String>
+    <system:String x:Key="string_tooltip_removeFailedDownload">Remove failed download</system:String>
+    <system:String x:Key="string_dialog_mismatchingLocalNexusUsernames">The user signed into NexusMods in your browser and the user signed into NexusMods in Mod Manager aren't the same. For 'Download with Manager' to work, they must be the same.</system:String>
+    <system:String x:Key="string_cannotDownload">Cannot download</system:String>
 
     <!-- Merge Mod Loader -->
     <system:String x:Key="string_dialog_mergeModFeatureLevel1">Is the mergemod you are compiling going to be used in a mod that targets ModDesc 8.2 or lower?</system:String>
@@ -3079,4 +3207,103 @@
     <!-- Auto Restore Panel -->
     <system:String x:Key="string_interp_errorRestoringFromBackupX">There was an error restoring from backup: {0}</system:String>
     <!-- 0={Error Message} -->
+    
+    <!-- Log Viewer -->
+    <system:String x:Key="string_title_logViewer">ME3Tweaks Mod Manager Log Viewer</system:String>
+
+    <!-- Text Shortening Toggle -->
+    <system:String x:Key="string_showLess">Show less</system:String>
+    <system:String x:Key="string_showMore">Show more</system:String>
+
+    <!-- Drag and Drop -->
+    <system:String x:Key="string_dialog_couldNotfindFXC">Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.</system:String>
+    <!-- FXC is the shader compiler that is used by DirectX for DX11 shaders -->
+    <system:String x:Key="string_fXCNotFound">FXC not found</system:String>
+    <system:String x:Key="string_compilingShaders">Compiling shaders</system:String>
+    <system:String x:Key="string_compiledShaders">Compiled shaders</system:String>
+    <system:String x:Key="string_selectMetadataFile">Select metadata file</system:String>
+    <system:String x:Key="string_selectOutputFolder">Select output folder</system:String>
+    <system:String x:Key="string_extractingTexturesFromBTP">Extracting textures from BTP</system:String>
+    <system:String x:Key="string_finishedExtractingTextures">Finished extracting textures</system:String>
+    <system:String x:Key="string_errorExtractingTexturesFromBTP">Error extracting textures from BTP</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_errorExtractingTexturesFromBTP">An error occurred while rebuilding source files from the BTP:\n{0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorExtractingBTP">Error extracting BTP</system:String>
+    <system:String x:Key="string_binaryTextureMetadataFile">Binary Texture Metadata file</system:String>
+    <!-- Used in file filter dialog, it appears as Binary Texture Metadata file|*.btm. This is the file associated with the Binary Texture Package .btp and has info about how to rebuild the source files -->
+
+    <!-- MEM to M3TO Converter -->
+    <system:String x:Key="string_selectMem">Select .mem</system:String>
+    <system:String x:Key="string_selectAMemFileToConvert">Select a .mem file to convert.</system:String>
+    <system:String x:Key="string_convert">Convert</system:String>
+    <system:String x:Key="string_selectTargetMod">Select target mod</system:String>
+    <system:String x:Key="string_selectTargetModToConvertMEMModInto">Select target mod to convert MEM mod into.</system:String>
+    <system:String x:Key="string_select">Select</system:String>
+    <system:String x:Key="string_installTextures">Install textures</system:String>
+    <system:String x:Key="string_skipInstall">Skip install</system:String>
+    <system:String x:Key="string_convertingMemToM3TO">Converting .mem to M3TO</system:String>
+    <system:String x:Key="string_conversionCompleted">Conversion completed</system:String>
+    <system:String x:Key="string_incompatibleModSelected">Incompatible mod selected</system:String>
+    <system:String x:Key="string_skipRestore">Skip restore</system:String>
+    <system:String x:Key="string_MEMToM3TOConverter">MEM to M3TO converter</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_memConvert_performTextureInstall">Perform texture install?\n\nIf you don't have them already installed, you need to perform this or conversion will do nothing.</system:String>
+    <system:String x:Key="string_errorConvertingMem">Error converting .mem</system:String>
+    <system:String x:Key="string_interp_findingModifiedTextures">Finding modified textures</system:String>
+    <system:String x:Key="string_interp_generatingM3TO">Generating M3TO</system:String>
+    <system:String x:Key="string_interp_movingTFCFiles">Moving TFC files</system:String>
+    <system:String x:Key="string_dialog_memConvertComplete">Conversion complete. Ensure you verify the results of the conversion.</system:String>
+    <system:String x:Key="string_interp_selectedModMoreThanOneDLCFolder">The selected mod must install a single DLC mod folder. The selected target mod installs {0}.</system:String>
+    <!-- 0={Number} -->
+    <system:String x:Key="string_interp_modMissingCookedPCConsole">The selected mod does not have a CookedPCConsole folder at the expected location: {0}. Cannot continue.</system:String>
+    <!-- 0={Folder path} -->
+    <system:String xml:space="preserve" x:Key="string_dialog_memConvertRestore">{0} will be restored to vanilla to install the texture mod. A texture override version will then be built from the changes made to the installation.\n\nIf this .mem targets custom textures added by mods, you should create a Batch Install Group that includes a restore, the mods that have the target textures, and this .mem file, and then select Skip Restore.</system:String>
+    <!-- 0={Game name} -->
+    <system:String xml:space="preserve" x:Key="string_interp_memConvertError">An error occurred while converting the .mem to M3TO format:\n{0}\n\nYou can find more detailed information in the application log.</system:String>
+    <!-- 0={Error message} -->
+    
+    <!-- Cached Target Manager -->
+    <system:String x:Key="string_manageCachedTargets">Manage Cached Targets</system:String>
+    <system:String x:Key="string_tooltip_manageCachedTargets">View what targets Mod Manager attempts to load for editing</system:String>
+    <system:String x:Key="string_desc_manageCachedTargets">Mod Manager contains a list of game targets it has seen, known as cached targets. Over time, these may become invalid due to changes such as moving or deleting games. Removing invalid targets will improve application startup time.</system:String>
+    <system:String x:Key="string_cachedTargets">Cached Targets</system:String>
+    <system:String x:Key="string_targetInformation">Target Information</system:String>
+    <system:String x:Key="string_status">Status:</system:String>
+    <system:String x:Key="string_path">Path:</system:String>
+    <system:String x:Key="string_failureReason">Failure Reason:</system:String>
+    <system:String x:Key="string_reloadTarget">Reload Target</system:String>
+    <system:String x:Key="string_tooltip_reloadTarget">Reloads the selected target to test if it can successfully load</system:String>
+    <system:String x:Key="string_restoreTargetFromBackup">Restore Target from backup</system:String>
+    <system:String x:Key="string_tooltip_restoreTargetFromBackup">Restores the game backup for this game to the target's location</system:String>
+    <system:String x:Key="string_removeFromCache">Remove from Cache</system:String>
+    <system:String x:Key="string_tooltip_removeFromCache">Removes this target from the cache so Mod Manager won't try to automatically load it as a modding target</system:String>
+    <system:String x:Key="string_unlockTarget">Unlock target</system:String>
+    <system:String x:Key="string_tooltip_unlockTarget">Enable this backup target to load by removing the backup protection marker</system:String>
+    <system:String x:Key="string_loadingCachedTargets">Loading cached targets</system:String>
+    <system:String x:Key="string_invalidTargetDirectoryDoesNotExist">Invalid target: Directory does not exist</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_confirmRemoveTarget">Are you sure you want to remove this target from the cache?\n\nGame: {0}\nPath: {1}\n\nThis will not modify any game files.</system:String>
+    <!-- 0={Game} 1={Path} -->
+    <system:String x:Key="string_removeCachedTarget">Remove Cached Target</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_confirmUnlockTarget">Are you sure you want to unlock this target?\n\nGame: {0}\nPath: {1}\n\nThis will remove the backup protection marker (cmm_vanilla) from the game installation, allowing it to be modified. This operation cannot be undone automatically.\n\nDo you want to proceed?</system:String>
+    <!-- 0={Game} 1={Path} -->
+    <system:String x:Key="string_unlockBackupTarget">Unlock Backup Target</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_errorUnlockingTarget">An error occurred while trying to remove the backup marker:\n\n{0}</system:String>
+    <!-- 0={Error Message} -->
+    <system:String x:Key="string_errorUnlockingTarget">Error Unlocking Target</system:String>
+    <system:String x:Key="string_valid">Valid</system:String>
+    <system:String x:Key="string_linkedBackup">Linked backup</system:String>
+    <system:String x:Key="string_unlinkedBackup">Unlinked backup</system:String>
+    <system:String x:Key="string_autodetected">Autodetected</system:String>
+
+    <!-- M3 Update Check -->
+    <system:String x:Key="string_desc_downgrade">This will downgrade Mod Manager to the current stable release.</system:String>
+    <system:String x:Key="string_interp_noDowngradeAvailable">{0} is the current stable build. No downgrade is necessary.</system:String>
+    <!-- 0={ME3Tweaks Mod Manager 9.2 Build 136 (example)} -->
+    <system:String x:Key="string_title_downgradeCheck">Downgrade check</system:String>
+    <!-- Title of dialog showing no downgrade available -->
+
+    <!-- M3 Supported OS -->
+    <system:String x:Key="string_interp_nameOrNewer">{0} or newer</system:String>
+    <!-- 0={[OS version like Windows 11 24H2] or newer} -->
+
+
 </ResourceDictionary>

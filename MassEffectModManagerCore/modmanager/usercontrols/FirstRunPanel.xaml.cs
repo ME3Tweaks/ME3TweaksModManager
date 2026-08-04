@@ -1,18 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using FontAwesome5;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -74,14 +70,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             M3Log.Information(@"Completing first run panel onboarding");
             if (Settings.EnableTelemetry)
             {
-                // Start app center
-                App.InitAppCenter();
+                // Initialize OpenTelemetry / Application Insights
+                M3OpenTelemetry.InitOpenTelemetry();
             }
-            App.FlushTelemetryItems(); // Push through any pending telemetry items
+            M3OpenTelemetry.FlushTelemetryItems(); // Push through any pending telemetry items
             Result.ReloadMods = true; // User has now chosen their mod library
             OnClosing(new DataEventArgs(true));
             Settings.ShowedPreviewPanel = true;
-            //Settings.Save();
         }
 
         public override void OnPanelVisible()
@@ -200,7 +195,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();
                             AuthorizedToNexusUsername = authInfo.Name;
-                            TelemetryInterposer.TrackEvent(@"Authenticated to NexusMods");
+                            M3OpenTelemetry.TrackEvent(@"Authenticated to NexusMods");
                         }
                         else
                         {

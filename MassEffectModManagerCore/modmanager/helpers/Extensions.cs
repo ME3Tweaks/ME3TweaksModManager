@@ -994,6 +994,11 @@ namespace ME3TweaksModManager.modmanager.helpers
         //          return false;
         //      }
 
+        /// <summary>
+        /// Returns if this is an archive format like 7z zip and rar
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static bool RepresentsFileArchive(this string path)
         {
             string extension = Path.GetExtension(path);
@@ -1003,6 +1008,11 @@ namespace ME3TweaksModManager.modmanager.helpers
             return false;
         }
 
+        /// <summary>
+        /// Returns if this is a format that can be extracted like rar, 7z, zip or exe (via 7z)
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static bool RepresentsExtractableItem(this string path)
         {
             string extension = Path.GetExtension(path);

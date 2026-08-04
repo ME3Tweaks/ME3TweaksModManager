@@ -1,0 +1,47 @@
+<UserControl x:Class="ME3TweaksModManager.modmanager.usercontrols.TextShorteningToggle"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" MaxHeight="{Binding CurrentMaxHeight, RelativeSource={RelativeSource AncestorType={x:Type local:TextShorteningToggle}}}">
+            <TextBlock Name="DisplayTextBlock"
+                       Text="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type local:TextShorteningToggle}}}"
+                       TextWrapping="Wrap"/>
+            
+            <Rectangle
+                       VerticalAlignment="Bottom" 
+                       Height="20"
+                       Visibility="{Binding ShowFadeEffect, RelativeSource={RelativeSource AncestorType={x:Type local:TextShorteningToggle}}, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Rectangle.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="Transparent" Offset="0"/>
+                        <!-- Opacity Mask must be white -->
+                        <GradientStop Color="White"  Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.OpacityMask>
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{DynamicResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}"/>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
+        
+        <Button Grid.Row="1"
+                Name="ExpandButton"
+                Content="{Binding ExpandButtonText, RelativeSource={RelativeSource AncestorType={x:Type local:TextShorteningToggle}}}"
+                Click="ExpandButton_Click"
+                Visibility="{Binding ShowExpandButton, RelativeSource={RelativeSource AncestorType={x:Type local:TextShorteningToggle}}, Converter={StaticResource BoolToVisibilityConverter}}"
+                HorizontalAlignment="Left"
+                Margin="0,3,0,0"
+                Padding="7,2"/>
+    </Grid>
+</UserControl>

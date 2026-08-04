@@ -1,3 +1,6 @@
 [submodule "submodules/ME3TweaksCore"]
 	path = submodules/ME3TweaksCore
 	url = https://github.com/ME3Tweaks/ME3TweaksCore.git
+[submodule "submodules/ModManagerDeployTool"]
+	path = submodules/ModManagerDeployTool
+	url = https://github.com/ME3Tweaks/ModManagerDeployTool.git

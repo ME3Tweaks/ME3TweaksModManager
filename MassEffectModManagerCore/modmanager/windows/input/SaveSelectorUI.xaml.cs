@@ -455,8 +455,6 @@ namespace ME3TweaksModManager.modmanager.windows.input
         /// </summary>
         public string SelectedLevelText { get; set; }
 
-
-
         public BitmapSource CurrentSaveImage { get; set; }
         public GameTarget Target { get; }
 
@@ -480,14 +478,10 @@ namespace ME3TweaksModManager.modmanager.windows.input
             OnSelectedSaveFileChanged();
         }
 
-
         private void LoadCommands()
         {
             SelectSaveCommand = new GenericCommand(SelectSave, CanSelectSave);
             CancelSelectionCommand = new GenericCommand(CancelSelection);
-            //RefundHenchTalentsCommand = new GenericCommand(RefundHenchTalents, SaveIsSelected);
-            //RefundPlayerTalentsCommand = new GenericCommand(RefundPlayerHenchTalents, SaveIsSelected);
-            //RefundHenchPlayerTalentsCommand = new GenericCommand(RefundHenchPlayerTalents, SaveIsSelected);
         }
 
         private void CancelSelection()
@@ -508,84 +502,6 @@ namespace ME3TweaksModManager.modmanager.windows.input
         {
             return SaveIsSelected() && (SelectedSaveFile.Game == MEGame.LE1 || SelectedSaveFile.Game.IsGame2() || SelectedSaveFile.Game.IsGame3());
         }
-
-        //        private void RefundPlayerHenchTalents()
-        //        {
-        //            InternalRefundPoints(true, false);
-        //        }
-
-        //        private async void InternalRefundPoints(bool refundPlayer, bool refundHench)
-        //        {
-        //            if (refundPlayer)
-        //            {
-        //                // CLEAR PLAYER POWERS
-        //                for (int i = SelectedSaveFile.PlayerRecord.Powers.Count - 1; i > 0; i--)
-        //                {
-        //                    // Need to figure out a way to only remove powers and leave things like first aid.
-        //                    var power = SelectedSaveFile.PlayerRecord.Powers[i].PowerClassName;
-        //                    bool shouldRemove = true;
-        //                    Debug.WriteLine(power);
-        //                    switch (power)
-        //                    {
-        //                        case "SFXGameContent_Powers.SFXPower_FirstAid":
-        //                        case "SFXGameContent_Powers.SFXPower_PlayerMelee":
-        //                        case "SFXGameContent_Powers.SFXPower_PlayerMeleePistol":
-        //                            shouldRemove = false;
-        //                            break;
-        //                    }
-
-        //                    if (shouldRemove)
-        //                    {
-        //                        SelectedSaveFile.PlayerRecord.Powers.RemoveAt(i);
-        //                    }
-        //                }
-
-        //                // Set the number of talent points
-        //                SelectedSaveFile.PlayerRecord.TalentPoints = TalentReset.GetNumTalentPoints(SelectedSaveFile.PlayerRecord.Level, true, true);
-        //            }
-
-        //            if (refundHench)
-        //            {
-
-        //                // CLEAR SQUADMATE POWERS
-        //                //foreach (var hm in SelectedSaveFile.HenchmanRecords)
-        //                //{
-        //                //    var numTalentPoints = TalentReset.GetNumTalentPoints(SelectedSaveFile.PlayerRecord.Level, false, true, hm.Tag == "hench_vixen" || hm.Tag == "hench_leading");
-        //                //    hm.TalentPoints = numTalentPoints;
-        //                //    hm.Powers.Clear(); // Wipe out the talents list so game has to rebuild it on load
-        //                //}
-
-        //                // Game breaking?
-        //                SelectedSaveFile.HenchmanRecords.Clear(); // Clears the loadout which removes powers (and weapons)
-        //            }
-
-        //            // Commit the save
-        //#if DEBUG
-        //            using (var outS = File.Open(SelectedSaveFile.FileName, FileMode.Create, FileAccess.Write))
-        //            {
-        //                SelectedSaveFile.Save(outS);
-        //            }
-        //#endif
-
-        //            // Test the save file
-        //            using (var outS = File.OpenRead(SelectedSaveFile.FileName))
-        //            {
-        //                var testSave = SaveFile.Load(outS);
-        //            }
-
-        //            M3L.ShowDialog(this, "Your save file has been updated.", "Save updated");
-        //            Debug.WriteLine("Done!");
-        //        }
-
-        //        private void RefundHenchTalents()
-        //        {
-        //            InternalRefundPoints(false, true);
-        //        }
-
-        //        private void RefundHenchPlayerTalents()
-        //        {
-        //            InternalRefundPoints(true, true);
-        //        }
 
         public GenericCommand SelectSaveCommand { get; set; }
         public ICommand CancelSelectionCommand { get; set; }
@@ -871,18 +787,29 @@ namespace ME3TweaksModManager.modmanager.windows.input
             {
                 foreach (var mapEntry in areadata)
                 {
-                    var parms = StringStructParser.GetCommaSplitValues(mapEntry.Value, canBeCaseInsensitive: true);
-                    var isUsable = parms.TryGetValue(@"AreaName", out var areaname);
-                    isUsable &= parms.TryGetValue(@"ImageName", out var imagename);
-                    parms.TryGetValue(@"AreaStrRef", out var areaStrRefStr);
-
-                    if (isUsable)
+                    try
                     {
-                        mapToAssetNameMap[areaname] = imagename;
-                        if (int.TryParse(areaStrRefStr, out var strRef))
+                        var parms = StringStructParser.GetCommaSplitValues(mapEntry.Value, canBeCaseInsensitive: true);
+                        var isUsable = parms.TryGetValue(@"AreaName", out var areaname);
+                        isUsable &= parms.TryGetValue(@"ImageName", out var imagename);
+                        parms.TryGetValue(@"AreaStrRef", out var areaStrRefStr);
+
+                        if (isUsable)
                         {
-                            mapToStrRefName[areaname] = strRef;
+                            mapToAssetNameMap[areaname] = imagename;
+                            if (int.TryParse(areaStrRefStr, out var strRef))
+                            {
+                                mapToStrRefName[areaname] = strRef;
+                            }
                         }
+                    } catch (Exception e)
+                    {
+                        M3OpenTelemetry.TrackEvent(@"Found malformed areadata entry", new Dictionary<string, string>()
+                        {
+                            {@"Game", Target.Game.ToString()},
+                            {@"Entry", mapEntry.Value},
+                        }); 
+                        M3Log.Error($@"Error parsing areadata string in {mapEntry.Value}: {mapEntry}. Error: {e.Message}");
                     }
                 }
             }
@@ -920,7 +847,7 @@ namespace ME3TweaksModManager.modmanager.windows.input
                         }
                         catch (Exception e)
                         {
-                            TelemetryInterposer.TrackEvent(@"Found malformed DLM", new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackEvent(@"Found malformed DLM", new Dictionary<string, string>()
                             {
                                 {@"Game", Target.Game.ToString()},
                                 {@"Entry", dlm.Value},

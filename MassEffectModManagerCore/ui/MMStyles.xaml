@@ -2,7 +2,9 @@
                     x:Class="ME3TweaksModManager.ui.MMStyles"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:fa5="http://schemas.fontawesome.com/icons/"
                     xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
@@ -41,6 +43,11 @@
     <converters1:EnumToEnabledConverter x:Key="EnumToEnabledConverter"/>
     <converters1:MEGameToGameNameConverter x:Key="MEGameToGameNameConverter"/>
     <converters1:BoolToDimmedOpacityConverter x:Key="BoolToDimmedOpacityConverter"/>
+    <converters1:IntGreaterThanConverter x:Key="IntGreaterThanConverter"/>
+
+    <FontFamily x:Key="M3DefaultFont">Segoe UI</FontFamily>
+    <sys:Double x:Key="M3DefaultFontSize">12</sys:Double>
+    <Thickness x:Key="M3DefaultMenuItemMargin">-30,0,0,0</Thickness>
 
     <Style x:Key="TargetSelectorContainerStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -50,12 +57,32 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
     </Style>
+
+    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+    </Style>
+    <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource {x:Type Menu}}">
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
+    <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource {x:Type ToolTip}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
+    <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
+
+    <Style TargetType="{x:Type adonisControls:MessageBoxWindow}" BasedOn="{StaticResource {x:Type adonisControls:MessageBoxWindow}}">
+        <Setter Property="FontFamily" Value="{DynamicResource M3DefaultFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource M3DefaultFontSize}" />
+    </Style>
     <Style
         x:Key="MenuItemHeaderStyle"
         TargetType="{x:Type MenuItem}">
         <Setter
             Property="Margin"
-            Value="-30,0,0,0" />
+            Value="{DynamicResource M3DefaultMenuItemMargin}" />
         <Setter
             Property="FontSize"
             Value="10" />
@@ -164,8 +191,11 @@
     <SolidColorBrush x:Key="OTModBrush" Color="#33884433" />
     <SolidColorBrush x:Key="LEModBrush" Color="#33334488" />
 
-    <!-- Game icon bitmaps since they're used all over the place -->
+    <!-- Some mipped icons -->
     <system:String x:Key="lexIcon">/modmanager/toolicons/lex.ico</system:String>
+    <system:String x:Key="appIcon">/appicon.ico</system:String>
+
+    <!-- Game icon bitmaps since they're used all over the place -->
     <system:String x:Key="me1gameiconpath">/images/gameicons/ME1_Icon.ico</system:String>
     <system:String x:Key="me2gameiconpath">/images/gameicons/ME2_Icon.ico</system:String>
     <system:String x:Key="me3gameiconpath">/images/gameicons/ME3_Icon.ico</system:String>

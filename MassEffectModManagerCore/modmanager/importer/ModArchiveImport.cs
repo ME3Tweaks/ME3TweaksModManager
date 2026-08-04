@@ -19,6 +19,7 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
 using SevenZip.EventArguments;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.importer
 {
@@ -253,6 +254,11 @@ namespace ME3TweaksModManager.modmanager.importer
             nbw.RunWorkerAsync(ArchiveFilePath);
         }
 
+        /// <summary>
+        /// Validates that the ModArchiveImport object has been properly configured with required callbacks
+        /// and dependencies before beginning operations.
+        /// </summary>
+        /// <returns>True if setup is valid; false if required callbacks or dependencies are missing.</returns>
         private bool ValidateSetup()
         {
             bool setupIsBad()
@@ -287,6 +293,10 @@ namespace ME3TweaksModManager.modmanager.importer
             return true;
         }
 
+        /// <summary>
+        /// Processes the results of the archive scan operation, including updating file source records,
+        /// detecting improperly packed mods, and transitioning to the appropriate state.
+        /// </summary>
         private void HandleScanResults()
         {
             if (SourceNXMLink != null)
@@ -319,7 +329,7 @@ namespace ME3TweaksModManager.modmanager.importer
 
             if (hasAnyImproperlyPackedMods)
             {
-                TelemetryInterposer.TrackEvent(@"Detected improperly packed M3 mod v2",
+                M3OpenTelemetry.TrackEvent(@"Detected improperly packed M3 mod v2",
                     new Dictionary<string, string>()
                     {
                         {@"Archive name", Path.GetFileName(ArchiveFilePath)}
@@ -345,10 +355,12 @@ namespace ME3TweaksModManager.modmanager.importer
         }
 
         /// <summary>
-        /// Inspects an 'archive' file. Archives may contain one or more mods (or none).
+        /// Background thread worker method that inspects an archive file for mods. Scans for content mods,
+        /// texture mods, batch install queues, and handles special cases like embedded executables and RCW mods.
+        /// Also checks for blacklisted archives.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The background worker that invoked this method.</param>
+        /// <param name="e">Event arguments containing the archive file path.</param>
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
             ActionText = M3L.GetString(M3L.string_interp_openingX, ScanningFile);
@@ -479,7 +491,11 @@ namespace ME3TweaksModManager.modmanager.importer
             ScanFailureReason = ModArchiveInspector.FindModsInArchive(pathOverride ?? archive, AddCompressedModCallback, OnModFailedToLoad, AddTextureModCallback, AddBIQCallback, ActionTextUpdateCallback, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
         }
 
-        private void BeginImportingMods()
+        /// <summary>
+        /// Initiates the mod import process by starting a background thread to extract selected mods
+        /// from the archive to the mod library.
+        /// </summary>
+        private void InternalBeginImporting()
         {
             var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModExtractor");
@@ -550,7 +566,7 @@ namespace ME3TweaksModManager.modmanager.importer
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods);
-                            M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freeSpace);
+                            MUtilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freeSpace);
                             ErrorCallback?.Invoke(
                                 M3L.GetString(M3L.string_insufficientDiskSpace),
                                 M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)));
@@ -581,6 +597,12 @@ namespace ME3TweaksModManager.modmanager.importer
         }
 
 
+        /// <summary>
+        /// Background thread worker method that extracts selected mods from the archive to the mod library.
+        /// Handles disk space validation, existing mod cleanup, and extraction of various mod types.
+        /// </summary>
+        /// <param name="sender">The background worker that invoked this method.</param>
+        /// <param name="e">Event arguments containing the list of mods to extract.</param>
         private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
         {
             ActionText = M3L.GetString(M3L.string_preparingToImportMods);
@@ -595,9 +617,9 @@ namespace ME3TweaksModManager.modmanager.importer
 
             //get total size requirement
             long requiredDiskSpace = mods.Sum(x => x.SizeRequiredtoExtract);
-            if (M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freespaceBytes))
+            if (MUtilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freespaceBytes))
             {
-                requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
+                requiredDiskSpace = (long)(requiredDiskSpace * 1.05); // 5% buffer due to swap, other temp things the OS may be doing
                 M3Log.Information($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)}");
                 if ((long)freespaceBytes < requiredDiskSpace)
                 {
@@ -632,10 +654,10 @@ namespace ME3TweaksModManager.modmanager.importer
                     }
                     continue;
                 }
+
                 //Ensure directory
                 var modDirectory = M3LoadedMods.GetExtractionDirectoryForMod(mod);
                 var sanitizedPath = Path.Combine(modDirectory, MUtilities.SanitizePath(mod.ModName));
-
 
                 if (mod is Mod && Directory.Exists(sanitizedPath))
                 {
@@ -668,7 +690,6 @@ namespace ME3TweaksModManager.modmanager.importer
                                 M3L.GetString(M3L.string_errorDeletingExistingMod),
                                 M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod));
                             abort = true;
-                            return;
                         }
                     }
                     catch (Exception ex)
@@ -751,6 +772,12 @@ namespace ME3TweaksModManager.modmanager.importer
             e.Result = extractedMods;
         }
 
+        /// <summary>
+        /// Extracts a Batch Install Queue (BIQ) file to the batch install groups directory.
+        /// Prompts user for confirmation if a file with the same name already exists.
+        /// </summary>
+        /// <param name="biq">The batch install queue to extract.</param>
+        /// <returns>Result indicating success or user cancellation.</returns>
         private EModImportResult ExtractBiq(BatchLibraryInstallQueue biq)
         {
             // Either that or sanitize biq.ModName for filesystem use
@@ -777,6 +804,10 @@ namespace ME3TweaksModManager.modmanager.importer
             return EModImportResult.OK;
         }
 
+        /// <summary>
+        /// Callback method that updates progress information during archive extraction operations.
+        /// </summary>
+        /// <param name="args">Event arguments containing progress details (amount completed and total).</param>
         private void ExtractionProgressCallback(DetailedProgressEventArgs args)
         {
             // Debug.WriteLine("Extraction progress " + args.AmountCompleted + "/" + args.TotalAmount);
@@ -785,6 +816,13 @@ namespace ME3TweaksModManager.modmanager.importer
             ProgressIndeterminate = ProgressValue == 0;
         }
 
+        /// <summary>
+        /// Callback method that updates progress information during package compression operations.
+        /// Used for OT (Original Trilogy) mods that compress packages after extraction.
+        /// </summary>
+        /// <param name="activityString">Description of the current compression activity.</param>
+        /// <param name="numDone">Number of packages that have been compressed.</param>
+        /// <param name="numToDo">Total number of packages to compress.</param>
         private void CompressedPackageCallback(string activityString, int numDone, int numToDo)
         {
             //progress for compression
@@ -857,16 +895,31 @@ namespace ME3TweaksModManager.modmanager.importer
 
 
 
+        /// <summary>
+        /// Begins scanning the archive for mods. This is the entry point for initiating
+        /// the archive inspection process.
+        /// </summary>
         public void BeginScan()
         {
             InspectArchiveFile();
         }
 
+        /// <summary>
+        /// Begins importing selected mods from the archive to the mod library.
+        /// This is the entry point for initiating the import process.
+        /// </summary>
         public void BeginImporting()
         {
-            BeginImportingMods();
+            InternalBeginImporting();
         }
 
+        /// <summary>
+        /// Static utility method to import texture mod (.mem) files to the texture library directory
+        /// for the specified game.
+        /// </summary>
+        /// <param name="memFiles">List of file paths to texture mod files to import.</param>
+        /// <param name="memGame">The game the texture mods are for. If Unknown, will be detected from file.</param>
+        /// <param name="task">Optional background task for progress reporting.</param>
         public static void ImportTextureFiles(List<string> memFiles, MEGame memGame = MEGame.Unknown, BackgroundTask task = null)
         {
             foreach (var memFile in memFiles)

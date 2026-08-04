@@ -12,6 +12,7 @@ using IniParser.Model;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager
 {
@@ -36,7 +37,9 @@ namespace ME3TweaksModManager.modmanager
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
-            if (Loaded)
+
+            // Don't save session-only settings
+            if (Loaded && !propertyName.StartsWith("SessionOnly_"))
             {
                 LogSettingChanging(propertyName, value);
                 Save();
@@ -80,7 +83,7 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _launchGamesThroughOrigin, value);
         }
 
-        public static bool _useOptimizedTextureRestore;
+        private static bool _useOptimizedTextureRestore;
         public static bool UseOptimizedTextureRestore
         {
             get => _useOptimizedTextureRestore;
@@ -134,6 +137,26 @@ namespace ME3TweaksModManager.modmanager
         {
             get => _betaMode;
             set => SetProperty(ref _betaMode, value);
+        }
+
+
+        private static bool _alphaMode = false;
+        public static bool AlphaMode
+        {
+            get
+            {
+#if DEBUG && FALSE
+                return true;
+#else
+                return _alphaMode;
+#endif
+            }
+            set
+            {
+#if !DEBUG
+                SetProperty(ref _alphaMode, value);
+#endif
+            }
         }
 
         private static bool _configureNXMHandlerOnBoot = true;
@@ -192,7 +215,7 @@ namespace ME3TweaksModManager.modmanager
         public static int WebClientTimeout
         {
             get => _webclientTimeout;
-            set => SetProperty(ref _webclientTimeout, value);
+            set => SetProperty(ref _webclientTimeout, Math.Clamp(value, 1, 300)); // Clamp between 1-300 seconds
         }
 
         private static string _updateServiceLZMAStoragePath;
@@ -243,12 +266,17 @@ namespace ME3TweaksModManager.modmanager
             get => _autoUpdateLods4K;
             set
             {
-                SetProperty(ref _autoUpdateLods4K, value);
-                if (!changingLODSetting && value)
+                if (SetProperty(ref _autoUpdateLods4K, value) && value && !changingLODSetting)
                 {
                     changingLODSetting = true;
-                    AutoUpdateLODs2K = false;
-                    changingLODSetting = false;
+                    try
+                    {
+                        AutoUpdateLODs2K = false;
+                    }
+                    finally
+                    {
+                        changingLODSetting = false;
+                    }
                 }
             }
         }
@@ -395,6 +423,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _le1ConsoleKey, value);
         }
 
+        private static Guid _instanceGuid = Guid.Empty;
+        public static Guid InstanceGuid
+        {
+            get => _instanceGuid;
+            set => SetProperty(ref _instanceGuid, value);
+        }
+
         private static bool _isLE1MiniConsoleKeySet;
         public static bool IsLE1MiniConsoleKeySet
         {
@@ -438,11 +473,32 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _skipDarkNet, value);
         }
 
-        public static bool _showInstalledModsInLibrary;
+        private static bool _showInstalledModsInLibrary;
         public static bool ShowInstalledModsInLibrary
         {
             get => _showInstalledModsInLibrary;
             set => SetProperty(ref _showInstalledModsInLibrary, value);
+        }
+
+        private static bool _playDialogSounds = true;
+        public static bool PlayDialogSounds
+        {
+            get => _playDialogSounds;
+            set => SetProperty(ref _playDialogSounds, value);
+        }
+
+        private static int _maxConcurrentImportOperations;
+        public static int MaxConcurrentImportOperations
+        {
+            get => _maxConcurrentImportOperations;
+            set => SetProperty(ref _maxConcurrentImportOperations, value);
+        }
+
+        private static bool _autoImportModUpdates = true;
+        public static bool AutoImportModUpdates
+        {
+            get => _autoImportModUpdates;
+            set => SetProperty(ref _autoImportModUpdates, value);
         }
 
         #region SESSION ONLY SETTINGS - DO NOT SAVE OR LOAD THESE
@@ -475,20 +531,26 @@ namespace ME3TweaksModManager.modmanager
 
         public static void Load()
         {
-            if (!File.Exists(SettingsPath))
-            {
-                File.Create(SettingsPath).Close();
-            }
             IniData settingsIni = null;
-            try
+
+            if (File.Exists(SettingsPath))
             {
-                settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+                try
+                {
+                    settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+                }
+                catch (Exception e)
+                {
+                    M3Log.Error(@"Error reading settings.ini file: " + e.Message);
+                    M3Log.Error(@"Mod Manager will use the defaults instead");
+                }
             }
-            catch (Exception e)
+            else
             {
-                M3Log.Error("Error reading settings.ini file: " + e.Message);
-                M3Log.Error("Mod Manager will use the defaults instead");
+                M3Log.Information(@"No settings.ini file found, using defaults");
+                settingsIni = new IniData();
             }
+
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastSelectedTarget = LoadSettingString(settingsIni, "ModManager", "LastSelectedTarget", null);
@@ -502,7 +564,7 @@ namespace ME3TweaksModManager.modmanager
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
             ModDownloadCacheFolder = LoadSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", null);
-
+            PlayDialogSounds = LoadSettingBool(settingsIni, "UI", "PlayDialogSounds", true);
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
             UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
@@ -527,6 +589,7 @@ namespace ME3TweaksModManager.modmanager
 
             SSUILoadAllSaves = LoadSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", false);
             ForcePullContentNextBoot = LoadSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", false);
+            InstanceGuid = LoadSettingGuid(settingsIni, "ModManager", "InstanceGuid", Guid.Empty);
 
             // LEGENDARY
             SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
@@ -561,6 +624,10 @@ namespace ME3TweaksModManager.modmanager
                 // Only read if value is set so we don't have a blank
                 LE1MiniConsoleKey = LoadSettingString(settingsIni, "ConfigMerge", "LE1MiniConsoleKey", null);
             }
+
+            // Downloads Manager
+            MaxConcurrentImportOperations = LoadSettingInt(settingsIni, "ModManager", "MaxConcurrentImportOperations", 3);
+            AutoImportModUpdates = LoadSettingBool(settingsIni, "ModManager", "AutoImportModUpdates", true);
 
             // BETA OPTIONS
             ShowInstalledModsInLibrary = LoadSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", false);
@@ -708,109 +775,121 @@ namespace ME3TweaksModManager.modmanager
         /// <summary>
         /// Saves the settings. Note this does not update the Updates/EncryptedPassword value. Returns false if commiting failed
         /// </summary>
+        private static readonly object SaveLock = new object();
+
         private static SettingsSaveResult Save()
         {
-            Debug.WriteLine(@"Saving settings");
-            try
+            lock (SaveLock)
             {
-                var settingsIni = new IniData();
-                if (File.Exists(SettingsPath))
+                Debug.WriteLine(@"Saving settings");
+                try
                 {
-                    settingsIni = new FileIniDataParser().ReadFile(SettingsPath); // Read file in so we don't lose any settings
+                    var settingsIni = new IniData();
+                    if (File.Exists(SettingsPath))
+                    {
+                        settingsIni = new FileIniDataParser().ReadFile(SettingsPath); // Read file in so we don't lose any settings
+                    }
+
+                    SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
+                    SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
+                    SaveSettingBool(settingsIni, "Logging", "LogModUpdater", LogModUpdater);
+                    SaveSettingBool(settingsIni, "Logging", "LogBackupAndRestore", LogBackupAndRestore);
+
+                    SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
+                    SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
+                    SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
+                    SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
+                    SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
+                    SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
+                    SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
+                    SaveSettingBool(settingsIni, "UI", "SkipDarkNet", SkipDarkNet);
+                    SaveSettingBool(settingsIni, "UI", "PlayDialogSounds", PlayDialogSounds);
+                    SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
+                    SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
+                    SaveSettingString(settingsIni, "ModManager", "Language", Language);
+                    SaveSettingString(settingsIni, "ModManager", "LastSelectedTarget", LastSelectedTarget);
+                    SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
+                    SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
+                    SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
+                    SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", AutoUpdateLODs4K);
+                    SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
+                    SaveSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", PreferCompressingPackages);
+                    SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
+                    SaveSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
+                    SaveSettingBool(settingsIni, "ModManager", "SkipLELauncher", SkipLELauncher);
+                    SaveSettingBool(settingsIni, "ModManager", "GenerationSettingOT", GenerationSettingOT);
+                    SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
+                    SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
+                    SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
+                    SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", OneTimeMessage_ModListIsNotListOfInstalledMods);
+                    SaveSettingBool(settingsIni, "ModManager", "ShowLE1CoalescedMergeOverwritesFile", OneTimeMessage_LE1CoalescedOverwriteWarning);
+                    SaveSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", ModDownloadCacheFolder);
+                    SaveSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", SelectedLE1LaunchOption);
+                    SaveSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", SelectedLE2LaunchOption);
+                    SaveSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", SelectedLE3LaunchOption);
+                    if (InstanceGuid != Guid.Empty)
+                    {
+                        SaveSettingGuid(settingsIni, "ModManager", "InstanceGuid", InstanceGuid);
+                    }
+
+                    SaveSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", EnableLE1CoalescedMerge);
+                    SaveSettingBool(settingsIni, "ModManager", "EnableLE12DAMerge", EnableLE12DAMerge);
+                    SaveSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", ForcePullContentNextBoot);
+                    SaveSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", ShowInstalledModsInLibrary);
+
+                    SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
+                    SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
+
+                    // Save Selector
+                    SaveSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", SSUILoadAllSaves);
+
+                    // Debug options
+                    SaveSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", UseOptimizedTextureRestore);
+                    SaveSettingBool(settingsIni, "ModManagerDebug", "EnableTextureSafetyChecks", EnableTextureSafetyChecks);
+
+                    // Config Merge
+                    #region LE1 Console Key
+                    SaveSettingBool(settingsIni, "ConfigMerge", "IsLE1ConsoleKeySet", IsLE1ConsoleKeySet);
+                    if (!IsLE1ConsoleKeySet)
+                    {
+                        // Remove the value if this is not bound
+                        RemoveSetting(settingsIni, "ConfigMerge", "LE1ConsoleKey");
+                    }
+                    else
+                    {
+                        SaveSettingString(settingsIni, "ConfigMerge", "LE1ConsoleKey", LE1ConsoleKey);
+                    }
+                    #endregion
+
+                    #region LE1 Mini Console Key
+                    SaveSettingBool(settingsIni, "ConfigMerge", "IsLE1MiniConsoleKeySet", IsLE1MiniConsoleKeySet);
+                    if (!IsLE1MiniConsoleKeySet)
+                    {
+                        // Remove the value if this is not bound
+                        RemoveSetting(settingsIni, "ConfigMerge", "LE1MiniConsoleKey");
+                    }
+                    else
+                    {
+                        SaveSettingString(settingsIni, "ConfigMerge", "LE1MiniConsoleKey", LE1MiniConsoleKey);
+                    }
+                    #endregion
+
+                    // Download Manager
+                    SaveSettingInt(settingsIni, "ModManager", "MaxConcurrentImportOperations", MaxConcurrentImportOperations);
+                    SaveSettingBool(settingsIni, "ModManager", "AutoImportModUpdates", AutoImportModUpdates);
+
+                    File.WriteAllText(SettingsPath, settingsIni.ToString());
+                    return SettingsSaveResult.SAVED;
                 }
-
-                SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
-                SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
-                SaveSettingBool(settingsIni, "Logging", "LogModUpdater", LogModUpdater);
-                SaveSettingBool(settingsIni, "Logging", "LogBackupAndRestore", LogBackupAndRestore);
-
-                SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
-                SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
-                SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
-                SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
-                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
-                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
-                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
-                SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
-                SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
-                SaveSettingBool(settingsIni, "UI", "SkipDarkNet", SkipDarkNet);
-                SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
-                SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
-                SaveSettingString(settingsIni, "ModManager", "Language", Language);
-                SaveSettingString(settingsIni, "ModManager", "LastSelectedTarget", LastSelectedTarget);
-                SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
-                SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
-                SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
-                SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", AutoUpdateLODs4K);
-                SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
-                SaveSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", PreferCompressingPackages);
-                SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
-                SaveSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
-                SaveSettingBool(settingsIni, "ModManager", "SkipLELauncher", SkipLELauncher);
-                SaveSettingBool(settingsIni, "ModManager", "GenerationSettingOT", GenerationSettingOT);
-                SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
-                SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
-                SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
-                SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", OneTimeMessage_ModListIsNotListOfInstalledMods);
-                SaveSettingBool(settingsIni, "ModManager", "ShowLE1CoalescedMergeOverwritesFile", OneTimeMessage_LE1CoalescedOverwriteWarning);
-                SaveSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", ModDownloadCacheFolder);
-                SaveSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", SelectedLE1LaunchOption);
-                SaveSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", SelectedLE2LaunchOption);
-                SaveSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", SelectedLE3LaunchOption);
-
-                SaveSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", EnableLE1CoalescedMerge);
-                SaveSettingBool(settingsIni, "ModManager", "EnableLE12DAMerge", EnableLE12DAMerge);
-                SaveSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", ForcePullContentNextBoot);
-                SaveSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", ShowInstalledModsInLibrary);
-
-                SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
-                SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
-
-                // Save Selector
-                SaveSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", SSUILoadAllSaves);
-
-                // Debug options
-                SaveSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", UseOptimizedTextureRestore);
-                SaveSettingBool(settingsIni, "ModManagerDebug", "EnableTextureSafetyChecks", EnableTextureSafetyChecks);
-
-                // Config Merge
-                #region LE1 Console Key
-                SaveSettingBool(settingsIni, "ConfigMerge", "IsLE1ConsoleKeySet", IsLE1ConsoleKeySet);
-                if (!IsLE1ConsoleKeySet)
+                catch (UnauthorizedAccessException uae)
                 {
-                    // Remove the value if this is not bound
-                    RemoveSetting(settingsIni, "ConfigMerge", "LE1ConsoleKey");
+                    M3Log.Error("Unauthorized access exception: " + App.FlattenException(uae));
+                    return SettingsSaveResult.FAILED_UNAUTHORIZED;
                 }
-                else
+                catch (Exception e)
                 {
-                    SaveSettingString(settingsIni, "ConfigMerge", "LE1ConsoleKey", LE1ConsoleKey);
+                    M3Log.Error("Error commiting settings: " + App.FlattenException(e));
                 }
-                #endregion
-
-                #region LE1 Mini Console Key
-                SaveSettingBool(settingsIni, "ConfigMerge", "IsLE1MiniConsoleKeySet", IsLE1MiniConsoleKeySet);
-                if (!IsLE1MiniConsoleKeySet)
-                {
-                    // Remove the value if this is not bound
-                    RemoveSetting(settingsIni, "ConfigMerge", "LE1MiniConsoleKey");
-                }
-                else
-                {
-                    SaveSettingString(settingsIni, "ConfigMerge", "LE1MiniConsoleKey", LE1MiniConsoleKey);
-                }
-                #endregion
-
-                File.WriteAllText(SettingsPath, settingsIni.ToString());
-                return SettingsSaveResult.SAVED;
-            }
-            catch (UnauthorizedAccessException uae)
-            {
-                M3Log.Error("Unauthorized access exception: " + App.FlattenException(uae));
-                return SettingsSaveResult.FAILED_UNAUTHORIZED;
-            }
-            catch (Exception e)
-            {
-                M3Log.Error("Error commiting settings: " + App.FlattenException(e));
             }
 
             return SettingsSaveResult.FAILED_OTHER;
@@ -869,13 +948,12 @@ namespace ME3TweaksModManager.modmanager
                         // all bytes are zero. The ini file has become corrupt. 
                         // This issue has been observed but not replicated
                         // Delete the settings.ini
-                        App.SubmitAnalyticTelemetryEvent(@"Corrupted settings.ini detected",
+                        M3OpenTelemetry.TrackEvent(@"Corrupted settings.ini detected",
                             new Dictionary<string, string>()
                             {
                                 {@"Filesize", bytes.Length.ToString()}
                             });
-                        M3Log.Fatal(
-                            @"DETECTED CORRUPT SETTINGS.INI FILE. This file will be deleted and reset to defaults.");
+                        M3Log.Fatal(@"DETECTED CORRUPT SETTINGS.INI FILE. This file will be deleted and reset to defaults.");
                         File.Delete(SettingsPath);
                     }
                 }

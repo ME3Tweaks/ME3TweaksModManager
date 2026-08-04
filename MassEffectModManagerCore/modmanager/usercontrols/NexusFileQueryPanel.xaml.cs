@@ -13,6 +13,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
@@ -71,7 +72,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SearchAgainstMod()
         {
-            ModSelectorDialog msd = new ModSelectorDialog(window, M3LoadedMods.Instance.AllLoadedMods.ToList(),
+            ModSelectorDialog msd = new ModSelectorDialog(window, M3LoadedMods.Instance.AllLoadedMods.OfType<IDisplayableMod>().ToList(),
                 M3L.GetString(M3L.string_selectModToCompareAgainstDatabase),
                 M3L.GetString(M3L.string_nfqp_selectModDialogText), M3L.GetString(M3L.string_selectMod))
             {
@@ -81,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (msd.SelectedMods.Any())
             {
-                QueryingMod = msd.SelectedMods[0];
+                QueryingMod = msd.SelectedMods[0] as Mod; // should always be accurate
                 PerformSearchAgainstMod();
             }
         }
@@ -105,12 +106,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public RelayCommand DownloadModCommand { get; private set; }
         public GenericCommand SearchCommand { get; set; }
         public GenericCommand CompareAgainstModCommand { get; set; }
+        public GenericCommand CustomSearchCommand { get; set; }
 
         private void LoadCommands()
         {
             DownloadModCommand = new RelayCommand(DownloadMod, CanDownloadMod);
             SearchCommand = new GenericCommand(PerformSearch, CanSearch);
             CompareAgainstModCommand = new GenericCommand(SearchAgainstMod, () => QPLoaded);
+#if DEBUG
+            CustomSearchCommand = new GenericCommand(CustomSearch);
+#endif
         }
 
 
@@ -270,6 +275,70 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private static String WildCardToRegular(String value)
         {
             return @"^" + Regex.Escape(value).Replace(@"\*", @".*") + @"$";
+        }
+
+
+        private void CustomSearch()
+        {
+#if DEBUG
+            Results.ClearEx();
+            QueryInProgress = true;
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    const string leDomain = @"masseffectlegendaryedition";
+                    if (!LoadedDatabases.TryGetValue(leDomain, out var db))
+                    {
+                        StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
+                        return;
+                    }
+
+                    var matchingFileNameIds = db.NameTable
+                        .Where(x => x.Value.EndsWith(@".m3da", StringComparison.InvariantCultureIgnoreCase))
+                        .Select(x => x.Key)
+                        .ToList();
+
+                    List<SearchedItemResult> matchingResults = new List<SearchedItemResult>();
+                    foreach (var fileNameId in matchingFileNameIds)
+                    {
+                        if (!db.FileInstances.TryGetValue(fileNameId, out var fileInstances) || fileInstances == null)
+                            continue;
+
+                        foreach (var instance in fileInstances)
+                        {
+                            if (!db.ModFileInfos.TryGetValue(instance.FileID, out var fileInfo) || fileInfo.LEGames == null)
+                                continue;
+
+                            bool isLE1Only = fileInfo.LEGames.Length == 1 && fileInfo.LEGames[0] == MEGame.LE1;
+                            bool isAllLE = fileInfo.LEGames.Contains(MEGame.LE1) && fileInfo.LEGames.Contains(MEGame.LE2) && fileInfo.LEGames.Contains(MEGame.LE3);
+                            if (!isLE1Only && !isAllLE)
+                                continue;
+
+                            matchingResults.Add(new SearchedItemResult
+                            {
+                                Instance = instance,
+                                Domain = leDomain,
+                                Filename = db.NameTable[instance.FilenameId],
+                                AssociatedDB = db
+                            });
+                        }
+                    }
+
+                    Results.AddRange(matchingResults);
+                    StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
+                }
+                catch (Exception e)
+                {
+                    M3Log.Error($@"Could not perform custom search: {e.Message}");
+                }
+                finally
+                {
+                    QueryInProgress = false;
+                }
+            });
+#endif
         }
 
         private void PerformSearchAgainstMod()

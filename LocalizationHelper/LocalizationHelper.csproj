@@ -2,19 +2,19 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<!-- Windows 2004 -->
-		<TargetFrameworks>net8.0-windows10.0.19041</TargetFrameworks>
+		<TargetFramework>net10.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<Authors>Mgamerz</Authors>
 		<Company>ME3Tweaks</Company>
 		<Product>ME3Tweaks Mod Manager Localizer</Product>
 		<Description>Localizes the ME3Tweaks Mod Manager files from Github</Description>
-		<Copyright>2020-2023 ME3Tweaks</Copyright>
+		<Copyright>2020-2026 ME3Tweaks</Copyright>
 		<ApplicationIcon>localizericon.ico</ApplicationIcon>
-		<Version>2.0.9</Version>
+		<Version>2.1.2</Version>
 		<Platforms>x64</Platforms>
 		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -28,12 +28,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AvalonEdit" Version="6.3.0.90" />
-		<PackageReference Include="Fody" Version="6.9.2">
+		<PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+		<PackageReference Include="Fody" Version="6.9.3">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
 	</ItemGroup>

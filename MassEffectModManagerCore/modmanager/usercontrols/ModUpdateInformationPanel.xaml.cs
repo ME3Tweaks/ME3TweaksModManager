@@ -17,7 +17,8 @@ using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
-using Microsoft.WindowsAPICodePack.Taskbar;
+using static ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -33,12 +34,33 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private List<Mod> updatedMods = new();
         private bool RefreshContentsOnVisible = false;
         public bool OperationInProgress { get; set; }
+        public bool IsNexusPremiumUser => NexusModsUtilities.UserInfo?.IsPremium == true;
+
+        private bool _useInAppUpdater = Settings.AutoImportModUpdates && NexusModsUtilities.UserInfo?.IsPremium == true;
+        public bool UseInAppUpdater
+        {
+            get => _useInAppUpdater;
+            set
+            {
+
+                if (_useInAppUpdater == value) return;
+
+                _useInAppUpdater = value;
+
+                // Persist the user's preference when it changes
+                if (Settings.AutoImportModUpdates != value)
+                {
+                    Settings.AutoImportModUpdates = value;
+                }
+
+                // Notify UI of the property change
+                TriggerPropertyChangedFor(nameof(UseInAppUpdater));
+            }
+        }
 
         public ModUpdateInformationPanel(List<M3OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
-#if DEBUG
             DownloadManager.OnDownloadMetadataLoaded += AssociateModDownload;
-#endif
             modsWithUpdates.ForEach(x =>
             {
                 x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
@@ -63,14 +85,39 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (sender is NexusModDownload md)
             {
+                var found = false;
                 foreach (var up in UpdatableMods.OfType<M3OnlineContent.NexusModUpdateInfo>())
                 {
                     if (up.NexusModsId == md.ProtocolLink.ModId)
                     {
                         up.DownloadFlow = md;
                         up.DownloadFlow.DownloadStateChanged += up.OnDownloadStateChanged;
+                        up.DownloadButtonText = M3L.GetString(M3L.string_updating);
+                        found = true;
                         break;
                     }
+                }
+
+                if (!found)
+                {
+                    M3Log.Warning($@"Could not associate download to mod in library: {md.FileName}");
+                }
+            }
+        }
+
+        private void OnDownloadStateChanged(object sender, EventArgs e)
+        {
+            if (sender is ModDownload md)
+            {
+                if (md.DownloadState is EModDownloadState.QUEUED)
+                {
+                    // This panel sets this to false for performance.
+                    md.ProgressIndeterminate = false;
+                }
+                else if (md.DownloadState is EModDownloadState.FINISHED or EModDownloadState.FAILED)
+                {
+                    TriggerPropertyChangedFor(nameof(ShowClearCompletedButton));
+                    md.DownloadStateChanged -= OnDownloadStateChanged;
                 }
             }
         }
@@ -102,9 +149,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (ui is M3OnlineContent.NexusModUpdateInfo nmui)
                 {
-                    var usedInAppDownloader = await AttemptQueueNexusModDownload(nmui);
-                    if (!usedInAppDownloader)
+                    // Check if we should auto-download and import
+                    if (UseInAppUpdater && NexusModsUtilities.UserInfo?.IsPremium == true)
                     {
+                        var usedInAppDownloader = await AttemptQueueNexusModDownload(nmui);
+                        if (!usedInAppDownloader)
+                        {
+                            var url = $@"https://nexusmods.com/{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}?tab=files";
+                            M3Utilities.OpenWebpage(url);
+                        }
+                    }
+                    else
+                    {
+                        // Open webpage for non-premium users or if auto-import is disabled
                         var url = $@"https://nexusmods.com/{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}?tab=files";
                         M3Utilities.OpenWebpage(url);
                     }
@@ -116,18 +173,29 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (NexusModsUtilities.UserInfo?.IsPremium == true)
             {
+                nmui.UIStatusString = M3L.GetString(M3L.string_initializing);
                 nmui.UpdateInProgress = true;
                 var fileId = await NexusModsUtilities.GetMainFileForMod(nmui.GetNexusDomain(), nmui.NexusModsId);
                 if (fileId != null)
                 {
                     // Fire as nxm link
                     string nxmlink = $@"nxm://{nmui.GetNexusDomain()}/mods/{nmui.NexusModsId}/files/{fileId}";
-                    DownloadManager.AddNXMDownload(nxmlink);
+                    var modDownload = DownloadManager.AddNXMDownload(nxmlink);
+
+                    if (modDownload.DownloadState == EModDownloadState.FAILED)
+                    {
+                        nmui.MarkUpdateFailed(M3L.GetString(M3L.string_initializationFailed));
+                        return false;
+                    }
+                    
+                    // Using in-app downloader.
+                    modDownload.DownloadStateChanged += OnDownloadStateChanged;
                     return true;
                 }
 
                 // Could not find file. We are not in progress.
-                nmui.UpdateInProgress = false;
+                M3Log.Warning($@"Could not generate download link for file: {nmui.mod.ModName}, domain: {nmui.GetNexusDomain()}, modId: {nmui.NexusModsId}");
+                nmui.MarkUpdateFailed(M3L.GetString(M3L.string_downloadUnavailable));
             }
 
             return false;
@@ -247,7 +315,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                TelemetryInterposer.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"ModMaker"},
                     {@"ModName", mui.mod.ModName},
@@ -308,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                TelemetryInterposer.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"Classic"},
                     {@"ModName", ui.mod.ModName},
@@ -343,7 +411,44 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             CloseCommand = new GenericCommand(CloseDialog, TaskNotRunning);
             DownloadAllCommand = new GenericCommand(DownloadAll, CanDownloadAll);
+            ClearCompletedCommand = new GenericCommand(ClearCompleted, CanClearCompleted);
         }
+
+        /// <summary>
+        /// Removes all items marked CanUpdate as false
+        /// </summary>
+        private void ClearCompleted()
+        {
+            var itemsToRemove = UpdatableMods.Where(x => !x.CanUpdate).ToList();
+
+            foreach (var up in itemsToRemove.OfType<M3OnlineContent.NexusModUpdateInfo>())
+            {
+                if (up.DownloadFlow != null)
+                {
+                    up.DownloadFlow.DownloadStateChanged -= OnDownloadStateChanged;
+                }
+            }
+
+            /// Nexus mods don't get added to updatedMods in other ways, so we need to do it here
+            updatedMods.AddRange(itemsToRemove.OfType<NexusModUpdateInfo>().Select(x => x.mod));
+
+            UpdatableMods.RemoveRange(itemsToRemove);
+
+            // Close dialog if nothing is left
+            if (UpdatableMods.Count == 0 && TaskNotRunning())
+            {
+                Result.ReloadMods = true;
+                CloseDialog();
+            }
+        }
+
+
+
+        /// <summary>
+        /// If any items in the list can be cleared
+        /// </summary>
+        /// <returns></returns>
+        private bool CanClearCompleted() => UpdatableMods.Any(x => !x.CanUpdate);
 
         /// <summary>
         /// If the download all button can be pressed
@@ -356,10 +461,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
 
         // 03/21/2025 - Show all download button if we are in beta mode.
-        public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || NexusModsUtilities.UserInfo?.IsPremium == true));
+        public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || NexusModsUtilities.UserInfo?.IsPremium == true && UseInAppUpdater));
+
+        /// <summary>
+        /// If the clear completed button should be shown at all to the user
+        /// </summary>
+        public bool ShowClearCompletedButton => UpdatableMods.Any(x => !x.CanUpdate);
 
         private void DownloadAll()
         {
+            TriggerPropertyChangedFor(nameof(ShowClearCompletedButton));
             var updates = UpdatableMods.Where(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0 || x.mod.NexusModID != 0)).ToList();
             OperationInProgress = true;
             CommandManager.InvalidateRequerySuggested();
@@ -368,6 +479,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 object syncObj = new object();
 
+                // Invoked when an update completes
                 void updateDone()
                 {
                     lock (syncObj)
@@ -411,8 +523,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public GenericCommand DownloadAllCommand { get; set; }
 
+        public GenericCommand ClearCompletedCommand { get; set; }
         private void CloseDialog()
         {
+            // Nexus mods don't get added to updatedMods in other ways, so we need to do it here
+            updatedMods.AddRange(UpdatableMods.Where(x => !x.CanUpdate).OfType<NexusModUpdateInfo>().Select(x => x.mod));
+
             Result.ReloadMods = updatedMods.Any();
             Result.ModToHighlightOnReload = updatedMods.FirstOrDefault();
             OnClosing(DataEventArgs.Empty);
@@ -472,9 +588,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         protected override void OnClosing(DataEventArgs e)
         {
-#if DEBUG
             DownloadManager.OnDownloadMetadataLoaded -= AssociateModDownload;
-#endif
+
+            foreach (var up in UpdatableMods.OfType<M3OnlineContent.NexusModUpdateInfo>())
+            {
+                if (up.DownloadFlow != null)
+                {
+                    up.DownloadFlow.DownloadStateChanged -= OnDownloadStateChanged;
+                }
+            }
             base.OnClosing(e);
         }
     }

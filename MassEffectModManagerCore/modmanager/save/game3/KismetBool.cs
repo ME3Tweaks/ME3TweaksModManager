@@ -27,14 +27,14 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("KismetBoolSaveRecord")]
+    [OriginalName(@"KismetBoolSaveRecord")]
     public class KismetBool : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("BoolGUID")]
+        [OriginalName(@"BoolGUID")]
         private Guid _Guid;
 
-        [OriginalName("Value")]
+        [OriginalName(@"Value")]
         private bool _Value;
         #endregion
 
@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Guid)
                 {
                     this._Guid = value;
-                    this.NotifyPropertyChanged("Guid");
+                    this.NotifyPropertyChanged(@"Guid");
                 }
             }
         }
@@ -66,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Value)
                 {
                     this._Value = value;
-                    this.NotifyPropertyChanged("Value");
+                    this.NotifyPropertyChanged(@"Value");
                 }
             }
         }

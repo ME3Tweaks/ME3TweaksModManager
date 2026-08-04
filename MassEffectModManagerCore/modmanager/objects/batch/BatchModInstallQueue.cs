@@ -1,24 +1,17 @@
-﻿using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
-using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.objects.mod;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using PropertyChanged;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Objects;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
-using Microsoft.AppCenter.Crashes;
-using SevenZip.EventArguments;
-using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.windows;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using SevenZip.EventArguments;
+using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.objects.batch
 {
@@ -105,9 +98,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public ObservableCollectionExtended<IBatchQueueMod> AllModsToInstall { get; } = new ObservableCollectionExtended<IBatchQueueMod>();
 
         /// <summary>
-        /// USED FOR SAVING/LOADING FILE FROM DISK
+        /// Used to indicate that the backup prompt has been shown. If this is true, don't show the backup prompt again, the user
+        /// decided to continue anyways. When a user says they want a backup, it will abort the install, so this being false has
+        /// no other meaning.
         /// </summary>
-        //public List<BatchMod> SerializedMods { get; internal set; }
+        [JsonIgnore]
+        public bool HasPromptedForBackup { get; set; } = false;
 
         /// <summary>
         /// If the mod should be installed with compression. This is only used in OT ME2 and ME3
@@ -273,7 +269,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             catch (Exception e)
             {
                 M3Log.Exception(e, @"Failure reading modern batch queue:");
-                TelemetryInterposer.TrackError(new Exception(@"Failed to read modern batch queue", e), new Dictionary<string, string>()
+                M3OpenTelemetry.TrackError(new Exception(@"Failed to read modern batch queue", e), new Dictionary<string, string>()
                 {
                     {@"Filename", queueFilename},
                     {@"Queue Text", queueJson}
@@ -330,64 +326,79 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// Save this queue to disk
         /// </summary>
         /// <returns></returns>
-        internal string Save(bool canOverwrite, string newName = null)
+        internal async Task<string> Save(bool canOverwrite, string newName = null, Action<ProgressInfo> progressDelegate = null)
         {
-            // Prepare for save
-            foreach (var m in ModsToInstall)
+            return await Task.Run(() =>
             {
-                m?.PrepareForSave();
-            }
-
-            SerializeOnly_MEMFilePaths = TextureModsToInstall.Select(x =>
-            {
-                var s = new SerializedTextureMod()
+                // Prepare for save
+                foreach (var m in ModsToInstall)
                 {
-                    TextureModPath = x.GetFilePathToMEM(),
-                    TextureModSize = x.Size, // Use the existing saved (in case we can't compute it)
-                    TextureModHash = x.Hash, // Use the existing saved (in case we can't compute it)
-                    AttachedToModdescMod = x is M3MEMMod, // M3MEMMod files are content-mod based texture mods (part of moddesc.ini bundle)
-                    InTextureLibrary = x.GetFilePathToMEM().StartsWith(M3LoadedMods.GetTextureLibraryDirectory(), StringComparison.InvariantCultureIgnoreCase) // If this is part of loose imported texture files
-                };
+                    m?.PrepareForSave();
+                }
 
-                if (File.Exists(x.GetFilePathToMEM()))
+                string currentFile = null;
+                void internalOnProgress(ProgressInfo pi)
                 {
-                    s.TextureModSize = new FileInfo(x.GetFilePathToMEM()).Length;
-                    if (x.Hash == null || x.InitialLoadedSize != x.Size || s.TextureModSize < (FileSize.MebiByte * 128))
+                    if (progressDelegate != null) // null check prevents string allocations
                     {
-                        // If we don't have a hash listed we MUST hash this into the object
-                        // If the initial loaded size has changed vs what we stored we must also change it (because the underlying file has changed)
-                        // Hash it. If it's big, we don't hash it, we just trust the size, to save on time.
-                        // I am not fully sure how reliable this system is...
-                        s.TextureModHash = MUtilities.CalculateHash(x.GetFilePathToMEM());
-                    }
-                    else
-                    {
-                        s.TextureModHash = @"0".PadLeft(32); // Hash 0...0
-                    }
-
-                    if (x is M3MEMMod mm && mm.ModdescMod != null)
-                    {
-                        // Store library relative path 
-                        s.TextureModPath = mm.ModdescMod.ModPath.Substring(M3LoadedMods.GetCurrentModLibraryDirectory().Length + 1) + Path.DirectorySeparatorChar + mm.GetRelativePathToMEM();
-                    }
-                    else if (s.InTextureLibrary)
-                    {
-                        // Store library relative path (after import)
-                        s.TextureModPath = x.GetFilePathToMEM().Substring(M3LoadedMods.GetTextureLibraryDirectory().Length + 1);
+                        pi.Status = M3L.GetString(M3L.string_interp_hashingXYpercent, currentFile, pi.Value.ToString(@"0.00"));
+                        progressDelegate(pi);
                     }
                 }
 
-                return s;
-            }).ToList(); // Serialize the list
+                SerializeOnly_MEMFilePaths = TextureModsToInstall.Select(x =>
+                            {
+                                var s = new SerializedTextureMod()
+                                {
+                                    TextureModPath = x.GetFilePathToMEM(),
+                                    TextureModSize = x.Size, // Use the existing saved (in case we can't compute it)
+                                    TextureModHash = x.Hash, // Use the existing saved (in case we can't compute it)
+                                    AttachedToModdescMod = x is M3MEMMod, // M3MEMMod files are content-mod based texture mods (part of moddesc.ini bundle)
+                                    InTextureLibrary = x.GetFilePathToMEM().StartsWith(M3LoadedMods.GetTextureLibraryDirectory(), StringComparison.InvariantCultureIgnoreCase) // If this is part of loose imported texture files
+                                };
 
-            // Commit
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+                                if (File.Exists(x.GetFilePathToMEM()))
+                                {
+                                    var fi = new FileInfo(x.GetFilePathToMEM());
+                                    s.TextureModSize = fi.Length;
+                                    if (x.Hash == null || x.InitialLoadedSize != x.Size || s.TextureModSize < (FileSize.MebiByte * 128))
+                                    {
+                                        // If we don't have a hash listed, we MUST hash this into the object
+                                        // If the initial loaded size has changed vs what we stored we must also change it (because the underlying file has changed)
+                                        // Hash it. If it's big, we don't hash it, we just trust the size, to save on time.
+                                        // I am not fully sure how reliable this system is...
+                                        currentFile = fi.Name;
+                                        s.TextureModHash = MUtilities.CalculateHash(x.GetFilePathToMEM(), progressDelegate: internalOnProgress);
+                                    }
+                                    else
+                                    {
+                                        s.TextureModHash = @"0".PadLeft(32); // Hash 0...0
+                                    }
 
-            var savePath = GetSaveName(newName ?? ModName, canOverwrite);
-            File.WriteAllText(savePath, json);
+                                    if (x is M3MEMMod mm && mm.ModdescMod != null)
+                                    {
+                                        // Store library relative path 
+                                        s.TextureModPath = mm.ModdescMod.ModPath.Substring(M3LoadedMods.GetCurrentModLibraryDirectory().Length + 1) + Path.DirectorySeparatorChar + mm.GetRelativePathToMEM();
+                                    }
+                                    else if (s.InTextureLibrary)
+                                    {
+                                        // Store library relative path (after import)
+                                        s.TextureModPath = x.GetFilePathToMEM().Substring(M3LoadedMods.GetTextureLibraryDirectory().Length + 1);
+                                    }
+                                }
 
-            SerializeOnly_MEMFilePaths = null; // Clear
-            return savePath;
+                                return s;
+                            }).ToList(); // Serialize the list
+
+                // Commit
+                var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+
+                var savePath = GetSaveName(newName ?? ModName, canOverwrite);
+                File.WriteAllText(savePath, json);
+
+                SerializeOnly_MEMFilePaths = null; // Clear
+                return savePath;
+            });
         }
 
         /// <summary>

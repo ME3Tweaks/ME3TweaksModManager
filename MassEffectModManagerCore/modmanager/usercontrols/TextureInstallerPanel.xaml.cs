@@ -1,5 +1,6 @@
 ﻿using System.Timers;
 using System.Windows;
+using System.Windows.Shell;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
@@ -9,6 +10,7 @@ using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
+using ME3TweaksModManager.modmanager.telemetry;
 
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -51,6 +53,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool ShowTextureWarning { get; init; } = true;
 
         /// <summary>
+        /// If marker installation should be skipped. Only use for advanced scenarios where you know what you are doing.
+        /// </summary>
+        public bool SkipMarkers { get; init; }
+
+        /// <summary>
         /// Target we are installing textures to
         /// </summary>
         public GameTarget Target { get; set; }
@@ -59,6 +66,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// List of files to install
         /// </summary>
         private readonly List<string> MEMFilesToInstall;
+
+        /// <summary>
+        /// Result of the MEM session. Can be null if one didn't run.
+        /// </summary>
+        public MEMSessionResult SessionResult;
 
         public TextureInstallerPanel(GameTarget target, List<string> memFilesToInstall)
         {
@@ -79,7 +91,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     M3Log.Exception(e, @"Error deleting MFL file for MEM: ");
                     AbortInstall = true;
-                    M3L.ShowDialog(Window.GetWindow(this), $"Unable to set the list of files for MEM to install: {e.Message}. Aborting installation of textures.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialog_unableToWriteMFL, e.Message), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
@@ -91,6 +103,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             MEMFilesToInstall = memFilesToInstall;
         }
 
+        // Weaved by PropertyChanged.Fody
+        public void OnPercentDoneChanged()
+        {
+            UpdateTaskbarProgress(PercentDone);
+        }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -211,8 +228,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             if (markerResult.HasAnyErrors())
                             {
-                                M3Log.Error(
-                                    $@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
+                                M3Log.Error($@"{markerResult.GetErrors().Count} leftover texture-modded files were found from a previous texture installation. These files must be removed or reverted to vanilla in order to continue installation.");
 
                                 if (Settings.LogModInstallation || markerResult.GetErrors().Count < 30)
                                 {
@@ -227,8 +243,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 }
 
                                 // Todo: Backup service specific strings.
-                                markerResult.AddFirstError(
-                                    M3L.GetString(M3L.string_dialog_leftoverTextureFilesFound));
+                                markerResult.AddFirstError(M3L.GetString(M3L.string_dialog_leftoverTextureFilesFound));
                                 b.Result = markerResult;
                                 return;
                             }
@@ -263,7 +278,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // Install the textures.
                     SetNextStep(M3L.GetString(M3L.string_preparingForTextureInstall)); // same message
                     var installResult = MEMIPCHandler.InstallMEMFiles(Target, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x, setGamePath: false);
-                    TelemetryInterposer.TrackEvent(@"Installed texture mods", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent(@"Installed texture mods", new Dictionary<string, string>()
                     {
                         {@"Result", installResult != null ? (installResult.ExitCode == 0 ? @"OK" : $@"Error code {installResult.ExitCode}") : @"Unknown"}
                     });
@@ -280,6 +295,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     foreach (var f in trackedFileToOriginalMD5Map.Where(x => x.Key.RepresentsPackageFilePath()))
                     {
                         var path = Path.Combine(Target.TargetPath, f.Key);
+                        M3Log.Information($@"Inventorying file after texture install: {path}");
                         var existingInfo = BasegameFileIdentificationService.GetBasegameFileSource(Target, path, f.Value);
                         if (existingInfo != null) // This should never be null but we will check here anyways.
                         {
@@ -291,7 +307,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         numDone++;
                         PercentDone = (int)(numDone * 100.0 / Target.ModifiedBasegameFiles.Count);
                     }
-
+                    M3Log.Information($@"Updating BGFIS with new texture modded hashes");
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(basegameFileDbUpdates);
                     b.Result = installResult;
                 }
@@ -313,6 +329,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (b.Result is MEMSessionResult mir)
                 {
+                    SessionResult = mir;
                     if (mir.ExitCode != 0)
                     {
                         // This is kind of technical, but will also catch some strange edge cases user may face if MEM unexpectedly dies.
@@ -325,7 +342,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         if (BGTask != null)
                         {
+                            // Show before dialog
                             BGTask.FinishedUIText = M3L.GetString(M3L.string_textureInstallationFailed);
+                            BackgroundTaskEngine.SubmitJobCompletion(BGTask);
+                            BGTask = null; // Done
                         }
 
                         ListDialog ld = null;
@@ -347,9 +367,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
 
+                // Finalize background task if it hasn't been yet
                 if (BGTask != null)
                 {
                     BackgroundTaskEngine.SubmitJobCompletion(BGTask);
+                    BGTask = null;
                 }
 
                 OnClosing(DataEventArgs.Empty);
@@ -367,9 +389,72 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             base.OnClosing(e);
 
             // Allow sleep when panel closes
-            _keepAwakeTimer.Stop();
-            _keepAwakeTimer.Elapsed -= keepSystemAwake;
+            // 08/19/2025 - Also dispose of the timer in case it's doing something
+            // dumb...
+            _keepAwakeTimer?.Stop();
+            _keepAwakeTimer?.Elapsed -= keepSystemAwake;
+            _keepAwakeTimer?.Dispose();
+            _keepAwakeTimer = null;
             SystemSleepManager.AllowSleep();
+
+            // Clear taskbar progress when closing
+            try
+            {
+                var win = Window.GetWindow(this);
+                if (win != null)
+                {
+                    win.Dispatcher.BeginInvoke(() =>
+                    {
+                        if (win.TaskbarItemInfo == null)
+                        {
+                            win.TaskbarItemInfo = new TaskbarItemInfo();
+                        }
+                        win.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+                        win.TaskbarItemInfo.ProgressValue = 0.0;
+                    });
+                }
+            }
+            catch
+            {
+                // Best-effort only
+            }
+        }
+
+        private void UpdateTaskbarProgress(int percent)
+        {
+            try
+            {
+                if (window == null) return;
+
+                // Ensure UI thread usage
+                window.Dispatcher.BeginInvoke(() =>
+                {
+                    if (window.TaskbarItemInfo == null)
+                    {
+                        window.TaskbarItemInfo = new TaskbarItemInfo();
+                    }
+
+                    if (percent <= 0)
+                    {
+                        window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+                        window.TaskbarItemInfo.ProgressValue = 0.0;
+                    }
+                    else if (percent >= 100)
+                    {
+                        window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Paused; // show full completed state
+                        window.TaskbarItemInfo.ProgressValue = 1.0;
+                    }
+                    else
+                    {
+                        window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
+                        window.TaskbarItemInfo.ProgressValue = Math.Max(0.0, Math.Min(1.0, percent / 100.0));
+                    }
+                });
+            }
+            catch
+            {
+                // best-effort only - ignore failures
+            }
         }
 
         private void SetNextStep(string nextStepText)

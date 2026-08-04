@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Timers;
 using System.Windows;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Misc;
@@ -50,6 +44,7 @@ namespace ME3TweaksModManager.modmanager
         /// </summary>
         private static FallbackLink StartupManifestURL = new FallbackLink()
         {
+            LoadBalancing = true,
             MainURL = @"https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + @"&M3=true",
             FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/staticfiles/liveservices/services/startupmanifest.json"
         };
@@ -65,7 +60,7 @@ namespace ME3TweaksModManager.modmanager
         /// </summary>
         /// <param name="betamode"></param>
         /// <returns></returns>
-        public static bool FetchOnlineStartupManifest(bool betamode, bool usePeriodicRefresh = false)
+        public static bool FetchOnlineStartupManifest(bool betamode, bool usePeriodicRefresh = false, bool performTouchup = true)
         {
             if (usePeriodicRefresh && manifestRefreshTimer == null)
             {
@@ -93,10 +88,13 @@ namespace ME3TweaksModManager.modmanager
                     string json = wc.DownloadString(fetchUrl);
                     _serverManifest = JsonConvert.DeserializeObject<CaseInsensitiveDictionary<object>>(json);
                     M3Log.Information($@"Fetched startup manifest from endpoint {host}");
-                    Application.Current?.Dispatcher.Invoke(() =>
+                    if (performTouchup)
                     {
-                        M3ServiceLoader.TouchupServerManifest(Application.Current.MainWindow as MainWindow);
-                    });
+                        Application.Current?.Dispatcher.Invoke(() =>
+                        {
+                            M3ServiceLoader.TouchupServerManifest(Application.Current.MainWindow as MainWindow);
+                        });
+                    }
                     return true;
                 }
                 catch (Exception e)

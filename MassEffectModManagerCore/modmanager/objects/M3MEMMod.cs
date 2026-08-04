@@ -2,6 +2,7 @@
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
@@ -19,7 +20,6 @@ namespace ME3TweaksModManager.modmanager.objects
     {
         [JsonIgnore]
         public Mod ModdescMod { get; set; }
-
 
         #region PARAMETERS
         /// <summary>
@@ -61,6 +61,15 @@ namespace ME3TweaksModManager.modmanager.objects
         private const string IMAGE_PARM = @"ImageAsset";
         private const string IMAGE_HEIGHT_PARM = @"ImageHeight";
         #endregion
+
+        /// <summary>
+        /// IDisplayableMod interface for name.
+        /// </summary>
+        [JsonIgnore]
+        public override string DisplayName
+        {
+            get => Title;
+        }
 
         /// <summary>
         /// Gets the full path to the MEM file.

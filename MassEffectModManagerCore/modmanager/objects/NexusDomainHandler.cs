@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -59,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.objects
             {
                 if (File.Exists(ProgramPath))
                 {
-                    M3Utilities.RunProcess(ProgramPath, Arguments.Replace(@"%1", nxmLink));
+                    MUtilities.RunProcess(ProgramPath, argsS: Arguments.Replace(@"%1", nxmLink), waitForProcess: false);
                     return null;
                 }
                 else
@@ -73,7 +74,6 @@ namespace ME3TweaksModManager.modmanager.objects
                 M3Log.Error($@"Error invoking handler for {domain} domain: {e.Message}");
                 return e.Message;
             }
-            return null;
         }
 
         public static void LoadExternalHandlers()

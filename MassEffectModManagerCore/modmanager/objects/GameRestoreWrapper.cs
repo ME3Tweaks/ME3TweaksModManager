@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.Restore;
@@ -8,8 +10,8 @@ using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using ME3TweaksModManager.modmanager.telemetry;
+using Microsoft.Win32;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -85,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.objects
 
         public GenericCommand RestoreButtonCommand { get; init; }
 
-        private object syncObj = new object();
+        // private object syncObj = new object();
 
         public GameRestoreWrapper(MEGame game, IEnumerable<GameTargetWPF> availableTargets, MainWindow window, Action restoreCompletedCallback = null)
         {
@@ -127,15 +129,14 @@ namespace ME3TweaksModManager.modmanager.objects
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         // Not sure if this has to be synced
-                        CommonOpenFileDialog ofd = new CommonOpenFileDialog()
+                        var ofd = new OpenFolderDialog
                         {
-                            Title = M3L.GetString(M3L.string_selectNewRestoreDestination),
-                            IsFolderPicker = true,
-                            EnsurePathExists = true
+                            ValidateNames = true,
+                            Title = M3L.GetString(M3L.string_selectNewRestoreDestination)
                         };
-                        if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                        if (ofd.ShowDialog() == true)
                         {
-                            selectedPath = ofd.FileName;
+                            selectedPath = ofd.FolderName;
                         }
                     });
                     return selectedPath;
@@ -178,7 +179,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 if (x.Exception != null)
                 {
                     M3Log.Exception(x.Exception, @"Error restoring game:");
-                    TelemetryInterposer.TrackError(x.Exception, new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackError(x.Exception, new Dictionary<string, string>()
                     {
                         {@"CustomOption", RestoreTarget.IsCustomOption.ToString()},
                         {@"TargetPath", RestoreTarget.TargetPath},
@@ -210,7 +211,15 @@ namespace ME3TweaksModManager.modmanager.objects
                         }
                     }
 
-                    RestoreCompletedCallback?.Invoke();
+                    // We delay a bit to let UI fully synchronize
+                    // if we don't wait the buttons don't unlock.
+                    Task.Run(() =>
+                    {
+                        Thread.Sleep(300);
+                    }).ContinueWithOnUIThread(x =>
+                    {
+                        RestoreCompletedCallback?.Invoke();
+                    });
                 }
             });
         }

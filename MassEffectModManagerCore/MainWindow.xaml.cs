@@ -1,55 +1,26 @@
-﻿using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Management;
-using System.Runtime;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media.Animation;
-using System.Windows.Navigation;
-using System.Windows.Threading;
-using System.Xml;
-using System.Xml.Linq;
-using AdonisUI;
-using CliWrap;
+﻿using AdonisUI;
 using CliWrap.EventStream;
 using CommandLine;
-using FontAwesome5;
 using LegendaryExplorerCore;
-using LegendaryExplorerCore.Coalesced;
-using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.TLK.ME2ME3;
-using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore;
-using ME3TweaksCore.Diagnostics;
-using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Helpers.MEM;
 using ME3TweaksCore.Localization;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
-using ME3TweaksCore.ME3Tweaks.M3Merge.Bio2DATable;
-using ME3TweaksCore.ME3Tweaks.M3Merge.Game2Email;
-using ME3TweaksCore.ME3Tweaks.M3Merge.GlobalShader;
 using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
+using ME3TweaksModManager.linux;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.deployment;
-using ME3TweaksModManager.modmanager.headmorph;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
@@ -61,17 +32,28 @@ using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
-using ME3TweaksModManager.modmanager.objects.tlk;
 using ME3TweaksModManager.modmanager.telemetry;
+using ME3TweaksModManager.modmanager.textures;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
-using Pathoschild.FluentNexus.Models;
-using LaunchOptionSelectorDialog = ME3TweaksModManager.modmanager.windows.dialog.LaunchOptionSelectorDialog;
+using NickStrupat;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Management;
+using System.Runtime;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media.Animation;
+using System.Windows.Navigation;
+using System.Windows.Threading;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
-using SaveSelectorUI = ME3TweaksModManager.modmanager.windows.input.SaveSelectorUI;
 using StarterKitContentSelector = ME3TweaksModManager.modmanager.windows.dialog.StarterKitContentSelector;
 
 namespace ME3TweaksModManager
@@ -133,17 +115,14 @@ namespace ME3TweaksModManager
         /// </summary>
         public BackgroundTask DownloadingTask { get; set; }
 
-        public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
+        /// <summary>
+        /// Flag to indicate if we have checked for Microsoft Visual C++ this session
+        /// </summary>
+        private bool hasCheckedForMSVC { get; set; } = false;
+
+        // public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
 
-        private readonly string[] SupportedDroppableExtensions =
-        {
-            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk",
-#if LEGACY
-            @".par",
-#endif
-            @".m3m", @".json", @".extractedbin", @".m3za", @".hlsl"
-        };
 
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
 
@@ -155,12 +134,6 @@ namespace ME3TweaksModManager
         public bool LE1ASILoaderInstalled { get; set; }
         public bool LE2ASILoaderInstalled { get; set; }
         public bool LE3ASILoaderInstalled { get; set; }
-
-        public bool ME1NexusEndorsed { get; set; }
-        public bool ME2NexusEndorsed { get; set; }
-        public bool ME3NexusEndorsed { get; set; }
-        public bool LENexusEndorsed { get; set; }
-
         public string VisitWebsiteText { get; set; }
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
@@ -184,7 +157,7 @@ namespace ME3TweaksModManager
         /// </summary>
         /// <param name="args">Command line arguments passed</param>
         /// <returns>True if window should be brought to the foreground, false otherwise</returns>
-        internal bool HandleInstanceArguments(string[] args)
+        internal async Task<bool> HandleInstanceArguments(string[] args)
         {
             // Fix pass through in debug mode which uses a .dll arg
             if (args.Any() && args[0].EndsWith(@".dll"))
@@ -216,7 +189,7 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingMergeModCompileManifest = parsedCommandLineArgs.Value.MergeModManifestToCompile;
                 if (parsedCommandLineArgs.Value.FeatureLevel > 0)
                     CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
-                return handleInitialPending();
+                return await handleInitialPending();
             }
 
             return false;
@@ -268,7 +241,7 @@ namespace ME3TweaksModManager
         public void ShowModArchiveImportForDownload(ModDownload downloadedMod, bool priority = true)
         {
             downloadedMod.DownloadedStream.Position = 0;
-            App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import",
+            M3OpenTelemetry.TrackEvent(@"User opened mod archive for import",
                 new Dictionary<string, string>
                 {
                     { @"Filename", downloadedMod.FileName }
@@ -317,27 +290,41 @@ namespace ME3TweaksModManager
 
         }
 
-        public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-
         private int oldFailedBindableCount = 0;
+        public string NoModSelectedRichText => InternalNoModSelectedText(true);
 
-        public string NoModSelectedText
+        private string InternalNoModSelectedText(bool richText)
         {
-            get
+            if (!M3SupportedOS.hasShownUnsupportedMessage && (!M3SupportedOS.IsSupportedOperatingSystem()))
             {
-                var retvar = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
-                var localizedTip = TipsService.GetTip(App.CurrentLanguage);
-                if (localizedTip != null)
-                {
-                    retvar += $"\n\n---------------------------------------------\n{localizedTip}"; //do not localize
-                }
+                M3SupportedOS.hasShownUnsupportedMessage = true;
+                string osList = string.Join("\n", M3SupportedOS.GetSupportedOperatingSystems().Select(x => $@" - {x.ToMinimumSupportedString()}")); //do not localize
+                var finalString = M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList);
+                finalString = RichTextHelper.ConvertUnicode(finalString);
+                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(finalString) + RichTextHelper.GetFooter();
+            }
 
+            var retvar = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
+            var localizedTip = TipsService.GetTip(App.CurrentLanguage);
+            if (localizedTip != null)
+            {
+                retvar += $"\n\n---------------------------------------------\n{localizedTip}"; //do not localize
+            }
+
+            if (richText)
+            {
+                // This probably doesn't work properly on non english language settings
+                var finalString = RichTextHelper.ConvertUnicode(retvar);
+                return RichTextHelper.GetHeader() + RichTextHelper.ConvertNewlines(finalString) + RichTextHelper.GetFooter();
+            }
+            else
+            {
                 return retvar;
             }
         }
 
         /// <summary>
-        /// The text for the start game button
+        /// The current selected launch option
         /// </summary>
         public LaunchOptionsPackage SelectedLaunchOption { get; set; } = M3LoadedMods.GetDefaultLaunchOptionsPackage();
 
@@ -345,11 +332,6 @@ namespace ME3TweaksModManager
         /// Text for the 'X mods failed to load'
         /// </summary>
         public string FailedModsString { get; set; }
-
-        /// <summary>
-        /// The string shown at the top left of the main window for the NexusMods status
-        /// </summary>
-        public string NexusLoginInfoString { get; set; } // BLANK TO START = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
         /// The current coalesce-d panel result that is pending handling
@@ -378,19 +360,16 @@ namespace ME3TweaksModManager
 
         public ObservableCollectionExtended<GameTargetWPF> InstallationTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
 
-        /// <summary>
-        /// List of all loaded targets, even ones for different generations
-        /// </summary>
-        private List<GameTargetWPF> InternalLoadedTargets { get; } = new();
-
-        //private ModLoader modLoadSer;
         public MainWindow()
         {
-            if (CommandLinePending.UpgradingFromME3CMM /* || true*/)
+            if (CommandLinePending.UpgradingFromME3CMM)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 //Show migration window before we load the main UI
                 M3Log.Information(@"Migrating from ME3CMM - showing migration dialog");
+                // This dialog can show before the main window is loaded (code below), but it is very
+                // unlikely this will be shown these days as ME3CMM stopped being updated around
+                // 2020.
                 new ME3CMMMigrationWindow().ShowDialog();
                 App.Current.MainWindow = this;
                 App.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -400,6 +379,15 @@ namespace ME3TweaksModManager
             LoadCommands();
             SetTheme(true);
             InitializeComponent();
+
+            // Must be after InitializeComponent() as it is what loads MMStyles.xaml from App.xaml (no idea why so late...)
+            if (WineWorkaroundsM3.SetWineUIDefaults())
+            {
+                // Because it may change fonts, and InitializeComponent(); sets the default text font, we need to force it to reload so it changes
+                // the used font for the description.
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText))); // Update localized tip shown
+            }
+
             this.ApplyDarkNetWindowTheme();
 
             //Change language if not INT
@@ -504,7 +492,9 @@ namespace ME3TweaksModManager
                 }
 
                 SelectedMod = x;
-                ModsList_ListBox.ScrollIntoView(x);
+                ModsList_ListBox.ScrollIntoView(SelectedMod);
+                // This makes the ApplyMod button refresh states so it shows up properly as clickable
+                CommandManager.InvalidateRequerySuggested();
             });
 
             // MOD UPDATER
@@ -534,7 +524,7 @@ namespace ME3TweaksModManager
                     MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
-                    bool done = M3Utilities.CreateDirectoryWithWritePermission(M3Filesystem.GetAppDataFolder(), true);
+                    bool done = MUtilities.CreateDirectoryWithWritePermission(M3Filesystem.GetAppDataFolder(), true);
                     if (done)
                     {
                         M3Log.Information(@"Granted permissions to ProgramData");
@@ -559,97 +549,6 @@ namespace ME3TweaksModManager
             {
                 M3Log.Information(@"settings.ini is writable");
             }
-        }
-
-        /// <summary>
-        /// Updates the Nexus Login status
-        /// </summary>
-        /// <param name="languageUpdateOnly">If we should only update the language text instead of a full update of API keys</param>
-        public async void RefreshNexusStatus(bool languageUpdateOnly = false)
-        {
-            if (NexusModsUtilities.HasAPIKey)
-            {
-                if (!languageUpdateOnly)
-                {
-                    var loggedIn = await AuthToNexusMods();
-                    if (loggedIn == null)
-                    {
-                        M3Log.Error(
-                            @"Error authorizing to NexusMods, did not get response from server or issue occurred while checking credentials. Setting not authorized");
-                        SetNexusNotAuthorizedUI();
-                    }
-                }
-
-                if (NexusModsUtilities.UserInfo != null)
-                {
-                    //prevent resetting ui to not authorized
-                    NexusLoginInfoString = NexusModsUtilities.UserInfo.Name;
-                    return;
-                }
-            }
-
-            SetNexusNotAuthorizedUI();
-        }
-
-        private void SetNexusNotAuthorizedUI()
-        {
-            NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
-            ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = LENexusEndorsed = false;
-            EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-        }
-
-        private async Task<User> AuthToNexusMods(bool languageUpdateOnly = false)
-        {
-            if (languageUpdateOnly)
-            {
-                if (NexusModsUtilities.UserInfo != null)
-                {
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed || LENexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                }
-                else
-                {
-                    EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                }
-
-                return null;
-            }
-
-            M3Log.Information(@"Authenticating to NexusMods...");
-            var userInfo = await NexusModsUtilities.AuthToNexusMods();
-            if (userInfo != null)
-            {
-                M3Log.Information(@"Authenticated to NexusMods");
-
-                //ME1
-                var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149);
-                ME1NexusEndorsed = me1Status ?? false;
-
-                //ME2
-                var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248);
-                ME2NexusEndorsed = me2Status ?? false;
-
-                //ME3
-                var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect3", 373);
-                ME3NexusEndorsed = me3Status ?? false;
-
-                //LE
-                var leStatus = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffectlegendaryedition", 2);
-                LENexusEndorsed = leStatus ?? false;
-
-                EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed || LENexusEndorsed)
-                    ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                    : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-            }
-            else
-            {
-                M3Log.Information(
-                    @"Did not authenticate to NexusMods. May not be logged in or there was network issue");
-                EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-            }
-
-            return userInfo;
         }
 
         /// <summary>
@@ -752,13 +651,15 @@ namespace ME3TweaksModManager
 
         private void DM_OnDownloadCompleted(object sender, EventArgs e)
         {
-            // Download has completed
+            // A download has completed
+            // Mod may be importing still
             if (DownloadingTask != null)
             {
                 var downloads = DownloadManager.GetDownloads();
-                if (downloads.Count == 1)
+                if (downloads.Count(x => x.Value.IsDownloading) == 0)
                 {
-
+                    BackgroundTaskEngine.SubmitJobCompletion(DownloadingTask);
+                    DownloadingTask = null;
                 }
             }
         }
@@ -815,7 +716,8 @@ namespace ME3TweaksModManager
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
         public ICommand StartGameCommand { get; set; }
-        public ICommand ShowinstallationInformationCommand { get; set; }
+        public ICommand ShowInstallationInformationCommand { get; set; }
+        public ICommand ManageCachedTargetsCommand { get; set; }
         public ICommand BackupCommand { get; set; }
         public ICommand DeployModCommand { get; set; }
         public ICommand DeleteModFromLibraryCommand { get; set; }
@@ -824,18 +726,12 @@ namespace ME3TweaksModManager
         public ICommand RestoreModFromME3TweaksCommand { get; set; }
         public ICommand GrantWriteAccessCommand { get; set; }
         public RelayCommand AutoTOCCommand { get; set; }
-        public ICommand RunTargetMergeCommand { get; set; }
         public RelayCommand CompileCoalescedCommand { get; set; }
         public RelayCommand DecompileCoalescedCommand { get; set; }
         public ICommand ConsoleKeyKeybinderCommand { get; set; }
-        public ICommand LoginToNexusCommand { get; set; }
-        public GenericCommand EndorseSelectedModCommand { get; set; }
         public ICommand CreateTestArchiveCommand { get; set; }
         public ICommand LaunchIniModderCommand { get; set; }
-        public ICommand EndorseM3OnNexusCommand { get; set; }
         public ICommand DownloadModMakerModCommand { get; set; }
-        public ICommand UpdaterServiceCommand { get; set; }
-        public ICommand UpdaterServiceSettingsCommand { get; set; }
         public ICommand MixinLibraryCommand { get; set; }
         public ICommand BatchModInstallerCommand { get; set; }
         public ICommand ImportDLCModFromGameCommand { get; set; }
@@ -851,9 +747,7 @@ namespace ME3TweaksModManager
         public ICommand InstallMEMFileCommand { get; set; }
         public ICommand TrilogySaveEditorCommand { get; set; }
         public ICommand AddStarterKitContentCommand { get; set; }
-        public ICommand InstallHeadmorphCommand { get; set; }
-        public ICommand ApplyM3HeadmorphCommand { get; set; }
-        public ICommand DiagToolOpenAllPackagesCommand { get; set; }
+        public ICommand ConvertMEMToTOCommand { get; set; }
 
 
         private void LoadCommands()
@@ -868,9 +762,10 @@ namespace ME3TweaksModManager
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
-            ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
-            BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
-            RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
+            ShowInstallationInformationCommand = new GenericCommand(ShowInstallInfoPanel, CanShowInstallInfo);
+            ManageCachedTargetsCommand = new GenericCommand(ShowCachedTargetsPanel);
+            BackupCommand = new GenericCommand(ShowBackupPanel, ContentCheckNotInProgress);
+            RestoreCommand = new GenericCommand(ShowRestorePanel, ContentCheckNotInProgress);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, IsModSelectedInDevMode);
             DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibraryWrapper, CanDeleteModFromLibrary);
             OpenDownloadManagerCommand = new GenericCommand(OpenDownloadManager, CanShowDownloadManager);
@@ -880,16 +775,10 @@ namespace ME3TweaksModManager
             RestoreModFromME3TweaksCommand = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new RelayCommand(RunAutoTOCOnGame, CanAutoTOC);
-            RunTargetMergeCommand = new RelayCommand(RunTargetMerge); // All games have at least one merge feature
             ConsoleKeyKeybinderCommand = new GenericCommand(OpenConsoleKeyKeybinder, CanOpenConsoleKeyKeybinder);
-            LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
-            EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
-            EndorseM3OnNexusCommand = new GenericCommand(EndorseM3, CanEndorseM3);
             DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
-            UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
-            UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
             MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
             BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
             ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
@@ -915,12 +804,12 @@ namespace ME3TweaksModManager
             ChangeCurrentLaunchConfigCommand = new GenericCommand(OpenLaunchOptionSelector, () => SelectedGameTarget?.Game.IsLEGame() ?? false);
             TrilogySaveEditorCommand = new GenericCommand(OpenTSE);
             AddStarterKitContentCommand = new GenericCommand(OpenStarterKitContentSelector, IsModSelectedInDevMode);
-            InstallHeadmorphCommand = new GenericCommand(BeginInstallingHeadmorph, CanInstallHeadmorph);
-            ApplyM3HeadmorphCommand = new GenericCommand(BeginInstallingM3Headmorph, CanInstallM3Headmorph);
-            StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget.Game.IsLEGame());
+            StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame());
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
-            DiagToolOpenAllPackagesCommand = new GenericCommand(DiagAllOpenPackages, CanRunGameDiagTool);
-
+            ConvertMEMToTOCommand = new GenericCommand(ConvertMEMToTextureOverride, () => M3LoadedMods.Instance.ModsLoaded);
+            LoadNexusCommands();
+            LoadHeadmorphCommands();
+            LoadMergeCommands();
         }
 
         private void OpenDownloadManager()
@@ -979,186 +868,6 @@ namespace ME3TweaksModManager
             ld.Show();
         }
 
-        private void DiagAllOpenPackages()
-        {
-            List<string> issues = new List<string>();
-            ShowRunAndDone(updateUIString =>
-            {
-                issues = DiagnosticTools.VerifyPackages(SelectedGameTarget,
-                                       (x, y) => updateUIString?.Invoke(M3L.GetString(M3L.string_interp_checkingPackagesXY, x, y)));
-                return M3L.GetString(M3L.string_interp_finishedPackageCheckIssuesCountIssuesFound, issues.Count);
-
-            }, M3L.GetString(M3L.string_checkingPackages), M3L.GetString(M3L.string_finishedCheckingPackages), () =>
-            {
-                if (issues.Count > 0)
-                {
-                    ListDialog ld = new ListDialog(issues, M3L.GetString(M3L.string_packageCheckFoundIssues), M3L.GetString(M3L.string_theFollowingPackagesFailedToOpen), this);
-                    ld.Show();
-                }
-            });
-        }
-
-        private bool CanRunGameDiagTool()
-        {
-            return SelectedGameTarget != null && SelectedGameTarget.Game.IsMEGame();
-        }
-
-        private void SelectSpecificSaveForBoot()
-        {
-            // Select save to install to
-            GameLauncher.SetAutoresumeSave(this, SelectedGameTarget, autoresumeSaveChanged: StartGameWithResume);
-        }
-
-        private void StartGameWithResume()
-        {
-            InternalStartGame(SelectedGameTarget, skipLauncher: true, autoboot: true);
-        }
-
-        private void BeginInstallingM3Headmorph()
-        {
-            if (!CanInstallM3Headmorph()) return;
-
-            // Show dialog
-            var selectorDialog = new HeadmorphSelectorDialog(this, SelectedMod);
-            if (selectorDialog.ShowDialog() == true && selectorDialog.SelectedHeadmorph != null)
-            {
-                var morph = selectorDialog.SelectedHeadmorph;
-                if (morph.RequiredDLC.Any())
-                {
-                    // We must check DLC first
-                    var installedDLC = SelectedGameTarget.GetMetaMappedInstalledDLC();
-                    foreach (var dlc in morph.RequiredDLC)
-                    {
-                        var modNameStr =
-                            TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName.Key, SelectedGameTarget.Game)?.modname ??
-                            dlc.DLCFolderName;
-                        if (installedDLC.TryGetValue(dlc.DLCFolderName.Key, out MetaCMM metaCmm))
-                        {
-                            if (dlc.MinVersion != null)
-                            {
-                                // No version info found
-                                if (metaCmm == null)
-                                {
-                                    // DLC installed but not by mod manager
-                                    M3Log.Error(
-                                        $@"Required DLC {dlc.DLCFolderName} is installed but Mod Manager could not read the version information; the mod may not have been installed by Mod Manager. We cannot verify this requirement is met; thus we are rejecting the install");
-                                    M3L.ShowDialog(this,
-                                        M3L.GetString(M3L.string_interp_headmorphRequiresDLCCouldNotDetermine, modNameStr, dlc.MinVersion, modNameStr),
-                                        M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
-                                }
-
-                                // We could not parse the version
-                                if (!Version.TryParse(metaCmm.Version, out var modVersion))
-                                {
-                                    M3Log.Error(
-                                        $@"Required DLC {dlc.DLCFolderName} is installed but could not parse its version: {metaCmm.Version}. We cannot verify this requirement is met; thus we are rejecting the install");
-                                    M3L.ShowDialog(this,
-                                        M3L.GetString(M3L.string_interp_headmorphRequiresDLCBadVersionString, modNameStr, dlc.MinVersion, metaCmm.Version),
-                                        M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
-                                }
-
-                                // We do not meet the version
-                                if (modVersion < dlc.MinVersion)
-                                {
-                                    M3Log.Error(
-                                        $@"Required DLC {dlc.DLCFolderName} is installed but does not meet the minimum version requirement. Installed version: {modVersion}, required version: {dlc.MinVersion}");
-                                    M3L.ShowDialog(this,
-                                        M3L.GetString(M3L.string_interp_headmorphRequiresDLCMinimumReqNotMet, modNameStr, dlc.MinVersion, modVersion, dlc.MinVersion),
-                                        M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            M3Log.Error($@"Required DLC for headmorph is not installed in game: {dlc.DLCFolderName}{(dlc.MinVersion != null ? @" with minimum version " + dlc.MinVersion : null)}"); // do not localize
-                            M3L.ShowDialog(this,
-                                M3L.GetString(M3L.string_interp_headmorphRequiresDLCPrereqNotMet, modNameStr),
-                                M3L.GetString(M3L.string_prerequesiteNotMet), MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-                    }
-                }
-
-                var headmorphFilepath = Path.Combine(SelectedMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME,
-                        selectorDialog.SelectedHeadmorph.FileName);
-                if (File.Exists(headmorphFilepath))
-                {
-                    InstallHeadmorphToTarget(headmorphFilepath, SelectedGameTarget, morph.Title);
-                }
-                else
-                {
-                    M3Log.Error($@"BUG FOUND? Headmorph file doesn't exist that was chosen: {headmorphFilepath}");
-                }
-            }
-        }
-
-        private bool CanInstallM3Headmorph()
-        {
-            if (!CanInstallHeadmorph()) return false;
-            if (SelectedMod == null) return false;
-            var headmorphJob = SelectedMod.GetJob(ModJob.JobHeader.HEADMORPHS);
-            if (headmorphJob == null || !headmorphJob.HeadMorphFiles.Any()) return false;
-            return true;
-        }
-
-        private bool CanInstallHeadmorph()
-        {
-            return SelectedGameTarget != null && SelectedGameTarget.Game.IsMEGame() && SelectedGameTarget.Game != MEGame.ME1;
-        }
-
-        private void BeginInstallingHeadmorph()
-        {
-            if (!CanInstallHeadmorph()) return;
-
-            // Select headmorph file
-
-
-            string filter = @"*.ron";
-            if (SelectedGameTarget.Game.IsGame2())
-                filter += @";*.me2headmorph";
-            if (SelectedGameTarget.Game.IsGame3())
-                filter += @";*.me3headmorph";
-
-            OpenFileDialog m = new OpenFileDialog
-            {
-                Title = M3L.GetString(M3L.string_selectHeadmorphFile),
-                Filter = M3L.GetString(M3L.string_headmorphFiles) + $@"|{filter}"
-            };
-            var result = m.ShowDialog(this);
-            if (result != true)
-                return;
-
-            InstallHeadmorphToTarget(m.FileName, SelectedGameTarget);
-        }
-
-        private void InstallHeadmorphToTarget(string mFileName, GameTarget selectedGameTarget, string titleSuffix = null)
-        {
-            // Select save to install to
-            SaveSelectorUI ssui = new SaveSelectorUI(this, selectedGameTarget, titleSuffix ?? Path.GetFileName(mFileName));
-            ssui.Show();
-            ssui.Closed += (sender, args) =>
-            {
-
-                if (ssui.SaveWasSelected && ssui.SelectedSaveFile != null)
-                {
-                    Task.Run(() =>
-                    {
-                        M3Log.Information($@"Installing headmorph {mFileName} to {ssui.SelectedSaveFile.SaveFilePath}");
-                        var task = BackgroundTaskEngine.SubmitBackgroundJob(@"HeadmorphInstall", M3L.GetString(M3L.string_installingHeadmorph), M3L.GetString(M3L.string_installedHeadmorphToSave));
-                        var installed = HeadmorphInstaller.InstallHeadmorph(mFileName, ssui.SelectedSaveFile.SaveFilePath, task).Result;
-                        if (!installed)
-                        {
-                            task.FinishedUIText = M3L.GetString(M3L.string_failedToInstallHeadmorph);
-                        }
-                        BackgroundTaskEngine.SubmitJobCompletion(task);
-                    });
-                }
-            };
-        }
-
         private void OpenStarterKitContentSelector()
         {
             var starterKitSelector = new StarterKitContentSelector(this, SelectedMod);
@@ -1174,147 +883,11 @@ namespace ME3TweaksModManager
             TrilogySaveEditorHelper.OpenTSE(this);
         }
 
-        private void OpenLaunchOptionSelector()
-        {
-            if (SelectedGameTarget?.Game.IsLEGame() ?? false) // Nice and hard to read
-            {
-                LaunchOptionSelectorDialog losd = new LaunchOptionSelectorDialog(this, SelectedGameTarget.Game);
-                losd.ShowDialog();
-                UpdateSelectedLaunchOption();
-            }
-        }
-
         private bool CanInstallMEMFile()
         {
-            return SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame() && !MUtilities.IsGameRunning(SelectedGameTarget.Game);
+            return SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame() && !MRunningGameInfo.IsGameRunning(SelectedGameTarget.Game);
         }
 
-        private void DecompileCoalesced(object obj)
-        {
-            if (obj is bool game3)
-            {
-                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalDecompile",
-                    M3L.GetString(M3L.string_decompilingCoalescedFile),
-                    M3L.GetString(M3L.string_decompiledCoalescedFile));
-                OpenFileDialog ofd = new OpenFileDialog()
-                {
-                    Title = M3L.GetString(M3L.string_selectCoalescedFile),
-                    Filter = @"Coalesced file|*.bin",
-                };
-                if (game3)
-                {
-                    ofd.Title += @" (ME3/LE3)";
-                }
-                else
-                {
-                    ofd.Title += @" (LE1/LE2)";
-                }
-
-                var result = ofd.ShowDialog(this);
-                if (result.HasValue && result.Value)
-                {
-                    Task.Run(() =>
-                    {
-                        var dir = Directory.GetParent(ofd.FileName).FullName;
-                        if (game3)
-                        {
-                            // Game 3
-                            CoalescedConverter.ConvertToXML(ofd.FileName, dir);
-                        }
-                        else
-                        {
-                            // LE1/LE2
-                            LECoalescedConverter.Unpack(ofd.FileName, dir);
-                        }
-
-                        TelemetryInterposer.TrackEvent(@"Decompiled Coalesced (menu)");
-                        M3Utilities.HighlightInExplorer(dir);
-                        BackgroundTaskEngine.SubmitJobCompletion(task);
-                    }).ContinueWithOnUIThread(x =>
-                    {
-                        if (x.Exception != null)
-                        {
-                            M3Log.Exception(x.Exception, @"Error decompiling coalesced file:");
-                            task.FinishedUIText = M3L.GetString(M3L.string_errorDecompilingCoalescedFile);
-                            BackgroundTaskEngine.SubmitJobCompletion(task);
-                            M3L.ShowDialog(this,
-                                M3L.GetString(M3L.string_interp_errorDecompilingCoalescedFile, x.Exception.Message),
-                                M3L.GetString(M3L.string_errorDecompiling), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    });
-
-                }
-                else
-                {
-                    task.FinishedUIText = M3L.GetString(M3L.string_abortedDecompilingCoalescedFile);
-                }
-            }
-        }
-
-        private void CompileCoalesced(object obj)
-        {
-            if (obj is bool game3)
-            {
-                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalCompile",
-                    M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
-                OpenFileDialog ofd = new OpenFileDialog()
-                {
-                    Title = M3L.GetString(M3L.string_selectCoalescedManifestFile),
-                };
-                if (game3)
-                {
-                    ofd.Filter = M3L.GetString(M3L.string_game3CoalescedManifest) + @"|*.xml";
-                }
-                else
-                {
-                    ofd.Filter = M3L.GetString(M3L.string_lE1LE2CoalescedManifest) + @"|mele.extractedbin";
-                }
-
-                var result = ofd.ShowDialog(this);
-                if (result.HasValue && result.Value)
-                {
-                    Task.Run(() =>
-                    {
-                        var containingDir = Directory.GetParent(ofd.FileName).FullName;
-                        if (game3)
-                        {
-                            // Game 3
-                            var dest = Path.Combine(containingDir,
-                                Path.GetFileNameWithoutExtension(ofd.FileName) + @".bin");
-                            CoalescedConverter.ConvertToBin(ofd.FileName, dest);
-                            M3Utilities.HighlightInExplorer(dest);
-                        }
-                        else
-                        {
-                            // LE1/LE2
-                            var dest = LECoalescedConverter.GetDestinationPathFromManifest(ofd.FileName);
-                            LECoalescedConverter.Pack(containingDir, dest); // takes the directory
-                            M3Utilities.HighlightInExplorer(dest);
-                        }
-
-                        TelemetryInterposer.TrackEvent(@"Compiled Coalesced (menu)");
-                        BackgroundTaskEngine.SubmitJobCompletion(task);
-                    }).ContinueWithOnUIThread(x =>
-                    {
-                        if (x.Exception != null)
-                        {
-                            M3Log.Exception(x.Exception, @"Error compiling coalesced file:");
-                            task.FinishedUIText = M3L.GetString(M3L.string_errorCompilingCoalescedFile);
-                            BackgroundTaskEngine.SubmitJobCompletion(task);
-                            M3L.ShowDialog(this,
-                                M3L.GetString(M3L.string_interp_errorCompilingCoalescedFile, x.Exception.Message),
-                                M3L.GetString(M3L.string_errorCompiling), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    });
-
-                }
-                else
-                {
-                    task.FinishedUIText = M3L.GetString(M3L.string_abortedCompilingCoalescedFile);
-                    BackgroundTaskEngine.SubmitJobCompletion(task);
-                }
-            }
-        }
 
         private void CloseSearchBox()
         {
@@ -1400,8 +973,10 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is string nxmlink && nxmlink.StartsWith(@"nxm://"))
                 {
-                    DownloadManager.AddNXMDownload(nxmlink);
-                    ShowDownloadManager();
+                    if (DownloadManager.AddNXMDownload(nxmlink) != null)
+                    {
+                        ShowDownloadManager();
+                    }
                 }
             };
             ShowBusyControl(nexusSearchPanel);
@@ -1444,7 +1019,7 @@ namespace ME3TweaksModManager
             if (result != null)
             {
                 // Issue opening the file.
-                M3L.ShowDialog(this, $"Error opening moddesc.ini file: {result}", M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorOpeningModdesciniFileResult, result), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1579,87 +1154,104 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
-                    bool isFirstInstall = true;
-                    BatchPanelResult = new PanelResult();
-                    HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
-                    var target = batchLibrary.SelectedGameTarget;
-                    //Install queue
-
-                    bool continueInstalling = true;
-                    int modIndex = 0;
-
-                    //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
-                    void modInstalled(bool successful, bool isfirst = false)
-                    {
-                        if (!isfirst)
-                        {
-                            M3Log.Information($@"ModInstalled() being called - successful: {successful}");
-                        }
-                        else
-                        {
-
-                            // Do an initial reload since we don't reload targets in the mod options panel anymore.
-                            target.ReloadGameTarget(false);
-
-                            if (queue.ContainsTextureMods() && (queue.UseSavedOptions ||
-                                                                // If all options are standalone we don't really care if there are saved options so just show it here
-                                                                queue.ModsToInstall.Where(x => !x.ModMissing).All(x => x.IsStandalone)))
-                            {
-                                // We use batch text if this contains content mods due to the timing difference
-                                continueInstalling = TextureInstallerPanel.ShowTextureInstallWarning(this, queue.ContainsContentMods());
-                            }
-                        }
-
-                        continueInstalling &= successful && !IsOnTrackToClose;
-                        if (continueInstalling && queue.ModsToInstall.Count > modIndex)
-                        {
-                            var bm = queue.ModsToInstall[modIndex];
-                            modIndex++;
-                            if (bm.IsAvailableForInstall())
-                            {
-                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
-                                bm.UseSavedOptions = queue.UseSavedOptions;
-                                bm.IsFirstBatchMod = isFirstInstall;
-                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
-                                isFirstInstall = false;
-                            }
-                            else
-                            {
-                                M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
-                                modInstalled(true); // Trigger next install
-                            }
-                        }
-                        else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
-                        {
-                            if (queue.ASIModsToInstall.Any())
-                            {
-                                ShowRunAndDone((updateUIString) => InstallBatchASIs(target, queue), M3L.GetString(M3L.string_installingASIMods),
-                                    M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
-                            }
-                            else
-                            {
-                                HandleBatchTextureInstall(target, queue);
-                            }
-                        }
-                        else
-                        {
-                            // Install failed or was aborted
-                            HandleBatchPanelResult = true;
-                        }
-                    }
-
-                    if (queue.RestoreBeforeInstall)
-                    {
-                        // Will trigger target reload automatically
-                        RunBatchRestore(queue, target, modInstalled);
-                    }
-                    else
-                    {
-                        modInstalled(true, true); //kick off first installation
-                    }
+                    InstallBatchQueue(batchLibrary.SelectedGameTarget, queue);
                 }
             };
             ShowBusyControl(batchLibrary);
+        }
+
+        /// <summary>
+        /// Installs a batch library install queue to the given target
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="queue"></param>
+        private void InstallBatchQueue(GameTarget target, BatchLibraryInstallQueue queue)
+        {
+            bool isFirstInstall = true;
+            BatchPanelResult = new PanelResult();
+            HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
+            //Install queue
+
+            bool continueInstalling = true;
+            int modIndex = 0;
+
+            //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
+            void modInstalled(bool successful, bool isfirst = false)
+            {
+                if (!isfirst)
+                {
+                    M3Log.Information($@"ModInstalled() being called - successful: {successful}");
+
+                    // Sync HasPromptedForBackup from the just-completed mod back to the queue so subsequent mods skip the backup prompt
+                    if (modIndex > 0)
+                        queue.HasPromptedForBackup |= queue.ModsToInstall[modIndex - 1].HasPromptedForBackup;
+                }
+                else
+                {
+
+                    // Do an initial reload since we don't reload targets in the mod options panel anymore.
+                    target.ReloadGameTarget(false);
+
+                    if (queue.ContainsTextureMods() && (queue.UseSavedOptions ||
+                                                        // If all options are standalone we don't really care if there are saved options so just show it here
+                                                        queue.ModsToInstall.Where(x => !x.ModMissing).All(x => x.IsStandalone)))
+                    {
+                        // We use batch text if this contains content mods due to the timing difference
+                        continueInstalling = TextureInstallerPanel.ShowTextureInstallWarning(this, queue.ContainsContentMods());
+                    }
+                }
+
+                continueInstalling &= successful && !IsOnTrackToClose;
+                if (continueInstalling && queue.ModsToInstall.Count > modIndex)
+                {
+                    var bm = queue.ModsToInstall[modIndex];
+                    modIndex++;
+                    if (bm.IsAvailableForInstall())
+                    {
+                        M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
+                        bm.UseSavedOptions = queue.UseSavedOptions;
+                        bm.IsFirstBatchMod = isFirstInstall;
+                        bm.HasPromptedForBackup = queue.HasPromptedForBackup; // pass through if user skipped restore option earlier
+                        ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
+                        isFirstInstall = false;
+                    }
+                    else
+                    {
+                        M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
+                        modInstalled(true); // Trigger next install
+                    }
+                }
+                else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
+                {
+                    if (queue.ASIModsToInstall.Any())
+                    {
+                        ShowRunAndDone(
+                            (config) => InstallBatchASIs(target, queue).Result,
+                            M3L.GetString(M3L.string_installingASIMods),
+                            M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
+                    }
+                    else
+                    {
+                        HandleBatchTextureInstall(target, queue);
+                    }
+                }
+                else
+                {
+                    // Install failed or was aborted
+                    M3Log.Warning($@"Batch install was aborted or one failed, setting HandleBatchPanelResult to true");
+                    HandleBatchPanelResult = true;
+                }
+            }
+
+            if (queue.RestoreBeforeInstall)
+            {
+                // Will trigger target reload automatically
+                RunBatchRestore(queue, target, modInstalled);
+            }
+            else
+            {
+                modInstalled(true, true); //kick off first installation
+            }
         }
 
         /// <summary>
@@ -1685,6 +1277,7 @@ namespace ME3TweaksModManager
                 if (shouldRestore == MessageBoxResult.Yes)
                 {
                     // successful, isfirst
+                    queue.HasPromptedForBackup = true;
                     modInstalled(true, true);
                 }
             }
@@ -1720,7 +1313,7 @@ namespace ME3TweaksModManager
             }
         }
 
-        private void HandleBatchTextureInstall(GameTarget target, BatchLibraryInstallQueue queue)
+        private async void HandleBatchTextureInstall(GameTarget target, BatchLibraryInstallQueue queue)
         {
             if (queue.TextureModsToInstall.Any(x => x.IsAvailableForInstall()))
             {
@@ -1738,22 +1331,22 @@ namespace ME3TweaksModManager
                     // There is at least one mod that is not standalone
                     ShowTextureWarning = !queue.UseSavedOptions && queue.ModsToInstall.Where(x => !x.ModMissing).Any(x => !x.IsStandalone)
                 };
-                tip.Close += (sender, args) =>
+                tip.Close += async (sender, args) =>
                 {
                     ReleaseBusyControl(); // This is so the panel is closed
-                    FinishBatchInstall(queue); // This can throw a dialog. So it will have to manually trigger the batch panel result as none may be showing.
+                    await FinishBatchInstall(queue); // This can throw a dialog. So it will have to manually trigger the batch panel result as none may be showing.
                 };
                 ShowBusyControl(tip);
             }
             else
             {
                 HandleBatchPanelResult = true; // We should handle the results
-                FinishBatchInstall(queue); // Advance to next step
+                await FinishBatchInstall(queue); // Advance to next step
             }
 
         }
 
-        private void FinishBatchInstall(BatchLibraryInstallQueue queue)
+        private async Task FinishBatchInstall(BatchLibraryInstallQueue queue)
         {
             // 11/18/2023 - batch installer with ASI mods was not clearing out queue
             // This should force merges to occur.
@@ -1768,19 +1361,22 @@ namespace ME3TweaksModManager
                 if (shouldSave)
                 {
                     M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
-                    queue.Save(true); // Commit the result
+                    // This should be pretty fast since it doesn't have to hash. So we don't run this
+                    // async.
+                    await queue.Save(true);
+                    M3Log.Information($@"Batch queue saved.");
                 }
             }
         }
 
-        private string InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
+        private async Task<string> InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
         {
             string result = null;
             foreach (var asi in queue.ASIModsToInstall)
             {
                 if (asi.IsAvailableForInstall())
                 {
-                    ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
+                    await ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
                 }
                 else
                 {
@@ -1811,22 +1407,6 @@ namespace ME3TweaksModManager
             return true;
         }
 
-        private void OpenUpdaterServicePanelEditorMode()
-        {
-            var updaterServicePanel = new UpdaterServicePanel();
-            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(updaterServicePanel);
-        }
-
-        private void OpenUpdaterServicePanel()
-        {
-            var updaterServicePanel = new UpdaterServicePanel(SelectedMod);
-            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(updaterServicePanel);
-        }
-
-        private bool CanOpenUpdaterServicePanel() => SelectedMod != null && SelectedMod.ModClassicUpdateCode > 0;
-
         private void OpenModMakerPanel()
         {
             var modmakerPanel = new ModMakerPanel();
@@ -1847,50 +1427,6 @@ namespace ME3TweaksModManager
             return true;
         }
 
-        private bool CanEndorseM3()
-        {
-            return NexusModsUtilities.UserInfo != null && (!ME1NexusEndorsed && !ME2NexusEndorsed && !ME3NexusEndorsed);
-        }
-
-        private void EndorseM3()
-        {
-            if (!ME1NexusEndorsed)
-            {
-                M3Log.Information(@"Endorsing M3 (ME1)");
-                NexusModsUtilities.EndorseFile(@"masseffect", true, 149, (newStatus) =>
-                {
-                    ME1NexusEndorsed = newStatus;
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                });
-            }
-
-            if (!ME2NexusEndorsed)
-            {
-                M3Log.Information(@"Endorsing M3 (ME2)");
-                NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, (newStatus) =>
-                {
-                    ME2NexusEndorsed = newStatus;
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                });
-            }
-
-            if (!ME3NexusEndorsed)
-            {
-                M3Log.Information(@"Endorsing M3 (ME3)");
-                NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, (newStatus) =>
-                {
-                    ME3NexusEndorsed = newStatus;
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed)
-                        ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods)
-                        : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-                });
-            }
-        }
-
         private void OpenMEIM()
         {
             new ME1IniModder().Show();
@@ -1906,84 +1442,7 @@ namespace ME3TweaksModManager
             ShowBusyControl(testArchiveGenerator);
         }
 
-        private void EndorseWrapper()
-        {
-            if (SelectedMod.IsEndorsed)
-            {
-                var unendorseresult = M3L.ShowDialog(this,
-                    M3L.GetString(M3L.string_interp_unendorseMod, SelectedMod.ModName),
-                    M3L.GetString(M3L.string_confirmUnendorsement), MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (unendorseresult == MessageBoxResult.Yes)
-                {
-                    UnendorseMod();
-                }
-            }
-            else
-            {
-                EndorseMod();
-            }
-        }
-
-        private bool CanEndorseMod() => NexusModsUtilities.HasAPIKey && SelectedMod != null &&
-                                        SelectedMod.NexusModID > 0 && SelectedMod.CanEndorse && !IsEndorsingMod;
-
-        private void EndorseMod()
-        {
-            if (SelectedMod != null)
-            {
-                M3Log.Information(@"Endorsing mod: " + SelectedMod.ModName);
-                CurrentModEndorsementStatus = M3L.GetString(M3L.string_endorsing);
-                IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, true);
-            }
-        }
-
-        private void UnendorseMod()
-        {
-            if (SelectedMod != null)
-            {
-                M3Log.Information(@"Unendorsing mod: " + SelectedMod.ModName);
-                CurrentModEndorsementStatus = M3L.GetString(M3L.string_unendorsing);
-                IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, false);
-            }
-        }
-
-        private void EndorsementCallback(Mod m, bool isModNowEndorsed, string endorsementFailedMessage)
-        {
-            IsEndorsingMod = false;
-            if (SelectedMod == m)
-            {
-                UpdatedEndorsementString();
-            }
-
-            if (endorsementFailedMessage != null)
-            {
-                M3L.ShowDialog(this, endorsementFailedMessage, M3L.GetString(M3L.string_couldNotEndorseFile),
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private bool CanShowNexusPanel()
-        {
-            return true; //might make some condition later.
-        }
-
-        private void ShowNexusPanel()
-        {
-            var nexusModsLoginPane = new NexusModsLogin();
-            nexusModsLoginPane.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(nexusModsLoginPane);
-        }
-
         public bool HasAtLeastOneTarget() => InstallationTargets.Any();
-
-        private bool HasME3Target()
-        {
-            return InstallationTargets.Any(x => x.Game == MEGame.ME3);
-        }
-
-        private bool HasLETarget() => InstallationTargets.Any(x => x.Game.IsLEGame());
 
         private void CheckSelectedModForUpdate()
         {
@@ -2026,7 +1485,7 @@ namespace ME3TweaksModManager
             var result = m.ShowDialog(this);
             if (result.Value)
             {
-                TelemetryInterposer.TrackEvent(@"User opened mod archive for import",
+                M3OpenTelemetry.TrackEvent(@"User opened mod archive for import",
                     new Dictionary<string, string>
                         { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
                 var archiveFile = m.FileName;
@@ -2042,23 +1501,84 @@ namespace ME3TweaksModManager
 
         private bool CanDeleteModFromLibrary() => SelectedMod != null && !ContentCheckInProgress;
 
-        private void DeleteModFromLibraryWrapper()
+        private async void DeleteModFromLibraryWrapper()
         {
-            DeleteModFromLibrary(SelectedMod);
+            await DeleteModFromLibrary(SelectedMod);
         }
 
-        public bool DeleteModFromLibrary(Mod selectedMod)
+        public async Task<bool> DeleteModFromLibrary(Mod selectedMod)
         {
+            if (selectedMod == null)
+            {
+                return false;
+            }
+
             var confirmationResult = M3L.ShowDialog(this,
                 M3L.GetString(M3L.string_interp_dialogDeleteSelectedModFromLibrary, selectedMod.ModName),
-                M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                MessageBoxResult.Yes);
             if (confirmationResult == MessageBoxResult.Yes)
             {
                 M3Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
-                if (MUtilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
+
+                // Submit background task
+                var deleteTask = BackgroundTaskEngine.SubmitBackgroundJob(
+                    @"ModDelete",
+                    M3L.GetString(M3L.string_interp_deletingModFromLibrary, selectedMod.ModName),
+                    M3L.GetString(M3L.string_interp_deletedModFromLibrary, selectedMod.ModName));
+
+                // Set loading state to disable UI
+                M3LoadedMods.Instance.SetLoadingState(true);
+
+                try
                 {
-                    M3LoadedMods.Instance.RemoveMod(selectedMod);
-                    return true;
+                    // Perform deletion on background thread
+                    bool deletionSuccess = await Task.Run(() => MUtilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath));
+
+                    if (deletionSuccess)
+                    {
+                        M3Log.Information($@"Successfully deleted mod from library: {selectedMod.ModName}");
+                        M3LoadedMods.Instance.RemoveMod(selectedMod);
+                        return true;
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Failed to delete mod from library: {selectedMod.ModName}");
+
+                        // Update task completion text to indicate failure
+                        deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
+
+                        // Show error dialog
+                        M3L.ShowDialog(this,
+                            M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName),
+                            M3L.GetString(M3L.string_error),
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Error($@"Exception occurred while deleting mod from library: {selectedMod.ModName}. {ex.Message}");
+
+                    // Update task completion text to indicate failure
+                    deleteTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName);
+
+                    // Show error dialog with exception details
+                    M3L.ShowDialog(this,
+                        $@"{M3L.GetString(M3L.string_interp_failedToDeleteModFromLibrary, selectedMod.ModName)}\n\n{ex.Message}",
+                        M3L.GetString(M3L.string_error),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+
+                    return false;
+                }
+                finally
+                {
+                    // Always restore UI state and complete task
+                    M3LoadedMods.Instance.SetLoadingState(false);
+                    BackgroundTaskEngine.SubmitJobCompletion(deleteTask);
                 }
 
                 //LoadMods();
@@ -2262,77 +1782,8 @@ namespace ME3TweaksModManager
             // This is pretty dicey with thread safety... 
             if (!Settings.SessionOnly_SuppressDLCMerge)
             {
-                foreach (var v in result.TargetsToPlotManagerSync)
-                {
-                    SyncPlotManagerForTarget(v);
-                }
-
-                foreach (var v in result.TargetsToLE1Merge)
-                {
-                    MergeLE1CoalescedForTarget(v);
-                    MergeLE12DAsForTarget(v);
-                }
-
-                foreach (var v in result.TargetsToGlobalShaderMerge)
-                {
-                    RunShaderMergeForTarget(v);
-                }
-            }
-
-            // MERGE DLC
-
-            // Todo: Persistence? That sounds miserable
-            var targetMergeMapping = new Dictionary<GameTarget, M3MergeDLC>();
-            if (result.NeedsMergeDLC)
-            {
-                // Remove any if existing.
-                foreach (var mergeTarget in result.GetMergeTargets())
-                {
-                    M3MergeDLC.RemoveMergeDLC(mergeTarget);
-
-                    var mergeDLC = new M3MergeDLC(mergeTarget);
-                    targetMergeMapping[mergeTarget] = mergeDLC;
-
-                    // Generate a new one - IF NECESSARY!
-                    // This is so if user deletes merge DLC it doesn't re-create itself immediately even if it's not necessary, e.g. user removed all merge DLC-eligible items.
-
-                    bool needsGenerated = !Settings.SessionOnly_SuppressDLCMerge && (SQMOutfitMerge.NeedsMerged(mergeTarget) || ME2EmailMerge.NeedsMergedGame2(mergeTarget));
-                    if (needsGenerated)
-                    {
-                        try
-                        {
-                            mergeDLC.GenerateMergeDLC();
-                        }
-                        catch (Exception e)
-                        {
-                            M3Log.Exception(e, @"Error generating ME3Tweaks Merge DLC: ");
-                            // This should have a dialog here, right?
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_errorGeneratingMergeDLC, e.Message), M3L.GetString(M3L.string_errorGeneratingMergeDLC), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
-            }
-
-            if (!Settings.SessionOnly_SuppressDLCMerge)
-            {
-                foreach (var v in result.TargetsToSquadmateMergeSync)
-                {
-                    ShowRunAndDone(
-                        (updateUIString) =>
-                            SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v], updateUIString),
-                        LC.GetString(LC.string_synchronizingSquadmateOutfits),
-                        M3L.GetString(M3L.string_synchronizedSquadmateOutfits),
-                        null);
-                }
-
-                foreach (var v in result.TargetsToEmailMergeSync)
-                {
-                    ShowRunAndDone(
-                        (updateUIString) => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v], updateUIString),
-                        M3L.GetString(M3L.string_synchronizingEmails),
-                        M3L.GetString(M3L.string_synchronizedEmails),
-                        null);
-                }
+                HandleBasegameTargetMerges(result);
+                HandleDLCTargetMerges(result);
             }
 
             foreach (var v in result.TargetsToAutoTOC)
@@ -2380,7 +1831,7 @@ namespace ME3TweaksModManager
 
                     control.Close += (a, b) => { ReleaseBusyControl(); };
                     ShowBusyControl(control);
-                    TelemetryInterposer.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
                     {
                         { @"Invocation method", @"Installation Information" }
                     });
@@ -2403,7 +1854,8 @@ namespace ME3TweaksModManager
             });
         }
 
-        private void ShowRunAndDone(Func<Action<string>, object> action, string startStr, string endStr, Action finishAction = null, Action<Exception> errorOccurred = null)
+
+        private void ShowRunAndDone(Func<RunAndDoneConfig, object> action, string startStr, string endStr, Action finishAction = null, Action<Exception> errorOccurred = null)
         {
             var runAndDone = new RunAndDonePanel(action, startStr, endStr);
             runAndDone.Close += (a, b) =>
@@ -2415,7 +1867,7 @@ namespace ME3TweaksModManager
             ShowBusyControl(runAndDone);
         }
 
-        private void ShowBackupPane()
+        private void ShowBackupPanel()
         {
             var backupCreator = new BackupCreator(InstallationTargets.ToList());
             backupCreator.Close += (a, b) =>
@@ -2432,18 +1884,32 @@ namespace ME3TweaksModManager
             ShowBusyControl(backupCreator);
         }
 
-        private void ShowRestorePane()
+        private void ShowRestorePanel()
         {
             var restoreManager = new RestorePanel(InstallationTargets.ToList(), SelectedGameTarget);
             restoreManager.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(restoreManager);
         }
 
-        private void ShowInstallInfo()
+        private void ShowInstallInfoPanel()
         {
             var installationInformation = new InstallationInformation(InstallationTargets.ToList(), SelectedGameTarget);
             installationInformation.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(installationInformation);
+        }
+
+        private void ShowCachedTargetsPanel()
+        {
+            var cachedTargetsPanel = new CachedTargetsPanel();
+            cachedTargetsPanel.Close += (a, b) =>
+            {
+                if (cachedTargetsPanel.Result.ReloadTargets)
+                {
+                    PopulateTargets(SelectedGameTarget);
+                }
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(cachedTargetsPanel);
         }
 
         /// <summary>
@@ -2503,134 +1969,12 @@ namespace ME3TweaksModManager
         {
             ApplyMod(SelectedMod);
         }
-
-        private void StartGame()
-        {
-            InternalStartGame(SelectedGameTarget);
-        }
-
-        internal void InternalStartGame(GameTargetWPF target, string customArguments = null, bool? skipLauncher = null, bool? autoboot = null)
-        {
-            var game = target.Game.ToGameName();
-            BackgroundTask gameLaunch = BackgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch",
-                M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
-
-            try
-            {
-                Task.Run(() =>
-                {
-                    if (target.Game.IsLEGame())
-                    {
-                        GameLauncher.LaunchGame(target, SelectedLaunchOption, skipLauncher, autoboot);
-                    }
-                    else
-                    {
-                        GameLauncher.LaunchGame(target, customArguments);
-                    }
-                })
-                    .ContinueWith(x =>
-                    {
-                        if (x.Exception != null)
-                        {
-                            M3Log.Error($@"There was an error launching the game: {x.Exception.FlattenException()}");
-                        }
-
-                        BackgroundTaskEngine.SubmitJobCompletion(gameLaunch);
-                    });
-            }
-            catch (Exception e)
-            {
-                BackgroundTaskEngine.SubmitJobCompletion(gameLaunch); // This ensures message is cleared out of queue
-                if (e is Win32Exception w32e)
-                {
-                    if (w32e.NativeErrorCode == 1223)
-                    {
-                        //Admin canceled.
-                        return; //we don't care.
-                    }
-                }
-
-                M3Log.Error(@"Error launching game: " + e.Message);
-            }
-
-            M3Telemetry.SubmitScreenResolutionInfo(target);
-        }
-
-        /// <summary>
-        /// Updates boot target and returns the HRESULT of the update command for registry.
-        /// Returns -3 if no registry update was performed.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        private int UpdateBootTarget(GameTargetWPF target)
-        {
-            string exe = @"reg";
-            var args = new List<string>();
-            string regPath = null;
-            switch (target.Game)
-            {
-                case MEGame.ME1:
-                    {
-                        var existingPath = ME1Directory.DefaultGamePath;
-                        if (existingPath != null)
-                        {
-                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect";
-                        }
-                    }
-                    break;
-                case MEGame.ME2:
-                    {
-                        var existingPath = ME2Directory.DefaultGamePath;
-                        if (existingPath != null)
-                        {
-                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 2";
-                        }
-                    }
-
-                    break;
-                case MEGame.ME3:
-                    {
-                        var existingPath = ME3Directory.DefaultGamePath;
-                        if (existingPath != null)
-                        {
-                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 3";
-                        }
-                    }
-                    break;
-            }
-
-            if (regPath != null)
-            {
-                //is set in registry
-                args.Add(@"add");
-                args.Add(regPath);
-                args.Add(@"/v");
-                args.Add(target.Game == MEGame.ME3 ? @"Install Dir" : @"Path");
-                args.Add(@"/t");
-                args.Add(@"REG_SZ");
-                args.Add(@"/d");
-                args.Add($"{target.TargetPath.TrimEnd('\\')}\\\\"); // do not localize
-                                                                    // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
-                args.Add(@"/f");
-
-                return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
-            }
-
-            return -3;
-        }
-
-        private bool CanStartGame()
-        {
-            //Todo: Check if this is origin game and if target will boot
-            return SelectedGameTarget != null && SelectedGameTarget.Selectable /*&& SelectedGameTarget.RegistryActive*/;
-        }
-
         private bool CanToggleBinkw32(object obj)
         {
             if (obj is string str && Enum.TryParse(str, out MEGame game))
             {
                 var target = GetCurrentTarget(game);
-                if (target != null && !MUtilities.IsGameRunning(game))
+                if (target != null && !MRunningGameInfo.IsGameRunning(game))
                 {
                     return File.Exists(M3Utilities.GetBinkFile(target));
                 }
@@ -2645,7 +1989,7 @@ namespace ME3TweaksModManager
             {
                 var target = GetCurrentTarget(game);
                 if (target == null) return; //can't toggle this
-                if (MUtilities.IsGameRunning(game))
+                if (MRunningGameInfo.IsGameRunning(game))
                 {
                     M3L.ShowDialog(this,
                         M3L.GetString(M3L.string_interp_dialogCannotInstallBinkWhileGameRunning, game.ToGameName()),
@@ -2685,7 +2029,6 @@ namespace ME3TweaksModManager
                     M3Utilities.UninstallBinkBypass(target);
                 }
 
-
                 UpdateBinkStatus(target.Game);
             }
         }
@@ -2700,7 +2043,7 @@ namespace ME3TweaksModManager
                     var configTool = M3Utilities.GetGameConfigToolPath(target);
                     try
                     {
-                        M3Utilities.RunProcess(configTool, "", false, true, false, false);
+                        MUtilities.RunProcess(configTool, allowReattemptAsAdmin: true, waitForProcess: false);
                     }
                     catch (Exception e)
                     {
@@ -2726,106 +2069,6 @@ namespace ME3TweaksModManager
             return false;
         }
 
-        private void AddTarget()
-        {
-            M3Log.Information(@"User is adding new modding target");
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
-            string filter =
-                $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffectLauncher.exe;MassEffect1.exe"; //only partially localizable.
-            ofd.Filter = filter;
-            if (ofd.ShowDialog() == true)
-            {
-                MEGame gameSelected = MEGame.Unknown;
-                var filename = Path.GetFileName(ofd.FileName);
-                M3Log.Information($@"Validating user chosen exe: {filename}");
-                if (filename.Equals(@"MassEffect3.exe", StringComparison.InvariantCultureIgnoreCase))
-                    gameSelected = MEGame.ME3;
-                if (filename.Equals(@"MassEffect2.exe", StringComparison.InvariantCultureIgnoreCase))
-                    gameSelected = MEGame.ME2;
-
-                if (gameSelected != MEGame.Unknown)
-                {
-                    // Check for LE versions
-                    var version = FileVersionInfo.GetVersionInfo(ofd.FileName);
-                    if (version.FileMajorPart >= 2)
-                    {
-                        // LE1 can't be selected this way as it has unique exe name.
-                        if (gameSelected == MEGame.ME2) gameSelected = MEGame.LE2;
-                        if (gameSelected == MEGame.ME3) gameSelected = MEGame.LE3;
-                    }
-                }
-                else
-                {
-                    // Has unique name
-                    if (filename.Equals(@"MassEffect.exe", StringComparison.InvariantCultureIgnoreCase))
-                        gameSelected = MEGame.ME1;
-                    if (filename.Equals(@"MassEffect1.exe", StringComparison.InvariantCultureIgnoreCase))
-                        gameSelected = MEGame.LE1;
-
-                    if (filename.Equals(@"MassEffectLauncher.exe"))
-                    {
-                        var version = FileVersionInfo.GetVersionInfo(ofd.FileName);
-                        if (version.FileMajorPart >= 2)
-                        {
-                            gameSelected = MEGame.LELauncher;
-                        }
-                    }
-                }
-
-                if (gameSelected != MEGame.Unknown)
-                {
-                    string result = Path.GetDirectoryName(ofd.FileName);
-                    if (gameSelected != MEGame.LELauncher)
-                    {
-                        // game root path for ME1/ME2
-                        result = Path.GetDirectoryName(result);
-                    }
-
-                    if (gameSelected.IsLEGame() || gameSelected == MEGame.ME3)
-                        result = Path.GetDirectoryName(result); //up one more because of win32/win64 directory.
-
-                    var pendingTarget = new GameTargetWPF(gameSelected, result, false);
-                    string failureReason = pendingTarget.ValidateTarget();
-
-                    if (failureReason == null)
-                    {
-                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
-                        {
-                            { @"Game", pendingTarget.Game.ToString() },
-                            { @"Result", @"Success" },
-                            { @"Supported", pendingTarget.Supported.ToString() }
-                        });
-
-                        M3Utilities.AddCachedTarget(pendingTarget);
-                        PopulateTargets(pendingTarget);
-                    }
-                    else
-                    {
-                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
-                        {
-                            { @"Game", pendingTarget.Game.ToString() },
-                            { @"Result", @"Failed, " + failureReason },
-                            { @"Supported", pendingTarget.Supported.ToString() }
-                        });
-                        M3Log.Error(@"Could not add target: " + failureReason);
-                        M3L.ShowDialog(this,
-                            M3L.GetString(M3L.string_interp_dialogUnableToAddGameTarget, failureReason),
-                            M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                    }
-                }
-                else
-                {
-                    M3Log.Error($@"Unsupported/unknown game: {ofd.FileName}");
-                }
-            }
-
-            else
-            {
-                M3Log.Information(@"User aborted adding new target");
-            }
-        }
 
         public bool ContentCheckInProgress { get; set; } = true; //init is content check
         private bool NetworkThreadNotRunning() => !ContentCheckInProgress;
@@ -2835,7 +2078,6 @@ namespace ME3TweaksModManager
             PerformStartupNetworkFetches(false);
         }
 
-        public GameTargetWPF SelectedGameTarget { get; set; }
 
         private bool CanReloadMods()
         {
@@ -2875,6 +2117,72 @@ namespace ME3TweaksModManager
             return true;
         }
 
+        /// <summary>
+        /// Checks whether the required Microsoft Visual C++ Redistributable (x64, version 14.50 or higher) is installed
+        /// and prompts the user to install it if necessary.
+        /// </summary>
+        /// <remarks>This method is required for enabling ASI mod support in Legendary Edition modding. If
+        /// the application is running under Wine, this check is skipped. The user is prompted to install the
+        /// redistributable either automatically or manually if it is not detected.</remarks>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public async Task CheckForMSVCPP()
+        {
+            if (WineWorkarounds.WineDetected)
+            {
+                // We don't use this method for msvc on wine
+                return;
+            }
+
+            // 02/07/2026 - Check MSVC++ v145 or higher is available for LE
+            if (!hasCheckedForMSVC)
+            {
+                var msvcInstalled = MSVCPP.IsVCRedist2015To2026x64Installed();
+                if (msvcInstalled)
+                {
+                    // Prereq met, mark checked and done
+                    hasCheckedForMSVC = true;
+                    return;
+                }
+
+                // Prereq not met
+                MessageBoxResult res = M3L.ShowDialog(this,
+                    M3L.GetString(M3L.string_dialog_msvcVersionMissing),
+                    M3L.GetString(M3L.string_mSVCPPRequired),
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Warning,
+                    MessageBoxResult.Yes,
+                    M3L.GetString(M3L.string_installForMe),
+                    M3L.GetString(M3L.string_installManually),
+                    M3L.GetString(M3L.string_doNotInstall));
+
+                if (res == MessageBoxResult.Yes)
+                {
+                    // Install auto
+                    M3Log.Information(@"User choosing to install Microsoft Visual C++ Redistributable automatically");
+                    await Task.Run(async () => { await InstallMSVCPP(); });
+                    hasCheckedForMSVC = true;
+                }
+                else if (res == MessageBoxResult.No)
+                {
+                    M3Log.Information(@"User choosing to install Microsoft Visual C++ Redistributable manually");
+                    M3L.ShowDialog(this,
+                        M3L.GetString(M3L.string_dialog_msvcManualDirections),
+                        M3L.GetString(M3L.string_mSVCPPRequired),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information,
+                        MessageBoxResult.OK);
+
+                    // Recheck now
+                    await CheckForMSVCPP();
+                }
+                else if (res == MessageBoxResult.Cancel)
+                {
+                    M3Log.Warning(@"User declined to install Microsoft Visual C++ Redistributable");
+                    hasCheckedForMSVC = true;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Applies a mod to the current or forced target. This method is asynchronous, it must run on the UI thread but it will immediately yield once the installer begins.
@@ -2886,14 +2194,14 @@ namespace ME3TweaksModManager
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
         /// <param name="recordOptionsToBM">If options chosen should be saved back to the BatchMod object</param>
         /// <param name="useSavedBatchOptions">If options saved in the BatchMod object should be used</param>
-        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null,
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, BatchMod batchMod = null,
             bool? installCompressed = null, Action<bool, bool> installCompletedCallback = null)
         {
-            if (!MUtilities.IsGameRunning(mod.Game))
+            if (!MRunningGameInfo.IsGameRunning(mod.Game))
             {
                 if (forcedTarget == null && SelectedGameTarget == null)
                 {
-                    TelemetryInterposer.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
+                    M3OpenTelemetry.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
                 }
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
                 var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod);
@@ -2907,7 +2215,7 @@ namespace ME3TweaksModManager
                         // Release the mod install options panel
                         ReleaseBusyControl();
 
-                        ModInstaller mi = new ModInstaller(miop);
+                        ModInstallerPanel mi = new ModInstallerPanel(miop);
                         mi.Close += (c, d) =>
                         {
                             if (mi.InstallationCancelled || !mi.InstallationSucceeded)
@@ -2915,6 +2223,11 @@ namespace ME3TweaksModManager
                                 modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
                             }
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+
+                            // Propagate HasDoneBackupCheck back to the BatchMod so the queue can update for subsequent mods
+                            if (batchMod != null && miop.HasDoneBackupCheck)
+                                batchMod.HasPromptedForBackup = true;
+
                             ReleaseBusyControl(); // Release the mod installer. This may cause merges to occur if batch panel handling is set to false.
 
                             // This must go after releasing the control because in batch mode it will begin setting up the next panel.
@@ -2968,11 +2281,11 @@ namespace ME3TweaksModManager
                     });
                     if (result)
                     {
-                        TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                        M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                             new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
+                            MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
                                 .ToList());
                         }
                         catch (Exception e)
@@ -2983,15 +2296,15 @@ namespace ME3TweaksModManager
                     else
                     {
                         M3Log.Warning(@"User denied permission to grant write permissions");
-                        TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                        M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                             new Dictionary<string, string>() { { @"Granted?", @"No" } });
                     }
                 }
                 else
                 {
-                    TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                    M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                         new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
-                    M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
+                    MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
                         .ToList());
                 }
             }
@@ -3003,10 +2316,7 @@ namespace ME3TweaksModManager
         }
 
         //Fody uses this property on weaving
-#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
-
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
@@ -3018,21 +2328,34 @@ namespace ME3TweaksModManager
             }
 
             DPIScaling.SetScalingFactor(this);
-#if PRERELEASE
-            // MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
-            // MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
-#endif
-
-            if (!App.IsOperatingSystemSupported())
+            if (WineWorkarounds.WineDetected)
             {
-                string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
-                M3Log.Error(@"This operating system is not supported.");
-                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList),
-                    M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
+                var message = M3L.GetString(M3L.string_dialog_wineDetected);
+#if DEBUG
+                if (WineWorkarounds.WineDetectedVersion != null)
+                {
+                    // Localization disabled on these strings as it's debug only
+                    message += $"\n\nWine version: {WineWorkarounds.WineDetectedVersion}"; // do not localize
+                    message += $"\nKernel: {WineWorkarounds.WineHostKernelName} {WineWorkarounds.WineHostKernelVersion}"; // do not localize
+                }
+#endif
+                M3L.ShowDialog(this, message, M3L.GetString(M3L.string_wineDetected), MessageBoxButton.OK);
             }
             else
             {
-                // Unimplemented last crash dialog code removed 03/28/2025
+                // Dialog removed 01/26/2026;
+                // Now forces NoModSelectedText.
+                //if (!App.IsOperatingSystemSupported())
+                //{
+                //    string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
+                //    M3Log.Warning(@"This operating system is not supported");
+                //    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList),
+                //        M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Warning);
+                //}
+                //else
+                //{
+                //    // Unimplemented last crash dialog code removed 03/28/2025
+                //}
             }
 
             // Run on background thread as we don't need the result of this
@@ -3095,22 +2418,13 @@ namespace ME3TweaksModManager
                 var data = new Dictionary<string, string>();
                 try
                 {
-                    ManagementObjectSearcher mosProcessor =
-                        new ManagementObjectSearcher(@"SELECT * FROM Win32_Processor");
-                    foreach (ManagementObject moProcessor in mosProcessor.Get())
-                    {
-                        // For seeing AMD vs Intel (for ME1 lighting)
-                        if (moProcessor[@"name"] != null)
-                        {
-                            data[@"Processor"] = moProcessor[@"name"].ToString();
-                            App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD");
-                        }
-                    }
+                    data[@"Processor"] = new ComputerInfo().CPUName;
+                    App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD"); // For seeing AMD vs Intel (for ME1 lighting)
 
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
                     data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
-
-                    App.SubmitAnalyticTelemetryEvent(@"Hardware Info", data);
+                    data[@"Memory"] = new ComputerInfo().TotalPhysicalMemory.ToString(); // 07/27/2026 probably would be nice to know what average size of userbase memory is for optimizing
+                    M3OpenTelemetry.TrackEvent(@"Version and Hardware Info", data);
                 }
                 catch //(Exception e)
                 {
@@ -3226,22 +2540,6 @@ namespace ME3TweaksModManager
         }
 
         /// <summary>
-        /// Gets current target that matches the game. If selected target does not match, the first one in the list used (active). THIS CAN RETURN A NULL OBJECT!
-        /// </summary>
-        /// <param name="game">Game to find target for</param>
-        /// <returns>Game matching target. If none
-        /// is found, this return null.</returns>
-        internal GameTargetWPF GetCurrentTarget(MEGame game)
-        {
-            if (SelectedGameTarget != null)
-            {
-                if (SelectedGameTarget.Game == game) return SelectedGameTarget;
-            }
-
-            return InstallationTargets.FirstOrDefault(x => x.Game == game);
-        }
-
-        /// <summary>
         /// Calls CheckAllModsForUpdates(). This method should be called from the UI thread.
         /// </summary>
         private void CheckAllModsForUpdatesWrapper()
@@ -3249,249 +2547,6 @@ namespace ME3TweaksModManager
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Mod update check");
             nbw.DoWork += (a, b) => ModUpdater.Instance.CheckAllModsForUpdates();
             nbw.RunWorkerAsync();
-        }
-
-        /// <summary>
-        /// Lock on this object if you want to ensure targets are not repopulating when code is run.
-        /// </summary>
-        internal static object targetRepopulationSyncObj = new();
-
-        private void PopulateTargets(GameTargetWPF selectedTarget = null)
-        {
-            // We lock this code behind object to ensure it finishes running before something else tries to use targets. If a panel tries to access targets list, it could be empty, and that's a problem.
-            lock (targetRepopulationSyncObj)
-            {
-                RepopulatingTargets = true;
-                InstallationTargets.ClearEx();
-                SelectedGameTarget = null;
-                MEDirectories.ReloadGamePaths(true); //this is redundant on the first boot but whatever.
-                M3Log.Information(@"Populating game targets");
-                var targets = new List<GameTargetWPF>();
-                bool foundMe1Active = false;
-                bool foundMe2Active = false;
-                if (ME3Directory.DefaultGamePath != null && Directory.Exists(ME3Directory.DefaultGamePath))
-                {
-                    var target = new GameTargetWPF(MEGame.ME3, ME3Directory.DefaultGamePath, true);
-                    var failureReason = target.ValidateTarget();
-                    if (failureReason == null)
-                    {
-                        M3Log.Information(@"Current boot target for ME3: " + target.TargetPath);
-                        targets.Add(target);
-                        M3Utilities.AddCachedTarget(target);
-                    }
-                    else
-                    {
-                        M3Log.Error(@"Current boot target for ME3 is invalid: " + failureReason);
-                    }
-                }
-
-                if (ME2Directory.DefaultGamePath != null && Directory.Exists(ME2Directory.DefaultGamePath))
-                {
-                    var target = new GameTargetWPF(MEGame.ME2, ME2Directory.DefaultGamePath, true);
-                    var failureReason = target.ValidateTarget();
-                    if (failureReason == null)
-                    {
-                        M3Log.Information(@"Current boot target for ME2: " + target.TargetPath);
-                        targets.Add(target);
-                        M3Utilities.AddCachedTarget(target);
-                        foundMe2Active = true;
-                    }
-                    else
-                    {
-                        M3Log.Error(@"Current boot target for ME2 is invalid: " + failureReason);
-                    }
-                }
-
-                if (ME1Directory.DefaultGamePath != null && Directory.Exists(ME1Directory.DefaultGamePath))
-                {
-                    var target = new GameTargetWPF(MEGame.ME1, ME1Directory.DefaultGamePath, true);
-                    var failureReason = target.ValidateTarget();
-                    if (failureReason == null)
-                    {
-                        M3Log.Information(@"Current boot target for ME1: " + target.TargetPath);
-                        targets.Add(target);
-                        M3Utilities.AddCachedTarget(target);
-                        foundMe1Active = true;
-                    }
-                    else
-                    {
-                        M3Log.Error(@"Current boot target for ME1 is invalid: " + failureReason);
-                    }
-                }
-
-                if (!string.IsNullOrWhiteSpace(LegendaryExplorerCoreLibSettings.Instance?.LEDirectory) &&
-                    Directory.Exists(LegendaryExplorerCoreLibSettings.Instance.LEDirectory))
-                {
-                    // Load LE targets
-                    void loadLETarget(MEGame game, string defaultPath)
-                    {
-                        var target = new GameTargetWPF(game, defaultPath, true);
-                        var failureReason = target.ValidateTarget();
-                        if (failureReason == null)
-                        {
-                            M3Log.Information($@"Current boot target for {game}: {target.TargetPath}");
-                            targets.Add(target);
-                        }
-                        else
-                        {
-                            M3Log.Error($@"Current boot target for {game} at {target.TargetPath} is invalid: " +
-                                        failureReason);
-                        }
-                    }
-
-                    loadLETarget(MEGame.LELauncher, LEDirectory.LauncherPath);
-                    loadLETarget(MEGame.LE1, LE1Directory.DefaultGamePath);
-                    loadLETarget(MEGame.LE2, LE2Directory.DefaultGamePath);
-                    loadLETarget(MEGame.LE3, LE3Directory.DefaultGamePath);
-                }
-
-                // Read steam locations
-                void addSteamTarget(string targetPath, bool foundActiveAlready, MEGame game)
-                {
-                    if (!string.IsNullOrWhiteSpace(targetPath)
-                        && Directory.Exists(targetPath)
-                        && !targets.Any(x =>
-                            x.TargetPath.Equals(targetPath, StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        var target = new GameTargetWPF(game, targetPath, !foundActiveAlready);
-                        var failureReason = target.ValidateTarget();
-                        if (failureReason == null)
-                        {
-                            M3Log.Information($@"Found Steam game for {game}: " + target.TargetPath);
-                            // Todo: Figure out how to insert at correct index
-                            targets.Add(target);
-                            M3Utilities.AddCachedTarget(target);
-                        }
-                        else
-                        {
-                            M3Log.Error($@"Steam version of {game} at {targetPath} is invalid: {failureReason}");
-                        }
-                    }
-                }
-
-                // ME1
-                addSteamTarget(M3Utilities.GetRegistrySettingString(
-                    @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 17460",
-                    @"InstallLocation"), foundMe1Active, MEGame.ME1);
-
-                // ME2
-                addSteamTarget(M3Utilities.GetRegistrySettingString(
-                    @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 24980",
-                    @"InstallLocation"), foundMe2Active, MEGame.ME2);
-
-                // ME3
-                addSteamTarget(M3Utilities.GetRegistrySettingString(
-                    @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1238020",
-                    @"InstallLocation"), foundMe2Active, MEGame.ME3);
-
-                // Legendary Edition
-                var legendarySteamLoc = M3Utilities.GetRegistrySettingString(
-                    @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1328670",
-                    @"InstallLocation");
-                if (!string.IsNullOrWhiteSpace(legendarySteamLoc))
-                {
-                    addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"Launcher"), false, MEGame.LELauncher);
-                    addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME1"), false, MEGame.LE1);
-                    addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME2"), false, MEGame.LE2);
-                    addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME3"), false, MEGame.LE3);
-                }
-
-                M3Log.Information(@"Loading cached targets");
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME3, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME2, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME1, targets));
-
-                // Load LE cached targets
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE3, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE2, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE1, targets));
-                targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LELauncher, targets));
-
-                OrderAndSetTargets(targets, selectedTarget);
-            }
-        }
-
-        private void OrderAndSetTargets(List<GameTargetWPF> targets, GameTargetWPF selectedTarget = null)
-        {
-            // ORDER THE TARGETS
-            //targets = targets.Where(x => x.Game.IsEnabledGeneration()).Distinct().ToList();
-            var finalList = new List<GameTargetWPF>();
-
-            //LE
-            var aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE3 && x.RegistryActive);
-            if (aTarget != null) finalList.Add(aTarget);
-            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE2 && x.RegistryActive);
-            if (aTarget != null) finalList.Add(aTarget);
-            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE1 && x.RegistryActive);
-            if (aTarget != null) finalList.Add(aTarget);
-            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LELauncher && x.RegistryActive);
-            if (aTarget != null) finalList.Add(aTarget);
-
-            // OT
-            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive);
-            if (aTarget != null) finalList.Add(aTarget);
-            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME2 && x.RegistryActive);
-            if (aTarget != null) finalList.Add(aTarget);
-            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME1 && x.RegistryActive);
-            if (aTarget != null) finalList.Add(aTarget);
-
-            if (targets.Count > finalList.Count)
-            {
-                finalList.Add(new GameTargetWPF(MEGame.Unknown,
-                    $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false,
-                    true)
-                { Selectable = false });
-            }
-
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.LE3 && !x.RegistryActive));
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.LE2 && !x.RegistryActive));
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.LE1 && !x.RegistryActive));
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.LELauncher && !x.RegistryActive));
-
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.ME2 && !x.RegistryActive));
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.ME1 && !x.RegistryActive));
-
-            if (!InternalLoadedTargets.Any())
-            {
-                InternalLoadedTargets.ReplaceAll(finalList.Where(x => !x.IsCustomOption));
-            }
-
-            finalList = finalList.Where(x => x.IsCustomOption || x.Game.IsEnabledGeneration()).ToList();
-            if (finalList.LastOrDefaultOut(out var lastTarget) && lastTarget.IsCustomOption)
-            {
-                // Trim last custom option
-                finalList.Remove(lastTarget);
-            }
-
-            InstallationTargets.ReplaceAll(finalList.Where(x => x.IsCustomOption || x.Game.IsEnabledGeneration()));
-
-            if (selectedTarget != null &&
-                finalList.FirstOrDefaultOut(x => x.TargetPath == selectedTarget.TargetPath, out var selTarget))
-            {
-                SelectedGameTarget = selTarget;
-            }
-            else if (!string.IsNullOrWhiteSpace(Settings.LastSelectedTarget) && InstallationTargets.FirstOrDefaultOut(
-                         x => !x.IsCustomOption && x.TargetPath.Equals(Settings.LastSelectedTarget),
-                         out var matchingTarget))
-            {
-                SelectedGameTarget = matchingTarget;
-            }
-            else
-            {
-                if (InstallationTargets.Count > 0)
-                {
-                    var firstSelectableTarget = InstallationTargets.FirstOrDefault(x => x.Selectable);
-                    if (firstSelectableTarget != null)
-                    {
-                        SelectedGameTarget = firstSelectableTarget;
-                    }
-                }
-            }
-
-            UpdateMenuTargets();
-            //BackupService.SetInstallStatuses(InstallationTargets);
-            RepopulatingTargets = false;
         }
 
         public async void OnSelectedModChanged()
@@ -3520,82 +2575,17 @@ namespace ME3TweaksModManager
                     ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName)
                     : "";
 
-                if (NexusModsUtilities.HasAPIKey)
-                {
-                    if (SelectedMod.NexusModID > 0)
-                    {
-                        if (SelectedMod.IsOwnMod)
-                        {
-                            CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseOwnMod);
-                        }
-                        else
-                        {
-                            CurrentModEndorsementStatus = M3L.GetString(M3L.string_gettingEndorsementStatus);
-
-                            var endorsed = await SelectedMod.GetEndorsementStatus();
-                            if (endorsed != null)
-                            {
-                                if (SelectedMod != null)
-                                {
-                                    //mod might have changed since we did BG thread wait.
-                                    if (SelectedMod.CanEndorse)
-                                    {
-                                        UpdatedEndorsementString();
-                                    }
-                                    else
-                                    {
-                                        CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseMod);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // null = self mod
-                                CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseOwnMod);
-
-                            }
-                        }
-
-                        CommandManager.InvalidateRequerySuggested();
-                    }
-                    else
-                    {
-                        CurrentModEndorsementStatus =
-                            $@"{M3L.GetString(M3L.string_cannotEndorseMod)} ({M3L.GetString(M3L.string_notLinkedToNexusMods)})";
-                    }
-                }
-                else
-                {
-                    CurrentModEndorsementStatus =
-                        $@"{M3L.GetString(M3L.string_cannotEndorseMod)} ({M3L.GetString(M3L.string_notAuthenticated)})";
-                }
-                //CurrentDescriptionText = newSelectedMod.DisplayedModDescription;
+                // Do not await
+                UpdateModEndorsementStatus();
             }
             else
             {
                 VisitWebsiteText = "";
                 SetWebsitePanelVisibility(false);
-                CurrentDescriptionText = DefaultDescriptionText;
             }
 
             CanApplyMod(); // This sets the text. Good design MG
         }
-
-        private void UpdatedEndorsementString()
-        {
-            if (SelectedMod != null)
-            {
-                if (SelectedMod.IsEndorsed)
-                {
-                    CurrentModEndorsementStatus = M3L.GetString(M3L.string_modEndorsed);
-                }
-                else
-                {
-                    CurrentModEndorsementStatus = M3L.GetString(M3L.string_endorseMod);
-                }
-            }
-        }
-
         private void SetWebsitePanelVisibility(bool open)
         {
             if (open != WebsitePanelStatus)
@@ -3653,6 +2643,15 @@ namespace ME3TweaksModManager
             Dispatcher.InvokeAsync(HandleMainWindowClosing, DispatcherPriority.Normal);
         }
 
+        /// <summary>
+        /// Handles the logic for closing the main application window, including user confirmation, cleanup checks, and
+        /// cancellation of pending operations as needed.
+        /// </summary>
+        /// <remarks>This method coordinates the shutdown process by checking for user overrides, ongoing
+        /// background operations, and open windows that may block closure. It prompts the user for confirmation if
+        /// critical tasks are in progress and ensures that all necessary cleanup is performed before the application
+        /// exits. If the Shift key is held during the close request, the application will close immediately, bypassing
+        /// standard cleanup checks.</remarks>
         private void HandleMainWindowClosing()
         {
             if (Keyboard.IsKeyDown(Key.LeftShift))
@@ -3730,7 +2729,7 @@ namespace ME3TweaksModManager
                         Title += @" - "
                         + M3L.GetString(M3L.string_cleaningUpPleaseWait);
 
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerIsPerformingCleanupOperations) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3),
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerIsPerformingCleanupOperations) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3), // do not localize
                             M3L.GetString(M3L.string_operationInProgress), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
@@ -3740,7 +2739,7 @@ namespace ME3TweaksModManager
 
                         Title += @" - "
                         + M3L.GetString(M3L.string_cleaningUpPleaseWait);
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerWillAutocloseBackgroundTasks) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3),
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_modManagerWillAutocloseBackgroundTasks) + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3), // do not localize
                             M3L.GetString(M3L.string_operationInProgress), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     return;
@@ -3757,7 +2756,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Mods are currently downloading - prompting user if they really want to close");
 
                 var abortResult = M3L.ShowDialog(this,
-                    "There are currently mods downloading. Are you sure you want to quit?", "Downloads in progress",
+                    M3L.GetString(M3L.string_dialog_exitWhileDownloading), M3L.GetString(M3L.string_downloadsInProgress),
                     MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (abortResult == MessageBoxResult.No)
                 {
@@ -3775,8 +2774,9 @@ namespace ME3TweaksModManager
             {
                 M3Log.Warning(@"Cannot safely close app while mods are importing, aborting application exit request");
                 M3L.ShowDialog(this,
-                    "There are currently mods importing into the library. Please wait until they are finished as aborting import may leave a library mods in a broken state."
-                    + "\n\n" + M3L.GetString(M3L.string_howToForceCloseM3), "Mods currently importing",
+                    M3L.GetString(M3L.string_dialog_exitWhileImporting)
+                    + "\n\n" // do not localize
+                    + M3L.GetString(M3L.string_howToForceCloseM3), M3L.GetString(M3L.string_modsCurrentlyImporting),
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 ;
                 return;
@@ -3793,7 +2793,6 @@ namespace ME3TweaksModManager
         /// <summary>
         /// Marks that the app is ready to close and closes the window.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
         private void ExitApp()
         {
             AppExiting = true;
@@ -3882,8 +2881,9 @@ namespace ME3TweaksModManager
 
                 M3ServiceLoader.LoadServices(bw, Settings.ForcePullContentNextBoot);
                 Settings.ForcePullContentNextBoot = false; // We have pulled content now
-                PropertyChanged?.Invoke(this,
-                    new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText))); // Update localized tip shown
+                M3SupportedOS.StartupCompleted = true;
 
                 if (firstStartupCheck)
                 {
@@ -3911,7 +2911,7 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            bw.RunWorkerCompleted += async (a, b) =>
             {
                 if (b.Error != null)
                 {
@@ -3923,7 +2923,7 @@ namespace ME3TweaksModManager
                 if (firstStartupCheck)
                 {
                     M3Utilities.WriteExeLocation();
-                    handleInitialPending();
+                    await handleInitialPending();
                 }
 
                 if (Settings.GenerationSettingOT)
@@ -3964,7 +2964,7 @@ namespace ME3TweaksModManager
         /// First time handling pending when app initially boots.
         /// </summary>
         /// <returns>If the main window should be brought to the foreground or not.</returns>
-        private bool handleInitialPending()
+        private async Task<bool> handleInitialPending()
         {
             bool shouldBringToFG = false;
 
@@ -3990,11 +2990,21 @@ namespace ME3TweaksModManager
                 {
                     shouldBringToFG = true;
                     Activate();
-                    DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink);
 
-                    ShowDownloadManager();
+                    if (NexusModsUtilities.UserInfo == null)
+                    {
+                        // Not logged in
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_nexusLoginRequiredForDownload), M3L.GetString(M3L.string_notSignedIn), MessageBoxButton.OK, MessageBoxImage.Error);
+                        ShowNexusPanel();
+                    }
+                    else
+                    {
+                        if (DownloadManager.AddNXMDownload(CommandLinePending.PendingNXMLink) != null)
+                        {
+                            ShowDownloadManager();
+                        }
+                    }
                 }
-
                 if (CommandLinePending.PendingInstallBink && CommandLinePending.PendingGame != null)
                 {
                     shouldBringToFG = true;
@@ -4025,6 +3035,16 @@ namespace ME3TweaksModManager
 
                 if (CommandLinePending.PendingInstallASIID > 0 && CommandLinePending.PendingGame != null)
                 {
+                    M3Log.Information($@"ASI installation requested by command line: {CommandLinePending.PendingInstallASIID} to {CommandLinePending.PendingGame}");
+                    if (CommandLinePending.PendingInstallASIVersion > 0)
+                    {
+                        M3Log.Information($@"Requested version: {CommandLinePending.PendingInstallASIVersion}");
+                    }
+                    else
+                    {
+                        M3Log.Information($@"Requested version: Latest");
+                    }
+
                     shouldBringToFG = true;
                     var game = CommandLinePending.PendingGame.Value;
                     if (!game.IsOTGame() && !game.IsLEGame())
@@ -4036,12 +3056,17 @@ namespace ME3TweaksModManager
                         GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
                         if (t != null)
                         {
-                            if (ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, CommandLinePending.PendingInstallASIVersion, includeHiddenASIs: true))
+                            CurrentOperationText = M3L.GetString(M3L.string_interp_installingASIMod);
+                            var result = await ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, CommandLinePending.PendingInstallASIVersion, includeHiddenASIs: true);
+
+                            if (result)
                             {
+                                M3Log.Information($@"ASI installed successfully (command line request)!");
                                 CurrentOperationText = M3L.GetString(M3L.string_installedASIModByCommandLineRequest);
                             }
                             else
                             {
+                                M3Log.Error($@"ASI failed to install (command line request)!");
                                 CurrentOperationText = M3L.GetString(M3L.string_failedToInstallASIModByCommandLineRequest);
                             }
                         }
@@ -4187,97 +3212,6 @@ namespace ME3TweaksModManager
             //}
         }
 
-        /// <summary>
-        /// Refreshes the dynamic help list
-        /// </summary>
-        /// <param name="sortableHelpItems"></param>
-        private void setDynamicHelpMenu(IReadOnlyList<SortableHelpElement> sortableHelpItems)
-        {
-            //Replacing the dynamic help menu
-            //DynamicHelp_MenuItem.Items.RemoveAll(x=>x.Tag is string str && str == "DynamicHelp");
-
-            var dynamicMenuItems = RecursiveBuildDynamicHelpMenuItems(sortableHelpItems);
-
-            //Clear old items out
-            for (int i = HelpMenuItem.Items.Count - 1; i > 0; i--)
-            {
-                if (HelpMenuItem.Items[i] is MenuItem menuItem && menuItem.Tag is string str && str == @"DynamicHelp")
-                {
-                    HelpMenuItem.Items.Remove(menuItem);
-                }
-            }
-
-            dynamicMenuItems.Reverse(); //we are going to insert these in reverse order
-            var dynamicHelpHeaderIndex = HelpMenuItem.Items.IndexOf(DynamicHelp_MenuItem) + 1;
-            foreach (var v in dynamicMenuItems)
-            {
-                HelpMenuItem.Items.Insert(dynamicHelpHeaderIndex, v);
-            }
-        }
-
-        internal void SetTipsForLanguage()
-        {
-
-        }
-
-        private List<MenuItem> RecursiveBuildDynamicHelpMenuItems(IReadOnlyList<SortableHelpElement> sortableHelpItems)
-        {
-            //Todo: Localized version
-            List<MenuItem> dynamicMenuItems = new List<MenuItem>();
-            foreach (var item in sortableHelpItems)
-            {
-                MenuItem m = new MenuItem()
-                {
-                    Header = item.Title,
-                    ToolTip = item.ToolTip,
-                    Tag = @"DynamicHelp"
-                };
-                if (!string.IsNullOrEmpty(item.URL))
-                {
-                    //URL HelpItem
-                    m.Click += (o, eventArgs) => M3Utilities.OpenWebpage(item.URL);
-                }
-                else if (!string.IsNullOrEmpty(item.ModalTitle))
-                {
-                    //Modal dialog
-                    item.ModalText = M3Utilities.ConvertBrToNewline(item.ModalText);
-                    m.Click += (o, eventArgs) =>
-                    {
-                        new DynamicHelpItemModalWindow(item) { Owner = this }.ShowDialog();
-                    };
-                }
-
-                // 06/05/2022 - Support a font awesome icon enumeration value
-                if (!string.IsNullOrWhiteSpace(item.FontAwesomeIconResource) &&
-                    Enum.TryParse<EFontAwesomeIcon>(item.FontAwesomeIconResource, out var icon))
-                {
-                    var ia = new ImageAwesome()
-                    {
-                        Icon = icon,
-                        Height = 16,
-                        Width = 16,
-                        Style = (Style)FindResource(@"EnableDisableImageStyle")
-                    };
-                    ia.SetResourceReference(ImageAwesome.ForegroundProperty, AdonisUI.Brushes.ForegroundBrush);
-
-                    m.Icon = ia;
-                }
-
-                dynamicMenuItems.Add(m);
-
-                if (item.Children.Count > 0)
-                {
-                    var children = RecursiveBuildDynamicHelpMenuItems(item.Children);
-                    foreach (var v in children)
-                    {
-                        m.Items.Add(v);
-                    }
-                }
-            }
-
-            return dynamicMenuItems;
-        }
-
         private void LaunchExternalTool_Clicked(object sender, RoutedEventArgs e)
         {
             string tool = null;
@@ -4312,7 +3246,7 @@ namespace ME3TweaksModManager
         {
             if (tool != null)
             {
-                TelemetryInterposer.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
                 {
                     { @"Tool name", tool },
                     { @"Arguments", arguments }
@@ -4325,7 +3259,7 @@ namespace ME3TweaksModManager
 
         private void OpenASIManager()
         {
-            TelemetryInterposer.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
             {
                 { @"Invocation method", @"Menu" }
             });
@@ -4333,90 +3267,17 @@ namespace ME3TweaksModManager
             exLauncher.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(exLauncher);
         }
-
-        private bool RepopulatingTargets;
-
-        public void OnSelectedGameTargetChanged()
-        {
-            if (!RepopulatingTargets && SelectedGameTarget != null)
-            {
-                //Settings.Save();
-                if (!SelectedGameTarget.RegistryActive)
-                {
-                    UpdateBinkStatus(SelectedGameTarget.Game);
-                    try
-                    {
-                        var hresult = UpdateBootTarget(SelectedGameTarget);
-                        if (hresult == -3) return; //do nothing.
-                        if (hresult == 0)
-                        {
-                            //rescan
-                            PopulateTargets(SelectedGameTarget);
-                            SelectedGameTarget.UpdateLODs(Settings.AutoUpdateLODs2K);
-                        }
-
-                        TelemetryInterposer.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
-                        {
-                            { @"New target", SelectedGameTarget.Game.ToString() },
-                        });
-                    }
-                    catch (Win32Exception ex)
-                    {
-                        M3Log.Warning(
-                            @"Win32 exception occurred updating boot target. User maybe pressed no to the UAC dialog?: " +
-                            ex.Message);
-                    }
-                }
-
-                Settings.LastSelectedTarget = SelectedGameTarget?.TargetPath;
-                UpdateSelectedLaunchOption();
-            }
-        }
-
-        private void UpdateSelectedLaunchOption()
-        {
-            if (SelectedGameTarget == null) return;
-
-            if (M3LoadedMods.Instance == null || !SelectedGameTarget.Game.IsLEGame())
-            {
-                // Set default option.
-                SelectedLaunchOption = M3LoadedMods.GetDefaultLaunchOptionsPackage(SelectedGameTarget.Game);
-                return;
-            }
-
-            Guid guidToMatch = SelectedGameTarget.Game switch
-            {
-                MEGame.LE1 => Settings.SelectedLE1LaunchOption,
-                MEGame.LE2 => Settings.SelectedLE2LaunchOption,
-                MEGame.LE3 => Settings.SelectedLE3LaunchOption,
-                _ => Guid.Empty,
-            };
-
-            var option = M3LoadedMods.Instance.AllLaunchOptions.FirstOrDefault(x => x.Game == SelectedGameTarget.Game && x.PackageGuid == guidToMatch);
-            if (option != null)
-            {
-                SelectedLaunchOption = option;
-            }
-            else
-            {
-                SelectedLaunchOption = M3LoadedMods.GetDefaultLaunchOptionsPackage(SelectedGameTarget.Game);
-            }
-        }
-
         private void UploadLog_Click(object sender, RoutedEventArgs e)
         {
-            ShowLogUploadPanel();
+            ShowLogUploadPanel(null);
         }
-        internal void ShowLogUploadPanel()
+
+        internal void ShowLogUploadPanel(GameTarget selectedTarget)
         {
-            var logUploaderUI = new LogUploaderPanel();
+            var logUploaderUI = new LogUploaderPanel(selectedTarget);
             logUploaderUI.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(logUploaderUI);
         }
-
-
-        public string CurrentModEndorsementStatus { get; private set; } = M3L.GetString(M3L.string_endorseMod);
-        public bool IsEndorsingMod { get; private set; }
 
         public bool CanOpenMEIM()
         {
@@ -4436,544 +3297,13 @@ namespace ME3TweaksModManager
             return false;
         }
 
-        private void Window_Drop(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                // Note that you can have more than one file.
-                bool continueLoop = true;
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (var file in files)
-                {
-                    if (!continueLoop)
-                        break;
-                    string ext = Path.GetExtension(file).ToLower();
-                    M3Log.Information(@"File dropped onto interface: " + file);
-                    switch (ext)
-                    {
-                        case @".rar":
-                        case @".7z":
-                        case @".zip":
-                        case @".exe":
-                            TelemetryInterposer.TrackEvent(@"User opened mod archive for import",
-                                new Dictionary<string, string>
-                                {
-                                    { @"Method", @"Drag & drop" },
-                                    { @"Filename", Path.GetFileName(file) }
-                                });
-                            openModImportUI(file);
-                            break;
-                        // Must come before .mem general case
-                        case @".mem"
-                            when ModFileFormats.GetGameMEMFileIsFor(file) is var memGame &&
-                                 memGame.IsLEGame(): // For LE
-                            App.SubmitAnalyticTelemetryEvent(@"User dropped LE mem file",
-                                new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
-
-                            continueLoop = false; // Do not parse other files in drop, we handle them here
-                            var memFiles = new List<string>(files.Length);
-                            memFiles.Add(file);
-                            foreach (var f in files)
-                            {
-                                if (f == file)
-                                    continue;
-                                if (Path.GetExtension(f) == @".mem" && ModFileFormats.GetGameMEMFileIsFor(f) == memGame)
-                                {
-                                    memFiles.Add(f);
-                                }
-                            }
-
-
-                            var impInstallCancel = M3L.ShowDialog(this,
-                                M3L.GetString(M3L.string_importOrInstallTheseMemFilesQuestion)
-                                + "\n\n" // do not localize
-                                + string.Join("\n - ", memFiles.Select(Path.GetFileName)), // do not localize
-                                M3L.GetString(M3L.string_importOrInstall),
-                                MessageBoxButton.YesNoCancel,
-                                MessageBoxImage.Question,
-                                MessageBoxResult.Yes,
-                                yesContent: M3L.GetString(M3L.string_import),
-                                noContent: M3L.GetString(M3L.string_install));
-
-                            if (impInstallCancel == MessageBoxResult.Cancel)
-                                return;
-                            if (impInstallCancel == MessageBoxResult.Yes)
-                            {
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"TextureImport",
-                                    M3L.GetString(M3L.string_importingTextureModsToLibrary),
-                                    M3L.GetString(M3L.string_importedTextureMods));
-                                Task.Run(() => { ModArchiveImport.ImportTextureFiles(memFiles, memGame); })
-                                    .ContinueWithOnUIThread(x => { BackgroundTaskEngine.SubmitJobCompletion(task); });
-                            }
-
-                            if (impInstallCancel == MessageBoxResult.No)
-                            {
-                                // Install
-                                var target = SelectedGameTarget;
-                                if (target?.Game != memGame)
-                                {
-                                    target = GetCurrentTarget(memGame);
-                                }
-
-                                if (target == null)
-                                {
-                                    M3L.ShowDialog(this,
-                                        M3L.GetString(M3L.string_interp_notTargetAvailableForX, memGame),
-                                        M3L.GetString(M3L.string_gameNotAvailable),
-                                        MessageBoxButton.OK,
-                                        MessageBoxImage.Error);
-                                    return;
-                                }
-
-                                TextureInstallerPanel tip = new TextureInstallerPanel(target, memFiles);
-                                tip.Close += (o, args) => ReleaseBusyControl();
-                                ShowBusyControl(tip);
-                            }
-
-                            break;
-                        //TPF, .mod, .mem
-                        case @".tpf":
-                        case @".mod":
-                        case @".mem":
-                            App.SubmitAnalyticTelemetryEvent(@"User redirected to MEM/ALOT Installer",
-                                new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_installingTextureMod, ext),
-                                M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK,
-                                MessageBoxImage.Warning);
-                            break;
-
-                        case @".me2mod":
-                            App.SubmitAnalyticTelemetryEvent(@"User opened me2mod file",
-                                new Dictionary<string, string> { { @"Filename", Path.GetFileName(file) } });
-                            openModImportUI(file);
-                            break;
-                        case @".xaml":
-                            if (Settings.DeveloperMode)
-                            {
-                                LoadExternalLocalizationDictionary(file);
-                            }
-
-                            break;
-                        case @".extractedbin":
-                            {
-                                using var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
-                                //var magic = fs.ReadInt32();
-                                //fs.Dispose();
-                                //if (magic is 0x666D726D or 0x1B) //fmrm (backwards) (ME3), 0x1B (LE1 (sigh))
-                                //{
-
-                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Compiler");
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompiler",
-                                    M3L.GetString(M3L.string_compilingCoalescedFile),
-                                    M3L.GetString(M3L.string_compiledCoalescedFile));
-                                nbw.DoWork += (a, b) =>
-                                {
-                                    var dest = Path.Combine(Directory.GetParent(file).FullName, File.ReadAllLines(file)[0]);
-                                    M3Log.Information($@"Compiling coalesced file: {file} -> {dest}");
-                                    CoalescedConverter.Convert(CoalescedConverter.CoalescedType.ExtractedBin, file, dest);
-                                    M3Log.Information(@"Compiled coalesced file");
-                                };
-                                nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
-                                nbw.RunWorkerAsync();
-                                // }
-                            }
-                            break;
-                        case @".bin":
-                            //Check for Coalesced
-                            {
-                                using var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
-                                var magic = fs.ReadInt32();
-                                fs.Dispose();
-                                if (magic is 0x666D726D or 0x1B or 0x1C
-                                    or 0x1E) //fmrm (backwards) (ME3), 0x1B (LE1), 0x1C (LE2 count or something...) 0x1E (LE2) (sigh)
-                                {
-
-                                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");
-                                    var task = BackgroundTaskEngine.SubmitBackgroundJob(@"CoalescedDecompile",
-                                        M3L.GetString(M3L.string_decompilingCoalescedFile),
-                                        M3L.GetString(M3L.string_decompiledCoalescedFile));
-                                    nbw.DoWork += (a, b) =>
-                                    {
-                                        var dest = Path.Combine(Directory.GetParent(file).FullName,
-                                            Path.GetFileNameWithoutExtension(file));
-                                        M3Log.Information($@"Decompiling coalesced file: {file} -> {dest}");
-                                        CoalescedConverter.Convert(CoalescedConverter.CoalescedType.Binary, file, dest);
-                                        M3Log.Information(@"Decompiled coalesced file");
-                                    };
-                                    nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
-                                    nbw.RunWorkerAsync();
-                                }
-#if DEBUG && !AZURE
-                                // TOC DUMP
-                                else if (magic is 0x3AB70C13)
-                                {
-                                    TOCBinFile tbf = new TOCBinFile(file);
-                                    tbf.DumpTOC();
-                                }
-#endif
-                            }
-                            break;
-                        case @".xml":
-                            //Check if it's ModMaker sideload, coalesced manifest, or TLK
-                            {
-                                try
-                                {
-                                    var xmldocument = XDocument.Load(file);
-                                    var rootElement = xmldocument.Root;
-                                    if (rootElement.Name == @"ModMaker")
-                                    {
-                                        //Modmaker Mod, sideload
-                                        var modmakerPanel = new ModMakerPanel()
-                                        {
-                                            LocalFileOption = true,
-                                            LocalFilePath = file
-                                        };
-
-                                        modmakerPanel.Close += (a, b) =>
-                                        {
-                                            ReleaseBusyControl();
-                                            if (b.Data is Mod m)
-                                            {
-                                                M3LoadedMods.Instance.LoadMods(m);
-                                            }
-                                        };
-                                        ShowBusyControl(modmakerPanel);
-                                        break;
-                                    }
-
-
-
-                                    if (rootElement.Name == @"CoalesceFile")
-                                    {
-                                        bool failedToCompileCoalesced = false;
-
-                                        void errorCompilingCoalesced(string message)
-                                        {
-                                            Application.Current.Dispatcher.Invoke(delegate
-                                            {
-                                                failedToCompileCoalesced = true;
-                                                M3L.ShowDialog(this, message,
-                                                    M3L.GetString(M3L.string_errorCompilingCoalesced), MessageBoxButton.OK,
-                                                    MessageBoxImage.Error);
-                                            });
-                                        }
-
-                                        //Coalesced manifest
-                                        NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Compiler");
-                                        var task = BackgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompile",
-                                            M3L.GetString(M3L.string_compilingCoalescedFile),
-                                            M3L.GetString(M3L.string_compiledCoalescedFile));
-                                        nbw.DoWork += (a, b) =>
-                                        {
-                                            var dest = Path.Combine(Directory.GetParent(file).FullName,
-                                                rootElement.Attribute(@"name").Value);
-                                            M3Log.Information($@"Compiling coalesced file: {file} -> {dest}");
-                                            try
-                                            {
-                                                CoalescedConverter.ConvertToBin(file, dest);
-                                                M3Log.Information(@"Compiled coalesced file");
-                                            }
-                                            catch (Exception e)
-                                            {
-                                                M3Log.Error($@"Error compiling Coalesced file: {e.Message}:");
-                                                M3Log.Error(App.FlattenException(e));
-                                                errorCompilingCoalesced(M3L.GetString(
-                                                    M3L.string_interp_exceptionOccuredWhileCompilingCoalsecedFileX,
-                                                    e.Message));
-                                            }
-                                        };
-                                        nbw.RunWorkerCompleted += (a, b) =>
-                                        {
-                                            if (failedToCompileCoalesced)
-                                                task.FinishedUIText = M3L.GetString(M3L.string_errorCompilingCoalesced);
-                                            BackgroundTaskEngine.SubmitJobCompletion(task);
-                                        };
-                                        nbw.RunWorkerAsync();
-                                        break;
-                                    }
-
-                                    bool failedToCompileTLK = false;
-
-                                    void errorCompilingTLK(string message)
-                                    {
-                                        Application.Current.Dispatcher.Invoke(delegate
-                                        {
-                                            failedToCompileTLK = true;
-                                            M3L.ShowDialog(this, message, M3L.GetString(M3L.string_errorCompilingTLK),
-                                                MessageBoxButton.OK, MessageBoxImage.Error);
-                                        });
-                                    }
-
-                                    // Tankmaster's uses a capital T where ME3Explorer used lowercase t
-                                    if (rootElement.Name == @"TlkFile")
-                                    {
-                                        //TLK file - ensure it's the manifest one
-                                        var sourceName = rootElement.Attribute(@"source");
-                                        if (sourceName != null)
-                                        {
-                                            //This is a manifest file
-                                            /*
-                                             * Manifest File
-                                             * Folder with same name
-                                             * |-> TLK.xml files
-                                             */
-                                            NamedBackgroundWorker nbw =
-                                                new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
-                                            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile",
-                                                M3L.GetString(M3L.string_compilingTLKFile),
-                                                M3L.GetString(M3L.string_compiledTLKFile));
-                                            nbw.DoWork += (a, b) =>
-                                            {
-                                                TLKTranspiler.CompileTLKManifest(file, rootElement, errorCompilingTLK);
-                                            };
-                                            nbw.RunWorkerCompleted += (a, b) =>
-                                            {
-                                                if (failedToCompileTLK)
-                                                    task.FinishedUIText = M3L.GetString(M3L.string_compilingFailed);
-                                                BackgroundTaskEngine.SubmitJobCompletion(task);
-                                            };
-                                            nbw.RunWorkerAsync();
-                                        }
-                                        else
-                                        {
-                                            //Is this a straight up TLK?
-                                            NamedBackgroundWorker nbw =
-                                                new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
-                                            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile",
-                                                M3L.GetString(M3L.string_compilingTLKFile),
-                                                M3L.GetString(M3L.string_compiledTLKFile));
-                                            nbw.DoWork += (a, b) =>
-                                            {
-                                                TLKTranspiler.CompileTLKManifestStrings(file, rootElement,
-                                                    errorCompilingTLK);
-                                            };
-                                            nbw.RunWorkerCompleted += (a, b) =>
-                                            {
-                                                if (failedToCompileTLK)
-                                                    task.FinishedUIText = M3L.GetString(M3L.string_compilingFailed);
-                                                BackgroundTaskEngine.SubmitJobCompletion(task);
-                                            };
-                                            nbw.RunWorkerAsync();
-                                        }
-                                    }
-                                    else if (rootElement.Name == @"tlkFile") //ME3Explorer style
-                                    {
-                                        NamedBackgroundWorker nbw =
-                                            new NamedBackgroundWorker(@"TLKTranspiler - CompileME3Exp");
-                                        var task = BackgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile",
-                                            M3L.GetString(M3L.string_compilingTLKFile),
-                                            M3L.GetString(M3L.string_compiledTLKFile));
-                                        nbw.DoWork += (a, b) =>
-                                        {
-                                            TLKTranspiler.CompileTLKME3Explorer(file, rootElement, errorCompilingTLK);
-                                        };
-                                        nbw.RunWorkerCompleted += (a, b) =>
-                                        {
-                                            if (failedToCompileTLK)
-                                                task.FinishedUIText = M3L.GetString(M3L.string_compilingFailed);
-                                            BackgroundTaskEngine.SubmitJobCompletion(task);
-                                        };
-                                        nbw.RunWorkerAsync();
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    M3Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
-                                    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorReadingXmlFileX, ex.Message),
-                                        M3L.GetString(M3L.string_errorReadingXmlFile), MessageBoxButton.OK,
-                                        MessageBoxImage.Error);
-                                }
-                            }
-                            break;
-                        case @".tlk":
-                            {
-                                //Break down into xml file
-                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLK decompiler");
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"TLKDecompile",
-                                    M3L.GetString(M3L.string_decompilingTLKFile),
-                                    M3L.GetString(M3L.string_decompiledTLKFile));
-                                nbw.DoWork += (a, b) =>
-                                {
-                                    var dest = Path.Combine(Directory.GetParent(file).FullName,
-                                        Path.GetFileNameWithoutExtension(file) + @".xml");
-                                    M3Log.Information($@"Decompiling TLK file: {file} -> {dest}");
-                                    var tf = new ME2ME3TalkFile(file);
-                                    tf.SaveToXML(dest);
-                                    M3Log.Information(@"Decompiled TLK file");
-                                };
-                                nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
-                                nbw.RunWorkerAsync();
-
-                            }
-                            break;
-#if LEGACY
-
-                        case @".par":
-                            {
-                                var contents = PARTools.DecodePAR(File.ReadAllBytes(file));
-                                Debug.WriteLine(contents);
-                            }
-                            break;
-#endif
-
-                        case @".json":
-                            {
-                                CompileMergeMod(file);
-                            }
-                            break;
-                        case @".m3m":
-                            try
-                            {
-                                MergeModLoader.DecompileM3M(file);
-                            }
-                            catch (Exception ex)
-                            {
-                                M3Log.Error($@"Error decompiling m3m mod file: {ex.Message}");
-                                M3L.ShowDialog(this,
-                                    M3L.GetString(M3L.string_interp_errorDecompilingM3MMessage, ex.Message),
-                                    M3L.GetString(M3L.string_errorDecompilingM3m), MessageBoxButton.OK,
-                                    MessageBoxImage.Error);
-                            }
-
-                            break;
-                        case @".m3za":
-                            try
-                            {
-                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"M3ZA decompressor");
-                                var fname = Path.GetFileName(file);
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3ZADecompress",
-                                    M3L.GetString(M3L.string_interp_decompressingFname, fname),
-                                    M3L.GetString(M3L.string_interp_decompressedFname, fname));
-                                nbw.DoWork += (a, b) =>
-                                {
-                                    void progress(int done, int total)
-                                    {
-                                        int percent = (int)Math.Round(done * 100.0f / total);
-                                        BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task,
-                                            M3L.GetString(M3L.string_interp_decompressingFnamePercent, fname, percent));
-                                    }
-
-                                    using var f = File.OpenRead(file);
-                                    var archive = CompressedTLKMergeData.ReadCompressedTlkMergeFile(f, true);
-                                    var completed = archive.DecompressArchiveToDisk(Directory.GetParent(file).FullName,
-                                        archive.LoadedCompressedData, progress);
-                                    if (!completed)
-                                    {
-                                        task.FinishedUIText = M3L.GetString(M3L.string_interp_failedToDecompressFname,
-                                            fname);
-                                    }
-                                };
-                                nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
-                                nbw.RunWorkerAsync();
-
-                            }
-                            catch (Exception ex2)
-                            {
-                                M3Log.Exception(ex2, $@"Error decompressing {file}:");
-                            }
-
-                            break;
-                        case @".hlsl":
-                            try
-                            {
-                                var fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") + @"x86\fxc.exe";
-                                if (!File.Exists(fxc))
-                                {
-                                    fxc = Environment.GetEnvironmentVariable("WindowsSdkVerBinPath") +
-                                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
-                                }
-
-                                if (!File.Exists(fxc))
-                                {
-                                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir") + @"bin\" +
-                                          Environment.GetEnvironmentVariable("WindowsSDKVersion") + @"x86\fxc.exe";
-                                }
-
-                                if (!File.Exists(fxc))
-                                {
-                                    fxc = Environment.GetEnvironmentVariable("WindowsSdkDir_80") + @"bin\x86\fxc.exe";
-                                }
-
-                                if (!File.Exists(fxc))
-                                {
-                                    M3Log.Warning("Could not find fxc - install a Windows SDK that contains FXC");
-                                    M3L.ShowDialog(this,
-                                        "Could not find a copy of fxc.exe. You will need to install a Windows SDK that contains the D3D11 compiler.",
-                                        "FXC not found", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
-                                }
-
-                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Shader Compiler");
-                                var fname = Path.GetFileName(file);
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"ShaderCompile",
-                                    "Compiling shaders",
-                                    "Compiled shaders");
-                                nbw.DoWork += async (a, b) =>
-                                {
-                                    void progress(int done, int total)
-                                    {
-                                        int percent = (int)Math.Round(done * 100.0f / total);
-                                        BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task,
-                                            $"Compiling shaders {percent}%");
-                                    }
-
-                                    int total = files.Length;
-                                    int done = 0;
-                                    foreach (var f in files)
-                                    {
-                                        var isPixelShader = f.Contains("PixelShader",
-                                            StringComparison.OrdinalIgnoreCase);
-                                        var typeParam = isPixelShader ? "ps_5_0" : "vs_5_0";
-                                        var outPath = Path.Combine(Directory.GetParent(file).FullName, Path.GetFileNameWithoutExtension(f) + @".m3gs");
-                                        var cmd = Cli.Wrap(fxc)
-                                            .WithArguments($"/T {typeParam} /Fo \"{outPath}\" \"{f}\"")
-                                            .WithValidation(CommandResultValidation.None); // do not localize
-                                        await foreach (var cmdEvent in cmd.ListenAsync())
-                                        {
-                                            switch (cmdEvent)
-                                            {
-                                                case StartedCommandEvent started:
-                                                    M3Log.Information($@"FXC: Process started with id {started.ProcessId}");
-                                                    break;
-                                                case StandardOutputCommandEvent stdOut:
-                                                    M3Log.Information($@"FXC: {stdOut.Text}");
-                                                    break;
-                                                case StandardErrorCommandEvent stdErr:
-                                                    M3Log.Error($@"FXC: {stdErr.Text}");
-                                                    break;
-                                                case ExitedCommandEvent exited:
-                                                    M3Log.Information($@"FXC: Process exited with code {exited.ExitCode}");
-                                                    break;
-                                            }
-                                        }
-
-                                        done++;
-                                        progress(done, total);
-                                    }
-                                };
-                                nbw.RunWorkerCompleted += (a, b) => { BackgroundTaskEngine.SubmitJobCompletion(task); };
-                                nbw.RunWorkerAsync();
-                            }
-                            catch (Exception ex)
-                            {
-                                // Show dialog or something.
-                                M3Log.Exception(ex, $@"Error compiling shaders:");
-                            }
-
-                            break;
-                    }
-                }
-            }
-        }
-
         private void CompileMergeMod(string file, double featureLevel = 0)
         {
             var version = MergeModLoader.GetMergeModVersionForCompile(this, file);
             if (version == null)
                 return; // User canceled.
 
-            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod),
-                M3L.GetString(M3L.string_compiledMergemod));
+            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod), M3L.GetString(M3L.string_compiledMergemod));
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MergeModCompiler");
             nbw.DoWork += (o, args) =>
             {
@@ -4987,8 +3317,7 @@ namespace ME3TweaksModManager
                     BackgroundTaskEngine.SubmitJobCompletion(task);
                     M3Log.Error($@"Error compiling m3m mod file: {args.Error.Message}");
                     M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, args.Error.Message),
-                        M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                        M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -5054,113 +3383,6 @@ namespace ME3TweaksModManager
             ShowBusyControl(modInspector, priority);
         }
 
-        private void Window_DragOver(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                // Note that you can have more than one file.
-                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                string ext = Path.GetExtension(files[0]).ToLower();
-                if (!SupportedDroppableExtensions.Contains(ext))
-                {
-                    if (!Settings.DeveloperMode || ext != @".xaml") //dev mode supports .xaml file drop for localization
-                    {
-                        e.Effects = DragDropEffects.None;
-                    }
-                }
-            }
-            else
-            {
-                e.Effects = DragDropEffects.None;
-            }
-
-            e.Handled = true;
-        }
-
-
-        private void RunTargetMerge(object obj)
-        {
-            if (obj is MEGame game)
-            {
-                var target = GetCurrentTarget(game);
-                if (target != null)
-                {
-                    PanelResult pr = new PanelResult();
-                    pr.AddTargetMerges(target);
-                    HandlePanelResult(pr);
-                }
-                else
-                {
-                    M3Log.Error(@"RunTargetMerge game target was null! This shouldn't be possible");
-                }
-            }
-        }
-
-        private void SyncPlotManagerForTarget(GameTarget target)
-        {
-            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
-                M3L.GetString(M3L.string_interp_syncingPlotManagerForGame, target.Game.ToGameName()),
-                M3L.GetString(M3L.string_interp_syncedPlotManagerForGame, target.Game.ToGameName()));
-            var pmuUI = new PlotManagerUpdatePanel(target);
-            pmuUI.Close += (a, b) =>
-            {
-                BackgroundTaskEngine.SubmitJobCompletion(task);
-                ReleaseBusyControl();
-            };
-            ShowBusyControl(pmuUI);
-        }
-
-        private void MergeLE1CoalescedForTarget(GameTarget target)
-        {
-            if (!Settings.EnableLE1CoalescedMerge)
-            {
-                M3Log.Warning(@"Cannot perform LE1 Coalesced Merge: feature is disabled by user request");
-                return;
-            }
-
-            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MergeLE1Coalesced", M3L.GetString(M3L.string_mergingCoalescedFiles),
-                M3L.GetString(M3L.string_mergedCoalescedFiles));
-            var coalMergePanel = new LE1CoalescedMergePanel(target);
-            coalMergePanel.Close += (a, b) =>
-            {
-                BackgroundTaskEngine.SubmitJobCompletion(task);
-                ReleaseBusyControl();
-            };
-            ShowBusyControl(coalMergePanel);
-        }
-
-        private void MergeLE12DAsForTarget(GameTarget target)
-        {
-            if (!Settings.EnableLE12DAMerge)
-            {
-                M3Log.Warning(@"Cannot perform LE1 2DA Merge: feature is disabled by user request");
-                return;
-            }
-
-            ShowRunAndDone((updateUIString) => Bio2DAMerge.RunBio2DAMerge(target),
-                M3L.GetString(M3L.string_merging2DATables),
-                M3L.GetString(M3L.string_merged2DATables),
-                null,
-                x =>
-                {
-                    if (x != null)
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorMerging2DAX, x.Message), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
-                });
-        }
-
-        private void RunShaderMergeForTarget(GameTarget target)
-        {
-            ShowRunAndDone((updateUIString) => GlobalShaderMerge.RunShaderMerge(target, true),
-                "Merging global shaders",
-                "Merged global shaders",
-                null,
-                x =>
-                {
-                    if (x != null)
-                        M3L.ShowDialog(this, $"Error merging global shaders: {x.Message}", M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
-                });
-        }
-
         private void RunAutoTOCOnGame(object obj)
         {
             if (obj is MEGame game)
@@ -5224,152 +3446,6 @@ namespace ME3TweaksModManager
 #endif
         }
 
-        private void ChangeLanguage_Clicked(object sender, RoutedEventArgs e)
-        {
-            string lang = @"int";
-            if (sender == LanguageINT_MenuItem)
-            {
-                lang = @"int";
-            }
-            else if (sender == LanguagePOL_MenuItem)
-            {
-                lang = @"pol";
-            }
-            else if (sender == LanguageRUS_MenuItem)
-            {
-                lang = @"rus";
-            }
-            else if (sender == LanguageDEU_MenuItem)
-            {
-                lang = @"deu";
-            }
-            else if (sender == LanguageBRA_MenuItem)
-            {
-                lang = @"bra";
-            }
-            else if (sender == LanguageITA_MenuItem)
-            {
-                lang = @"ita";
-            }
-            //else if (sender == LanguageESN_MenuItem)
-            //{
-            //    lang = @"esn";
-            //}
-            //else if (sender == LanguageFRA_MenuItem)
-            //{
-            //    lang = @"fra";
-            //}
-            //else if (sender == LanguageCZE_MenuItem)
-            //{
-            //    lang = @"cze";
-            //}
-            //else if (sender == LanguageKOR_MenuItem)
-            //{
-            //    lang = @"kor";
-            //}
-            SetApplicationLanguageAsync(lang, false);
-        }
-
-        /// <summary>
-        /// Sets the UI language synchronously, typically before we have a way to schedule onto the UI thread (e.g. UI thread has not started)
-        /// </summary>
-        /// <param name="lang"></param>
-        /// <param name="startup"></param>
-        /// <param name="forcedDictionary"></param>
-        public void SetApplicationLanguage(string lang, bool startup, ResourceDictionary forcedDictionary = null)
-        {
-            M3Log.Information(@"Setting language to " + lang);
-            M3Localization.InternalSetLanguage(lang, forcedDictionary, startup).Wait();
-            RefreshMainUIStrings(lang, startup);
-        }
-
-        /// <summary>
-        /// Sets the UI language on a background thread.
-        /// </summary>
-        /// <param name="lang"></param>
-        /// <param name="startup"></param>
-        /// <param name="forcedDictionary"></param>
-        public void SetApplicationLanguageAsync(string lang, bool startup, ResourceDictionary forcedDictionary = null)
-        {
-            //Application.Current.Dispatcher.Invoke(async () =>
-            //{
-            //Set language.
-            Stopwatch sw = new Stopwatch();
-            Task.Run(() =>
-            {
-                sw.Start();
-                M3Localization.InternalSetLanguage(lang, forcedDictionary, startup).Wait();
-            }).ContinueWithOnUIThread(x =>
-            {
-                // Debug.WriteLine($@"ChangeLangAsync time: {sw.ElapsedMilliseconds}ms");
-                RefreshMainUIStrings(lang, startup);
-                // Debug.WriteLine($@"ChangeLangAsync time post-ui refresh: {sw.ElapsedMilliseconds}ms");
-            });
-        }
-
-        /// <summary>
-        /// Triggers UI strings to rebind when a language change has occurred
-        /// </summary>
-        /// <param name="startup"></param>
-        /// <param name="lang"></param>
-        private void RefreshMainUIStrings(string lang, bool startup)
-        {
-            App.CurrentLanguage = Settings.Language = lang;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
-            RefreshNexusStatus(true);
-            SelectedLaunchOption?.OnLanguageChanged();
-            try
-            {
-                var localizedHelpItems = DynamicHelpService.GetHelpItems(lang);
-                setDynamicHelpMenu(localizedHelpItems);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Could not set localized dynamic help: " + e.Message);
-            }
-
-            if (SelectedMod != null)
-            {
-                // This will force strings to update
-                var sm = SelectedMod;
-                SelectedMod = null;
-                SelectedMod = sm;
-            }
-
-            if (!startup)
-            {
-                //if (forcedDictionary == null)
-                //{
-                //Settings.Save(); //save this language option
-                //}
-
-                AuthToNexusMods(languageUpdateOnly: true).Wait(); //this call will immediately return
-                M3LoadedMods.Instance.FailedMods.RaiseBindableCountChanged();
-                CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
-                VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
-            }
-        }
-
-
-        private void LoadExternalLocalizationDictionary(string filepath)
-        {
-            string filename = Path.GetFileNameWithoutExtension(filepath);
-            string extension = Path.GetExtension(filepath);
-            if (M3Localization.SupportedLanguages.Contains(filename) && extension == @".xaml" && Settings.DeveloperMode)
-            {
-                //Load external dictionary
-                try
-                {
-                    var extDictionary = (ResourceDictionary)XamlReader.Load(new XmlTextReader(filepath));
-                    SetApplicationLanguage(filename, false, extDictionary);
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error(@"Error loading external localization file: " + e.Message);
-                }
-            }
-        }
-
         internal void ShowBackupNag()
         {
             var nagPanel = new BackupNagSystem(InstallationTargets.ToList());
@@ -5399,6 +3475,7 @@ namespace ME3TweaksModManager
         {
             if (SelectedMod != null)
             {
+                M3Log.Information($@"Listing installable files for {SelectedMod.ModName}");
                 var files = SelectedMod.GetAllInstallableFiles();
                 ListDialog l = new ListDialog(files, M3L.GetString(M3L.string_interp_allInstallableFiles, SelectedMod.ModName), M3L.GetString(M3L.string_description_allInstallableFiles), this);
                 l.Show();
@@ -5587,10 +3664,13 @@ namespace ME3TweaksModManager
             return queuedUserControls.Any(x => x.GetType() == type);
         }
 
-        public void UpdateMenuTargets()
+        private void ConvertMEMToTextureOverride()
         {
-            // Populate the list of available games, for menus
-            MenuAvailableGames.ReplaceAll(InstallationTargets.Where(x => x.Game.IsMEGame()).Select(x => x.Game).Distinct().OrderBy(x => x));
+            var converter = new MEMToTOConverter(this);
+            if (converter.SetupConversion())
+            {
+                converter.BeginConversion();
+            }
         }
 
         /// <summary>
@@ -5614,6 +3694,48 @@ namespace ME3TweaksModManager
                 }
             });
 
+            return result;
+        }
+
+        private void OnBottomGameIDImageClick(object sender, MouseButtonEventArgs e)
+        {
+            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+            {
+                Settings.AlphaMode = true;
+            }
+        }
+
+        /// <summary>
+        /// Downloads and installs the Microsoft Visual C++ Redistributable in the background.
+        /// </summary>
+        /// <remarks>This method submits a background job to download and install the Microsoft Visual C++
+        /// Redistributable package. The job status is updated based on the success or failure of the installation. This
+        /// method is intended for internal use and should not be called directly from user code.</remarks>
+        internal async Task<bool> InstallMSVCPP()
+        {
+            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MSVCPPInstall", LC.GetString(LC.string_downloadingMicrosoftVisualCPPRedistributable), M3L.GetString(M3L.string_installedMicrosoftVisualCPPRedistributable));
+            var pi = new ProgressInfo();
+            pi.OnUpdate = (upd) =>
+            {
+                if (upd.Indeterminate)
+                {
+                    BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, upd.Status);
+                }
+                else
+                {
+                    BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, upd.Status + $@" {upd.Value:F0}%");
+                }
+            };
+            var result = await MSVCPP.DownloadAndInstallVCRedistx64Async(pi);
+            if (result)
+            {
+                task.FinishedUIText = M3L.GetString(M3L.string_installedMicrosoftVisualCPPRedistributable);
+            }
+            else
+            {
+                task.FinishedUIText = M3L.GetString(M3L.string_failedToInstallMicrosoftVisualCPPRedistributable);
+            }
+            BackgroundTaskEngine.SubmitJobCompletion(task);
             return result;
         }
     }

@@ -30,7 +30,7 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("PlotTableSaveRecord")]
+    [OriginalName(@"PlotTableSaveRecord")]
     public class PlotTable : IPlotTable, IUnrealSerializable, INotifyPropertyChanged
     {
         public PlotTable()
@@ -42,30 +42,30 @@ namespace ME3TweaksModManager.modmanager.save.game3
         #region Fields
         private readonly PlotTableWrapper _Helpers;
 
-        [OriginalName("BoolVariables")]
+        [OriginalName(@"BoolVariables")]
         private BitArray _BoolVariables = new BitArray(0);
 
         private readonly BitArrayWrapper _BoolVariablesWrapper;
 
-        [OriginalName("IntVariables")]
+        [OriginalName(@"IntVariables")]
         private List<IntVariablePair> _IntVariables = new List<IntVariablePair>();
 
-        [OriginalName("FloatVariables")]
+        [OriginalName(@"FloatVariables")]
         private List<FloatVariablePair> _FloatVariables = new List<FloatVariablePair>();
 
-        [OriginalName("QuestProgressCounter")]
+        [OriginalName(@"QuestProgressCounter")]
         private int _QuestProgressCounter;
 
-        [OriginalName("QuestProgress")]
+        [OriginalName(@"QuestProgress")]
         private List<PlotQuest> _QuestProgress = new List<PlotQuest>();
 
-        [OriginalName("QuestIDs")]
+        [OriginalName(@"QuestIDs")]
         private List<int> _QuestIDs = new List<int>();
 
-        [OriginalName("CodexEntries")]
+        [OriginalName(@"CodexEntries")]
         private List<PlotCodex> _CodexEntries = new List<PlotCodex>();
 
-        [OriginalName("CodexIDs")]
+        [OriginalName(@"CodexIDs")]
         private List<int> _CodexIDs = new List<int>();
         #endregion
 
@@ -265,7 +265,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._BoolVariables)
                 {
                     this._BoolVariables = value;
-                    this.NotifyPropertyChanged("BoolVariables");
+                    this.NotifyPropertyChanged(@"BoolVariables");
                 }
             }*/
         }
@@ -278,7 +278,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._IntVariables)
                 {
                     this._IntVariables = value;
-                    this.NotifyPropertyChanged("IntVariables");
+                    this.NotifyPropertyChanged(@"IntVariables");
                 }
             }
         }
@@ -291,7 +291,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._FloatVariables)
                 {
                     this._FloatVariables = value;
-                    this.NotifyPropertyChanged("FloatVariables");
+                    this.NotifyPropertyChanged(@"FloatVariables");
                 }
             }
         }
@@ -304,7 +304,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._QuestProgressCounter)
                 {
                     this._QuestProgressCounter = value;
-                    this.NotifyPropertyChanged("QuestProgressCounter");
+                    this.NotifyPropertyChanged(@"QuestProgressCounter");
                 }
             }
         }
@@ -317,7 +317,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._QuestProgress)
                 {
                     this._QuestProgress = value;
-                    this.NotifyPropertyChanged("QuestProgress");
+                    this.NotifyPropertyChanged(@"QuestProgress");
                 }
             }
         }
@@ -330,7 +330,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._QuestIDs)
                 {
                     this._QuestIDs = value;
-                    this.NotifyPropertyChanged("QuestIDs");
+                    this.NotifyPropertyChanged(@"QuestIDs");
                 }
             }
         }
@@ -343,7 +343,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CodexEntries)
                 {
                     this._CodexEntries = value;
-                    this.NotifyPropertyChanged("CodexEntries");
+                    this.NotifyPropertyChanged(@"CodexEntries");
                 }
             }
         }
@@ -356,7 +356,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._CodexIDs)
                 {
                     this._CodexIDs = value;
-                    this.NotifyPropertyChanged("CodexIDs");
+                    this.NotifyPropertyChanged(@"CodexIDs");
                 }
             }
         }
@@ -375,14 +375,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
         #endregion
 
         #region Children
-        [OriginalName("IntVariablePair")]
+        [OriginalName(@"IntVariablePair")]
         public class IntVariablePair : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Index")]
+            [OriginalName(@"Index")]
             private int _Index;
 
-            [OriginalName("Value")]
+            [OriginalName(@"Value")]
             private int _Value;
             #endregion
 
@@ -401,7 +401,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -413,7 +413,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Index)
                     {
                         this._Index = value;
-                        this.NotifyPropertyChanged("Index");
+                        this.NotifyPropertyChanged(@"Index");
                     }
                 }
             }
@@ -426,7 +426,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Value)
                     {
                         this._Value = value;
-                        this.NotifyPropertyChanged("Value");
+                        this.NotifyPropertyChanged(@"Value");
                     }
                 }
             }
@@ -443,14 +443,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
             }
         }
 
-        [OriginalName("FloatVariablePair")]
+        [OriginalName(@"FloatVariablePair")]
         public class FloatVariablePair : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Index")]
+            [OriginalName(@"Index")]
             private int _Index;
 
-            [OriginalName("Value")]
+            [OriginalName(@"Value")]
             private float _Value;
             #endregion
 
@@ -469,7 +469,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
 
             public override string ToString()
             {
-                return this.Name ?? "(null)";
+                return this.Name ?? @"(null)";
             }
 
             #region Properties
@@ -481,7 +481,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Index)
                     {
                         this._Index = value;
-                        this.NotifyPropertyChanged("Index");
+                        this.NotifyPropertyChanged(@"Index");
                     }
                 }
             }
@@ -494,7 +494,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (Equals(value, this._Value) == false)
                     {
                         this._Value = value;
-                        this.NotifyPropertyChanged("Value");
+                        this.NotifyPropertyChanged(@"Value");
                     }
                 }
             }
@@ -511,20 +511,20 @@ namespace ME3TweaksModManager.modmanager.save.game3
             }
         }
 
-        [OriginalName("PlotQuest")]
+        [OriginalName(@"PlotQuest")]
         public class PlotQuest : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("QuestCounter")]
+            [OriginalName(@"QuestCounter")]
             private int _QuestCounter;
 
-            [OriginalName("QuestUpdated")]
+            [OriginalName(@"QuestUpdated")]
             private bool _QuestUpdated;
 
-            [OriginalName("ActiveGoal")]
+            [OriginalName(@"ActiveGoal")]
             private int _ActiveGoal;
 
-            [OriginalName("History")]
+            [OriginalName(@"History")]
             private List<int> _History = new List<int>();
             #endregion
 
@@ -545,7 +545,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._QuestCounter)
                     {
                         this._QuestCounter = value;
-                        this.NotifyPropertyChanged("QuestCounter");
+                        this.NotifyPropertyChanged(@"QuestCounter");
                     }
                 }
             }
@@ -558,7 +558,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._QuestUpdated)
                     {
                         this._QuestUpdated = value;
-                        this.NotifyPropertyChanged("QuestUpdated");
+                        this.NotifyPropertyChanged(@"QuestUpdated");
                     }
                 }
             }
@@ -571,7 +571,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._ActiveGoal)
                     {
                         this._ActiveGoal = value;
-                        this.NotifyPropertyChanged("ActiveGoal");
+                        this.NotifyPropertyChanged(@"ActiveGoal");
                     }
                 }
             }
@@ -584,7 +584,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._History)
                     {
                         this._History = value;
-                        this.NotifyPropertyChanged("History");
+                        this.NotifyPropertyChanged(@"History");
                     }
                 }
             }
@@ -604,7 +604,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
         public class PlotCodex : IUnrealSerializable, INotifyPropertyChanged
         {
             #region Fields
-            [OriginalName("Pages")]
+            [OriginalName(@"Pages")]
             private List<PlotCodexPage> _Pages = new List<PlotCodexPage>();
             #endregion
 
@@ -622,7 +622,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                     if (value != this._Pages)
                     {
                         this._Pages = value;
-                        this.NotifyPropertyChanged("Pages");
+                        this.NotifyPropertyChanged(@"Pages");
                     }
                 }
             }
@@ -639,14 +639,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
             }
 
             #region Children
-            [OriginalName("PlotCodexPage")]
+            [OriginalName(@"PlotCodexPage")]
             public class PlotCodexPage : IUnrealSerializable, INotifyPropertyChanged
             {
                 #region Fields
-                [OriginalName("Page")]
+                [OriginalName(@"Page")]
                 private int _Page;
 
-                [OriginalName("bNew")]
+                [OriginalName(@"bNew")]
                 private bool _IsNew;
                 #endregion
 
@@ -665,7 +665,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                         if (value != this._Page)
                         {
                             this._Page = value;
-                            this.NotifyPropertyChanged("Page");
+                            this.NotifyPropertyChanged(@"Page");
                         }
                     }
                 }
@@ -678,7 +678,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                         if (value != this._IsNew)
                         {
                             this._IsNew = value;
-                            this.NotifyPropertyChanged("IsNew");
+                            this.NotifyPropertyChanged(@"IsNew");
                         }
                     }
                 }

@@ -4,6 +4,7 @@ using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.objects.launcher;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.windows.dialog
 {
@@ -88,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
             PopulatePackages();
             if (option != null)
             {
-                App.SubmitAnalyticTelemetryEvent(@"Created launch option", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Created launch option", new Dictionary<string, string>()
                 {
                     {@"Option name", ChosenOption?.PackageTitle},
                     {@"Option lang", ChosenOption?.ChosenLanguage},

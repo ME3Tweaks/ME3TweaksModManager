@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
@@ -13,6 +12,7 @@ using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -170,7 +170,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 catch (Exception e)
                 {
                     M3Log.Exception(e, @"Error occurred serializing moddesc");
-                    TelemetryInterposer.TrackError(e);
+                    M3OpenTelemetry.TrackError(e);
                     error = e.FlattenException();
                     break;
                 }
@@ -246,7 +246,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public bool IsLocalizationMod { get; set; }
         public bool AskToClose()
         {
-            if (M3L.ShowDialog(this, "Close without saving changes?", "Application closing", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            if (M3L.ShowDialog(this, M3L.GetString(M3L.string_closeWithoutSavingChangesQuestion), M3L.GetString(M3L.string_applicationClosing), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes) == MessageBoxResult.Yes)
             {
                 Close();
                 return true;

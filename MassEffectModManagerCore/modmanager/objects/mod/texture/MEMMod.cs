@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.Services.FileSource;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.batch;
@@ -22,7 +17,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
     /// Describes a MEMMod, which is a containing object for a .mem file
     /// </summary>
     [DebuggerDisplay(@"MEMMod | {Game} at {FilePath}")]
-    public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged, IBatchQueueMod
+    public class MEMMod : M3ValidateOnLoadObject, IImportableMod, INotifyPropertyChanged, IBatchQueueMod, IDisplayableMod
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -48,6 +43,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
                 }
             }
         }
+
+        /// <summary>
+        /// IDisplayableMod interface for name.
+        /// </summary>
+        [JsonIgnore]
+        public virtual string DisplayName => DisplayString;
 
         /// <summary>
         /// The full path to the .mem file
@@ -133,8 +134,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             }
         }
 
-
-
         public virtual string GetDescription()
         {
             if (IsInArchive)
@@ -143,7 +142,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             }
             var modifiedExports = GetModifiedExportNames();
             var exportNotListed = M3L.GetString(M3L.string_textureExportsNotListedInThisMemFile);
-            var exportList = string.Join('\n', modifiedExports.Select(x => $@" - {(string.IsNullOrWhiteSpace(x) ? exportNotListed : x)}")); // do not localize
+            var elemCount = Math.Min(modifiedExports.Count, 100);
+            var exportList = string.Join('\n', modifiedExports.Take(elemCount).Select(x => $@" - {(string.IsNullOrWhiteSpace(x) ? exportNotListed : x)}")); // do not localize
+            if (modifiedExports.Count > 100)
+            {
+                // Written this way for localizer
+                exportList += "\n... " // do not localize
+                    + M3L.GetString(M3L.string_listTruncatedTo100Entries);
+
+            }
             return M3L.GetString(M3L.string_interp_textureModModifiesExportsX, exportList);
         }
 
@@ -272,5 +279,18 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         /// The size of the file that was parsed from disk. Used to detect a desync, if the file is large
         /// </summary>
         internal long InitialLoadedSize { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not MEMMod other)
+                return false;
+
+            return FilePath == other.FilePath;
+        }
+
+        public override int GetHashCode()
+        {
+            return FilePath?.GetHashCode() ?? 0;
+        }
     }
 }

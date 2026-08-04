@@ -1,25 +1,22 @@
-﻿using ME3TweaksModManager.modmanager.objects;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+﻿using Flurl.Util;
 using LegendaryExplorerCore.Gammtek;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save;
+using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows.input;
+using Microsoft.Win32;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     /// <summary>
-    /// Class for handling m3:// links
+    /// Class for handling me3tweaksmodmanager:// links
     /// </summary>
     public class M3ProtocolHandler
     {
@@ -44,14 +41,26 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
             if (link.Command == M3Link.UPLOAD_LOG_COMMAND)
             {
-                window.ShowLogUploadPanel();
+                GameTarget uploadTarget = null;
+                if (link.QueryParams != null && link.QueryParams.TryGetValue(@"game", out var gameStr) && Enum.TryParse<MEGame>(gameStr, out var game))
+                {
+                    uploadTarget = window.InstallationTargets.FirstOrDefault(x => x.Game == game);
+                }
+                if (!window.HasAnyQueuedPanelsOfType(typeof(LogUploaderPanel)))
+                {
+                    M3Log.Information(@"M3ProtocolHandler: Showing log uploader");
+                    window.ShowLogUploadPanel(uploadTarget);
+                }
+                else
+                {
+                    M3Log.Information(@"Log upload panel is already open or queued, not opening another instance.");
+                }
                 return;
             }
 
             if (link.Command == M3Link.IMPORT_SAVE_COMMAND)
             {
-                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"SaveImport", M3L.GetString(M3L.string_importingSaveFileFromME3Tweaks),
-                    M3L.GetString(M3L.string_importedSaveFileFromME3Tweaks));
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"SaveImport", M3L.GetString(M3L.string_importingSaveFileFromME3Tweaks), M3L.GetString(M3L.string_importedSaveFileFromME3Tweaks));
                 Task.Run(() =>
                 {
                     var saveinfo = HttpUtility.ParseQueryString(link.Data);
@@ -63,7 +72,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                         game = Enum<MEGame>.Parse(gameStr);
                     }
 
-                    M3Log.Information($@"Downloading ME3Tweaks diagnostic save: {hash}");
+                    M3Log.Information($@"M3ProtocolHandler: Downloading ME3Tweaks diagnostic save: {hash}");
 
                     var storageLink = $@"https://me3tweaks.com/modmanager/logservice/saves/{hash}.pcsav";
                     var saveName = saveinfo[@"name"];
@@ -144,6 +153,14 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             var queryPos = linkContents.IndexOf('?');
             m3pl.Command = (queryPos > 1 ? linkContents.Substring(0, queryPos) : linkContents).ToUpper().Trim('/'); // Some browsers add this on the end
             m3pl.Data = queryPos > 0 ? linkContents.Substring(queryPos + 1) : null;
+
+            // 12/6/2025 - Support parsing link parameters
+            var uri = new Uri(link);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            m3pl.QueryParams = query.AllKeys.ToDictionary(k => k, k => query[k]);
+
+            query.ToKeyValuePairs().ToDictionary();
+
             return m3pl;
         }
 
@@ -168,5 +185,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         /// Data for the command to execute
         /// </summary>
         public string Data { get; set; }
+
+        /// <summary>
+        /// Dictionary of parameters on the protocol link. This is the parsed version of Data.
+        /// </summary>
+        public Dictionary<string, string> QueryParams { get; private set; }
     }
 }

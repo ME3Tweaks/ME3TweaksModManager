@@ -1,4 +1,5 @@
 using SevenZip.EventArguments;
+using ME3TweaksCore.Helpers;
 
 namespace SevenZip
 {
@@ -9,9 +10,23 @@ namespace SevenZip
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
-
+    using ME3TweaksCore.Misc;
     using SevenZip.Sdk;
     using SevenZip.Sdk.Compression.Lzma;
+
+    // ME3TWEAKS ADDITION ============
+    /// <summary>
+    /// Enum of various operations the compressor will do that can be translated to a user interface.
+    /// </summary>
+    public enum ESevenZipOperation
+    {
+        /// <summary>
+        /// Indicates the archive is being moved on disk after it has been finalized.
+        /// </summary>
+        FinalMove
+    }
+    // END ME3TWEAKS ADDITION ========
+
 
     /// <summary>
     /// Class to pack data into archives supported by 7-Zip.
@@ -888,11 +903,34 @@ namespace SevenZip
                 : null;
         }
 
-        private void FinalizeUpdate()
+        private void FinalizeUpdate(
+            // ME3TWEAKS ADDITION
+            Action<ESevenZipOperation, object, object> operationCallback = null
+            )
         {
             if (_volumeSize == 0 && (CompressionMode != CompressionMode.Create || _updateData.FileNamesToModify != null))
             {
-                File.Move(GetTempArchiveFileName(_archiveName), _archiveName);
+                var tempName = GetTempArchiveFileName(_archiveName);
+
+                var isOnSameVolume = FileHelper.IsOnSameVolume(tempName, _archiveName);
+                if (isOnSameVolume)
+                {
+                    File.Move(tempName, _archiveName);
+                }
+                else
+                {
+                    void internalProgressCallback(long done, long total)
+                    {
+                        operationCallback?.Invoke(ESevenZipOperation.FinalMove, done, total);
+                    }
+                    void onException(Exception ex)
+                    {
+                        throw ex;
+                    }
+
+                    CopyTools.CopyFileWithProgress(tempName, _archiveName, internalProgressCallback, onException);
+                    File.Delete(tempName);
+                }
             }
         }
 
@@ -1399,7 +1437,11 @@ namespace SevenZip
         /// <param name="archiveName">The archive file name.</param>
         /// <param name="password">The archive password.</param>
         public void CompressFileDictionary(
-            IDictionary<string, string> fileDictionary, string archiveName, string password = "")
+            IDictionary<string, string> fileDictionary, string archiveName, string password = "",
+
+            // ME3TWEAKS ADDITION
+            Action<ESevenZipOperation, object, object> operationCallback = null
+            )
         {
             _compressingFilesOnDisk = true;
             _archiveName = archiveName;
@@ -1422,7 +1464,7 @@ namespace SevenZip
                 }
             }
 
-            FinalizeUpdate();
+            FinalizeUpdate(operationCallback);
         }
 
         /// <summary>

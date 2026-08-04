@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols;
 using SevenZip;
 
@@ -85,7 +86,6 @@ namespace ME3TweaksModManager.modmanager.importer
             var me2mods = new List<ArchiveFileInfo>(); //ME2 RCW Mods
             var textureModEntries = new List<ArchiveFileInfo>(); //TPF MEM MOD files
             var batchQueueEntries = new List<ArchiveFileInfo>(); //BIQ2 files (old biq are not supported)
-            bool isAlotFile = false;
             try
             {
                 foreach (var entry in archiveFile.ArchiveFileData)
@@ -94,11 +94,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     {
                         string fname = Path.GetFileName(entry.FileName);
                         var extension = Path.GetExtension(fname);
-                        if (fname.Equals(@"ALOTInstaller.exe", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            isAlotFile = true;
-                        }
-                        else if (fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
+                        if (fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
                         {
                             moddesciniEntries.Add(entry);
                         }
@@ -304,7 +300,7 @@ namespace ME3TweaksModManager.modmanager.importer
                         else
                         {
                             M3Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
-                            TelemetryInterposer.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
                                 {
                                     {@"moddesc.ini name", importingInfo.servermoddescname ?? transform.PostTransformModdesc}
                                 });
@@ -372,7 +368,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     else
                     {
                         M3Log.Information(@"ME3Tweaks does not have additional version information for this file.");
-                        TelemetryInterposer.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
                                 {@"Filename", Path.GetFileName(filepath)},
                                 {@"MD5", md5}
@@ -388,7 +384,7 @@ namespace ME3TweaksModManager.modmanager.importer
                 {
                     //Try straight up TPMI import?
                     M3Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
-                    TelemetryInterposer.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                         {
                             {@"Filename", Path.GetFileName(filepath)},
                             {@"MD5", md5}

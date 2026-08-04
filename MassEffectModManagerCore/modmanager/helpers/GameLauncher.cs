@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using LegendaryExplorerCore.GameFilesystem;
+﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Save;
 using LegendaryExplorerCore.Unreal;
@@ -11,7 +9,10 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.save.shared;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.windows.input;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
@@ -131,7 +132,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
             LaunchGame(target, args);
 
-            App.SubmitAnalyticTelemetryEvent(@"LE Game Launch", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"LE Game Launch", new Dictionary<string, string>()
             {
                 {@"Game", target.Game.ToString()},
                 {@"LaunchConfig", (!LaunchPackage.IsCustomOption).ToString()},
@@ -161,7 +162,8 @@ namespace ME3TweaksModManager.modmanager.helpers
             {
 
                 // IS GAME STEAM BASED?
-                if (target.GameSource.Contains(@"Steam"))
+                // 07/26/2026 - Do not run if app is under WINE as steam will never actually be running in the prefix.
+                if (target.GameSource.Contains(@"Steam") && !WineWorkarounds.WineDetected)
                 {
                     var steamInstallPath = M3Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", @"InstallPath");
                     if (steamInstallPath != null && Directory.Exists(steamInstallPath))
@@ -212,7 +214,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
             }
 
-            if (Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
+            if (Settings.SkipLELauncher && target.Game.IsLEGame() && !MRunningGameInfo.IsGameRunning(MEGame.LELauncher))
             {
                 var launcherPath = Path.Combine(target.TargetPath, @"..", @"Launcher");
                 var launcherTarget = new GameTargetWPF(MEGame.LELauncher, launcherPath, false);
@@ -288,17 +290,19 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
             }
 
+            // Run game with command line arguments - either built (string) or passed in (list). We always build for steam games ME3/LE if we find Link2EA.
             if (commandLineArgsString != null)
             {
-                M3Utilities.RunProcess(exe, commandLineArgsString, false, true, false, false, environmentVars);
+                MUtilities.RunProcess(exe, argsS: commandLineArgsString, waitForProcess: false, allowReattemptAsAdmin: true, environmentVariables: environmentVars);
             }
             else if (commandLineArgsList != null)
             {
-                M3Utilities.RunProcess(exe, commandLineArgsList, false, true, false, false, environmentVars);
+                MUtilities.RunProcess(exe, argsL: commandLineArgsList, waitForProcess: false, allowReattemptAsAdmin: true, environmentVariables: environmentVars);
             }
             else
             {
-                M3Utilities.RunProcess(exe, @"", false, true, false, false, environmentVars);
+                // Re-attempt as admin is allowed for ME1.
+                MUtilities.RunProcess(exe, waitForProcess: false, allowReattemptAsAdmin: true, environmentVariables: environmentVars);
             }
         }
 
@@ -348,7 +352,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                     // We need to run steam or it's going to throw the application error message.
                     M3Log.Information($@"Steam not running. Launching now.");
                     startingUpSteam = true;
-                    M3Utilities.RunProcess(steamExe);
+                    MUtilities.RunProcess(steamExe, waitForProcess: false);
                 }
                 else if (startingUpSteam)
                 {

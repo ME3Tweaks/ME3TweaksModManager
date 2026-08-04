@@ -1,15 +1,25 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
+using ME3TweaksCore.Assets.VanillaDatabase;
+using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.ME3Tweaks.M3Merge.Game2Email;
-using ME3TweaksModManager.modmanager.gamemd5;
-using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.modmanager.objects.gametarget;
-using SevenZip;
+using ME3TweaksCore.Objects;
+using ME3TweaksCore.TextureOverride;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.windows;
+using SevenZip;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
+    [Localizable(false)]
     public static class DebugMenu
     {
         public static void RouteDebugCall(string sender, MainWindow window)
@@ -32,7 +42,50 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowWelcomePanel_MenuItem)) ShowWelcomePanel_Click(window);
             if (sender == nameof(MainWindow.ShowBGFISDB_MenuItem)) ShowBGFISDB_Click(window);
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
+            if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
+            if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
+            if (sender == nameof(MainWindow.CrashTest_MenuItem)) CrashTest(window);
 #endif
+        }
+
+        
+#if DEBUG
+
+        private static void TestMSVCPPInstaller(MainWindow window)
+        {
+            window.InstallMSVCPP();
+        }
+
+
+        private static void TriggerBTPBuild(MainWindow window)
+        {
+            if (window.SelectedMod == null)
+                return;
+
+            var target = window.GetCurrentTarget(window.SelectedMod.Game);
+            if (target == null)
+                return;
+
+            var dlcFolder = window.SelectedMod.GetAllPossibleCustomDLCFolders().FirstOrDefault();
+            if (dlcFolder == null)
+                return;
+
+            var gameDir = Path.Combine(target.GetDLCPath(), dlcFolder);
+            if (!Directory.Exists(gameDir))
+                return;
+
+            var task = BackgroundTaskEngine.SubmitBackgroundJob("Texture Override Merge", "Texture Override Merge", "Completed");
+            void onProgress(ProgressInfo pi)
+            {
+                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(task, $"{pi.Status}");
+            }
+            var pi = new ProgressInfo();
+            pi.OnUpdate = onProgress;
+            Task.Run(() =>
+            {
+                M3CTextureOverrideMerge.PerformDLCMerge(target, dlcFolder, false, pi);
+            }).ContinueWithOnUIThread(r => { BackgroundTaskEngine.SubmitJobCompletion(task); });
+
         }
 
         private static void TestDetermineIfInstalled(MainWindow window)
@@ -43,7 +96,29 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-#if DEBUG
+
+        private static void TestTextureMerge(MainWindow window)
+        {
+            var package = MEPackageHandler.OpenMEPackage(@"Z:\ModLibrary\LE1\PackageStoredTO\DLC_MOD_PackageStoredTO\CookedPCConsole\TO_EntryMenu.pcc");
+            foreach (var tex in package.Exports.Where(x => x.ClassName == "Texture2D"))
+            {
+                var texBin = ObjectBinary.From<UTexture2D>(tex);
+                var uncompBigMips = texBin.Mips.Where(x => x.StorageType == StorageTypes.pccUnc && (x.SizeX >= 64 || x.SizeY >= 64));
+                foreach (var bigMip in uncompBigMips)
+                {
+                    bigMip.Mip = TextureCompression.CompressTexture(bigMip.Mip, StorageTypes.pccOodle);
+                    bigMip.CompressedSize = bigMip.Mip.Length;
+                    bigMip.StorageType = StorageTypes.pccOodle;
+                }
+                tex.WriteBinary(texBin);
+            }
+
+            package.Save(@"S:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME1\BioGame\CookedPCConsole\EntryMenu.pcc");
+            return;
+        }
+
+
+
         private static void ShowBGFISDB_Click(MainWindow window)
         {
             var previewPanel = new BasegameFileIdentificationServicePanel();
@@ -220,7 +295,40 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static void TestCode_Click(MainWindow mw)
         {
+            var helpWindow = new DynamicHelpWindow();
+            helpWindow.Owner = mw; // Set owner if needed
+            helpWindow.ShowDialog();
+        }
 
+        private static void ShowXceedDialog(MainWindow window)
+        {
+            // Used to test theming
+            Task.Run(() =>
+            {
+                Thread.Sleep(200);
+            }).ContinueWithOnUIThread(x =>
+            {
+                var title = @"Test dialog";
+                var str = @"This is a test dialog. I am a long running message. Do you want to continue?\n\nPlease make sure I fit the width you need and don't look goofy. The defaults seem to be really poor";
+                var buttons = System.Windows.MessageBoxButton.YesNoCancel;
+                var icon = System.Windows.MessageBoxImage.Warning;
+
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, str, title, buttons, icon);
+                M3L.ShowDialog(window, str, title, buttons, icon);
+                M3L.ShowDialog(window, "Done.");
+            });
+
+        }
+
+        /// <summary>
+        /// Triggers a crash by intentionally throwing an exception for testing purposes.
+        /// </summary>
+        /// <remarks>This method is intended for testing error handling scenarios and should not be used
+        /// in production code.</remarks>
+        /// <exception cref="Exception">Always thrown to indicate a simulated crash during the execution of the method.</exception>
+        private static void CrashTest(MainWindow window)
+        {
+            throw new Exception(@"The application is crashing with a test message");
         }
 #endif
     }

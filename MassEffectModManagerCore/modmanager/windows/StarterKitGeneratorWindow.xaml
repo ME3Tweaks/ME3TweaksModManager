@@ -336,6 +336,7 @@
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 TextWrapping="Wrap"
+                AcceptsReturn="True"
                 Text="{Binding ModDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=200, ValidatesOnDataErrors=True}"
                 TextChanged="FieldText_Changed">
                 <xctk:WatermarkTextBox.Watermark>

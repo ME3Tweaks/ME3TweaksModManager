@@ -33,50 +33,124 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 UseLayoutRounding="True">
 
-                            <DockPanel LastChildFill="True">
+                            <Grid>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+
+                                <Border x:Name="WindowContent"
+                                        Grid.Row="1"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter />
+                                </Border>
 
                                 <Border x:Name="TitleBar"
-                                        DockPanel.Dock="Top"
+                                        Grid.Row="0"
                                         KeyboardNavigation.TabNavigation="None"
                                         KeyboardNavigation.DirectionalNavigation="None"
                                         Background="{TemplateBinding TitleBarBackground}"
-                                        TextElement.Foreground="{TemplateBinding TitleBarForeground}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                                        TextElement.Foreground="{TemplateBinding TitleBarForeground}"
+                                        MinHeight="30">
 
-                                        <Grid x:Name="PART_DragMoveThumb"
-                                              Grid.Column="0"
-                                              Background="Transparent">
-                                            
+                                    <DockPanel x:Name="PART_DragMoveThumb"
+                                               LastChildFill="True"
+                                               Background="Transparent">
+
+                                        <Grid DockPanel.Dock="Right">
+                                            <!-- Note: Defined grid rows are used to align buttons to top because VerticalAlignment="Top" makes them shrink. -->
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition MaxHeight="30"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Button x:Name="PART_MinimizeButton"
+                                                        Grid.Column="0"
+                                                        Style="{DynamicResource {x:Static adonisUi:Styles.WindowButton}}"
+                                                        Foreground="{TemplateBinding TitleBarForeground}"
+                                                        Background="{TemplateBinding WindowButtonHighlightBrush}">
+                                                    <Button.ContentTemplate>
+                                                        <DataTemplate>
+                                                            <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowMinimize}}"
+                                                                    Width="10"
+                                                                    Height="10"/>
+                                                        </DataTemplate>
+                                                    </Button.ContentTemplate>
+                                                </Button>
+
+                                                <Button x:Name="PART_MaximizeRestoreButton"
+                                                        Grid.Column="1"
+                                                        Style="{DynamicResource {x:Static adonisUi:Styles.WindowButton}}"
+                                                        Foreground="{TemplateBinding TitleBarForeground}"
+                                                        Background="{TemplateBinding WindowButtonHighlightBrush}">
+                                                    <Button.ContentTemplate>
+                                                        <DataTemplate>
+                                                            <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowMaximize}}"
+                                                                    Width="10"
+                                                                    Height="10"/>
+                                                        </DataTemplate>
+                                                    </Button.ContentTemplate>
+                                                </Button>
+
+                                                <Button x:Name="PART_CloseButton"
+                                                        Grid.Column="2"
+                                                        Style="{DynamicResource {x:Static adonisUi:Styles.WindowCloseButton}}"
+                                                        Foreground="{TemplateBinding TitleBarForeground}">
+                                                    <Button.ContentTemplate>
+                                                        <DataTemplate>
+                                                            <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowClose}}"
+                                                                    Width="10"
+                                                                    Height="10"/>
+                                                        </DataTemplate>
+                                                    </Button.ContentTemplate>
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
 
                                             <Grid VerticalAlignment="Center"
-                                                  Margin="8, 0, 0, 0">
+                                                  Margin="3, 0, 0, 0">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
+
+                                                <Grid.Visibility>
+                                                    <MultiBinding Converter="{x:Static adonisConverters:AllVisibilitiesToVisibilityConverter.Instance}">
+                                                        <Binding Path="IconVisibility" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}" />
+                                                        <Binding Path="TitleVisibility" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}" />
+                                                    </MultiBinding>
+                                                </Grid.Visibility>
 
                                                 <Image x:Name="PART_IconPresenter"
                                                        Source="{Binding IconSource, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                                        Visibility="{Binding IconVisibility, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                                        Width="16"
                                                        Height="16"
-                                                       Margin="0, 0, 5, 0"/>
+                                                       Margin="5, 0, 0, 0"/>
 
                                                 <TextBlock Grid.Column="1"
                                                            Text="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                                           Visibility="{Binding TitleVisibility, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                                            VerticalAlignment="Center"
                                                            FontSize="11.5"
                                                            RenderOptions.ClearTypeHint="Auto"
                                                            TextOptions.TextRenderingMode="Auto"
-                                                           TextOptions.TextFormattingMode="Display"/>
+                                                           TextOptions.TextFormattingMode="Display"
+                                                           Margin="5, 0, 0, 0"/>
                                             </Grid>
 
                                             <ContentPresenter Grid.Column="1"
@@ -84,68 +158,14 @@
                                                               HorizontalAlignment="Stretch"
                                                               VerticalAlignment="Stretch"/>
                                         </Grid>
-
-                                        <Grid Grid.Column="1"
-                                              VerticalAlignment="Top">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <Button x:Name="PART_MinimizeButton"
-                                                    Grid.Column="0"
-                                                    Style="{DynamicResource {x:Static adonisUi:Styles.WindowButton}}"
-                                                    Foreground="{TemplateBinding TitleBarForeground}"
-                                                    Background="{TemplateBinding WindowButtonHighlightBrush}">
-                                                <Button.ContentTemplate>
-                                                    <DataTemplate>
-                                                        <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowMinimize}}"
-                                                                Width="10"
-                                                                Height="10"/>
-                                                    </DataTemplate>
-                                                </Button.ContentTemplate>
-                                            </Button>
-
-                                            <Button x:Name="PART_MaximizeRestoreButton"
-                                                    Grid.Column="1"
-                                                    Style="{DynamicResource {x:Static adonisUi:Styles.WindowButton}}"
-                                                    Foreground="{TemplateBinding TitleBarForeground}"
-                                                    Background="{TemplateBinding WindowButtonHighlightBrush}">
-                                                <Button.ContentTemplate>
-                                                    <DataTemplate>
-                                                        <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowMaximize}}"
-                                                                Width="10"
-                                                                Height="10"/>
-                                                    </DataTemplate>
-                                                </Button.ContentTemplate>
-                                            </Button>
-
-                                            <Button x:Name="PART_CloseButton"
-                                                    Grid.Column="2"
-                                                    Style="{DynamicResource {x:Static adonisUi:Styles.WindowCloseButton}}"
-                                                    Foreground="{TemplateBinding TitleBarForeground}">
-                                                <Button.ContentTemplate>
-                                                    <DataTemplate>
-                                                        <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowClose}}"
-                                                                Width="10"
-                                                                Height="10"/>
-                                                    </DataTemplate>
-                                                </Button.ContentTemplate>
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
+                                    </DockPanel>
                                 </Border>
-
-                                <Border Background="{TemplateBinding Background}">
-                                    <ContentPresenter />
-                                </Border>
-                            </DockPanel>
+                            </Grid>
                         </Border>
                     </AdornerDecorator>
 
                     <ControlTemplate.Triggers>
-                        
+
                         <Trigger Property="IsActive" Value="False">
                             <Setter Property="TextElement.Foreground"
                                     TargetName="TitleBar"
@@ -172,13 +192,21 @@
                                     TargetName="PART_MaximizeRestoreButton">
                                 <Setter.Value>
                                     <DataTemplate>
-                                      <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowRestore}}"
+                                        <ContentControl ContentTemplate="{DynamicResource {x:Static adonisUi:Icons.WindowRestore}}"
                                                       Width="10"
                                                       Height="10"/>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="WindowState" Value="Maximized" />
+                                <Condition Property="ShrinkTitleBarWhenMaximized" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TitleBar" Property="MinHeight" Value="22" />
+                        </MultiTrigger>
 
                         <Trigger Property="WindowStyle" Value="ToolWindow">
                             <Setter TargetName="PART_MinimizeButton" Property="Visibility" Value="Collapsed" />
@@ -198,12 +226,23 @@
                             <Setter TargetName="PART_MaximizeRestoreButton" Property="IsEnabled" Value="False"/>
                         </Trigger>
 
+                        <Trigger Property="WindowStyle" Value="None">
+                            <Setter TargetName="TitleBar" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+
+                        <Trigger Property="PlaceTitleBarOverContent" Value="True">
+                            <Setter TargetName="WindowContent" Property="Grid.Row" Value="0" />
+                            <Setter TargetName="WindowContent" Property="Grid.RowSpan" Value="2" />
+                            <Setter Property="TitleBarBackground" Value="Transparent" />
+                        </Trigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
 
         <Style.Triggers>
+
             <Trigger Property="WindowState" Value="Maximized">
                 <Setter Property="WindowChrome.WindowChrome">
                     <Setter.Value>
@@ -215,6 +254,16 @@
                     </Setter.Value>
                 </Setter>
             </Trigger>
+
+            <Trigger Property="WindowStyle" Value="None">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <WindowChrome CaptionHeight="0"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+
         </Style.Triggers>
     </Style>
 

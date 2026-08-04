@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -62,10 +63,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             //Check free space.
             var sourceDir = Path.Combine(M3Directories.GetDLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
             var library = M3LoadedMods.GetModDirectoryForGame(SelectedTarget.Game);
-            if (M3Utilities.DriveFreeBytes(library, out var freeBytes))
+            if (MUtilities.DriveFreeBytes(library, out var freeBytes))
             {
                 //Check enough space
-                var sourceSize = M3Utilities.GetSizeOfDirectory(sourceDir);
+                var sourceSize = MUtilities.GetSizeOfDirectory(sourceDir);
                 if (sourceSize > (long)freeBytes)
                 {
                     //Not enough space
@@ -109,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     if (b.Error == null && b.Result != null)
                     {
-                        TelemetryInterposer.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
                         {
                             {@"Game", SelectedTarget.Game.ToString()},
                             {@"Folder", SelectedDLCFolder.DLCFolderName}

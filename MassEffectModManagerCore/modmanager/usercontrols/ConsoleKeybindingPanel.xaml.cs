@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -24,8 +24,8 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
 using Path = System.IO.Path;
 
@@ -485,7 +485,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (Game.IsGame3()) SetGame3ConsoleKeybinds(consoleKeyStr, typeKeyStr);
                     if (Game is MEGame.LE1 or MEGame.LE2) SetLE1LE2ConsoleKeybinds(consoleKeyStr, typeKeyStr);
 
-                    TelemetryInterposer.TrackEvent($@"Set {Game} Console Keys", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent($@"Set {Game} Console Keys", new Dictionary<string, string>()
                     {
                         {@"Full Console Key", consoleKeyStr },
                         {@"Mini Console Key", typeKeyStr }

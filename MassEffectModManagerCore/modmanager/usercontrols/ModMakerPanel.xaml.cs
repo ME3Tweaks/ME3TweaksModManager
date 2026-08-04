@@ -100,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var result = m.ShowDialog(window);
             if (result.Value)
             {
-                //TelemetryInterposer.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
+                //M3OpenTelemetry.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
                 LocalFilePath = m.FileName;
             }
         }

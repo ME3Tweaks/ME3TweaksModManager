@@ -29,14 +29,14 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
             stream.Serialize(ref this.CodexIDs);
         }
 
-        [DisplayName("Paragon Points")]
+        [DisplayName(@"Paragon Points")]
         public int _helper_ParagonPoints
         {
             get { return this.GetIntVariable(2); }
             set { this.SetIntVariable(2, value); }
         }
 
-        [DisplayName("Renegade Points")]
+        [DisplayName(@"Renegade Points")]
         public int _helper_RenegadePoints
         {
             get { return this.GetIntVariable(3); }

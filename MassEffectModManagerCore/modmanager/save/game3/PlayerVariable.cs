@@ -26,14 +26,14 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("PlayerVariableSaveRecord")]
+    [OriginalName(@"PlayerVariableSaveRecord")]
     public class PlayerVariable : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("VariableName")]
+        [OriginalName(@"VariableName")]
         private string _Name;
 
-        [OriginalName("VariableValue")]
+        [OriginalName(@"VariableValue")]
         private int _Value;
         #endregion
 
@@ -52,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Name)
                 {
                     this._Name = value;
-                    this.NotifyPropertyChanged("Name");
+                    this.NotifyPropertyChanged(@"Name");
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Value)
                 {
                     this._Value = value;
-                    this.NotifyPropertyChanged("Value");
+                    this.NotifyPropertyChanged(@"Value");
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using ME3TweaksModManager.modmanager.localizations;
+﻿using ME3TweaksCore.ME3Tweaks.ModManager;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects.mod;
 
@@ -10,7 +11,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         public static void AddMetadataChecks(EncompassingModDeploymentCheck check)
         {
             string versionString = check.ModBeingDeployed.ParsedModVersion != null ? check.ModBeingDeployed.ParsedModVersion.ToString(M3Utilities.GetDisplayableVersionFieldCount(check.ModBeingDeployed.ParsedModVersion)) : check.ModBeingDeployed.ModVersionString;
-            string versionFormat = check.ModBeingDeployed.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
+            string versionFormat = check.ModBeingDeployed.ModDescTargetVersion < ModDescConsts.MODDESC_VERSION_6_0 ? @"X.X" : @"X.X[.X[.X]]";
             string checklistItemText = check.ModBeingDeployed.ParsedModVersion != null ? M3L.GetString(M3L.string_verifyModVersion) : M3L.GetString(M3L.string_recommendedVersionFormatNotFollowed, versionFormat);
             check.DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {

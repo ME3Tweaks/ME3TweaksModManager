@@ -1,18 +1,20 @@
-﻿using System.Diagnostics;
-using System.IO.Hashing;
-using System.Text;
-using System.Windows.Media.Imaging;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+﻿using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
+using System.Diagnostics;
+using System.IO.Hashing;
+using System.Text;
+using System.Windows.Media.Imaging;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
 {
@@ -91,7 +93,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         /// <summary>
         /// UI-only
-        /// </summary>
+        /// </summaryTarget 
         public virtual double TextOpacity
         {
             get
@@ -120,6 +122,14 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             get; set;
         }
 
+        /// <summary>
+        /// The cached value of UIIsSelectable, before the value
+        /// is updated by checking COND_MANUAL. This is required to
+        /// properly compute DependsOn applicability. This is only used
+        /// if moddesc > 9.1.
+        /// </summary>
+        protected bool UIIsSelectable_PreDepends;
+
         //public abstract bool UINotApplicable { get; }
 
         /// <summary>
@@ -132,6 +142,18 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public bool UIIsSelected { get; set; }
         #endregion
+
+#if DEBUG
+        public void OnUIIsSelectedChanged(object old, object newv)
+        {
+            Debug.WriteLine($@"||| {FriendlyName} UISelected changed: {old} -> {newv}");
+        }
+
+        public void OnUIIsSelectableChanged(object old, object newv)
+        {
+            Debug.WriteLine($@"||| {FriendlyName} UIIsSelectable changed: {old} -> {newv}");
+        }
+#endif
 
         /// <summary>
         /// The root path where the multilists (if used) for this alternate is stored at
@@ -264,43 +286,55 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         /// <param name="allOptionsDependedOn">List of alternate options that this one depends on, so they can be checked against for their selection state.</param>
         /// <returns>True if the selection state was changed; false if not. This is used to determine if there needs to be another call to update selections again</returns>
-        internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTargetWPF target)
+        internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTarget target)
         {
             if (DependsOnKeys.Count == 0) return false; // Nothing changes as we don't depend on any other options
-            Debug.WriteLine($@"UpdateSelectability on {FriendlyName} with DependsOnKeys!");
+            Debug.WriteLine($@"UpdateSelectability() on {FriendlyName} for {allOptionsDependedOn.Count()} options: {string.Join(',', allOptionsDependedOn.Select(x=>x.FriendlyName))}");
             bool changed = false;
-            bool keepParsing = true;
+            bool dependsOnIsMet = true;
             // Depends On Keys
             foreach (var key in DependsOnKeys)
             {
-                if (!keepParsing)
+                if (!dependsOnIsMet)
                     continue;
 
+                // Find the matching option...
                 var option = allOptionsDependedOn.FirstOrDefault(x => x.OptionKey == key.Key);
                 if (option == null)
                 {
                     // This shouldn't happen!
                     Debug.WriteLine($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen.");
-                    TelemetryInterposer.TrackError(new Exception($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen."));
+                    M3OpenTelemetry.TrackError(new Exception($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen."));
                     continue;
                 }
 
                 if (option.UIIsSelected && !key.IsPlus.Value)
                 {
                     // The DependsOnKey option is selected, but we need -
-                    changed = ApplyDependsOnNotMet();
-                    keepParsing = false;
+                    changed = ApplyDependsOnNotMet(mod);
+                    dependsOnIsMet = false;
+                    Debug.WriteLine(@"Stopping further parsing");
                 }
                 else if (!option.UIIsSelected && key.IsPlus.Value)
                 {
                     // The DependsOnKey option is not selected, but we need +
-                    changed = ApplyDependsOnNotMet();
-                    keepParsing = false;
+                    changed = ApplyDependsOnNotMet(mod);
+                    dependsOnIsMet = false;
+                    Debug.WriteLine(@"Stopping further parsing");
                 }
                 else if (!option.UIIsSelected ^ key.IsPlus.Value)
                 {
-                    // Unlock the option
-                    ApplyDependsOnMet();
+                    // Backwards compatibility: This
+                    // code should only run if ALL options are confirmed
+                    // as not triggering NotMet. However, before 9.2
+                    // this always ran here, so we run it here to ensure
+                    // backwards compatibility.
+                    if (mod.ModDescTargetVersion <= ModDescConsts.MODDESC_VERSION_9_1)
+                    {
+                        // Unlock the option
+                        ApplyDependsOnMet(mod);
+                        // We keep parsing in case it converts to not met.
+                    }
                 }
 
                 // Todo: This implementation needs updated for multi-mode.
@@ -313,7 +347,14 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 //}
             }
 
-
+            // Mod Manager 9.2: Bugfix - Met() should only be run
+            // after we know all others are not met
+            // Also, record changed, which 9.1 and below did not do
+            if (mod.ModDescTargetVersion > ModDescConsts.MODDESC_VERSION_9_1 && dependsOnIsMet)
+            {
+                // Apply DependsOnMet condition
+                changed = ApplyDependsOnMet(mod);
+            }
 
             return changed;
         }
@@ -322,18 +363,20 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// Called when the DependsOnKeys conditions are not met.
         /// </summary>
         /// <returns></returns>
-        private bool ApplyDependsOnNotMet()
+        private bool ApplyDependsOnNotMet(Mod mod)
         {
-            return InternalApplyDepends(DependsOnNotMetAction);
+            Debug.WriteLine($@"@ {FriendlyName} ApplyDependsOnNotMet()");
+            return InternalApplyDepends(DependsOnNotMetAction, mod);
         }
 
         /// <summary>
         /// Called when the DependsOnKeys conditions are met.
         /// </summary>
         /// <returns></returns>
-        private bool ApplyDependsOnMet()
+        private bool ApplyDependsOnMet(Mod mod)
         {
-            return InternalApplyDepends(DependsOnMetAction);
+            Debug.WriteLine($@"@ {FriendlyName} ApplyDependsOnMet()");
+            return InternalApplyDepends(DependsOnMetAction, mod);
         }
 
         /// <summary>
@@ -341,28 +384,44 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         /// <param name="dependsAction">Action to perform</param>
         /// <returns>True if changed states, false if not</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        private bool InternalApplyDepends(EDependsOnAction dependsAction)
+        private bool InternalApplyDepends(EDependsOnAction dependsAction, Mod mod)
         {
             var initialSelection = UIIsSelected;
 
             // Can we select?
-            var hasUserChoice = dependsAction is EDependsOnAction.ACTION_ALLOW_SELECT or EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED;
-            var alreadyHasUserChoice = UIIsSelectable;
-
-            if (!hasUserChoice)
+            var targetStateHasUserChoice = dependsAction is EDependsOnAction.ACTION_ALLOW_SELECT or EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED;
+            var currentStateHasUserChoice = UIIsSelectable_PreDepends;
+            if (mod.ModDescTargetVersion <= ModDescConsts.MODDESC_VERSION_9_1)
             {
-                // We're going to lock the option.
+                // In 9.1 and below, for backwards compatibility, we
+                // use what it originally used - UIIsSelectable,
+                // which may be wrong due to it being changed earlier up the stack
+                currentStateHasUserChoice = UIIsSelectable;
+            }
+
+            if (!targetStateHasUserChoice)
+            {
+                // We're going to lock the option either checked or unchecked depending on action.
+                Debug.WriteLine($@" > Target state does not have user choice: {dependsAction}");
                 UIIsSelected = dependsAction == EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED;
             }
-            else if (!alreadyHasUserChoice)
+            else if (!currentStateHasUserChoice)
             {
-                // If the user is gaining the ability to make a decision, we will follow the action by the developer. We don't want to modify the existing user choice if they have a choice
-                // and this update doesn't change the ability for the user to make a choice
+                // If the user is gaining the ability to make a decision,
+                //    we will follow the action by the developer.
+                Debug.WriteLine($@" > Current state does not have user choice, user is gaining ability to make a choice.");
                 UIIsSelected = dependsAction == EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED; // Other option is unchecked.
             }
+            else
+            {
+                // We don't want to modify the existing user choice if they have a choice
+                // and this update doesn't change the ability for the user to make a choice
+                Debug.WriteLine($@" > Target state has choice {dependsAction}, current state has choice {currentStateHasUserChoice}. Keeping the current user selection.");
+                // UIIsSelected = dependsAction == EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED;
+            }
 
-            UIIsSelectable = hasUserChoice; // Make option selectable if it provider user choice
+            UIIsSelectable = targetStateHasUserChoice; // Make option selectable if it provider user choice
+            Debug.WriteLine($@"ApplyDepends {FriendlyName}: {dependsAction} (selection, haschoice): init: {initialSelection},{currentStateHasUserChoice} -> result: {UIIsSelected},{UIIsSelectable}");
             return initialSelection != UIIsSelected;
         }
 
@@ -423,7 +482,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <returns></returns>
         private bool ReadImageAssetOptions(Mod modForValidating, Dictionary<string, string> properties)
         {
-            if (modForValidating.ModDescTargetVersion >= 6.2)
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_2)
             {
                 if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_IMAGENAME, out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
                 {
@@ -500,13 +559,13 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             ReadAutoApplicableText(properties); // This can't fail validation
 
             // ModDesc 6.0: Mutually exclusive options
-            if (modForValidating.ModDescTargetVersion >= 6.0)
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_0)
             {
                 GroupName = properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_OPTIONGROUP, out string groupName) ? groupName : null;
             }
 
             // ModDesc 8.0: Read dev-defined OptionKey, SortOrder, Hidden
-            if (modForValidating.ModDescTargetVersion >= 8.0)
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
             {
                 if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_HIDDEN, out string hiddenValue))
                 {

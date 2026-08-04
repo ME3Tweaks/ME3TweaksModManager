@@ -2,6 +2,7 @@
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -110,7 +111,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 FriendlyName = friendlyName;
             }
-            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_0 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
                 M3Log.Error(@"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
@@ -140,7 +141,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
                     {
                         // ME3 remapping headers
-                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, foldername, modForValidating.ModDescTargetVersion >= 9.0));
+                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, foldername, modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0));
                         continue;
                     }
                     if (!dlc.StartsWith(@"DLC_"))
@@ -152,7 +153,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     else
                     {
                         // Direct DLC name
-                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, dlc, modForValidating.ModDescTargetVersion >= 9.0));
+                        ConditionalDLC.Add(alternates.ConditionalDLC.MakeConditionalDLC(modForValidating, dlc, modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0));
                     }
                 }
             }
@@ -184,7 +185,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             }
 
 
-            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
+            if (modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_6_0 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
                 M3Log.Error($@"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing Description");
@@ -208,7 +209,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     }
                     // ModDesc 8.0 change: Require MultiListRootPath not be an empty string.
                     // This checks because EGM LE did not set it so this would break loading that mod on future builds
-                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_ROOTPATH, out var rootpath) && (modForValidating.ModDescTargetVersion < 8.0 || !string.IsNullOrWhiteSpace(rootpath)))
+                    if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_ROOTPATH, out var rootpath) && (modForValidating.ModDescTargetVersion < ModDescConsts.MODDESC_VERSION_8_0 || !string.IsNullOrWhiteSpace(rootpath)))
                     {
                         MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
                     }
@@ -257,8 +258,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                     // ModDesc 8.0: Allow flattening output of multilist output.
                     // Backported to 7.0 125 build for EGM - it must work on 125 7.0 and above.
-                    if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
-                        || modForValidating.ModDescTargetVersion >= 8.0)
+                    if ((modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_7_0 && modForValidating.MinimumSupportedBuild >= 125)
+                        || modForValidating.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_8_0)
                     {
                         if (properties.TryGetValue(AlternateKeys.ALTSHARED_KEY_MULTILIST_FLATTENOUTPUT, out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
                         {
@@ -281,7 +282,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 else if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES)
                 {
                     #region NOINSTALL MULTILIST
-                    if (modForValidating.ModDescTargetVersion < 6.1)
+                    if (modForValidating.ModDescTargetVersion < ModDescConsts.MODDESC_VERSION_6_1)
                     {
                         M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.");
                         ValidAlternate = false;
@@ -339,7 +340,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 else if (Operation == AltFileOperation.OP_APPLY_MERGEMODS)
                 {
                     #region MERGE MOD
-                    if (modForValidating.ModDescTargetVersion < 7.0)
+                    if (modForValidating.ModDescTargetVersion < ModDescConsts.MODDESC_VERSION_7_0)
                     {
                         M3Log.Error($@"Alternate File operation OP_APPLY_MERGEMOD can only be used when targeting cmmver >= 7.0");
                         ValidAlternate = false;
@@ -464,7 +465,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
 
                     //workaround for 4.5
-                    if (modForValidating.ModDescTargetVersion == 4.5)
+                    if (modForValidating.ModDescTargetVersion == ModDescConsts.MODDESC_VERSION_4_5)
                     {
                         // BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
                         // In 5.0 and above this became AltFile.
@@ -538,14 +539,14 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 case AltFileCondition.COND_DLC_NOT_PRESENT:
                     UIIsSelected = !ConditionalDLC.Any(i => metaInfo.ContainsKey(i.DLCFolderName.Key));
-                    if (UIIsSelected && mod.ModDescTargetVersion >= 9.0)
+                    if (UIIsSelected && mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                     {
                         UIIsSelected = CheckExtraConditions(metaInfo);
                     }
                     break;
                 case AltFileCondition.COND_DLC_PRESENT:
                     UIIsSelected = ConditionalDLC.Any(i => metaInfo.ContainsKey(i.DLCFolderName.Key));
-                    if (UIIsSelected && mod.ModDescTargetVersion >= 9.0)
+                    if (UIIsSelected && mod.ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0)
                     {
                         UIIsSelected = CheckExtraConditions(metaInfo);
                     }
@@ -598,6 +599,14 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             AlternateFile file = new AlternateFile();
             base.CopyForEditor(file);
             return file;
+        }
+
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTarget target)
+        {
+            // This value should be cached before calling the base method.
+            UIIsSelectable_PreDepends = UIIsSelectable;
+
+            return base.UpdateSelectability(allOptionsDependedOn, mod, target);
         }
     }
 }

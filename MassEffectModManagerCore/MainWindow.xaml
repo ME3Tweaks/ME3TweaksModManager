@@ -16,7 +16,8 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
     xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
-    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -41,6 +42,9 @@
             Key="F"
             Modifiers="Control"
             Command="{Binding SearchModsCommand}" />
+        <KeyBinding
+            Key="Delete"
+            Command="{Binding DeleteModFromLibraryCommand}" />
     </Window.InputBindings>
     <Window.Resources>
         <Storyboard
@@ -222,30 +226,6 @@
                         RenderOptions.BitmapScalingMode="HighQuality" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem
-                Header="{DynamicResource string_mE3TweaksUpdaterService}"
-                Style="{StaticResource MenuItemHeaderStyle}"
-                ui:SharedUIBindings.DevModeGenerationOT="True" />
-            <MenuItem
-                Header="{DynamicResource string_Prepareforupdaterservice}"
-                Command="{Binding UpdaterServiceCommand}"
-                ToolTip="{DynamicResource string_tooltip_uploadToUpdaterService}"
-                ui:SharedUIBindings.DevModeGenerationOT="True">
-                <MenuItem.Icon>
-                    <fa5:ImageAwesome
-                        Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Solid_CloudUploadAlt"
-                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                        Height="16"
-                        Width="16"
-                        RenderOptions.BitmapScalingMode="HighQuality" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem
-                Header="{DynamicResource string_editUpdaterServiceSettings}"
-                Command="{Binding UpdaterServiceSettingsCommand}"
-                ToolTip="{DynamicResource string_tooltip_updaterServiceSettings}"
-                ui:SharedUIBindings.DevModeGenerationOT="True" />
             <MenuItem
                 Header="{DynamicResource string_thirdPartyIdentificationService}"
                 Style="{StaticResource MenuItemHeaderStyle}"
@@ -511,9 +491,9 @@
                         Header="{DynamicResource string_importAndManageMods}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem
-                        Header="Download Manager"
+                        Header="{DynamicResource string_downloadManager}"
                         Command="{Binding OpenDownloadManagerCommand}"
-                        ToolTip="Show current running downloads">
+                        ToolTip="{DynamicResource string_tooltip_showCurrentRunningDownloads}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -552,12 +532,25 @@
                     </MenuItem>
                     <MenuItem
                         Header="{DynamicResource string_seeWhatsInstalled}"
-                        Command="{Binding ShowinstallationInformationCommand}"
+                        Command="{Binding ShowInstallationInformationCommand}"
                         ToolTip="{DynamicResource string_tooltip_targetInfo}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
                                 Icon="Solid_Eye"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_manageCachedTargets}"
+                        Command="{Binding ManageCachedTargetsCommand}"
+                        ToolTip="{DynamicResource string_tooltip_manageCachedTargets}">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_Database"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1391,19 +1384,22 @@
                     <!--<MenuItem
                         Header="{DynamicResource string_blankItemToAvoidBreakingTheInterface}" />-->
                     <MenuItem
-                        Header="{DynamicResource string_showModInstallationStatusInLbrary}"
-                        ToolTip="{DynamicResource string_tooltip_notReliableForAllMods}"
-                        IsCheckable="True"
-                        StaysOpenOnClick="True"
-                        IsChecked="{Binding Path=(modmanager:Settings.ShowInstalledModsInLibrary)}" />
-                    <MenuItem
                         Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
                         Header="{DynamicResource string_suppressTargetMerges}"
                         ToolTip="{DynamicResource string_tooltip_suppressTargetMerges}"
                         IsCheckable="True"
                         StaysOpenOnClick="True"
                         IsChecked="{Binding Path=(modmanager:Settings.SessionOnly_SuppressDLCMerge)}" />
+                    <MenuItem
+                        Header="{DynamicResource string_convertMemToM3TextureOverride}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                        ToolTip="{DynamicResource string_tooltip_convertMemtoM3TextureOverride}"
+                        Command="{Binding ConvertMEMToTOCommand}" />
                 </MenuItem>
+                <MenuItem
+                    Header="{DynamicResource string_alpha}"
+                    Padding="4"
+                    Visibility="{Binding Path=(modmanager:Settings.AlphaMode), Converter={StaticResource BoolToVisibilityConverter}}"></MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"
                     Visibility="{x:Static local:App.DebugOnlyVisibility}"
@@ -1426,6 +1422,10 @@
                     <MenuItem
                         Header="{DynamicResource string_debugPrintInstallationQueue}"
                         Name="DebugPrintInstallationQueue_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_triggerBTPBuildOnModFolderInstalled}"
+                        Name="TriggerBTPBuild_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
                         Header="{DynamicResource string_requiresSelectedTarget}"
@@ -1489,6 +1489,18 @@
                         Header="{DynamicResource string_test7z}"
                         Name="Test7z_MenuItem"
                         Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_showTestDialog}"
+                        Name="ShowXceedDialog_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_testMicrosoftVisualCppInstaller}"
+                        Name="TestMSVCPInstaller_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                       Header="Crash test"
+                       Name="CrashTest_MenuItem"
+                       Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
@@ -1509,19 +1521,6 @@
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
                                 Icon="Solid_Stethoscope"
-                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                Height="16"
-                                Width="16" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem
-                        ToolTip="{DynamicResource string_tooltip_diagnosticTool_OpenAllPackages}"
-                        Header="{DynamicResource string_diagnosticTool_OpenAllPackages}"
-                        Command="{Binding DiagToolOpenAllPackagesCommand}">
-                        <MenuItem.Icon>
-                            <fa5:ImageAwesome
-                                Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Solid_BookOpen"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1674,7 +1673,8 @@
                             Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"
                             Width="24"
                             Height="24"
-                            Margin="5,0" />
+                            Margin="5,0"
+                            MouseRightButtonUp="OnBottomGameIDImageClick" />
                         <Button
                             MinWidth="70"
                             Padding="10,7"
@@ -1849,7 +1849,7 @@
                         ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}" />
                     <Button
                         Content="{DynamicResource string_targetInfo}"
-                        Command="{Binding ShowinstallationInformationCommand}"
+                        Command="{Binding ShowInstallationInformationCommand}"
                         Grid.Row="0"
                         Grid.Column="3"
                         Padding="5,0"
@@ -1895,10 +1895,37 @@
                                                         <RowDefinition
                                                             Height="Auto" />
                                                     </Grid.RowDefinitions>
+                                                    <!-- This border is effectively an underline effect -->
                                                     <Border
                                                         Background="{Binding BackgroundColor}"
                                                         Height="2"
-                                                        VerticalAlignment="Bottom" />
+                                                        VerticalAlignment="Bottom">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Opacity" Value="1" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                                                        <DataTrigger.EnterActions>
+                                                                            <BeginStoryboard x:Name="GameFilterLoadingPulseStoryboard">
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation
+                                                                                        Storyboard.TargetProperty="Opacity"
+                                                                                        From="1"
+                                                                                        To="0.25"
+                                                                                        Duration="0:0:0.5"
+                                                                                        AutoReverse="True"
+                                                                                        RepeatBehavior="Forever" />
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </DataTrigger.EnterActions>
+                                                                        <DataTrigger.ExitActions>
+                                                                            <StopStoryboard BeginStoryboardName="GameFilterLoadingPulseStoryboard" />
+                                                                        </DataTrigger.ExitActions>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                    </Border>
                                                     <TextBlock
                                                         Text="{Binding Game}" />
                                                 </Grid>
@@ -2200,6 +2227,19 @@
                                                             Property="Text"
                                                             Value="{DynamicResource string_pleaseWait}" />
                                                     </DataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition
+                                                                Binding="{Binding LoadedOnce, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                            <Condition
+                                                                Binding="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter
+                                                            Property="Text"
+                                                            Value="Reloading mods" />
+                                                    </MultiDataTrigger>
                                                     <DataTrigger
                                                         Binding="{Binding AllGamesHidden, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="True">
@@ -2227,6 +2267,19 @@
                                                             Property="Text"
                                                             Value="{DynamicResource string_pleaseWait_startup}" />
                                                     </DataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition
+                                                                Binding="{Binding LoadedOnce, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                            <Condition
+                                                                Binding="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
+                                                                Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter
+                                                            Property="Text"
+                                                            Value="The mod library is reloading." />
+                                                    </MultiDataTrigger>
                                                     <DataTrigger
                                                         Binding="{Binding AllGamesHidden, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="True">
@@ -2313,7 +2366,7 @@
                                     Path="SelectedMod.RichDisplayedModDescription"
                                     Mode="OneWay" />
                                 <Binding
-                                    Path="NoModSelectedText"
+                                    Path="NoModSelectedRichText"
                                     Mode="OneWay" />
                             </PriorityBinding>
                         </xctk:RichTextBox.Text>

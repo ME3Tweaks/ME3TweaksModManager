@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
 using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.me3tweaks;
-using Microsoft.AppCenter.Crashes;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksModManager.modmanager.telemetry;
 using SevenZip;
 using SevenZip.EventArguments;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
@@ -93,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 throw new Exception(M3L.GetString(M3L.string_interp_theArchiveFileArchivePathIsNoLongerAvailable, archivePath));
             }
 
-            compressPackages &= Game >= MEGame.ME2;
+            compressPackages &= Game is MEGame.ME2 or MEGame.ME3;
 
             SevenZipExtractor archive;
             var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
@@ -101,12 +95,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             bool closeStreamOnFinish = true;
             if (archiveStream != null)
             {
+                M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Stream (EX) - {ModName}", archiveStream);
                 archive = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
                 closeStreamOnFinish = false;
             }
             else
             {
                 archive = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+                M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive SZE (EX) - {ModName}", archive);
             }
 
             var fileIndicesToExtract = new List<int>();
@@ -124,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
                     if (referencedFiles.Contains(relativedName))
                     {
-                        M3Log.Information(@"Adding file to extraction list: " + info.FileName);
+                        M3Log.Information(@"Adding file to extraction list: " + info.FileName, Settings.LogModInstallation);
                         fileIndicesToExtract.Add(info.Index);
                         filePathsToExtractTESTONLY.Add(relativedName);
                     }
@@ -139,7 +135,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             archive.Progressing += archiveExtractionProgress;
             string outputFilePathMapping(ArchiveFileInfo entryInfo)
             {
-                M3Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
+                M3Log.Information(@"Mapping extraction target for " + entryInfo.FileName, Settings.LogModInstallation);
 
                 string entryPath = entryInfo.FileName;
                 if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
@@ -230,7 +226,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 if (compressPackages)
                 {
-
                     var fToCompress = outputFilePathMapping(args.FileInfo);
                     if (fToCompress.RepresentsPackageFilePath())
                     {
@@ -313,7 +308,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
                         if (!testRun)
                         {
-                            M3Utilities.RunProcess(vpat, args, true, false, false, true);
+                            MUtilities.RunProcess(vpat, argsS: args, waitForProcess: true, noWindow: true);
                         }
                     }
                 }
@@ -396,7 +391,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             else
             {
                 M3Log.Error(@"Tried to extract RCW mod to M3 mod but the job was empty.");
-                TelemetryInterposer.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
+                M3OpenTelemetry.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
             }
         }
     }

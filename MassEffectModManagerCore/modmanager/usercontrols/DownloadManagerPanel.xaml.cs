@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
@@ -16,9 +17,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     {
         public ICommand CloseCommand { get; set; }
 
+        public RelayCommand BeginImportCommand { get; set; }
+
         public string DownloadLocationText { get; set; }
 
+        /// <summary>
+        /// List of downloads show in the in the panel
+        /// </summary>
         public ObservableCollectionExtended<ModDownload> Downloads { get; } = new ObservableCollectionExtended<ModDownload>();
+
+        /// <summary>
+        /// Reference to the static FailedDownloads collection for binding
+        /// </summary>
+        public ObservableCollectionExtended<ModDownload> FailedDownloads => DownloadManager.FailedDownloads;
+
         public DownloadManagerPanel()
         {
             LoadCommands();
@@ -26,8 +38,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             // Setup location text.
             DownloadLocationText = Settings.ModDownloadCacheFolder == null
-                ? "Downloads will automatically be deleted when Mod Manager closes (mods imported into the library will be unaffected). You can change this in the application settings."
-                : $"Downloaded files are saved to the following location, which can be changed in the settings:\n{Settings.ModDownloadCacheFolder}";
+                ? M3L.GetString(M3L.string_dlmgr_subTempCache)
+                : M3L.GetString(M3L.string_dlmgr_subPermCache, Settings.ModDownloadCacheFolder);
 
         }
 
@@ -65,6 +77,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(CloseWrapper);
+            BeginImportCommand = new RelayCommand(StartModImport,
+                x => x is ModDownload md && md.CanImport);
+        }
+
+        private void StartModImport(object obj)
+        {
+            if (obj is ModDownload md)
+            {
+                BeginImportFor(md);
+            }
         }
 
         private void CloseWrapper()
@@ -101,7 +123,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Clear out canceled downloads from the manager.
             DownloadManager.ClearAbortedDownloads();
 
-            Downloads.Clear(); // Ensure we have no references in event this window doesn't clean up for some reason (memory analyzer shows it is not reliable unless another window appears)
+            Downloads.ClearEx(); // Ensure we have no references in event this window doesn't clean up for some reason (memory analyzer shows it is not reliable unless another window appears)
             base.OnClosing(dataEventArgs);
         }
 
@@ -128,14 +150,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // Is there only one active download? If so, we will immediately kick to import
                     if (Downloads.Count == 1)
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            CloseWrapper();
-                            mainwindow.ShowModArchiveImportForDownload(md);
-                        });
+                        BeginImportFor(md);
                     }
                 }
             }
+        }
+
+        private void BeginImportFor(ModDownload md)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                CloseWrapper();
+                mainwindow.ShowModArchiveImportForDownload(md);
+            });
         }
 
         private void DownloadError(object sender, string e)
@@ -146,5 +173,42 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 OnClosing(DataEventArgs.Empty);
             });
         }
+
+
+        private void ClearAllFailed_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() => 
+            { 
+                DownloadManager.FailedDownloads.ClearEx();
+                
+                // Check if both collections are empty and close the panel if so
+                CheckAndCloseIfEmpty();
+            });
+        }
+
+        private void RemoveFailedDownload_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is ModDownload download)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    DownloadManager.FailedDownloads.Remove(download);
+                    
+                    // Check if both collections are empty and close the panel if so
+                    CheckAndCloseIfEmpty();
+                });
+            }
+        }
+
+        private void CheckAndCloseIfEmpty()
+        {
+            // Check if both FailedDownloads and Downloads are empty
+            if (DownloadManager.FailedDownloads.Count == 0 && Downloads.Count == 0)
+            {
+                CloseWrapper();
+            }
+        }
+
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

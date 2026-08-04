@@ -29,122 +29,122 @@ using ME3TweaksModManager.modmanager.save.shared;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("PlayerSaveRecord")]
+    [OriginalName(@"PlayerSaveRecord")]
     public class Player : IUnrealSerializable, INotifyPropertyChanged, IPlayerRecord
     {
         #region Fields
-        [OriginalName("bIsFemale")]
+        [OriginalName(@"bIsFemale")]
         private bool _IsFemale;
 
-        [OriginalName("PlayerClassName")]
+        [OriginalName(@"PlayerClassName")]
         private string _ClassName;
 
-        [OriginalName("bCombatPawn")]
+        [OriginalName(@"bCombatPawn")]
         private bool _IsCombatPawn;
 
-        [OriginalName("bInjuredPawn")]
+        [OriginalName(@"bInjuredPawn")]
         private bool _IsInjuredPawn;
 
-        [OriginalName("bUseCasualAppearance")]
+        [OriginalName(@"bUseCasualAppearance")]
         private bool _UseCasualAppearance;
 
-        [OriginalName("Level")]
+        [OriginalName(@"Level")]
         private int _Level;
 
-        [OriginalName("CurrentXP")]
+        [OriginalName(@"CurrentXP")]
         private float _CurrentXP;
 
-        [OriginalName("FirstName")]
+        [OriginalName(@"FirstName")]
         private string _FirstName;
 
-        [OriginalName("LastName")]
+        [OriginalName(@"LastName")]
         private int _LastName;
 
-        [OriginalName("Origin")]
+        [OriginalName(@"Origin")]
         private OriginType _Origin;
 
-        [OriginalName("Notoriety")]
+        [OriginalName(@"Notoriety")]
         private NotorietyType _Notoriety;
 
-        [OriginalName("TalentPoints")]
+        [OriginalName(@"TalentPoints")]
         private int _TalentPoints;
 
-        [OriginalName("MappedPower1")]
+        [OriginalName(@"MappedPower1")]
         private string _MappedPower1;
 
-        [OriginalName("MappedPower2")]
+        [OriginalName(@"MappedPower2")]
         private string _MappedPower2;
 
-        [OriginalName("MappedPower3")]
+        [OriginalName(@"MappedPower3")]
         private string _MappedPower3;
 
-        [OriginalName("Appearance")]
+        [OriginalName(@"Appearance")]
         private Appearance _Appearance = new Appearance();
 
-        [OriginalName("Powers")]
+        [OriginalName(@"Powers")]
         private List<Power> _Powers = new List<Power>();
 
-        [OriginalName("GAWAssets")]
+        [OriginalName(@"GAWAssets")]
         private List<GAWAsset> _GAWAssets = new List<GAWAsset>();
 
-        [OriginalName("Weapons")]
+        [OriginalName(@"Weapons")]
         private List<Weapon> _Weapons = new List<Weapon>();
 
-        [OriginalName("WeaponMods")]
+        [OriginalName(@"WeaponMods")]
         private List<WeaponMod> _WeaponMods = new List<WeaponMod>();
 
-        [OriginalName("LoadoutWeapons")]
+        [OriginalName(@"LoadoutWeapons")]
         private Loadout _LoadoutWeapons = new Loadout();
 
-        [OriginalName("PrimaryWeapon")]
+        [OriginalName(@"PrimaryWeapon")]
         private string _PrimaryWeapon;
 
-        [OriginalName("SecondaryWeapon")]
+        [OriginalName(@"SecondaryWeapon")]
         private string _SecondaryWeapon;
 
-        [OriginalName("LoadoutWeaponGroups")]
+        [OriginalName(@"LoadoutWeaponGroups")]
         private List<int> _LoadoutWeaponGroups = new List<int>();
 
-        [OriginalName("HotKeys")]
+        [OriginalName(@"HotKeys")]
         private List<HotKey> _HotKeys = new List<HotKey>();
 
-        [OriginalName("CurrentHealth")]
+        [OriginalName(@"CurrentHealth")]
         private float _CurrentHealth;
 
-        [OriginalName("Credits")]
+        [OriginalName(@"Credits")]
         private int _Credits;
 
-        [OriginalName("Medigel")]
+        [OriginalName(@"Medigel")]
         private int _Medigel;
 
-        [OriginalName("Eezo")]
+        [OriginalName(@"Eezo")]
         private int _Eezo;
 
-        [OriginalName("Iridium")]
+        [OriginalName(@"Iridium")]
         private int _Iridium;
 
-        [OriginalName("Palladium")]
+        [OriginalName(@"Palladium")]
         private int _Palladium;
 
-        [OriginalName("Platinum")]
+        [OriginalName(@"Platinum")]
         private int _Platinum;
 
-        [OriginalName("Probes")]
+        [OriginalName(@"Probes")]
         private int _Probes;
 
-        [OriginalName("CurrentFuel")]
+        [OriginalName(@"CurrentFuel")]
         private float _CurrentFuel;
 
-        [OriginalName("Grenades")]
+        [OriginalName(@"Grenades")]
         private int _Grenades;
 
-        [OriginalName("FaceCode")]
+        [OriginalName(@"FaceCode")]
         private string _FaceCode;
 
-        [OriginalName("srClassFriendlyName")]
+        [OriginalName(@"srClassFriendlyName")]
         private int _ClassFriendlyName;
 
-        [OriginalName("CharacterGUID")]
+        [OriginalName(@"CharacterGUID")]
         private Guid _Guid;
         #endregion
 
@@ -221,7 +221,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ClassName)
                 {
                     this._ClassName = value;
-                    this.NotifyPropertyChanged("ClassName");
+                    this.NotifyPropertyChanged(@"ClassName");
                 }
             }
         }
@@ -234,7 +234,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._IsCombatPawn)
                 {
                     this._IsCombatPawn = value;
-                    this.NotifyPropertyChanged("IsCombatPawn");
+                    this.NotifyPropertyChanged(@"IsCombatPawn");
                 }
             }
         }
@@ -247,7 +247,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._IsInjuredPawn)
                 {
                     this._IsInjuredPawn = value;
-                    this.NotifyPropertyChanged("IsInjuredPawn");
+                    this.NotifyPropertyChanged(@"IsInjuredPawn");
                 }
             }
         }
@@ -260,7 +260,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._UseCasualAppearance)
                 {
                     this._UseCasualAppearance = value;
-                    this.NotifyPropertyChanged("UseCasualAppearance");
+                    this.NotifyPropertyChanged(@"UseCasualAppearance");
                 }
             }
         }
@@ -273,7 +273,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Level)
                 {
                     this._Level = value;
-                    this.NotifyPropertyChanged("Level");
+                    this.NotifyPropertyChanged(@"Level");
                 }
             }
         }
@@ -328,7 +328,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._LastName)
                 {
                     this._LastName = value;
-                    this.NotifyPropertyChanged("LastName");
+                    this.NotifyPropertyChanged(@"LastName");
                 }
             }
         }
@@ -341,7 +341,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Origin)
                 {
                     this._Origin = value;
-                    this.NotifyPropertyChanged("Origin");
+                    this.NotifyPropertyChanged(@"Origin");
                 }
             }
         }
@@ -354,7 +354,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Notoriety)
                 {
                     this._Notoriety = value;
-                    this.NotifyPropertyChanged("Notoriety");
+                    this.NotifyPropertyChanged(@"Notoriety");
                 }
             }
         }
@@ -367,7 +367,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._TalentPoints)
                 {
                     this._TalentPoints = value;
-                    this.NotifyPropertyChanged("TalentPoints");
+                    this.NotifyPropertyChanged(@"TalentPoints");
                 }
             }
         }
@@ -380,7 +380,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MappedPower1)
                 {
                     this._MappedPower1 = value;
-                    this.NotifyPropertyChanged("MappedPower1");
+                    this.NotifyPropertyChanged(@"MappedPower1");
                 }
             }
         }
@@ -393,7 +393,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MappedPower2)
                 {
                     this._MappedPower2 = value;
-                    this.NotifyPropertyChanged("MappedPower2");
+                    this.NotifyPropertyChanged(@"MappedPower2");
                 }
             }
         }
@@ -406,7 +406,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._MappedPower3)
                 {
                     this._MappedPower3 = value;
-                    this.NotifyPropertyChanged("MappedPower3");
+                    this.NotifyPropertyChanged(@"MappedPower3");
                 }
             }
         }
@@ -419,7 +419,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Appearance)
                 {
                     this._Appearance = value;
-                    this.NotifyPropertyChanged("Appearance");
+                    this.NotifyPropertyChanged(@"Appearance");
                 }
             }
         }
@@ -432,7 +432,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Powers)
                 {
                     this._Powers = value;
-                    this.NotifyPropertyChanged("Powers");
+                    this.NotifyPropertyChanged(@"Powers");
                 }
             }
         }
@@ -445,7 +445,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._GAWAssets)
                 {
                     this._GAWAssets = value;
-                    this.NotifyPropertyChanged("GAWAssets");
+                    this.NotifyPropertyChanged(@"GAWAssets");
                 }
             }
         }
@@ -458,7 +458,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Weapons)
                 {
                     this._Weapons = value;
-                    this.NotifyPropertyChanged("Weapons");
+                    this.NotifyPropertyChanged(@"Weapons");
                 }
             }
         }
@@ -471,7 +471,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._WeaponMods)
                 {
                     this._WeaponMods = value;
-                    this.NotifyPropertyChanged("WeaponMods");
+                    this.NotifyPropertyChanged(@"WeaponMods");
                 }
             }
         }
@@ -484,7 +484,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._LoadoutWeapons)
                 {
                     this._LoadoutWeapons = value;
-                    this.NotifyPropertyChanged("LoadoutWeapons");
+                    this.NotifyPropertyChanged(@"LoadoutWeapons");
                 }
             }
         }
@@ -497,7 +497,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._PrimaryWeapon)
                 {
                     this._PrimaryWeapon = value;
-                    this.NotifyPropertyChanged("PrimaryWeapon");
+                    this.NotifyPropertyChanged(@"PrimaryWeapon");
                 }
             }
         }
@@ -510,7 +510,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._SecondaryWeapon)
                 {
                     this._SecondaryWeapon = value;
-                    this.NotifyPropertyChanged("SecondaryWeapon");
+                    this.NotifyPropertyChanged(@"SecondaryWeapon");
                 }
             }
         }
@@ -523,7 +523,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._LoadoutWeaponGroups)
                 {
                     this._LoadoutWeaponGroups = value;
-                    this.NotifyPropertyChanged("LoadoutWeaponGroups");
+                    this.NotifyPropertyChanged(@"LoadoutWeaponGroups");
                 }
             }
         }
@@ -536,7 +536,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._HotKeys)
                 {
                     this._HotKeys = value;
-                    this.NotifyPropertyChanged("HotKeys");
+                    this.NotifyPropertyChanged(@"HotKeys");
                 }
             }
         }
@@ -549,7 +549,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._CurrentHealth) == false)
                 {
                     this._CurrentHealth = value;
-                    this.NotifyPropertyChanged("CurrentHealth");
+                    this.NotifyPropertyChanged(@"CurrentHealth");
                 }
             }
         }
@@ -562,7 +562,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Credits)
                 {
                     this._Credits = value;
-                    this.NotifyPropertyChanged("Credits");
+                    this.NotifyPropertyChanged(@"Credits");
                 }
             }
         }
@@ -575,7 +575,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Medigel)
                 {
                     this._Medigel = value;
-                    this.NotifyPropertyChanged("Medigel");
+                    this.NotifyPropertyChanged(@"Medigel");
                 }
             }
         }
@@ -588,7 +588,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Eezo)
                 {
                     this._Eezo = value;
-                    this.NotifyPropertyChanged("Eezo");
+                    this.NotifyPropertyChanged(@"Eezo");
                 }
             }
         }
@@ -601,7 +601,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Iridium)
                 {
                     this._Iridium = value;
-                    this.NotifyPropertyChanged("Iridium");
+                    this.NotifyPropertyChanged(@"Iridium");
                 }
             }
         }
@@ -614,7 +614,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Palladium)
                 {
                     this._Palladium = value;
-                    this.NotifyPropertyChanged("Palladium");
+                    this.NotifyPropertyChanged(@"Palladium");
                 }
             }
         }
@@ -627,7 +627,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Platinum)
                 {
                     this._Platinum = value;
-                    this.NotifyPropertyChanged("Platinum");
+                    this.NotifyPropertyChanged(@"Platinum");
                 }
             }
         }
@@ -640,7 +640,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Probes)
                 {
                     this._Probes = value;
-                    this.NotifyPropertyChanged("Probes");
+                    this.NotifyPropertyChanged(@"Probes");
                 }
             }
         }
@@ -653,7 +653,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._CurrentFuel) == false)
                 {
                     this._CurrentFuel = value;
-                    this.NotifyPropertyChanged("CurrentFuel");
+                    this.NotifyPropertyChanged(@"CurrentFuel");
                 }
             }
         }
@@ -666,7 +666,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._Grenades) == false)
                 {
                     this._Grenades = value;
-                    this.NotifyPropertyChanged("Grenades");
+                    this.NotifyPropertyChanged(@"Grenades");
                 }
             }
         }
@@ -679,7 +679,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._FaceCode)
                 {
                     this._FaceCode = value;
-                    this.NotifyPropertyChanged("FaceCode");
+                    this.NotifyPropertyChanged(@"FaceCode");
                 }
             }
         }
@@ -692,7 +692,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ClassFriendlyName)
                 {
                     this._ClassFriendlyName = value;
-                    this.NotifyPropertyChanged("ClassFriendlyName");
+                    this.NotifyPropertyChanged(@"ClassFriendlyName");
                 }
             }
         }
@@ -705,7 +705,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Guid)
                 {
                     this._Guid = value;
-                    this.NotifyPropertyChanged("Guid");
+                    this.NotifyPropertyChanged(@"Guid");
                 }
             }
         }

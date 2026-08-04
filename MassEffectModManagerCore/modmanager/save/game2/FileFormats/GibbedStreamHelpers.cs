@@ -63,7 +63,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
                     }
                 }
 
-                throw new ArgumentException("unknown enum type", "type");
+                throw new ArgumentException(@"unknown enum type", @"type");
             }
 
             public static TypeCode Get(Type type)

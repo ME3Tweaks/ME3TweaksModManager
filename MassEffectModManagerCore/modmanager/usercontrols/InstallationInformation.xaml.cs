@@ -1,11 +1,11 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.ME3Tweaks.M3Merge.Game2Email;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
@@ -55,18 +55,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanRestoreMPSFARs()
         {
-            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MUtilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
         }
         private bool CanRestoreSPSFARs()
         {
-            return IsPanelOpen && SelectedTarget.Game != MEGame.Unknown && !MUtilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget.Game != MEGame.Unknown && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
         }
 
         private bool CanRemoveTarget() => SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !SelectedTarget.RegistryActive;
 
+        /// <summary>
+        /// Removes the selected cached target from settings
+        /// </summary>
         private void RemoveTarget()
         {
-            M3Utilities.RemoveCachedTarget(SelectedTarget);
+            M3TargetCache.RemoveCachedTarget(SelectedTarget);
             Result.ReloadTargets = true;
             ClosePanel();
         }
@@ -94,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown
                    && BackupService.GetBackupStatus(SelectedTarget.Game).BackedUp
                    && !RestoreAllBasegameInProgress
-                   && !MUtilities.IsGameRunning(SelectedTarget.Game)
+                   && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game)
                    // Check there is at least one file we can restore
                    && SelectedTarget.ModifiedBasegameFiles.Count(x =>
                        !SelectedTarget.TextureModded || !x.FilePath.RepresentsPackageFilePath()) > 0;
@@ -111,11 +114,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true;
         }
 
+        /// <summary>
+        /// Invoked when modified files filter changes values
+        /// </summary>
         public void OnModifiedFilesFilterTextChanged()
         {
             SelectedTarget?.ModifiedBasegameFilesView.Refresh();
         }
 
+        /// <summary>
+        /// Restores all basegame files that have been modified. This doesn't wipe out extra stuff.
+        /// </summary>
         private void RestoreAllBasegame()
         {
             bool restorePackages = true;
@@ -133,7 +142,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var res = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     restore = res == MessageBoxResult.Yes;
 
-                    
+
                 }
             }
             else
@@ -284,7 +293,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanRestoreAllSFARs()
         {
-            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MUtilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !MRunningGameInfo.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
         /// <summary>
@@ -299,7 +308,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 bool deleteConfirmationCallback(InstalledDLCMod mod)
                 {
-                    if (MUtilities.IsGameRunning(selectedTarget.Game))
+                    if (MRunningGameInfo.IsGameRunning(selectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning,
@@ -323,7 +332,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 }
 
-                void notifyDLCModDeleted()
+                void notifyDLCModDeleted(InstalledDLCMod deletedMod)
                 {
                     if (selectedTarget.Game.IsGame1() || selectedTarget.Game.IsGame2())
                     {
@@ -349,10 +358,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         Result.TargetsToGlobalShaderMerge.Add(selectedTarget);
                     }
-                    selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);
+
+                    // 11/30/2025 - Don't repopulate DLC mods on delete, just remove it.
+                    selectedTarget.UIInstalledDLCMods.Remove(deletedMod);
+
+                    // 11/30/2025 - Update installation state of toggled mod
+                    // Run on background thread as this can stall pretty hard
+                    Task.Run(() =>
+                    {
+                        M3LoadedMods.RefreshInstallationModState(selectedTarget, deletedMod);
+                    });
+                    // selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);
                 }
 
-                void notifyToggled()
+                void notifyToggled(InstalledDLCMod toggledMod)
                 {
                     if (selectedTarget.Game.IsGame1() || selectedTarget.Game.IsGame2())
                     {
@@ -378,6 +397,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         Result.TargetsToGlobalShaderMerge.Add(selectedTarget);
                     }
+
+                    // 11/30/2025 - Update installation state of toggled mod
+                    // Run on background thread as this can stall pretty hard
+                    Task.Run(() =>
+                    {
+                        M3LoadedMods.RefreshInstallationModState(selectedTarget, toggledMod);
+                    });
                 }
 
                 selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);
@@ -385,7 +411,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 selectedTarget.PopulateTextureInstallHistory();
                 bool restoreBasegamefileConfirmationCallback(string filepath)
                 {
-                    if (MUtilities.IsGameRunning(selectedTarget.Game))
+                    if (MRunningGameInfo.IsGameRunning(selectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, selectedTarget.Game.ToGameName()), M3L.GetString(M3L.string_gameRunning),
@@ -425,7 +451,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 bool restoreSfarConfirmationCallback(string sfarPath)
                 {
-                    if (MUtilities.IsGameRunning(selectedTarget.Game))
+                    if (MRunningGameInfo.IsGameRunning(selectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,
@@ -650,6 +676,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
+            if (SelectedTarget?.Game == MEGame.LELauncher)
+            {
+                // Select modified basegame files so we don't have no tab selected
+                SelectedTarget_TabControl.SelectedItem = ModifiedBasegameFiles_Tab;
+            }
         }
 
         private void OpenASIManager_Click(object sender, RequestNavigateEventArgs e)

@@ -7,19 +7,19 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
     public partial class Power : IUnrealSerializable
     {
         [UnrealFieldOffset(0x00)]
-        [UnrealFieldDisplayName("Name")]
+        [UnrealFieldDisplayName(@"Name")]
         public string PowerName;
 
         [UnrealFieldOffset(0x0C)]
-        [UnrealFieldDisplayName("Current Rank")]
+        [UnrealFieldDisplayName(@"Current Rank")]
         public float CurrentRank;
 
         [UnrealFieldOffset(0x10)]
-        [UnrealFieldDisplayName("Class Name")]
+        [UnrealFieldDisplayName(@"Class Name")]
         public string PowerClassName;
 
         [UnrealFieldOffset(0x1C)]
-        [UnrealFieldDisplayName("Wheel Display Index")]
+        [UnrealFieldDisplayName(@"Wheel Display Index")]
         public int WheelDisplayIndex;
 
         public void Serialize(IUnrealStream stream)
@@ -32,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 
         public override string ToString()
         {
-            return String.Format("{0} = {1} ({2})",
+            return String.Format(@"{0} = {1} ({2})",
                 this.PowerName,
                 this.CurrentRank,
                 this.WheelDisplayIndex);

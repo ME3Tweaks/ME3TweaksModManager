@@ -84,7 +84,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 this._CachedValue =
                     () =>
                     {
-                        throw new InvalidOperationException(string.Format("{0} is not visible",
+                        throw new InvalidOperationException(string.Format(@"{0} is not visible",
                                                                           this._ResourceType.FullName));
                     };
                 return this._CachedValue();
@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 this._CachedValue =
                     () =>
                     {
-                        throw new InvalidOperationException(string.Format("{0} does not have a public property {1}",
+                        throw new InvalidOperationException(string.Format(@"{0} does not have a public property {1}",
                                                                           this._ResourceType.FullName,
                                                                           this._PropertyName));
                     };
@@ -111,7 +111,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 this._CachedValue =
                     () =>
                     {
-                        throw new InvalidOperationException(string.Format("{0} {1} is not a string",
+                        throw new InvalidOperationException(string.Format(@"{0} {1} is not a string",
                                                                           this._ResourceType.FullName,
                                                                           property.Name));
                     };
@@ -126,7 +126,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 this._CachedValue =
                     () =>
                     {
-                        throw new InvalidOperationException(string.Format("{0} {1} getter is not public",
+                        throw new InvalidOperationException(string.Format(@"{0} {1} getter is not public",
                                                                           this._ResourceType.FullName,
                                                                           property.Name));
                     };

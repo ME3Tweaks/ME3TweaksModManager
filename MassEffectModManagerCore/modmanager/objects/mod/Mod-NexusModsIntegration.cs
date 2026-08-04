@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
@@ -7,8 +7,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
-using Microsoft.AppCenter.Analytics;
-
+using ME3TweaksModManager.modmanager.telemetry;
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
@@ -83,6 +82,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModSpecificEndorsement");
             nbw.DoWork += (a, b) =>
             {
+                if (endorse)
+                {
+                    M3Log.Information($@"Endorsing {ModName}");
+                }
+                else
+                {
+                    M3Log.Information($@"Unendorsing {ModName}");
+                }
+
                 var client = NexusModsUtilities.GetClient();
                 string gamename = @"masseffect";
                 if (Game == MEGame.ME2) gamename += @"2";
@@ -94,11 +102,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     if (endorse)
                     {
-                        client.Mods.Endorse(gamename, NexusModID, @"1.0").Wait();
+                        client.Mods.Endorse(gamename, NexusModID, ModVersionString).Wait();
+                        M3Log.Information($@"Endorsement complete");
                     }
                     else
                     {
-                        client.Mods.Unendorse(gamename, NexusModID, @"1.0").Wait();
+                        client.Mods.Unendorse(gamename, NexusModID, ModVersionString).Wait();
+                        M3Log.Information($@"Unendorsement complete");
                     }
                 }
                 catch (Exception e)
@@ -124,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 checkedEndorsementStatus = false;
                 IsEndorsed = GetEndorsementStatus().Result ?? false;
-                TelemetryInterposer.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
+                M3OpenTelemetry.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
                     {@"Endorsed", endorse.ToString() },
                     {@"Succeeded", telemetryOverride ?? (endorse == IsEndorsed).ToString() }

@@ -16,7 +16,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 
         public override string ToString()
         {
-            return String.Format("{1} ({0})",
+            return String.Format(@"{1} ({0})",
                 this.ModuleID,
                 this.Name);
         }

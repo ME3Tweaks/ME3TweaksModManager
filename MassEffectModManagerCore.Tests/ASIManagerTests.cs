@@ -63,14 +63,14 @@ namespace ME3TweaksModManager.Tests
                             }
 
                             Console.WriteLine($@"Install source variable: {sourceBool}");
-                            Assert.IsTrue(ASIManager.InstallASIToTarget(v, gt, sourceBool),
+                            Assert.IsTrue(ASIManager.InstallASIToTarget(v, gt, sourceBool).Result,
                                 $"Installation of ASI failed: {v.Name}");
-                            Assert.AreEqual(1, Directory.GetFiles(asiDir).Length,
+                            Assert.HasCount(1, Directory.GetFiles(asiDir),
                                 "The count of files in the ASI directory is not 1 after install of an ASI!");
 
                             // Check is installed
                             var installedASIs = gt.GetInstalledASIs().OfType<KnownInstalledASIMod>().ToList();
-                            Assert.AreEqual(1, installedASIs.Count,
+                            Assert.HasCount(1, installedASIs,
                                 "The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to 1!");
 
                             // Check it maps to the correct one.
@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.Tests
 
                             // Ensure it still can be found.
                             installedASIs = gt.GetInstalledASIs().OfType<KnownInstalledASIMod>().ToList();
-                            Assert.AreEqual(1, installedASIs.Count, "The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to 1 after renaming the file!");
+                            Assert.HasCount(1, installedASIs, "The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to 1 after renaming the file!");
 
                             // Make multiple clones, to ensure all old ones get deleted on upgrades.
                             for (int i = 0; i < numASIEnumerations; i++)
@@ -93,7 +93,7 @@ namespace ME3TweaksModManager.Tests
                             }
 
                             installedASIs = gt.GetInstalledASIs().OfType<KnownInstalledASIMod>().ToList();
-                            Assert.AreEqual(numASIEnumerations + 1, installedASIs.Count, $"The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to {(numASIEnumerations + 1)} after cloning the file {numASIEnumerations} times!");
+                            Assert.HasCount(numASIEnumerations + 1, installedASIs, $"The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to {(numASIEnumerations + 1)} after cloning the file {numASIEnumerations} times!");
                         }
                     }
 
@@ -108,7 +108,7 @@ namespace ME3TweaksModManager.Tests
                         randomCount++;
 
                         var unknownInstalledASIs = gt.GetInstalledASIs().OfType<UnknownInstalledASIMod>().ToList();
-                        Assert.AreEqual(randomCount, unknownInstalledASIs.Count, "Writing random bytes to installed ASI made amount of installed ASIs not correct!");
+                        Assert.HasCount(randomCount, unknownInstalledASIs, "Writing random bytes to installed ASI made amount of installed ASIs not correct!");
 
                     }
 
@@ -117,7 +117,7 @@ namespace ME3TweaksModManager.Tests
                         // Test uninstall and remove
                         Assert.IsTrue(v.Uninstall(), $"ASI failed to uninstall: {v.InstalledPath}");
                     }
-                    Assert.AreEqual(0, Directory.GetFiles(asiDir).Length, "Leftover files remain after uninstalling all ASIs from target");
+                    Assert.IsEmpty(Directory.GetFiles(asiDir), "Leftover files remain after uninstalling all ASIs from target");
                 }
             }
         }

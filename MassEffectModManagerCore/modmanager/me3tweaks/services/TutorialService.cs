@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +12,6 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.tutorial;
 using ME3TweaksModManager.modmanager.windows;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
@@ -50,13 +49,61 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
 
         /// <summary>
-        /// Looks up importing information for mods through the third party mod importing service. This returns all candidates, the client code must determine which is the appropriate value.
+        /// Gets the tutorial steps
         /// </summary>
-        /// <param name="archiveSize">Size of archive being checked for information</param>
-        /// <returns>List of candidates</returns>
+        /// <returns>The list of loaded tutorial steps</returns>
         public static IReadOnlyCollection<TutorialStep> GetTutorialSteps()
         {
             return Database;
+        }
+
+        /// <summary>
+        /// Ensures a specific tutorial step's image is available, downloading if necessary.
+        /// </summary>
+        /// <param name="step">The tutorial step to ensure has an image</param>
+        public static void EnsureStepImageAvailable(TutorialStep step)
+        {
+            if (step == null || string.IsNullOrWhiteSpace(step.imagename))
+                return;
+
+            if (!ServiceLoaded)
+                return;
+
+            var fileRootPath = M3Filesystem.GetTutorialServiceCache();
+            var imagePath = Path.Combine(fileRootPath, step.imagename);
+
+            // Check if file exists and has correct hash
+            if (File.Exists(imagePath) && MUtilities.CalculateHash(imagePath) == step.imagemd5)
+                return;
+
+            // Download the image
+            foreach (var endpoint in M3OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
+            {
+                Uri myUri = new Uri(endpoint);
+                string host = myUri.Host;
+
+                var fullurl = endpoint + @"tutorial/" + step.imagename;
+                M3Log.Information($@"Downloading {step.imagename} from endpoint {host}");
+                var downloadedImage = MOnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
+                if (downloadedImage.errorMessage == null)
+                {
+                    try
+                    {
+                        downloadedImage.result.WriteToFile(imagePath);
+                        M3Log.Information($@"Successfully downloaded tutorial image {step.imagename}");
+                    }
+                    catch (Exception e)
+                    {
+                        M3Log.Error($@"Error writing tutorial image {imagePath}: {e.Message}");
+                    }
+
+                    return;
+                }
+                else
+                {
+                    M3Log.Warning($@"Unable to download tutorial asset {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
+                }
+            }
         }
 
         public static bool LoadService(JToken data)

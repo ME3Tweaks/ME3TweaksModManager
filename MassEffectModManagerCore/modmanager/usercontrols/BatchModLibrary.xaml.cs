@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
@@ -15,10 +15,10 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using SevenZip;
 
@@ -104,7 +104,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return SelectedBatchQueue != null && App.IsDebug;
         }
 
-        private void DuplicateGroup()
+        private async void DuplicateGroup()
         {
             if (SelectedBatchQueue == null) return;
 
@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (!File.Exists(destPath))
                     {
                         SelectedBatchQueue.ModName = result;
-                        SelectedBatchQueue.Save(false, destPath);
+                        await SelectedBatchQueue.Save(false, destPath);
                         parseBatchFiles(destPath);
                     }
                     else
@@ -198,7 +198,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
+            // Log breakdown of items to be installed
+            var batchModCount = SelectedBatchQueue.ModsToInstall.Count;
+            var asiModCount = SelectedBatchQueue.ASIModsToInstall?.Count ?? 0;
+            var textureModCount = SelectedBatchQueue.TextureModsToInstall.Count;
+
+            M3Log.Information($"Installing batch group '{SelectedBatchQueue.ModName}': {batchModCount} mods, {asiModCount} ASI mods, {textureModCount} texture mods, game restore: {SelectedBatchQueue.RestoreBeforeInstall}");
+
+            M3OpenTelemetry.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.ModName},
                 {@"Group size", SelectedBatchQueue.AllModsToInstall.Count.ToString()},
@@ -406,11 +413,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     catch (Exception e)
                     {
                         M3Log.Exception(e, @"Error occurred parsing batch queue file:");
-                        TelemetryInterposer.TrackError(new Exception(@"Error parsing batch queue file", e), new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(new Exception(@"Error parsing batch queue file", e), new Dictionary<string, string>()
                         {
                             {@"Filename", file}
                         });
-                        App.SubmitAnalyticTelemetryEvent("");
                     }
                 }
             }
@@ -422,6 +428,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void OnSelectedBatchQueueChanged()
         {
+            if (mainwindow == null)
+            {
+                // Window has closed
+                return;
+            }
+
             GameTargetWPF currentTarget = SelectedGameTarget;
             SelectedGameTarget = null;
             InstallationTargetsForGroup.ClearEx();

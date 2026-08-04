@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.ComponentModel;
-using System.Windows;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+﻿using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
@@ -12,9 +9,11 @@ using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using ME3TweaksModManager.modmanager.telemetry;
+using Microsoft.Win32;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.Windows;
 
 namespace ME3TweaksModManager.modmanager.loaders
 {
@@ -123,7 +122,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             return Path.Combine(GetCurrentModLibraryDirectory(), @"Textures", game.ToString());
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// If the mod list hasn't actually booted once
@@ -150,11 +149,21 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// </summary>
         public Action<Mod> SelectModCallback { get; set; }
 
+
         /// <summary>
         /// If mods are currently loading
         /// </summary>
         public bool IsLoadingMods { get; private set; } =
             true; // This makes the spinner activate while program is starting up.
+
+        /// <summary>
+        /// Sets the loading state for the mod library, which controls UI availability
+        /// </summary>
+        /// <param name="isLoading">True to indicate mods are loading and disable UI, false to enable UI</param>
+        public void SetLoadingState(bool isLoading)
+        {
+            IsLoadingMods = isLoading;
+        }
 
         /// <summary>
         /// If the mod library has completed the first load
@@ -311,7 +320,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             catch (Exception e)
             {
                 M3Log.Error(@"Unable to ensure mod directories: " + e.Message);
-                TelemetryInterposer.TrackError(e);
+                M3OpenTelemetry.TrackError(e);
                 M3L.ShowDialog(window,
                     M3L.GetString(M3L.string_interp_dialogUnableToCreateModLibraryNoPermissions, e.Message),
                     M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -323,7 +332,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 else
                 {
                     M3Log.Error(@"Unable to create mod library. Mod Manager will now exit.");
-                    TelemetryInterposer.TrackError(new Exception(@"Unable to create mod library", e),
+                    M3OpenTelemetry.TrackError(new Exception(@"Unable to create mod library", e),
                         new Dictionary<string, string>() { { @"Executable location", App.ExecutableLocation } });
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_unableToCreateModLibrary),
                         M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -372,12 +381,9 @@ namespace ME3TweaksModManager.modmanager.loaders
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
-                bool canAutoCheckForModUpdates =
-                    MOnlineContent
-                        .CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
+                bool canAutoCheckForModUpdates = MOnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
-                LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader",
-                    M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
+                LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 M3Log.Information(@"Loading mods from mod library: " + GetCurrentModLibraryDirectory());
 
                 List<(MEGame game, string path)> modDescsToLoad = new();
@@ -517,7 +523,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                     {
                         //moddesc.ini exists but it did not load
                         M3Log.Error(@"Mod to highlight failed to load! Path: " + modpathToHighlight);
-                        TelemetryInterposer.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"),
+                        M3OpenTelemetry.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"),
                             new Dictionary<string, string>()
                             {
                                 { @"Moddesc path", modpathToHighlight }
@@ -564,17 +570,29 @@ namespace ME3TweaksModManager.modmanager.loaders
 
 
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            bw.RunWorkerCompleted += async (a, b) =>
             {
                 ModsLoaded = true;
                 IsLoadingMods = false;
                 LoadedOnce = true;
+
+                // 12/21/2025 - Run filter to ensure filter text is applied to the UI
+                // 01/08/2026 - Note: This changes the UI so it must be run BEFORE
+                //              selection callback or it will appear to not scroll the 
+                //              list
+                FilterMods();
+
                 if (b.Result is Mod m)
                 {
                     SelectModCallback?.Invoke(m);
                 }
 
                 ModsReloaded?.Invoke(this, EventArgs.Empty);
+
+                if (Settings.GenerationSettingLE)
+                {
+                    MainWindow.Instance.CheckForMSVCPP();
+                }
             };
             bw.RunWorkerAsync();
         }
@@ -608,15 +626,14 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (libraryType == MessageBoxResult.Yes)
             {
                 // Shared
-                CommonOpenFileDialog m = new CommonOpenFileDialog
+                var m = new OpenFolderDialog
                 {
-                    IsFolderPicker = true,
-                    EnsurePathExists = true,
+                    ValidateNames = true,
                     Title = M3L.GetString(M3L.string_selectModLibraryFolder)
                 };
-                if (m.ShowDialog(centeringWindow) == CommonFileDialogResult.Ok)
+                if (m.ShowDialog(centeringWindow) == true)
                 {
-                    Settings.ModLibraryPath = m.FileName;
+                    Settings.ModLibraryPath = m.FolderName;
                     if (loadModsAfterSelecting)
                     {
                         Instance.LoadMods();
@@ -859,6 +876,40 @@ namespace ME3TweaksModManager.modmanager.loaders
         public static string GetDeploymentDirectory()
         {
             return Directory.CreateDirectory(Path.Combine(GetCurrentModLibraryDirectory(), @"DeployedMods")).FullName;
+        }
+
+        /// <summary>
+        /// Refreshes the installation status of a mod if the setting is enabled, for the given installed dlc mod object.
+        /// </summary>
+        /// <param name="target">Target to check against</param>
+        /// <param name="changedStateMod">Mod that was toggled or deleted</param>
+        internal static void RefreshInstallationModState(GameTarget target, InstalledDLCMod changedStateMod)
+        {
+            if (Settings.ShowInstalledModsInLibrary)
+            {
+                var modsToUpdateState = new List<Mod>();
+                var realDlcFolderName = changedStateMod.DLCFolderName.TrimStart('x');
+                foreach (var mod in M3LoadedMods.Instance.AllLoadedMods.Where(x => x.Game == target.Game))
+                {
+                    var dlcFolders = mod.GetAllPossibleCustomDLCFolders();
+                    if (dlcFolders.Contains(realDlcFolderName, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        modsToUpdateState.Add(mod);
+                    }
+                }
+
+                // Only refresh state if there's anything to do
+                if (modsToUpdateState.Any())
+                {
+                    var state = target.GetInfoRequiredToDetermineIfInstalled();
+
+                    foreach (var mod in modsToUpdateState)
+                    {
+                        M3Log.Information($@"Refreshing installation state for mod {changedStateMod.ModName} on target {target.TargetPath}");
+                        mod.DetermineIfInstalled(state);
+                    }
+                }
+            }
         }
     }
 }

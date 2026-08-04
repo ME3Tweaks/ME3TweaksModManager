@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     xmlns:me3Tweaks="clr-namespace:ME3TweaksModManager.modmanager.me3tweaks"
@@ -46,7 +47,35 @@
                 Visibility="{Binding ShowDownloadAllButton, Converter={StaticResource BoolToVisibilityConverter}}"
                 Padding="7,4"
                 HorizontalAlignment="Left"
-                Margin="0,5,0,5" />
+                Margin="0,5,5,5" />
+            <Button
+                DockPanel.Dock="Left"
+                Content="{DynamicResource string_clearCompleted}"
+                ToolTip="{DynamicResource string_tooltip_clearCompleted}"
+                Command="{Binding ClearCompletedCommand}"
+                Visibility="{Binding ShowClearCompletedButton, Converter={StaticResource BoolToVisibilityConverter}}"
+                Padding="7,4"
+                HorizontalAlignment="Left"
+                Margin="0,5,5,5" />
+            <CheckBox
+                DockPanel.Dock="Left"
+                Content="{DynamicResource string_useInappUpdater}"
+                IsChecked="{Binding UseInAppUpdater}"
+                IsEnabled="{Binding IsNexusPremiumUser}"
+                VerticalAlignment="Center"
+                Margin="0,5,0,5">
+                <CheckBox.ToolTip>
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        MaxWidth="400">
+            <Run
+                            Text="{DynamicResource string_tooltip_useInAppUpdater}" />
+            <LineBreak />
+            <Run
+                            Text="{DynamicResource string_tooltip_turnOffIfUndesirable}" />
+                    </TextBlock>
+                </CheckBox.ToolTip>
+            </CheckBox>
             <Button
                 DockPanel.Dock="Bottom"
                 Content="{DynamicResource string_close}"
@@ -127,9 +156,9 @@
                                 Value="{Binding CurrentBytesDownloaded}"
                                 IsIndeterminate="{Binding Indeterminate}" />
                         </Grid>
-                        <TextBlock
+                        <usercontrols:TextShorteningToggle
                             Text="{Binding changelog}"
-                            TextWrapping="Wrap" />
+                            CollapsedMaxHeight="80" />
                         <Expander
                             x:Name="ftl_Expander"
                             Header="{Binding FilesToDownloadUIString}"
@@ -340,12 +369,12 @@
                             Maximum="{Binding DownloadFlow.ProgressMaximum, Mode=OneWay}"
                             Value="{Binding DownloadFlow.ProgressValue, Mode=OneWay}"
                             IsIndeterminate="{Binding DownloadFlow.ProgressIndeterminate, Mode=OneWay}" />
-                        <TextBlock
+                        <usercontrols:TextShorteningToggle
                             Text="{Binding changelog}"
                             Grid.Row="5"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
-                            TextWrapping="Wrap" />
+                            CollapsedMaxHeight="80" />
                     </Grid>
                     <DataTemplate.Triggers>
                         <Trigger

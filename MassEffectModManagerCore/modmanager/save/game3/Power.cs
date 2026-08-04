@@ -26,38 +26,38 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("PowerSaveRecord")]
+    [OriginalName(@"PowerSaveRecord")]
     public class Power : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("PowerName")]
+        [OriginalName(@"PowerName")]
         private string _Name;
 
-        [OriginalName("CurrentRank")]
+        [OriginalName(@"CurrentRank")]
         private float _CurrentRank;
 
-        [OriginalName("EvolvedChoices[0]")]
+        [OriginalName(@"EvolvedChoices[0]")]
         private int _EvolvedChoice0;
 
-        [OriginalName("EvolvedChoices[1]")]
+        [OriginalName(@"EvolvedChoices[1]")]
         private int _EvolvedChoice1;
 
-        [OriginalName("EvolvedChoices[2]")]
+        [OriginalName(@"EvolvedChoices[2]")]
         private int _EvolvedChoice2;
 
-        [OriginalName("EvolvedChoices[3]")]
+        [OriginalName(@"EvolvedChoices[3]")]
         private int _EvolvedChoice3;
 
-        [OriginalName("EvolvedChoices[4]")]
+        [OriginalName(@"EvolvedChoices[4]")]
         private int _EvolvedChoice4;
 
-        [OriginalName("EvolvedChoices[5]")]
+        [OriginalName(@"EvolvedChoices[5]")]
         private int _EvolvedChoice5;
 
-        [OriginalName("PowerClassName")]
+        [OriginalName(@"PowerClassName")]
         private string _ClassName;
 
-        [OriginalName("WheelDisplayIndex")]
+        [OriginalName(@"WheelDisplayIndex")]
         private int _WheelDisplayIndex;
         #endregion
 
@@ -89,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Name)
                 {
                     this._Name = value;
-                    this.NotifyPropertyChanged("Name");
+                    this.NotifyPropertyChanged(@"Name");
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Equals(value, this._CurrentRank) == false)
                 {
                     this._CurrentRank = value;
-                    this.NotifyPropertyChanged("CurrentRank");
+                    this.NotifyPropertyChanged(@"CurrentRank");
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EvolvedChoice0)
                 {
                     this._EvolvedChoice0 = value;
-                    this.NotifyPropertyChanged("EvolvedChoice0");
+                    this.NotifyPropertyChanged(@"EvolvedChoice0");
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EvolvedChoice1)
                 {
                     this._EvolvedChoice1 = value;
-                    this.NotifyPropertyChanged("EvolvedChoice1");
+                    this.NotifyPropertyChanged(@"EvolvedChoice1");
                 }
             }
         }
@@ -141,7 +141,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EvolvedChoice2)
                 {
                     this._EvolvedChoice2 = value;
-                    this.NotifyPropertyChanged("EvolvedChoice2");
+                    this.NotifyPropertyChanged(@"EvolvedChoice2");
                 }
             }
         }
@@ -154,7 +154,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EvolvedChoice3)
                 {
                     this._EvolvedChoice3 = value;
-                    this.NotifyPropertyChanged("EvolvedChoice3");
+                    this.NotifyPropertyChanged(@"EvolvedChoice3");
                 }
             }
         }
@@ -167,7 +167,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EvolvedChoice4)
                 {
                     this._EvolvedChoice4 = value;
-                    this.NotifyPropertyChanged("EvolvedChoice4");
+                    this.NotifyPropertyChanged(@"EvolvedChoice4");
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._EvolvedChoice5)
                 {
                     this._EvolvedChoice5 = value;
-                    this.NotifyPropertyChanged("EvolvedChoice5");
+                    this.NotifyPropertyChanged(@"EvolvedChoice5");
                 }
             }
         }
@@ -193,7 +193,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._ClassName)
                 {
                     this._ClassName = value;
-                    this.NotifyPropertyChanged("ClassName");
+                    this.NotifyPropertyChanged(@"ClassName");
                 }
             }
         }
@@ -206,7 +206,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._WheelDisplayIndex)
                 {
                     this._WheelDisplayIndex = value;
-                    this.NotifyPropertyChanged("WheelDisplayIndex");
+                    this.NotifyPropertyChanged(@"WheelDisplayIndex");
                 }
             }
         }

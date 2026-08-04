@@ -27,19 +27,19 @@
 
 namespace ME3TweaksModManager.modmanager.save.game3
 {
-    [OriginalName("ENotorietyType")]
+    [OriginalName(@"ENotorietyType")]
     public enum NotorietyType : byte
     {
-        [OriginalName("NotorietyType_None")]
+        [OriginalName(@"NotorietyType_None")]
         None = 0,
 
-        [OriginalName("NotorietyType_Survivor")]
+        [OriginalName(@"NotorietyType_Survivor")]
         Survivor = 1,
 
-        [OriginalName("NotorietyType_Warhero")]
+        [OriginalName(@"NotorietyType_Warhero")]
         Warhero = 2,
 
-        [OriginalName("NotorietyType_Ruthless")]
+        [OriginalName(@"NotorietyType_Ruthless")]
         Ruthless = 3,
     }
 }

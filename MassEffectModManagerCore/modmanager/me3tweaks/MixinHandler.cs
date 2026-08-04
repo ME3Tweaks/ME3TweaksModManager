@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -13,7 +13,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
-using Microsoft.AppCenter.Crashes;
+using ME3TweaksModManager.modmanager.telemetry;
 using Microsoft.IO;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
@@ -250,7 +250,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                     if (!mixin.IsFinalizer && outStream.Length != decompressedStream.Length)
                     {
                         M3Log.Error($@"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed! The output of this mixin patch will be discarded.");
-                        TelemetryInterposer.TrackError(new Exception($@"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed! The output of this mixin patch will be discarded."));
+                        M3OpenTelemetry.TrackError(new Exception($@"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed! The output of this mixin patch will be discarded."));
                     }
                     else
                     {
@@ -261,7 +261,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 }
                 else
                 {
-                    TelemetryInterposer.TrackError(new Exception($@"Mixin {mixin.PatchName} cannot be applied, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}"));
+                    M3OpenTelemetry.TrackError(new Exception($@"Mixin {mixin.PatchName} cannot be applied, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}"));
                     M3Log.Error($@"Mixin {mixin.PatchName} cannot be applied to this data, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}");
                     failedApplicationCallback?.Invoke(M3L.GetString(M3L.string_interp_cannotApplyMixinWrongSize, mixin.PatchName, mixin.TargetFile, mixin.TargetSize, decompressedStream.Length));
                 }

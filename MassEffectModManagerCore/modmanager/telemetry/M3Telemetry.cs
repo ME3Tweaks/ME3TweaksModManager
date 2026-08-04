@@ -1,12 +1,6 @@
 ﻿using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
-using Pathoschild.FluentNexus.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.telemetry
 {
@@ -86,7 +80,7 @@ namespace ME3TweaksModManager.modmanager.telemetry
                         break;
                 }
 
-                TelemetryInterposer.TrackEvent(@"Launched game", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Launched game", new Dictionary<string, string>()
                 {
                     {@"Game", target.Game.ToString()},
                     {@"Screen resolution", resolution}

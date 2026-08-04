@@ -26,14 +26,14 @@ using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    [OriginalName("StreamingStateSaveRecord")]
+    [OriginalName(@"StreamingStateSaveRecord")]
     public class StreamingState : IUnrealSerializable, INotifyPropertyChanged
     {
         #region Fields
-        [OriginalName("Name")]
+        [OriginalName(@"Name")]
         private string _Name;
 
-        [OriginalName("bActive")]
+        [OriginalName(@"bActive")]
         private bool _IsActive;
         #endregion
 
@@ -52,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._Name)
                 {
                     this._Name = value;
-                    this.NotifyPropertyChanged("Name");
+                    this.NotifyPropertyChanged(@"Name");
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (value != this._IsActive)
                 {
                     this._IsActive = value;
-                    this.NotifyPropertyChanged("IsActive");
+                    this.NotifyPropertyChanged(@"IsActive");
                 }
             }
         }

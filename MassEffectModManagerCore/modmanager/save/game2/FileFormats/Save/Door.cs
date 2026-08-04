@@ -18,7 +18,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 
         public override string ToString()
         {
-            return String.Format("{0} = {1}, {2}",
+            return String.Format(@"{0} = {1}, {2}",
                 this.DoorGUID,
                 this.CurrentState,
                 this.OldState);

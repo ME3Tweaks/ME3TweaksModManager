@@ -1,23 +1,17 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Diagnostics.Support;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.save.shared;
+using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.modmanager.windows.input;
 using ME3TweaksModManager.ui;
-using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -27,14 +21,44 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     [AddINotifyPropertyChangedInterface]
     public partial class LogUploaderPanel : MMBusyPanelBase
     {
+        /// <summary>
+        /// If log upload is in progress
+        /// </summary>
         public bool UploadingLog { get; private set; }
+
+        /// <summary>
+        /// If the log should be shown in the local log viewer instead of uploaded
+        /// </summary>
+        public bool UseLocalLogViewer { get; set; }
+
+        /// <summary>
+        /// The message shown in the UI about what's happening
+        /// </summary>
         public string CollectionStatusMessage { get; set; }
-        //public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
+
+        /// <summary>
+        /// If advanced diagnostics should be performed
+        /// </summary>
+        public bool AdvancedDiagnostics { get; set; }
+
+        /// <summary>
+        /// List of available application logs
+        /// </summary>
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
+
+        /// <summary>
+        /// List of available diagnostic targets
+        /// </summary>
         public ObservableCollectionExtended<GameTargetWPF> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
-        public LogUploaderPanel()
+
+        /// <summary>
+        /// The target to auto select when we populate the list
+        /// </summary>
+        private GameTarget preselectedTarget;
+
+        public LogUploaderPanel(GameTarget preselectedTarget)
         {
-            DataContext = this;
+            this.preselectedTarget = preselectedTarget;
             LoadCommands();
         }
 
@@ -49,11 +73,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
             DiagnosticTargets.Add(new GameTargetWPF(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false, true));
             DiagnosticTargets.AddRange(targets.Where(x => x.Game != MEGame.LELauncher));
-            SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
-            //if (LogSelector_ComboBox.Items.Count > 0)
-            //{
-            //    LogSelector_ComboBox.SelectedIndex = 0;
-            //}
+
+            // Select the preselected target
+            if (preselectedTarget != null)
+            {
+                SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault(x => x.TargetPath == preselectedTarget.TargetPath);
+                preselectedTarget = null; // Lose reference
+            }
+
+            // Select the 'choose a target' if none is set
+            if (SelectedDiagnosticTarget == null)
+            {
+                SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
+            }
         }
 
         public ICommand UploadLogCommand { get; set; }
@@ -73,8 +105,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SelectSave()
         {
-            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedDiagnosticTarget,
-                M3L.GetString(M3L.string_selectASaveToIncludeWithDiagnostic));
+            SaveSelectorUI ssui = new SaveSelectorUI(window, SelectedDiagnosticTarget, M3L.GetString(M3L.string_selectASaveToIncludeWithDiagnostic));
             ssui.Show();
             ssui.Closed += (sender, args) =>
             {
@@ -111,7 +142,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void StartLogUpload(bool isPreviousCrashLog = false)
         {
             UploadingLog = true;
-            //TopText = M3L.GetString(M3L.string_collectingLogInformation);
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"LogUpload");
             nbw.WorkerReportsProgress = true;
             nbw.ProgressChanged += (a, b) =>
@@ -148,28 +178,36 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     DiagnosticTarget = SelectedDiagnosticTarget,
                     SelectedLog = SelectedLog,
                     Attachments = GetAttachments(),
-                    PerformFullTexturesCheck = TextureCheck,
+                    AdvancedDiagnosticsEnabled = AdvancedDiagnostics,
                     UpdateTaskbarProgressStateCallback = updateTaskbarProgressStateCallback,
                     UpdateProgressCallback = updateProgressCallback,
                     SelectedSaveFilePath = SelectedSaveFile?.SaveFilePath,
                     UpdateStatusCallback = updateStatusCallback,
+                    UseLocalLogViewer = UseLocalLogViewer
                 };
 
-                b.Result = LogCollector.SubmitDiagnosticLog(package);
+                b.Result = LogCollector.SubmitDiagnosticLogAsync(package).Result;
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
-                if (b.Error == null && b.Result is string response)
+                if (b.Error == null && b.Result is LogUploadPackage lup)
                 {
-                    if (response.StartsWith(@"http"))
+                    if (lup.Response != null && lup.Response.StartsWith(@"https"))
                     {
-                        M3Utilities.OpenWebpage(response);
+                        M3Utilities.OpenWebpage(lup.Response);
                     }
                     else
                     {
                         OnClosing(DataEventArgs.Empty);
-                        var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        if (!UseLocalLogViewer)
+                        {
+                            var res = M3L.ShowDialog(Window.GetWindow(this), lup.Response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
+                        // 12/13/2025 - Add local log viewer if ME3Tweaks is down or inaccessible
+                        var localLogViewer = new M3LogViewerWindow(lup.FullLogText);
+                        localLogViewer.Show();
                         return;
                     }
                 }
@@ -200,11 +238,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 e.Handled = true;
                 OnClosing(DataEventArgs.Empty);
-            }
-
-            if (e.Key == Key.Space)
-            {
-                Debugger.Break();
             }
         }
 
