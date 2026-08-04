@@ -121,5 +121,87 @@ namespace ME3TweaksModManager.Tests
                 }
             }
         }
+
+        [TestMethod]
+        public void TestManifestLoadOrderPreloadedThenCachedThenEmbedded()
+        {
+            GlobalTest.Init();
+
+            const int preloadedGroupId = 424242;
+            const int cachedGroupId = 525252;
+            var preloadedManifest = @"<asimanifest><updategroup groupid='424242' game='4'><asimod><name>Preloaded Test ASI</name><installedname>PreloadedTest</installedname><author>ME3Tweaks</author><version>1</version><description>test</description><hash>c1bc233ee7bbbe2bf00acdaaa1457f2f</hash><sourcecode>https://example.com/source</sourcecode><downloadlink>https://example.com/download</downloadlink><beta>0</beta><hidden>0</hidden><devsonly>0</devsonly></asimod></updategroup></asimanifest>";
+            var cachedManifest = @"<asimanifest><updategroup groupid='525252' game='4'><asimod><name>Cached Test ASI</name><installedname>CachedTest</installedname><author>ME3Tweaks</author><version>1</version><description>test</description><hash>c1bc233ee7bbbe2bf00acdaaa1457f2f</hash><sourcecode>https://example.com/source</sourcecode><downloadlink>https://example.com/download</downloadlink><beta>0</beta><hidden>0</hidden><devsonly>0</devsonly></asimod></updategroup></asimanifest>";
+
+            var backupManifestPath = ASIManager.ManifestLocation + @".bak_test";
+            var backupStagedPath = ASIManager.StagedManifestLocation + @".bak_test";
+
+            var hadManifest = File.Exists(ASIManager.ManifestLocation);
+            var hadStaged = File.Exists(ASIManager.StagedManifestLocation);
+
+            try
+            {
+                if (hadManifest)
+                {
+                    File.Copy(ASIManager.ManifestLocation, backupManifestPath, true);
+                }
+
+                if (hadStaged)
+                {
+                    File.Copy(ASIManager.StagedManifestLocation, backupStagedPath, true);
+                }
+
+                if (File.Exists(ASIManager.ManifestLocation))
+                {
+                    File.Delete(ASIManager.ManifestLocation);
+                }
+
+                if (File.Exists(ASIManager.StagedManifestLocation))
+                {
+                    File.Delete(ASIManager.StagedManifestLocation);
+                }
+
+                ASIManager.LoadManifest(forceLocal: false, preloadedManifestData: preloadedManifest);
+                Assert.IsTrue(ASIManager.GetASIModsByGame(MEGame.LE1).Any(x => x.UpdateGroupId == preloadedGroupId), "Preloaded manifest should be used when forceLocal is false.");
+                Assert.IsFalse(ASIManager.GetASIModsByGame(MEGame.LE1).Any(x => x.UpdateGroupId == cachedGroupId), "Preloaded manifest should not be replaced by cached data when preloaded data is available.");
+
+                File.WriteAllText(ASIManager.ManifestLocation, cachedManifest);
+                if (File.Exists(ASIManager.StagedManifestLocation))
+                {
+                    File.Delete(ASIManager.StagedManifestLocation);
+                }
+
+                ASIManager.LoadManifest(forceLocal: false, preloadedManifestData: null);
+                Assert.IsTrue(ASIManager.GetASIModsByGame(MEGame.LE1).Any(x => x.UpdateGroupId == cachedGroupId), "Cached manifest should load when no preloaded data is available.");
+                Assert.IsFalse(ASIManager.GetASIModsByGame(MEGame.LE1).Any(x => x.UpdateGroupId == preloadedGroupId), "Cached manifest should be preferred over old preloaded content.");
+
+                File.Delete(ASIManager.ManifestLocation);
+                ASIManager.LoadManifest(forceLocal: true, preloadedManifestData: preloadedManifest);
+                Assert.IsFalse(ASIManager.GetASIModsByGame(MEGame.LE1).Any(x => x.UpdateGroupId == preloadedGroupId), "Force-local load should ignore preloaded manifest and fall back to embedded when cached manifest is unavailable.");
+            }
+            finally
+            {
+                if (File.Exists(ASIManager.ManifestLocation))
+                {
+                    File.Delete(ASIManager.ManifestLocation);
+                }
+
+                if (File.Exists(ASIManager.StagedManifestLocation))
+                {
+                    File.Delete(ASIManager.StagedManifestLocation);
+                }
+
+                if (hadManifest && File.Exists(backupManifestPath))
+                {
+                    File.Copy(backupManifestPath, ASIManager.ManifestLocation, true);
+                    File.Delete(backupManifestPath);
+                }
+
+                if (hadStaged && File.Exists(backupStagedPath))
+                {
+                    File.Copy(backupStagedPath, ASIManager.StagedManifestLocation, true);
+                    File.Delete(backupStagedPath);
+                }
+            }
+        }
     }
 }
