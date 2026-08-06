@@ -41,6 +41,9 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXGame.pcc",
             "Startup.pcc",
 
+            // Gestures (animations, especially in menus)
+            "GesturesConfig.pcc",
+
             // Game executable directory is already included by default
 
 
@@ -54,6 +57,60 @@ namespace ME3TweaksModManager.modmanager.milan
 
             // Required for MP to not crash and die
             "SFXGUI_WeaponUIDataSF.pcc",
+
+            // Basegame Weapons
+            "SFXWeapon_AssaultRifle_Argus.pcc",
+            "SFXWeapon_AssaultRifle_Avenger.pcc",
+            "SFXWeapon_AssaultRifle_Cobra.pcc",
+            "SFXWeapon_AssaultRifle_Collector.pcc",
+            "SFXWeapon_AssaultRifle_Falcon.pcc",
+            "SFXWeapon_AssaultRifle_Geth.pcc",
+            "SFXWeapon_AssaultRifle_Mattock.pcc",
+            "SFXWeapon_AssaultRifle_Reckoning.pcc",
+            "SFXWeapon_AssaultRifle_Revenant.pcc",
+            "SFXWeapon_AssaultRifle_Saber.pcc",
+            "SFXWeapon_AssaultRifle_Valkyrie.pcc",
+            "SFXWeapon_AssaultRifle_Vindicator.pcc",
+            "SFXWeapon_Pistol_Carnifex.pcc",
+            "SFXWeapon_Pistol_Eagle.pcc",
+            "SFXWeapon_Pistol_EndGameCarnifex.pcc",
+            "SFXWeapon_Pistol_Ivory.pcc",
+            "SFXWeapon_Pistol_Phalanx.pcc",
+            "SFXWeapon_Pistol_Predator.pcc",
+            "SFXWeapon_Pistol_Scorpion.pcc",
+            "SFXWeapon_Pistol_Talon.pcc",
+            "SFXWeapon_Pistol_Thor.pcc",
+            "SFXWeapon_Shotgun_Claymore.pcc",
+            "SFXWeapon_Shotgun_Crusader.pcc",
+            "SFXWeapon_Shotgun_Disciple.pcc",
+            "SFXWeapon_Shotgun_Eviscerator.pcc",
+            "SFXWeapon_Shotgun_Geth.pcc",
+            "SFXWeapon_Shotgun_Graal.pcc",
+            "SFXWeapon_Shotgun_Katana.pcc",
+            "SFXWeapon_Shotgun_Raider.pcc",
+            "SFXWeapon_Shotgun_Scimitar.pcc",
+            "SFXWeapon_Shotgun_Striker.pcc",
+            "SFXWeapon_SMG_Hornet.pcc",
+            "SFXWeapon_SMG_Hurricane.pcc",
+            "SFXWeapon_SMG_Locust.pcc",
+            "SFXWeapon_SMG_Shuriken.pcc",
+            "SFXWeapon_SMG_Tempest.pcc",
+            "SFXWeapon_SniperRifle_BlackWidow.pcc",
+            "SFXWeapon_SniperRifle_Incisor.pcc",
+            "SFXWeapon_SniperRifle_Indra.pcc",
+            "SFXWeapon_SniperRifle_Javelin.pcc",
+            "SFXWeapon_SniperRifle_Mantis.pcc",
+            "SFXWeapon_SniperRifle_Raptor.pcc",
+            "SFXWeapon_SniperRifle_Valiant.pcc",
+            "SFXWeapon_SniperRifle_Viper.pcc",
+            "SFXWeapon_SniperRifle_Widow.pcc",
+            
+            // Basegame Weapon Mods
+            "SFXWEaponMods_AssaultRifles.pcc",
+            "SFXWEaponMods_Pistols.pcc",
+            "SFXWEaponMods_Shotguns.pcc",
+            "SFXWEaponMods_SMGs.pcc",
+            "SFXWEaponMods_SniperRifles.pcc",
 
             // Basegame MP
             "SFXPawn_Atlas.pcc",
@@ -246,7 +303,7 @@ namespace ME3TweaksModManager.modmanager.milan
         }
 
         // UI STRING UPDATES FOR INSTALLER ========
-        
+
 
 
         // END UI STRING UPDATES FOR INSTALLER=====
@@ -330,7 +387,7 @@ namespace ME3TweaksModManager.modmanager.milan
         private bool percentVisible;
         private string action;
         private int percent;
-        
+
 
         private void setPercentVisibility(bool visible)
         {
@@ -361,5 +418,5 @@ namespace ME3TweaksModManager.modmanager.milan
             interop.SetStatus?.Invoke(message);
         }
     }
-#endregion
+        #endregion
 }
