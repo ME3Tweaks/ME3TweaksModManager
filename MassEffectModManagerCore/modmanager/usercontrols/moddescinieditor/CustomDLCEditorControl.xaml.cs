@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using IniParser.Model;
@@ -10,7 +8,7 @@ using ME3TweaksModManager.modmanager.exceptions;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
-using ME3TweaksModManager.ui;
+using ME3TweaksModManager.modmanager.objects.mod.editor;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
@@ -41,6 +39,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                         cdp.PropertyChanged += CustomDLCPropertyChanged;
                         CustomDLCParameters.Add(cdp);
                     }
+
+                    this.outdated_dlc_editor.LoadFromList(EditingMod.OutdatedCustomDLC);
+                    this.incompatible_dlc_editor.LoadFromList(EditingMod.IncompatibleDLC);
+
+                    // Build filtered descriptor parameters (excluding outdated/incompatible which are handled by DLCListDescriptorControl)
+                    //08/03/2026 - there is no remaining parameters since splitting out the dlc lists, but 
+                    // this is left here in case we eventually add more.
+                    BuildRemainingDescriptorParameters();
                 }
 
                 HasLoaded = true;
@@ -97,6 +103,38 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 
         public ObservableCollectionExtended<MDCustomDLCParameter> CustomDLCParameters { get; } = new ObservableCollectionExtended<MDCustomDLCParameter>();
 
+        public ObservableCollectionExtended<MDParameter> RemainingDescriptorParameters { get; } = new ObservableCollectionExtended<MDParameter>();
+
+        private void BuildRemainingDescriptorParameters()
+        {
+            RemainingDescriptorParameters.ClearEx();
+
+            if (CustomDLCJob?.ParameterMap == null)
+                return;
+
+            // Only include descriptors that are NOT handled by DLCListDescriptorControl
+            // (i.e., exclude outdatedcustomdlc and incompatiblecustomdlc)
+            var excludedKeys = new HashSet<string>
+            {
+                Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_OUTDATEDDLC,
+                Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_INCOMPATIBLEDLC,
+                Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_SOURCEDIRS,
+                Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_DESTDIRS
+            };
+
+            foreach (var param in CustomDLCJob.ParameterMap)
+            {
+                if (!excludedKeys.Contains(param.Key))
+                {
+                    RemainingDescriptorParameters.Add(new MDParameter
+                    {
+                        Key = param.Key,
+                        Value = param.Value
+                    });
+                }
+            }
+        }
+
         public override void Serialize(IniData ini)
         {
             if (CustomDLCJob != null)
@@ -124,17 +162,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                     }
                 }
 
+                outdated_dlc_editor.Serialize(Mod.MODDESC_HEADERKEY_CUSTOMDLC, ini);
+                incompatible_dlc_editor.Serialize(Mod.MODDESC_HEADERKEY_CUSTOMDLC, ini);
                 customdlc_multilists_editor.Serialize(ini);
 
-                foreach (var p in CustomDLCJob.ParameterMap)
-                {
-                    // sourcedirs and destdirs was serialized above
-                    // Add any extra keys here that are not sourcedirs or destdirs that need serialized
-                    if (!string.IsNullOrWhiteSpace(p.Value) && (p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_INCOMPATIBLEDLC || p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_REQUIREDDLC || p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_OUTDATEDDLC))
-                    {
-                        ini[Mod.MODDESC_HEADERKEY_CUSTOMDLC][p.Key] = p.Value;
-                    }
-                }
+                // Serialize all descriptor parameters from ParameterMap
+                // The DLCListDescriptorControl instances have already updated the ParameterMap
+                //foreach (var p in CustomDLCJob.ParameterMap)
+                //{
+                //    // sourcedirs and destdirs was serialized above
+                //    // Add any extra keys here that are not sourcedirs or destdirs that need serialized
+                //    if (!string.IsNullOrWhiteSpace(p.Value) && 
+                //        (p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_INCOMPATIBLEDLC || 
+                //         p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_REQUIREDDLC || 
+                //         p.Key == Mod.MODDESC_DESCRIPTOR_CUSTOMDLC_OUTDATEDDLC))
+                //    {
+                //        ini[Mod.MODDESC_HEADERKEY_CUSTOMDLC][p.Key] = p.Value;
+                //    }
+                //}
             }
         }
     }

@@ -120,9 +120,26 @@
                 FontWeight="Bold" />
             <moddescinieditor:DescriptorEditorItemsControl
                 Description="{DynamicResource string_mde_dec_header_customdlc}"
-                ItemsSource="{Binding CustomDLCJob.ParameterMap}"
+                ItemsSource="{Binding RemainingDescriptorParameters}"
                 DockPanel.Dock="Top"
+                Margin="0,5,0,0"
                 x:Name="custdlc_descriptor_editor" />
+            <moddescinieditor:DLCListDescriptorControl
+                HeaderText="outdatedcustomdlc"
+                Description="DLC folder names that are outdated and should be removed during installation."
+                DescriptorKey="outdatedcustomdlc"
+                ParentEditorControl="{Binding RelativeSource={RelativeSource AncestorType={x:Type moddescinieditor:ModdescEditorControlBase}}}"
+                DockPanel.Dock="Top"
+                Margin="0,5,0,0"
+                x:Name="outdated_dlc_editor" />
+            <moddescinieditor:DLCListDescriptorControl
+                HeaderText="incompatiblecustomdlc"
+                Description="DLC folder names that are incompatible with this mod."
+                DescriptorKey="incompatiblecustomdlc"
+                ParentEditorControl="{Binding RelativeSource={RelativeSource AncestorType={x:Type moddescinieditor:ModdescEditorControlBase}}}"
+                DockPanel.Dock="Top"
+                Margin="0,5,0,0"
+                x:Name="incompatible_dlc_editor" />
             <moddescinieditor:MultilistEditorControl
                 Header="CUSTOMDLC"
                 x:Name="customdlc_multilists_editor"
