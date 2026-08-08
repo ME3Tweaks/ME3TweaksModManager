@@ -12,6 +12,7 @@ using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -520,7 +521,7 @@ namespace ME3TweaksModManager.modmanager.objects
                         if (isLastAttempt && !CancellationController.Token.IsCancellationRequested)
                         {
                             // Download didn't work!
-                            TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                             {
                                 { @"Domain", ProtocolLink?.Domain },
                                 { @"File", ModFile?.Name },
@@ -571,7 +572,7 @@ namespace ME3TweaksModManager.modmanager.objects
                                 M3Log.Error(@"Download failed: File does not appear to match file on NexusMods");
                                 InternalOnModDownloadError(
                                     M3L.GetString(M3L.string_fileDidNotVerifyDownloadMayBeCorrupt));
-                                TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                                M3OpenTelemetry.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                                 {
                                     { @"Domain", ProtocolLink?.Domain },
                                     { @"File", ModFile?.Name },
@@ -590,7 +591,7 @@ namespace ME3TweaksModManager.modmanager.objects
                                 $@"An error occurred while attempting to verify the file: {ex.Message}. Skipping verification for this download.");
                         }
 
-                        TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                         {
                             { @"Domain", ProtocolLink?.Domain },
                             { @"File", ModFile?.Name },

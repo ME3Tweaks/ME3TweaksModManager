@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,8 +15,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Ingestion.Models.Serialization;
+using ME3TweaksModManager.modmanager.telemetry;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;
@@ -213,7 +212,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
                 var newStatus = GetEndorsementStatusForFile(gamedomain, fileid).Result;
 
-                TelemetryInterposer.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
+                M3OpenTelemetry.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
                     {@"Endorsed", endorse.ToString()},
                     {@"Succeeded", telemetryOverride ?? (endorse == newStatus).ToString()}

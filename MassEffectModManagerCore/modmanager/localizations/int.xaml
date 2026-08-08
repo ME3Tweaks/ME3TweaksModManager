@@ -722,6 +722,8 @@
     <system:String x:Key="string_ensureGameIsValidDiscord">Ensure your game is properly installed and has been run once. If you continue to have issues, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_trackingMergemodChanges">Tracking mergemod changes</system:String>
     <!-- M3 is inventorying files for changes, hence 'tracking' them -->
+    <system:String x:Key="string_trackingBasegameChanges">Tracking basegame changes</system:String>
+    <!-- M3 is inventorying files for changes, hence 'tracking' them -->
     <system:String x:Key="string_tooltip_optionNotApplicable">Based on conditions set by the mod developer, this option is not applicable based on your game's current setup</system:String>
     <system:String x:Key="string_tooltip_optionForceApplied">Based on conditions set by the mod developer, this option must be applied based on your game's current setup</system:String>
     <system:String x:Key="string_textureOverrideMergeFailed">Texture override merge failed</system:String>
@@ -987,7 +989,15 @@
     <!-- 0={expectedModCount} 1={foundCount} -->
     <system:String x:Key="string_interp_finalizingArchive">Finalizing archive...</system:String>
     <!-- This indicates an archive is being copied across disks. Not sure what a good text to put here was, as there is not much horizontal space -->
-    
+    <system:String x:Key="string_interp_tlkNotForServerMismatch">Mismatched global override flag 'NotForServer' detected across TLK exports. {0} in {1} ({2}) has 'NotForServer' {3}, but {4} has 'NotForServer' {5}</system:String>
+    <!-- Shown when two TLK objects across langauges have differing override flags. 0={BioTlkFile export name} 1={Filename} 2={Language code (likely INT)} 3={"set" or "not set" (localized)} 4={language code} 5={langStatus (set or not set)} -->
+    <system:String x:Key="string_interp_tlkExportMissingInLocalization">Missing expected BioTlkFile export {0} in package {1} for language {2}</system:String>
+    <!-- When an expected localization object in the file is not present. 0={BioTlkFile export name} 1={Package} 2={Language} -->
+    <system:String x:Key="string_undercaseSet">set</system:String>
+    <!-- interpolated into string above. -->
+    <system:String x:Key="string_undercaseNotSet">not set</system:String>
+    <!-- interpolated into string above. -->
+
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
     <!-- 0={Filepath} -->
@@ -1947,7 +1957,6 @@
     <system:String x:Key="string_library_computerinfo">Small library for easily fetching CPU, OS, and memory information</system:String>
     <system:String x:Key="string_library_fluentnexus">Modern async HTTP client for the Nexus Mods API</system:String>
     <system:String x:Key="string_library_recyclablememorystream">Library for a recyclable pool of memory buffers</system:String>
-    <system:String x:Key="string_library_sshnet">Library for handling SSH connections</system:String>
     <system:String x:Key="string_library_watsonwebsocket">Library for handling websocket connections</system:String>
     <system:String x:Key="string_library_authenticodeexaminer">Manages inspecting Authenticode file signatures</system:String>
     <system:String x:Key="string_library_ntfsstreams">Library for reading NTFS alternate data streams</system:String>
@@ -1957,7 +1966,9 @@
     <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper for robocopy command in C#</system:String>
     <system:String x:Key="string_starMeansForked">* = ME3Tweaks forked version</system:String>
     <system:String x:Key="string_tooltip_clickToViewLicense">Click to view license</system:String>
-
+    <system:String x:Key="string_library_openTelemetry">Handles telemetry data for crashes and feature usage statistics</system:String>
+    <system:String x:Key="string_library_darkNet">Provides themeing for title bars to match the application theme</system:String>
+    
     <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->
@@ -2845,6 +2856,8 @@
     <system:String x:Key="string_interp_updatingX">Updating {0}</system:String>
     <!-- 0={<A string>} -->
     <system:String x:Key="string_interp_mergeModAssetsSingleFolder">Asset files for mergemods must all be contained in the same folder. Invalid asset name: {0}</system:String>
+    <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_mergeModFileChangedReload">m3m file '{0}' has changed since the mod was loaded. Please reload the mod library</system:String>
     <!-- 0={Filename} -->
 
     <!-- Merge Mods (V2) -->

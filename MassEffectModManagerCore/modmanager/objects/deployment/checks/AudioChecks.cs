@@ -6,6 +6,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.telemetry;
 using System.Diagnostics;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
@@ -156,7 +157,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                                     var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(item.internalValidationTarget, afcPath.Substring(item.internalValidationTarget.TargetPath.Length + 1));
                                     if (vanillaInfo == null)
                                     {
-                                        TelemetryInterposer.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(item.internalValidationTarget.TargetPath.Length + 1)}"));
+                                        M3OpenTelemetry.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(item.internalValidationTarget.TargetPath.Length + 1)}"));
                                     }
 
                                     if (audioOffset >= vanillaInfo[0].size)

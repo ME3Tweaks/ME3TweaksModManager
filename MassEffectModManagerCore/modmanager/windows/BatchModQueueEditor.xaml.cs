@@ -23,6 +23,7 @@ using System.ComponentModel;
 using System.Windows.Data;
 using System.Threading.Tasks;
 using ME3TweaksCore.Objects;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -773,7 +774,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
             if (result)
             {
-                TelemetryInterposer.TrackEvent(@"Saved Batch Group", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Saved Batch Group", new Dictionary<string, string>()
                 {
                     { @"Group name", GroupName },
                     { @"Group size", _modsInGroup.Count.ToString() },

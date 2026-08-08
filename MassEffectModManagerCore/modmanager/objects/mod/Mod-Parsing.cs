@@ -19,6 +19,7 @@ using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
 using ME3TweaksModManager.modmanager.objects.mod.moddesc;
+using ME3TweaksModManager.modmanager.telemetry;
 using SevenZip;
 using System.Diagnostics;
 using System.Globalization;
@@ -2148,7 +2149,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     // Ensure there is at least one silo. If there isn't, then the mod will never validate
                     if (!siloScopes.AllowedSilos.Any())
                     {
-                        TelemetryInterposer.TrackEvent(@"Mod has no scoped silos", new Dictionary<string, string>(){
+                        M3OpenTelemetry.TrackEvent(@"Mod has no scoped silos", new Dictionary<string, string>(){
                             {@"Mod name", ModName},
                             {@"Mod version", ModVersionString},
                         });
@@ -2191,7 +2192,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     {
                         if (!siloScopes.AllowedSilos.Any(silo => f.StartsWith(silo, StringComparison.InvariantCultureIgnoreCase)))
                         {
-                            TelemetryInterposer.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>(){
+                            M3OpenTelemetry.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>(){
                                 {@"Mod name", ModName},
                                 {@"Header", job.Header.ToString()},
                                 {@"Game", Game.ToString()},
@@ -2211,7 +2212,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             if (siloScopes.DisallowedSilos.Any(silo => f.StartsWith(silo, StringComparison.InvariantCultureIgnoreCase)))
                             {
-                                TelemetryInterposer.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>(){
+                                M3OpenTelemetry.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>(){
                                     {@"Mod name", ModName},
                                     {@"Header", job.Header.ToString()},
                                     {@"Game", Game.ToString()},
@@ -2234,7 +2235,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             if (siloScopes.DisallowedFileSilos.Any(silo => silo.Equals(f, StringComparison.InvariantCultureIgnoreCase)))
                             {
-                                TelemetryInterposer.TrackEvent(@"Mod attempts to install disallowed file", new Dictionary<string, string>(){
+                                M3OpenTelemetry.TrackEvent(@"Mod attempts to install disallowed file", new Dictionary<string, string>(){
                                     {@"Mod name", ModName},
                                     {@"Header", job.Header.ToString()},
                                     {@"Game", Game.ToString()},
@@ -2400,7 +2401,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             var storageType = Archive.GetStorageTypeOfFile(path);
             if (storageType != @"Copy")
             {
-                M3Log.Error($@"Mod has file is improperly stored in the archive: {path}. Mods must be deployed from Mod Manager to properly work.");
+                M3Log.Error($@"Mod has file that is improperly stored in the archive: {path}. Mods must be deployed from Mod Manager to properly work.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_improperPackedFile, path);
                 return false;
             }

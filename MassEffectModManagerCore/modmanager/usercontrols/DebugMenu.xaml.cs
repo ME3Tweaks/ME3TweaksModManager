@@ -1,12 +1,12 @@
 ﻿using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
+using ME3TweaksCore.Assets.VanillaDatabase;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.ME3Tweaks.M3Merge.Game2Email;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.TextureOverride;
-using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -45,9 +45,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.DebugDetermineIfInstalled_MenuItem)) TestDetermineIfInstalled(window);
             if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
             if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
+            if (sender == nameof(MainWindow.CrashTest_MenuItem)) CrashTest(window);
 #endif
         }
 
+        
 #if DEBUG
         private static void TriggerBTPBuild(MainWindow window)
         {
@@ -310,11 +312,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var buttons = System.Windows.MessageBoxButton.YesNoCancel;
                 var icon = System.Windows.MessageBoxImage.Warning;
 
-                Xceed.Wpf.Toolkit.MessageBox.Show(window, str,title,buttons,icon);
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, str, title, buttons, icon);
                 M3L.ShowDialog(window, str, title, buttons, icon);
                 M3L.ShowDialog(window, "Done.");
             });
 
+        }
+
+        /// <summary>
+        /// Triggers a crash by intentionally throwing an exception for testing purposes.
+        /// </summary>
+        /// <remarks>This method is intended for testing error handling scenarios and should not be used
+        /// in production code.</remarks>
+        /// <exception cref="Exception">Always thrown to indicate a simulated crash during the execution of the method.</exception>
+        private static void CrashTest(MainWindow window)
+        {
+            throw new Exception(@"The application is crashing with a test message");
         }
 #endif
     }

@@ -2,12 +2,14 @@
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.Shared.BasegameFileIdentification;
 using ME3TweaksModManager.modmanager.objects.mod;
+using System.Diagnostics;
 
 namespace ME3TweaksModManager.me3tweakscoreextended
 {
     /// <summary>
     /// Extension to create a BasegameFileRecord using a game target and a mod.
     /// </summary>
+    [DebuggerDisplay(@"M3BasegameFileRecord | {file} | {size} | {hash}")]
     public class M3BasegameFileRecord : BasegameFileRecord
     {
         public M3BasegameFileRecord(string fullfilepath, int size, GameTarget gameTarget, Mod modBeingInstalled, string md5 = null)

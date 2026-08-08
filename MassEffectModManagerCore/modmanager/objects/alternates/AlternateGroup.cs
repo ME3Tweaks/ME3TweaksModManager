@@ -290,6 +290,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </remarks>
         public bool TrySelectOption(AlternateOption newItem, bool? shouldSetToTrue = null)
         {
+            // If data context was not set prior to this call this prevents crash
+            // Seen in telemetry 07/26/2026
+            if (newItem == null)
+                return false; 
             if (!newItem.UIIsSelectable) return false; // Do nothing. This option is not selectable.
             SelectNewOption(newItem);
 

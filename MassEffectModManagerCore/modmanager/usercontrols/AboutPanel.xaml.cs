@@ -18,7 +18,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// </summary>
     public partial class AboutPanel : MMBusyPanelBase
     {
-        public bool TelemetryKeyAvailable => APIKeys.HasAppCenterKey;
+        public bool TelemetryKeyAvailable => APIKeys.HasAppInsightsConnectionString;
         public string NetVersion => Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
 
         public ObservableCollectionExtended<LibraryCredit> Libraries { get; } = new ObservableCollectionExtended<LibraryCredit>();
@@ -80,10 +80,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // M3 version
                 new LibraryCredit(@"FluentNexus*", @"https://github.com/Pathoschild/FluentNexus", M3L.GetString(M3L.string_library_fluentnexus)),
                 new LibraryCredit(@"RecyclableMemoryStream", @"https://github.com/Microsoft/Microsoft.IO.RecyclableMemoryStream", M3L.GetString(M3L.string_library_recyclablememorystream)),
-                new LibraryCredit(@"SSH.NET", @"https://github.com/sshnet/SSH.NET", M3L.GetString(M3L.string_library_sshnet)),
                 new LibraryCredit(@"WatsonWebsocket", @"https://github.com/jchristn/WatsonWebsocket", M3L.GetString(M3L.string_library_watsonwebsocket)),
                 new LibraryCredit(@"SingleInstanceCore", @"https://github.com/soheilkd/SingleInstanceCore", M3L.GetString(M3L.string_enablesSingleinstancingOfAnApplication)),
                 new LibraryCredit(@"RoboSharp*", @"https://github.com/tjscience/RoboSharp", M3L.GetString(M3L.string_wrapperForRobocopyCommandInCSharp)),
+
+                new LibraryCredit(@"OpenTelemetry", @"https://opentelemetry.io/", M3L.GetString(M3L.string_library_openTelemetry)),
+                new LibraryCredit(@"DarkNet", @"https://github.com/tjscience/RoboSharp", M3L.GetString(M3L.string_library_darkNet)),
+
             };
 
 

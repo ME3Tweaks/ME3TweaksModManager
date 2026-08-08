@@ -35,9 +35,9 @@ namespace ME3TweaksModManager.modmanager.objects
     [AddINotifyPropertyChangedInterface]
     public class GameFilterLoader : GameFilter
     {
-        private static SolidColorBrush loadingBrush = new SolidColorBrush(Color.FromArgb(0x88, 0x00, 0xFF, 0x44));
+        private static SolidColorBrush loadingBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x92, 0xA5, 0xF4));
         public SolidColorBrush BackgroundColor => IsLoading ? loadingBrush : Brushes.Transparent;
-        
+
         [AlsoNotifyFor(nameof(BackgroundColor))]
         public bool IsLoading { get; set; }
 

@@ -1,1 +1,0 @@
-pwsh UpdateLEDBs.ps1

@@ -17,9 +17,8 @@ using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using static ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -316,7 +315,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                TelemetryInterposer.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"ModMaker"},
                     {@"ModName", mui.mod.ModName},
@@ -377,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                TelemetryInterposer.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"Classic"},
                     {@"ModName", ui.mod.ModName},

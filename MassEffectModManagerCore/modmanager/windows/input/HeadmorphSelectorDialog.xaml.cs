@@ -1,18 +1,10 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms.VisualStyles;
-using Dark.Net;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+﻿using System.Windows;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.headmorph;
-using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.windows
 {

@@ -4,6 +4,7 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
     MaxWidth="640"
+    xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel>
         <StackPanel
@@ -19,7 +20,7 @@
                 Text="+"
                 FontSize="40" />
             <Image
-                Source="/appicon.ico"
+                Source="{ui:MippedIcon Source={StaticResource appIcon}, Size=64}"
                 Height="64"
                 RenderOptions.BitmapScalingMode="HighQuality"
                 VerticalAlignment="Center" />

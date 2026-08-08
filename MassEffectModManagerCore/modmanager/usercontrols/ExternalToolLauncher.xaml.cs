@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,8 +15,8 @@ using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
 using Octokit;
 using SevenZip;
 using Application = System.Windows.Application;
@@ -96,7 +96,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null, Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
-            TelemetryInterposer.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
             {
                 {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", version.ToString()}
@@ -237,7 +237,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             #endregion
 
             if (latestRelease == null || downloadLink == null) return;
-            TelemetryInterposer.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
             {
                 {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", latestRelease.TagName}
@@ -367,7 +367,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
 
             Action = M3L.GetString(M3L.string_interp_launching, toolToUiString(tool));
-            TelemetryInterposer.TrackEvent(@"Launching tool", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Launching tool", new Dictionary<string, string>()
             {
                 {@"Tool name", Path.GetFileName(localExecutable) }
             });

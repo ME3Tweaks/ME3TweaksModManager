@@ -19,6 +19,7 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.ui;
 using SevenZip.EventArguments;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.importer
 {
@@ -328,7 +329,7 @@ namespace ME3TweaksModManager.modmanager.importer
 
             if (hasAnyImproperlyPackedMods)
             {
-                TelemetryInterposer.TrackEvent(@"Detected improperly packed M3 mod v2",
+                M3OpenTelemetry.TrackEvent(@"Detected improperly packed M3 mod v2",
                     new Dictionary<string, string>()
                     {
                         {@"Archive name", Path.GetFileName(ArchiveFilePath)}

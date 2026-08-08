@@ -21,14 +21,10 @@ using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using Serilog;
+using ME3TweaksModManager.modmanager.telemetry;
 using SevenZip;
 using SingleInstanceCore;
-
-#if WITH_APPCENTER
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-#endif
+using ME3TweaksModManager.linux;
 
 namespace ME3TweaksModManager
 {
@@ -80,11 +76,6 @@ namespace ME3TweaksModManager
         /// </summary>
         public const double HighestSupportedModDesc = 9.2;
 
-        /// <summary>
-        /// If telemetry has been flushed after checking if it is enabled.
-        /// </summary>
-        public static bool FlushedTelemetry;
-
         public void OnInstanceInvoked(string[] args)
         {
             // Another exe was launched
@@ -122,6 +113,7 @@ namespace ME3TweaksModManager
             try
             {
                 string exeFolder = Directory.GetParent(ExecutableLocation).FullName;
+                bool ignoreWine = false; // If true we do not do wine workarounds
                 try
                 {
                     Log.Logger = M3Log.CreateLogger();
@@ -215,8 +207,8 @@ namespace ME3TweaksModManager
                         }
                         if (parsedCommandLineArgs.Value.DisableWineWorkarounds)
                         {
-                            WineWorkarounds.WineDetected = false;
-                            M3Log.Warning(@"Wine Workarounds Disabled");
+                            ignoreWine = true;
+                            WineWorkaroundsM3.DisableWineWorkarounds();
                         }
                     }
                     else
@@ -243,8 +235,7 @@ namespace ME3TweaksModManager
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
 
-                // Detect Wine earlier than CoreBoot so workarounds can be applied sooner
-                WineWorkarounds.Init();
+                
 
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
@@ -252,12 +243,16 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;
-                M3Log.Information(@"ME3Tweaks Mod Manager " + version);
-                M3Log.Information(@"Application boot: " + DateTime.UtcNow);
-                M3Log.Information(@"Running as " + Environment.UserName);
-                M3Log.Information(@"Executable location: " + ExecutableLocation);
-                M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
-                WineWorkarounds.LogWineInfo();
+                M3Log.Information($@"ME3Tweaks Mod Manager {version}");
+                M3Log.Information($@"Application boot: {DateTime.UtcNow}");
+                M3Log.Information($@"Running as {Environment.UserName}");
+                M3Log.Information($@"Executable location: {ExecutableLocation}");
+                M3Log.Information($@"Operating system: {RuntimeInformation.OSDescription}");
+                if (!ignoreWine)
+                {
+                    // Detect Wine earlier than ME3TweaksCore boot so workarounds can be applied sooner
+                    WineWorkaroundsM3.Init();
+                }
 
                 //Get build date
                 BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });
@@ -274,7 +269,7 @@ namespace ME3TweaksModManager
                     if (CommandLinePending.PendingNXMLink != null && NexusDomainHandler.HandleExternalLink(CommandLinePending.PendingNXMLink))
                     {
                         // Externally handled
-                        M3Log.Information(@"Exiting application");
+                        M3Log.Information(@"Exiting application - nxm handled");
                         Environment.Exit(0);
                         return; // Nothing else to do
                     }
@@ -291,7 +286,7 @@ namespace ME3TweaksModManager
                 {
                     try
                     {
-                        var avs = M3Utilities.GetListOfInstalledAV();
+                        var avs = MUtilities.GetListOfInstalledAV();
                         M3Log.Information(@"Detected the following antivirus products:");
                         foreach (var av in avs)
                         {
@@ -339,14 +334,21 @@ namespace ME3TweaksModManager
                 // Set title bar color
                 DarkNet.Instance.SetCurrentProcessTheme(Settings.DarkTheme ? Theme.Dark : Theme.Light);
 
+                // We do conditional telemetry initialization here because we want to respect user settings as early as possible
+                // By default, if the preview panel has not been shown, telemetry data is queued. It will only be sent once the 
+                // preview panel has been shown where the user can make their telemetry election.
+                // Once it is closed, it will be discarded or sent.
+                // If the panel has been shown, and the setting is enabled, we enable it here.
                 if (Settings.ShowedPreviewPanel && !Settings.EnableTelemetry)
                 {
                     M3Log.Warning("Telemetry is disabled :(");
                 }
                 else if (Settings.ShowedPreviewPanel)
                 {
-                    // Telemetry is on and we've shown the preview panel. Start appcenter
-                    InitAppCenter();
+                    // Telemetry is on and we've shown the preview panel. Initialize OpenTelemetry.
+                    // Note - you cannot use TelemetryInterposer until ME3TweaksCore boots
+                    // so in the M3 project you should directly call M3OpenTelemetry
+                    M3OpenTelemetry.InitOpenTelemetry();
                 }
                 else
                 {
@@ -368,7 +370,7 @@ namespace ME3TweaksModManager
                     if (IsLanguageSupported(@"pol") && currentCultureLang.StartsWith(@"pl")) InitialLanguage = Settings.Language = @"pol";
                     if (IsLanguageSupported(@"bra") && currentCultureLang.StartsWith(@"pt")) InitialLanguage = Settings.Language = @"bra";
                     if (IsLanguageSupported(@"ita") && currentCultureLang.StartsWith(@"it")) InitialLanguage = Settings.Language = @"ita";
-                    SubmitAnalyticTelemetryEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
+                    M3OpenTelemetry.TrackEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
                     M3Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
@@ -392,7 +394,7 @@ namespace ME3TweaksModManager
                     {
                         if (!File.Exists(sevenZpath))
                         {
-                            SubmitAnalyticTelemetryEvent("7z dll not found", new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackEvent("7z dll not found", new Dictionary<string, string>()
                             {
                                 {@"Library path", sevenZpath}
                             });
@@ -475,97 +477,6 @@ namespace ME3TweaksModManager
 
             if (lang == @"int") return true; // Just in case
             return false;
-        }
-
-        private static List<(string, Dictionary<string, string>)> QueuedTelemetryItems = new List<(string, Dictionary<string, string>)>();
-
-        /// <summary>
-        /// Submits a telemetry event. Queues them if the first run panel has not shown yet. All calls to TrackEvent should route through here to respect user settings.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="data"></param>
-        public static void SubmitAnalyticTelemetryEvent(string name, Dictionary<string, string> data = null)
-        {
-            if (!Settings.ShowedPreviewPanel && !FlushedTelemetry && QueuedTelemetryItems != null)
-            {
-                // Queue a telemetry item until the panel has closed
-                QueuedTelemetryItems.Add((name, data));
-            }
-            else
-            {
-                // if telemetry is not enabled this will not do anything.
-#if WITH_APPCENTER
-                Analytics.TrackEvent(name, data);
-#endif
-            }
-        }
-
-        /// <summary>
-        /// Flushes the startup telemetry events and disables the queue.
-        /// </summary>
-        public static void FlushTelemetryItems()
-        {
-            FlushedTelemetry = true;
-            if (Settings.EnableTelemetry && QueuedTelemetryItems != null)
-            {
-                foreach (var v in QueuedTelemetryItems)
-                {
-                    TelemetryInterposer.TrackEvent(v.Item1, v.Item2);
-                }
-            }
-
-            QueuedTelemetryItems = null; // Just release the memory. This variable is never used again
-        }
-
-        internal static void InitAppCenter()
-        {
-#if WITH_APPCENTER
-            if (!new NickStrupat.ComputerInfo().ActuallyPlatform)
-            {
-                M3Log.Warning(@"This does not appear to be an actually supported platform, disabling telemetry");
-                return;
-            }
-#if !DEBUG
-            if (APIKeys.HasAppCenterKey)
-            {
-                Crashes.GetErrorAttachments = (ErrorReport report) =>
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    // Attach some text.
-                    string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:";
-                    M3Log.Fatal(report.StackTrace);
-                    M3Log.Fatal(errorMessage);
-                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                    if (log.Length < FileSize.MebiByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"crashlog.txt"));
-                    }
-                    else
-                    {
-                        //Compress log
-                        var compressedLog = LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, @"crashlog.txt.lzma", @"application/x-lzma"));
-                    }
-                    return attachments;
-                };
-                M3Log.Information(@"Initializing AppCenter");
-                AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
-            }
-            else
-            {
-                M3Log.Error(@"This build is not configured correctly for AppCenter!");
-            }
-#else
-            if (!APIKeys.HasAppCenterKey)
-            {
-                Debug.WriteLine(@" >>> This build is missing an API key for AppCenter!");
-            }
-            else
-            {
-                Debug.WriteLine(@"This build has an API key for AppCenter");
-            }
-#endif
-#endif
         }
 
         /// <summary>
@@ -653,13 +564,14 @@ namespace ME3TweaksModManager
         /// <param name="e">Exception to process</param>
         static void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
+            M3Log.Exception(e.Exception, @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:", true);
+            M3OpenTelemetry.TrackCrash(e.Exception, new Dictionary<string, string>() { { @"Source", @"UnhandledDispatcherException" } });
+
             if (Settings.BetaMode)
             {
                 // Don't show this to users who are not on beta.
-                MessageBox.Show(e.Exception.FlattenException());
+                MessageBox.Show(e.Exception.FlattenException(), @"ME3Tweaks Mod Manager has crashed!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            M3Log.Exception(e.Exception, @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:", true);
         }
 
         /// <summary>
@@ -726,6 +638,7 @@ namespace ME3TweaksModManager
                     //M3Log.Information(@"Application exiting (duplicate instance)");
                 }
 
+                M3OpenTelemetry.Shutdown();
                 Log.CloseAndFlush();
             }
 
@@ -739,10 +652,6 @@ namespace ME3TweaksModManager
             // This method makes references to some imports that are only actually used by !DEBUG
             // This method is purposely never called. It is so when unnecessary imports are removed,
             // the ones needed by the items in the !DEBUG block remain
-#if WITH_APPCENTER
-            Crashes.TrackError(new Exception("TEST DUMMY"));
-            var nothing3 = AppCenter.Configured;
-#endif
             LZMA.Compress(new byte[0], 0);
             var nothing = LogCollector.SessionStartString;
             var nothing2 = FileSize.GibiByte;

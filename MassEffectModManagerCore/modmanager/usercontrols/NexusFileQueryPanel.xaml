@@ -1,5 +1,7 @@
 ﻿<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.NexusFileQueryPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:b="http://schemas.microsoft.com/xaml/behaviors" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.NexusFileQueryPanel" 
+    xmlns:local="clr-namespace:ME3TweaksModManager"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:b="http://schemas.microsoft.com/xaml/behaviors" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
     mc:Ignorable="d"
     MinWidth="700"
     MinHeight="550"
@@ -114,6 +116,13 @@
                 HorizontalAlignment="Right"
                 Margin="5,0"
                 Command="{Binding CompareAgainstModCommand}" />
+            <Button
+                Visibility="{x:Static local:App.DebugOnlyVisibility}"
+                Content="Custom search"
+                DockPanel.Dock="Right"
+                HorizontalAlignment="Right"
+                Margin="5,0"
+                Command="{Binding CustomSearchCommand}" />
         </DockPanel>
         <Grid
             HorizontalAlignment="Stretch">
@@ -227,7 +236,8 @@
                                     Text="{Binding FileInfo.Description}"
                                     DockPanel.Dock="Top"
                                     TextWrapping="Wrap" />
-                                <TextBlock>
+                                <TextBlock
+                                    TextWrapping="Wrap">
                                     <TextBlock.Text>
                                         <MultiBinding
                                             StringFormat="{}{0} - {1}">

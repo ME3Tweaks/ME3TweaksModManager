@@ -15,6 +15,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using System.ComponentModel;
 using System.Windows;
 using Microsoft.Win32;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager
 {
@@ -316,7 +317,7 @@ namespace ME3TweaksModManager
                             SelectedGameTarget.UpdateLODs(Settings.AutoUpdateLODs2K);
                         }
 
-                        TelemetryInterposer.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
                         {
                             { @"New target", SelectedGameTarget.Game.ToString() },
                         });
@@ -397,7 +398,7 @@ namespace ME3TweaksModManager
                                                                     // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
                 args.Add(@"/f");
 
-                return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
+                return MUtilities.RunProcess(exe, argsL: args, waitForProcess: true, requireAdmin: true);
             }
 
             return -3;
@@ -467,7 +468,7 @@ namespace ME3TweaksModManager
 
                     if (failureReason == null)
                     {
-                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
                         {
                             { @"Game", pendingTarget.Game.ToString() },
                             { @"Result", @"Success" },
@@ -479,7 +480,7 @@ namespace ME3TweaksModManager
                     }
                     else
                     {
-                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
                         {
                             { @"Game", pendingTarget.Game.ToString() },
                             { @"Result", @"Failed, " + failureReason },

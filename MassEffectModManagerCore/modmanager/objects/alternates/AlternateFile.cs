@@ -601,7 +601,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             return file;
         }
 
-        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTargetWPF target)
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTarget target)
         {
             // This value should be cached before calling the base method.
             UIIsSelectable_PreDepends = UIIsSelectable;

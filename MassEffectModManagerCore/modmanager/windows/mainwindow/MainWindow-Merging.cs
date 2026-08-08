@@ -196,11 +196,11 @@ namespace ME3TweaksModManager
             ShowRunAndDone((config) => Bio2DAMerge.RunBio2DAMerge(target),
                 M3L.GetString(M3L.string_merging2DATables),
                 M3L.GetString(M3L.string_merged2DATables),
-                null,
-                x =>
+                null, // no completion callback
+                ex => // show error dialog on exception
                 {
-                    if (x != null)
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorMerging2DAX, x.Message), M3L.GetString(M3L.string_error), System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    if (ex != null)
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorMerging2DAX, ex.Message), M3L.GetString(M3L.string_error), System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 });
         }
 

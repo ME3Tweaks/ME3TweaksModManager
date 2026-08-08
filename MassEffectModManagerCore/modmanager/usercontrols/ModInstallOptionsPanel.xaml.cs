@@ -1,4 +1,5 @@
 ﻿using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
@@ -66,7 +67,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         private List<PlusMinusKey> InOrderRecordedOptions { get; set; } = new();
 
-        public ModInstallOptionsPanel(Mod mod, GameTargetWPF gameTargetWPF, bool? installCompressed, BatchMod batchMod)
+        public ModInstallOptionsPanel(Mod mod, GameTarget gameTarget, bool? installCompressed, BatchMod batchMod)
         {
             ModBeingInstalled = mod;
 
@@ -101,7 +102,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <param name="newT"></param>
         public void OnSelectedGameTargetChanged(object oldT, object newT)
         {
-            Result.SelectedTarget = newT as GameTargetWPF;
+            Result.SelectedTarget = newT as GameTarget;
             if (oldT != null && newT != null)
             {
                 PreventInstallUntilTargetChange = false;
@@ -130,7 +131,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             AlternateGroups.ClearEx();
 
             //Write check
-            var canWrite = M3Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
+            var canWrite = MUtilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
             if (!canWrite)
             {
                 M3Log.Warning($@"Directory is not writable: {SelectedGameTarget.TargetPath}");
@@ -474,7 +475,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void UpdateOptions(ref int numAttemptsRemaining, Mod mod, GameTargetWPF target, List<AlternateOption> optionsToUpdate = null, bool initialSetup = false)
+        private void UpdateOptions(ref int numAttemptsRemaining, Mod mod, GameTarget target, List<AlternateOption> optionsToUpdate = null, bool initialSetup = false)
         {
             numAttemptsRemaining--;
             if (numAttemptsRemaining <= 0)
@@ -656,7 +657,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SelectedOptions = optionsMap,
                 BatchMode = BatchMod != null,
                 IsFirstBatchMod = BatchMod?.IsFirstBatchMod ?? false,
-                SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected) // ME1 Read only option
+                SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected), // ME1 Read only option
+                HasDoneBackupCheck = BatchMod?.HasPromptedForBackup ?? false // Skip backup prompt if already done earlier in this batch
             };
 
             // Save batch options to the object in the event the user wants to save the options.

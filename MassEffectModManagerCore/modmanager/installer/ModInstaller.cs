@@ -27,8 +27,9 @@ using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
-using ME3TweaksModManager.modmanager.objects.mod.moddesc;
 using ME3TweaksModManager.modmanager.objects.tlk;
+using ME3TweaksModManager.modmanager.postship;
+using ME3TweaksModManager.modmanager.telemetry;
 using NickStrupat;
 using SevenZip;
 using System.Diagnostics;
@@ -178,7 +179,7 @@ namespace ME3TweaksModManager.modmanager.installer
         /// <returns></returns>
         private bool CheckForGameBackup()
         {
-            var hasBackup = BackupService.GetBackupStatus(InstallOptionsPackage.ModBeingInstalled.Game).BackedUp;
+            var hasBackup = InstallOptionsPackage.HasDoneBackupCheck || BackupService.GetBackupStatus(InstallOptionsPackage.ModBeingInstalled.Game).BackedUp;
             var hasAnyGameModificationJobs = InstallOptionsPackage.ModBeingInstalled.InstallationJobs.Any(x => x.Header != ModJob.JobHeader.CUSTOMDLC && x.Header != ModJob.JobHeader.BALANCE_CHANGES);
 
             // 06/06/2022 - Check for PlotSync since it modifies basegame file
@@ -197,7 +198,13 @@ namespace ME3TweaksModManager.modmanager.installer
             if (!hasBackup)
             {
                 var installAnyways = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, InstallOptionsPackage.ModBeingInstalled.Game.ToGameName(), InstallOptionsPackage.ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
-                return installAnyways == MessageBoxResult.Yes;
+                if (installAnyways == MessageBoxResult.Yes)
+                {
+                    // User chose to install without a backup; flag this so subsequent batch mods skip the prompt
+                    InstallOptionsPackage.HasDoneBackupCheck = true;
+                    return true;
+                }
+                return false;
             }
 
             return true; //has backup
@@ -248,7 +255,7 @@ namespace ME3TweaksModManager.modmanager.installer
         /// Performs the mod installation. This is a blocking method and must be run on a background thread or a new task.Run()!
         /// </summary>
         public async Task InstallMod()
-        {
+        {   
             var sw = Stopwatch.StartNew();
             bool testrun = false; //change to true to test
             M3Log.Information(@"Mod Installer Background thread starting");
@@ -657,7 +664,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         {
                             // for some reason we don't have permission to do this.
                             M3Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
-                            M3Utilities.CreateDirectoryWithWritePermission(path, true);
+                            MUtilities.CreateDirectoryWithWritePermission(path, true);
                             MUtilities.DeleteFilesAndFoldersRecursively(path);
                         }
                         catch (Exception finalException)
@@ -714,7 +721,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 // There is probably better way to do this
                 var shouldTrack = InstallOptionsPackage.InstallTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)
                                                                         && targetPath.ContainsAny(MEDirectories.OfficialDLC(InstallOptionsPackage.InstallTarget.Game).Select(x => $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
-                if ((shouldTrack || !targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
+                if ((shouldTrack || !targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
                     && targetPath.Contains(InstallOptionsPackage.InstallTarget.TargetPath) // Must be within the game directory (no config files)
                     && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
                 {
@@ -768,7 +775,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 catch (Exception ex)
                 {
                     M3Log.Error(@"Error extracting files: " + ex.Message);
-                    TelemetryInterposer.TrackError(ex, new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackError(ex, new Dictionary<string, string>()
                     {
                         {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName },
                         {@"Version", InstallOptionsPackage.ModBeingInstalled.ModVersionString}
@@ -832,7 +839,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     catch (Exception ex)
                     {
                         M3Log.Error(@"Error extracting files: " + ex.Message);
-                        TelemetryInterposer.TrackError(ex, new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(ex, new Dictionary<string, string>()
                         {
                             {@"Mod name", InstallOptionsPackage.ModBeingInstalled.ModName},
                             {@"Filename", InstallOptionsPackage.ModBeingInstalled.Archive.FileName},
@@ -859,6 +866,9 @@ namespace ME3TweaksModManager.modmanager.installer
             var installedMetaCmms = new CaseInsensitiveDictionary<MetaCMM>();
             foreach (var addedDLCFolder in addedDLCFolders)
             {
+                // Apply post ship fixes
+                PostShipFixes.ApplyPostShipDLCFixes(InstallOptionsPackage.InstallTarget, addedDLCFolder);
+
                 // Write metacmm files
                 M3Log.Information(@"Writing _metacmm file for " + addedDLCFolder);
 
@@ -969,6 +979,12 @@ namespace ME3TweaksModManager.modmanager.installer
                                 {
                                     mm.source = $"{existingInfo.source}\n{newTextToAppend}"; // do not localize
                                 }
+                                else
+                                {
+                                    // Same mod is being reinstalled; carry forward the full existing source
+                                    // rather than letting the constructor default (just this mod's name) win.
+                                    mm.source = existingInfo.source;
+                                }
 
                                 mm.moddeschashes.AddRange(existingInfo.moddeschashes);
                             }
@@ -1018,7 +1034,6 @@ namespace ME3TweaksModManager.modmanager.installer
                         }
                     }
                 }
-
 
                 // Run at the end of all merge mods so we get the final hash.
                 void convertMergeModRecordsToFileIdentificationRecords()
@@ -1282,15 +1297,33 @@ namespace ME3TweaksModManager.modmanager.installer
             Debug.WriteLine($@"Installer took {sw.ElapsedMilliseconds}ms");
             if (basegameFilesInstalled.Any() || basegameIdentificationServiceRecords.Any())
             {
+                M3Log.Information($@"Inventorying basegame changes for BFGIS");
+                SetAction?.Invoke(M3L.GetString(M3L.string_trackingBasegameChanges));
                 try
                 {
-                    var files = new List<BasegameFileRecord>(basegameFilesInstalled.Count + basegameIdentificationServiceRecords.Count);
-                    files.AddRange(basegameIdentificationServiceRecords.Values);
+                    var totalFilesToTrack = basegameFilesInstalled.Count + basegameIdentificationServiceRecords.Count;
+                    var files = new List<BasegameFileRecord>(totalFilesToTrack);
+                    var processedFiles = 0;
+
+                    void updateTrackingProgress()
+                    {
+                        processedFiles++;
+                        SetPercentVisibility?.Invoke(true);
+                        SetPercent?.Invoke((int)(processedFiles * 100.0 / totalFilesToTrack));
+                    }
+
+                    foreach (var record in basegameIdentificationServiceRecords.Values)
+                    {
+                        files.Add(record);
+                    }
+
                     foreach (var file in basegameFilesInstalled)
                     {
                         var entry = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled);
                         files.Add(entry);
+                        updateTrackingProgress();
                     }
+
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(files);
                 }
                 catch (Exception ex)
@@ -1341,7 +1374,7 @@ namespace ME3TweaksModManager.modmanager.installer
             }
             catch (Exception e)
             {
-                TelemetryInterposer.TrackError(e);
+                M3OpenTelemetry.TrackError(e);
                 M3Log.Error($@"Error parsing ME2Coalesced: {e.Message}. We are aborting this installation");
                 InstallationResult.Result = EModInstallerResult.INSTALL_ABORTED_BAD_ME2_COALESCED;
                 InstallationResult.ErrorMessage = M3L.GetString(M3L.string_dialogInvalidME2Coalesced);
@@ -1361,7 +1394,7 @@ namespace ME3TweaksModManager.modmanager.installer
                 if (me2cF.Key == null)
                 {
                     M3Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF.FileName);
-                    TelemetryInterposer.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
                     {
                         { @"me2mod mod name", rcw.ModName },
                         { @"Missing file", rcwF.FileName }
@@ -1376,7 +1409,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     if (section == null)
                     {
                         M3Log.Error($@"RCW mod specifies a section in {rcwF.FileName} that does not exist in the local coalesced: {rcwS.SectionName}");
-                        TelemetryInterposer.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
                         {
                             { @"me2mod mod name", rcw.ModName },
                             { @"File", rcwF.FileName },
@@ -1396,7 +1429,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     if (section == null)
                     {
                         M3Log.Error($@"RCW section is null! We didn't find {rcwS.SectionName}");
-                        TelemetryInterposer.TrackEvent(@"RCW Section Null", new Dictionary<string, string>
+                        M3OpenTelemetry.TrackEvent(@"RCW Section Null", new Dictionary<string, string>
                         {
                             {@"MissingSection", rcwS.SectionName},
                             {@"InFile", rcwF.FileName}
@@ -1420,7 +1453,7 @@ namespace ME3TweaksModManager.modmanager.installer
                         }
                         catch (Exception e)
                         {
-                            TelemetryInterposer.TrackError(e, new Dictionary<string, string>()
+                            M3OpenTelemetry.TrackError(e, new Dictionary<string, string>()
                             {
                                 {@"FailingEntry", key.RawText},
                                 {@"Failing mod", InstallOptionsPackage.ModBeingInstalled.ModName}
@@ -1566,7 +1599,7 @@ namespace ME3TweaksModManager.modmanager.installer
                     {
                         Debugger.Break();
                         M3Log.Fatal(@"Installing a NEW file into TESTPATCH! This will break the game. This should be immediately reported to Mgamerz on Discord.");
-                        TelemetryInterposer.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
                         {
                             {@"Mod name", mod.ModName}
                         });

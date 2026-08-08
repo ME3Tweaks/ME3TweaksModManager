@@ -444,7 +444,7 @@ namespace SevenZip
             IArchiveOpenCallback openCallback)
         {
             ThreadId = Thread.CurrentThread.ManagedThreadId;
-            Debug.WriteLine($"Opening archive on thread {ThreadId}");
+            // Debug.WriteLine($"Opening archive on thread {ThreadId}");
             ulong checkPos = 1 << 15;
             int res = _archive.Open(archiveStream, ref checkPos, openCallback);
             return (OperationResult)res;

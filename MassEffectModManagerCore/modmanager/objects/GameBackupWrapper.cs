@@ -1,29 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
-using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
-using ME3TweaksCore.Services.Backup;
-using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.windows;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using PropertyChanged;
 using NamedBackgroundWorker = ME3TweaksCore.Helpers.NamedBackgroundWorker;
 
 namespace ME3TweaksModManager.modmanager.objects

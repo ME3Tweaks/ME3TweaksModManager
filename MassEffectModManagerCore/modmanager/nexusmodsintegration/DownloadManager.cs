@@ -46,17 +46,19 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// <summary>
         /// Synchronization object for the download queue
         /// </summary>
-        private static object _queueSyncObj = new object();
+        private static readonly object _queueSyncObj = new object();
 
         /// <summary>
         /// Synchronization object for attempting to start a download to make sure something doesn't try itself twice
         /// </summary>
-        private static object _downloadStateSyncObj = new object();
+        private static readonly object _downloadStateSyncObj = new object();
 
         /// <summary>
         /// The list of downloads. They may not all be actively downloading, but in a queued state.
         /// </summary>
-        private static ConcurrentDictionary<string, ModDownload> Downloads = new();
+        private static readonly ConcurrentDictionary<string, ModDownload> Downloads = new();
+
+        private static readonly ConcurrentDictionary<ModArchiveImport, ModDownload> ImportFlowLookup = new();
 
         public static ObservableCollectionExtended<ModDownload> FailedDownloads { get; } = new();
 
@@ -203,7 +205,10 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
                 // Attempt to a new start download, as states have changed.
                 // Attempt when our state has just changed to one of the following:
-                if (item.DownloadState is EModDownloadState.QUEUED or EModDownloadState.FINISHED or EModDownloadState.FAILED)
+                if (item.DownloadState is EModDownloadState.QUEUED
+                    or EModDownloadState.FINISHED
+                    or EModDownloadState.FAILED
+                    or EModDownloadState.DOWNLOADCANCELED)
                 {
                     TryStartDownload();
 
@@ -217,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 if (item.DownloadState == EModDownloadState.DOWNLOADCOMPLETE)
                 {
                     // Signal download has completed.
-                    OnDownloadCompleted(item, EventArgs.Empty);
+                    OnDownloadCompleted?.Invoke(item, EventArgs.Empty);
 
                     if (item.AutoImport)
                     {
@@ -265,12 +270,15 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                         mai.ImportStateChanged += OnImportStateChange;
 
                         item.ImportFlow = mai;
+                        ImportFlowLookup[mai] = item; // O(1) reverse lookup
                         mai.ProgressChanged += ImportProgressChanged;
                         mai.BeginScan();
                     }
                 }
 
-                if (item.DownloadState is EModDownloadState.FAILED or EModDownloadState.FINISHED)
+                if (item.DownloadState is EModDownloadState.FAILED
+                    or EModDownloadState.FINISHED
+                    or EModDownloadState.DOWNLOADCANCELED)
                 {
                     // No longer downloading
                     RemoveDownload(item);
@@ -280,17 +288,11 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
         private static void ImportProgressChanged(object sender, M3ProgressEventArgs e)
         {
-            if (sender is ModArchiveImport mai)
+            if (sender is ModArchiveImport mai && ImportFlowLookup.TryGetValue(mai, out var md))
             {
-                // Poor performance for how much progress will be called. We should probably use a lookup or simply cache the variable.
-                var md = Downloads.FirstOrDefault(x => x.Value != null && x.Value.ImportFlow == mai).Value;
-                if (md != null)
-                {
-                    // Debug.WriteLine($@"ImportProgress: {e.AmountCompleted}/{e.TotalAmount} IsIndeterminate: {e.IsIndeterminate}");
-                    md.ProgressMaximum = e.TotalAmount;
-                    md.ProgressValue = e.AmountCompleted;
-                    md.ProgressIndeterminate = e.IsIndeterminate;
-                }
+                md.ProgressMaximum = e.TotalAmount;
+                md.ProgressValue = e.AmountCompleted;
+                md.ProgressIndeterminate = e.IsIndeterminate;
             }
         }
 
@@ -301,50 +303,49 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         /// <param name="e"></param>
         private static void OnImportStateChange(object sender, EventArgs e)
         {
-            if (sender is ModArchiveImport mai)
-            {
-                var matchingObj = Downloads.Values.FirstOrDefault(x => x.ImportFlow == mai);
-                if (matchingObj == null)
-                    return;
+            if (sender is not ModArchiveImport mai)
+                return;
 
-                switch (mai.CurrentState)
-                {
-                    case EModArchiveImportState.FAILED:
-                        {
-                            OnDownloadImportFailed?.Invoke(matchingObj, EventArgs.Empty);
-                            matchingObj.DownloadState = EModDownloadState.FAILED;
-                            matchingObj.Status = M3L.GetString(M3L.string_importFailed);
-                        }
-                        break;
-                    case EModArchiveImportState.SCANNING:
-                        {
-                            OnDownloadScanning?.Invoke(matchingObj, EventArgs.Empty);
-                            matchingObj.DownloadState = EModDownloadState.IMPORTING;
-                            matchingObj.Status = M3L.GetString(M3L.string_scanning);
-                        }
-                        break;
-                    case EModArchiveImportState.SCANCOMPLETED:
-                        {
-                            OnDownloadScanCompleted?.Invoke(matchingObj, EventArgs.Empty);
-                            matchingObj.DownloadState = EModDownloadState.IMPORTING;
-                            matchingObj.Status = M3L.GetString(M3L.string_importQueued);
-                        }
-                        break;
-                    case EModArchiveImportState.IMPORTING:
-                        {
-                            OnDownloadImporting?.Invoke(matchingObj, EventArgs.Empty);
-                            matchingObj.DownloadState = EModDownloadState.IMPORTING;
-                            matchingObj.Status = M3L.GetString(M3L.string_importingMods);
-                        }
-                        break;
-                    case EModArchiveImportState.COMPLETE:
-                        {
-                            OnDownloadImported?.Invoke(matchingObj, EventArgs.Empty);
-                            matchingObj.DownloadState = EModDownloadState.FINISHED;
-                            matchingObj.Status = M3L.GetString(M3L.string_importComplete);
-                        }
-                        break;
-                }
+            if (!ImportFlowLookup.TryGetValue(mai, out var matchingObj))
+                return;
+
+            switch (mai.CurrentState)
+            {
+                case EModArchiveImportState.FAILED:
+                    {
+                        OnDownloadImportFailed?.Invoke(matchingObj, EventArgs.Empty);
+                        matchingObj.DownloadState = EModDownloadState.FAILED;
+                        matchingObj.Status = M3L.GetString(M3L.string_importFailed);
+                    }
+                    break;
+                case EModArchiveImportState.SCANNING:
+                    {
+                        OnDownloadScanning?.Invoke(matchingObj, EventArgs.Empty);
+                        matchingObj.DownloadState = EModDownloadState.IMPORTING;
+                        matchingObj.Status = M3L.GetString(M3L.string_scanning);
+                    }
+                    break;
+                case EModArchiveImportState.SCANCOMPLETED:
+                    {
+                        OnDownloadScanCompleted?.Invoke(matchingObj, EventArgs.Empty);
+                        matchingObj.DownloadState = EModDownloadState.IMPORTING;
+                        matchingObj.Status = M3L.GetString(M3L.string_importQueued);
+                    }
+                    break;
+                case EModArchiveImportState.IMPORTING:
+                    {
+                        OnDownloadImporting?.Invoke(matchingObj, EventArgs.Empty);
+                        matchingObj.DownloadState = EModDownloadState.IMPORTING;
+                        matchingObj.Status = M3L.GetString(M3L.string_importingMods);
+                    }
+                    break;
+                case EModArchiveImportState.COMPLETE:
+                    {
+                        OnDownloadImported?.Invoke(matchingObj, EventArgs.Empty);
+                        matchingObj.DownloadState = EModDownloadState.FINISHED;
+                        matchingObj.Status = M3L.GetString(M3L.string_importComplete);
+                    }
+                    break;
             }
         }
 
@@ -372,7 +373,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 M3Log.Information($"TryStartDownload() - Current active download count: {currentDownloadCount}");
                 foreach (var dl in queue)
                 {
-                    if (currentDownloadCount > Settings.MaxConcurrentImportOperations)
+                    if (currentDownloadCount >= Settings.MaxConcurrentImportOperations)
                     {
                         // Cannot exceed download count.
                         M3Log.Information($"TryStartDownload() - We are at max concurrent import operations limit ({Settings.MaxConcurrentImportOperations}), cannot start a new download");
@@ -432,6 +433,14 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         {
             md.DownloadStateChanged -= DownloadStateChanged;
             md.OnModDownloadError -= DownloadError;
+
+            // Import-flow cleanup
+            if (md.ImportFlow != null)
+            {
+                md.ImportFlow.ImportStateChanged -= OnImportStateChange;
+                md.ImportFlow.ProgressChanged -= ImportProgressChanged;
+                ImportFlowLookup.TryRemove(md.ImportFlow, out _);
+            }
         }
 
         /// <summary>

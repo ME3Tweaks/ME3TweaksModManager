@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
@@ -9,13 +9,6 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.usercontrols.options;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
-
-#if WITH_APPCENTER
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-#endif
-
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -153,7 +146,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool ChangingTelemetrySetting()
         {
-#if WITH_APPCENTER
             if (!Settings.EnableTelemetry)
             {
                 //user trying to turn it off 
@@ -165,21 +157,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
 
                 M3Log.Warning(@"Turning off telemetry :(");
-
-                // Immediately turn off telemetry per user request
-                Analytics.SetEnabledAsync(false);
-                Crashes.SetEnabledAsync(false);
+                // 03/22/2026 - Telemetry data is fully gated by the setting so we no longer need to disable
+                // anything.
             }
             else
             {
                 //turning telemetry on
                 M3Log.Information(@"Turning on telemetry :)");
 
-                // Immediately turn on telemetry per user request
-                Analytics.SetEnabledAsync(true);
-                Crashes.SetEnabledAsync(true);
+                // 03/22/2026 - Telemetry data is fully gated by the setting so we no longer need to enable
+                // anything.
             }
-#endif
             return true;
         }
 
@@ -250,30 +238,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
-                    if (WineWorkarounds.WineDetected)
+                    var m = new OpenFolderDialog
                     {
-                        var m = new OpenFolderDialog
-                        {
-                            ValidateNames = true,
-                            Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
-                        };
-                        if (m.ShowDialog(window) == true)
-                        {
-                            Settings.ModDownloadCacheFolder = m.FolderName;
-                        }
-                    }
-                    else
+                        ValidateNames = true,
+                        Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
+                    };
+                    if (m.ShowDialog(window) == true)
                     {
-                        CommonOpenFileDialog m = new CommonOpenFileDialog
-                        {
-                            IsFolderPicker = true,
-                            EnsurePathExists = true,
-                            Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
-                        };
-                        if (m.ShowDialog(window) == CommonFileDialogResult.Ok)
-                        {
-                            Settings.ModDownloadCacheFolder = m.FileName;
-                        }
+                        Settings.ModDownloadCacheFolder = m.FolderName;
                     }
                 }
 

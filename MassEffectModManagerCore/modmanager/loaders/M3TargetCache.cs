@@ -1,14 +1,8 @@
-﻿using LegendaryExplorerCore.Misc;
-using ME3TweaksCore.Localization;
+﻿using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
-using Org.BouncyCastle.Asn1.X509;
-using Pathoschild.FluentNexus.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace ME3TweaksModManager.modmanager.loaders
@@ -49,7 +43,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 if (File.Exists(cacheFile))
                 {
                     // 01/16/2026 - Do not read empty lines
-                    gameCache.AddRange(M3Utilities.WriteSafeReadAllLines(cacheFile)
+                    gameCache.AddRange(MUtilities.WriteSafeReadAllLines(cacheFile)
                                         .Where(x => !string.IsNullOrWhiteSpace(x))
                                         .Distinct());
                 }

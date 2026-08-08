@@ -1,17 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
-using Dark.Net;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
-using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.tutorial;
-using ME3TweaksModManager.ui;
-using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -36,6 +33,15 @@ namespace ME3TweaksModManager.modmanager.windows
         /// </summary>
         public int CurrentStepIndex { get; set; }
 
+        /// <summary>
+        /// Watcher for tutorial cache directory changes
+        /// </summary>
+        private FileSystemWatcher _tutorialWatcher;
+
+        /// <summary>
+        /// Timer for checking image availability
+        /// </summary>
+        private System.Timers.Timer _imageCheckTimer;
 
         public IntroTutorial(Window owner)
         {
@@ -48,6 +54,8 @@ namespace ME3TweaksModManager.modmanager.windows
                 LoadCommands();
                 InitializeComponent();
                 this.ApplyDarkNetWindowTheme();
+                StartImageMonitoring();
+                Closed += (a, b) => StopImageMonitoring(); // Handle window closing to prevent event handler leaks
             }
             else
             {
@@ -133,7 +141,7 @@ namespace ME3TweaksModManager.modmanager.windows
             PrepareSteps();
 
             // Restore the state
-            if (TutorialSteps.Count >= CurrentStepIndex)
+            if (TutorialSteps.Count > CurrentStepIndex)
             {
                 CurrentStep = TutorialSteps[CurrentStepIndex];
             }
@@ -165,14 +173,126 @@ namespace ME3TweaksModManager.modmanager.windows
             CurrentStep = TutorialSteps[CurrentStepIndex];
         }
 
+        // Weaved by Fody
+        /// <summary>
+        /// Called when the current step changes. Triggers image download and refresh.
+        /// </summary>
+        private void OnCurrentStepChanged()
+        {
+            if (CurrentStep == null)
+                return;
+
+            // Start background task to ensure the image is available
+            Task.Run(() =>
+            {
+                TutorialService.EnsureStepImageAvailable(CurrentStep);
+
+                // Also ensure the next step's image to improve UX
+                if (CurrentStepIndex + 1 < TutorialSteps.Count)
+                {
+                    TutorialService.EnsureStepImageAvailable(TutorialSteps[CurrentStepIndex + 1]);
+                }
+            });
+
+            // Immediately check if image is available
+            CheckCurrentStepImage();
+        }
+
         public GenericCommand NextCommand { get; set; }
         public GenericCommand PreviousCommand { get; set; }
         public GenericCommand SkipTutorialCommand { get; set; }
         public GenericCommand ReloadTutorialCommand { get; set; }
+
         public bool AskToClose()
         {
+            StopImageMonitoring();
             Close();
             return true;
+        }
+
+        /// <summary>
+        /// Starts monitoring for image availability in the background.
+        /// </summary>
+        private void StartImageMonitoring()
+        {
+            try
+            {
+                var cacheDir = M3Filesystem.GetTutorialServiceCache();
+                if (!Directory.Exists(cacheDir))
+                {
+                    Directory.CreateDirectory(cacheDir);
+                }
+
+                // Set up file system watcher
+                _tutorialWatcher = new FileSystemWatcher(cacheDir)
+                {
+                    Filter = "*.*",
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite
+                };
+
+                _tutorialWatcher.Created += (s, e) => OnImageFileChanged(e.Name);
+                _tutorialWatcher.Changed += (s, e) => OnImageFileChanged(e.Name);
+                _tutorialWatcher.EnableRaisingEvents = true;
+
+                // Set up timer to periodically check if current image is now available
+                _imageCheckTimer = new System.Timers.Timer(500) // Check every 500ms
+                {
+                    AutoReset = true
+                };
+                _imageCheckTimer.Elapsed += (s, e) => CheckCurrentStepImage();
+                _imageCheckTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                M3Log.Warning($@"Failed to start tutorial image monitoring: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Stops monitoring for image availability.
+        /// </summary>
+        private void StopImageMonitoring()
+        {
+            _tutorialWatcher?.Dispose();
+            _imageCheckTimer?.Stop();
+            _imageCheckTimer?.Dispose();
+        }
+
+        /// <summary>
+        /// Called when a file is detected in the tutorial cache directory.
+        /// </summary>
+        private void OnImageFileChanged(string fileName)
+        {
+            // Check if this is the image for the current step
+            if (CurrentStep != null && fileName == CurrentStep.imagename)
+            {
+                CheckCurrentStepImage();
+            }
+        }
+
+        /// <summary>
+        /// Checks if the current step's image is now available and refreshes the binding if it is.
+        /// </summary>
+        private void CheckCurrentStepImage()
+        {
+            if (CurrentStep == null)
+                return;
+
+            var imagePath = CurrentStep.UIImagePath;
+            if (string.IsNullOrWhiteSpace(imagePath))
+                return;
+
+            // Check if file now exists
+            if (File.Exists(imagePath))
+            {
+                // Force a binding refresh by temporarily clearing and resetting the path
+                Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    var tempPath = CurrentStep.UIImagePath;
+                    CurrentStep.UIImagePath = null;
+                    CurrentStep.UIImagePath = tempPath;
+                });
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using LegendaryExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.Objects;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -194,6 +195,9 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         {
             var tlkPackages = Directory.GetFiles(Path.Combine(item.ModToValidateAgainst.ModPath, customDLC), $@"{tlkPackageBaseName}*{tlkExtension}", SearchOption.AllDirectories);
 
+            // Dictionary to store BioTlkFile exports by language for NotForServer flag validation
+            var tlkExportsByLanguage = new Dictionary<string, List<ExportEntry>>();
+
             foreach (var language in languages)
             {
                 if (item.CheckDone) return;
@@ -228,14 +232,107 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                             item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount, tlkFilename));
                         }
 
-
+                        // Store exports for NotForServer flag validation
+                        tlkExportsByLanguage[language.FileCode] = tfExports;
                         tlkMappings[language.FileCode] = maleTLK.StringRefs;
                     }
                 }
             }
 
+            // Check NotForServer flags consistency across all localizations
+            if (tlkExportsByLanguage.Count > 0)
+            {
+                CheckGame1TLKNotForServerFlags(item, tlkExportsByLanguage, tlkPackageBaseName);
+            }
+        }
 
-            // Check mappings.
+        /// <summary>
+        /// Validates that all BioTlkFile exports have matching NotForServer object flags across all language localizations.
+        /// If the INT (base) language has the NotForServer flag set, all localized versions must match.
+        /// </summary>
+        /// <param name="item">The deployment check list item to report errors to.</param>
+        /// <param name="tlkExportsByLanguage">Dictionary mapping language codes to their BioTlkFile exports.</param>
+        /// <param name="tlkPackageBaseName">Base name of the TLK package for error messages.</param>
+        private static void CheckGame1TLKNotForServerFlags(DeploymentChecklistItem item, Dictionary<string, List<ExportEntry>> tlkExportsByLanguage, string tlkPackageBaseName)
+        {
+            if (tlkExportsByLanguage.Count < 1)
+            {
+                return;
+            }
+
+            // Build a map of export names to their NotForServer flag state per language
+            var exportFlagsByLanguage = new Dictionary<string, Dictionary<string, bool>>();
+            var allExportNames = new HashSet<string>();
+
+            foreach (var langEntry in tlkExportsByLanguage)
+            {
+                var langFlagMap = new Dictionary<string, bool>();
+                foreach (var export in langEntry.Value)
+                {
+                    var hasNotForServer = export.ObjectFlags.Has(UnrealFlags.EObjectFlags.NotForServer);
+                    langFlagMap[export.ObjectName.Name] = hasNotForServer;
+                    allExportNames.Add(export.ObjectName.Name);
+                }
+                exportFlagsByLanguage[langEntry.Key] = langFlagMap;
+            }
+
+            // Check that all exports exist in all languages with matching flags
+            foreach (var exportName in allExportNames)
+            {
+                bool? expectedFlagState = null;
+                string referenceLanguage = null;
+
+                // Find the first language that has this export to use as reference
+                foreach (var langEntry in exportFlagsByLanguage)
+                {
+                    if (langEntry.Value.TryGetValue(exportName, out var flagState))
+                    {
+                        expectedFlagState = flagState;
+                        referenceLanguage = langEntry.Key;
+                        break;
+                    }
+                }
+
+                if (expectedFlagState == null || referenceLanguage == null)
+                {
+                    // Should never happen, but skip if it does
+                    continue;
+                }
+
+                // Check all other languages have the same export with the same flag state
+                foreach (var langEntry in exportFlagsByLanguage)
+                {
+                    if (langEntry.Key == referenceLanguage)
+                    {
+                        // Skip the reference language
+                        continue;
+                    }
+
+                    if (!langEntry.Value.TryGetValue(exportName, out var langFlagState))
+                    {
+                        // Export missing in this language
+                        item.AddBlockingError(
+                            M3L.GetString(M3L.string_interp_tlkExportMissingInLocalization,
+                                exportName,
+                                tlkPackageBaseName,
+                                langEntry.Key));
+                    }
+                    else if (langFlagState != expectedFlagState)
+                    {
+                        // Flag state mismatch
+                        var referenceStatus = expectedFlagState.Value ? M3L.GetString(M3L.string_undercaseSet) : M3L.GetString(M3L.string_undercaseNotSet);
+                        var langStatus = langFlagState ? M3L.GetString(M3L.string_undercaseSet) : M3L.GetString(M3L.string_undercaseNotSet);
+                        item.AddBlockingError(
+                            M3L.GetString(M3L.string_interp_tlkNotForServerMismatch,
+                                exportName,
+                                tlkPackageBaseName,
+                                referenceLanguage,
+                                referenceStatus,
+                                langEntry.Key,
+                                langStatus));
+                    }
+                }
+            }
         }
 
         /// <summary>

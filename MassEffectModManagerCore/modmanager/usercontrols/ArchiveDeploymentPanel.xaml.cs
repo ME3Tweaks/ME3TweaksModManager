@@ -5,19 +5,17 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.ME3Tweaks.ModManager.Interfaces;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksCore.TextureOverride;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.importer;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.deployment;
 using ME3TweaksModManager.modmanager.objects.deployment.checks;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.tlk;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using SevenZip;
 using System.Collections.Concurrent;
 using System.ComponentModel;
@@ -45,7 +43,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ArchiveDeploymentPanel(Mod mod)
         {
             M3Log.Information($@"Initiating deployment for mod {mod.ModName} {mod.ModVersionString}");
-            TelemetryInterposer.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
             });
@@ -190,14 +188,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     else if (ModsInDeployment.Count == 1)
                     {
-                        TelemetryInterposer.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
                         {
                             { @"Mod name" , $@"{ModsInDeployment[0].ModBeingDeployed.ModName} {ModsInDeployment[0].ModBeingDeployed.ParsedModVersion}"}
                         });
                     }
                     else
                     {
-                        TelemetryInterposer.TrackEvent(@"Deployed multipack of mods", new Dictionary<string, string>()
+                        M3OpenTelemetry.TrackEvent(@"Deployed multipack of mods", new Dictionary<string, string>()
                         {
                             { @"Included mods" , string.Join(';', ModsInDeployment.Select(x=>$@"{x.ModBeingDeployed.ModName} {x.ModBeingDeployed.ParsedModVersion}"))}
                         });

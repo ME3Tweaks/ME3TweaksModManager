@@ -145,6 +145,13 @@ namespace ME3TweaksModManager.modmanager.objects.batch
 
 
         /// <summary>
+        /// Flag to indicate backup check should be skipped for this batch mod as it has been done earlier and the user declined.
+        /// </summary>
+        [JsonIgnore]
+        public bool HasPromptedForBackup { get; internal set; }
+
+
+        /// <summary>
         /// Initializes and associates a mod with this object
         /// </summary>
         public void Init(bool logMissing)

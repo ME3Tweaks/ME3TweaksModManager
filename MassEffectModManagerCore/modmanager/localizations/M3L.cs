@@ -636,6 +636,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_oodleNotFound = "string_oodleNotFound";
 		public const string string_ensureGameIsValidDiscord = "string_ensureGameIsValidDiscord";
 		public const string string_trackingMergemodChanges = "string_trackingMergemodChanges";
+		public const string string_trackingBasegameChanges = "string_trackingBasegameChanges";
 		public const string string_tooltip_optionNotApplicable = "string_tooltip_optionNotApplicable";
 		public const string string_tooltip_optionForceApplied = "string_tooltip_optionForceApplied";
 		public const string string_textureOverrideMergeFailed = "string_textureOverrideMergeFailed";
@@ -823,6 +824,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deploymentFailed = "string_deploymentFailed";
 		public const string string_interp_dialog_deploymentFailedWrongNumMods = "string_interp_dialog_deploymentFailedWrongNumMods";
 		public const string string_interp_finalizingArchive = "string_interp_finalizingArchive";
+		public const string string_interp_tlkNotForServerMismatch = "string_interp_tlkNotForServerMismatch";
+		public const string string_interp_tlkExportMissingInLocalization = "string_interp_tlkExportMissingInLocalization";
+		public const string string_undercaseSet = "string_undercaseSet";
+		public const string string_undercaseNotSet = "string_undercaseNotSet";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
 		public const string string_interp_detectedTFCFromAnotherModTPMI = "string_interp_detectedTFCFromAnotherModTPMI";
 		public const string string_interp_detectedTFCFromAnotherModUnknown = "string_interp_detectedTFCFromAnotherModUnknown";
@@ -1470,7 +1475,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_library_computerinfo = "string_library_computerinfo";
 		public const string string_library_fluentnexus = "string_library_fluentnexus";
 		public const string string_library_recyclablememorystream = "string_library_recyclablememorystream";
-		public const string string_library_sshnet = "string_library_sshnet";
 		public const string string_library_watsonwebsocket = "string_library_watsonwebsocket";
 		public const string string_library_authenticodeexaminer = "string_library_authenticodeexaminer";
 		public const string string_library_ntfsstreams = "string_library_ntfsstreams";
@@ -1479,6 +1483,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_wrapperForRobocopyCommandInCSharp = "string_wrapperForRobocopyCommandInCSharp";
 		public const string string_starMeansForked = "string_starMeansForked";
 		public const string string_tooltip_clickToViewLicense = "string_tooltip_clickToViewLicense";
+		public const string string_library_openTelemetry = "string_library_openTelemetry";
+		public const string string_library_darkNet = "string_library_darkNet";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
 		public const string string_updateASI = "string_updateASI";
@@ -2138,6 +2144,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_incompleteStaticArrayIndex = "string_interp_incompleteStaticArrayIndex";
 		public const string string_interp_updatingX = "string_interp_updatingX";
 		public const string string_interp_mergeModAssetsSingleFolder = "string_interp_mergeModAssetsSingleFolder";
+		public const string string_interp_mergeModFileChangedReload = "string_interp_mergeModFileChangedReload";
 		public const string string_interp_classUpdateCannotNestMoreThanOne = "string_interp_classUpdateCannotNestMoreThanOne";
 		public const string string_interp_classUpdateCannotUpdateVanillaClass = "string_interp_classUpdateCannotUpdateVanillaClass";
 		public const string string_me3tweaksModManagerOptions = "string_me3tweaksModManagerOptions";

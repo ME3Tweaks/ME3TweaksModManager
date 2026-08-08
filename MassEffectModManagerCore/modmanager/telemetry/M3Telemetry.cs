@@ -80,7 +80,7 @@ namespace ME3TweaksModManager.modmanager.telemetry
                         break;
                 }
 
-                TelemetryInterposer.TrackEvent(@"Launched game", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Launched game", new Dictionary<string, string>()
                 {
                     {@"Game", target.Game.ToString()},
                     {@"Screen resolution", resolution}

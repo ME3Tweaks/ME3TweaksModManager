@@ -17,6 +17,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
+using ME3TweaksModManager.linux;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.deployment;
 using ME3TweaksModManager.modmanager.helpers;
@@ -31,11 +32,13 @@ using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.textures;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
+using NickStrupat;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -117,7 +120,7 @@ namespace ME3TweaksModManager
         /// </summary>
         private bool hasCheckedForMSVC { get; set; } = false;
 
-        public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
+        // public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
 
 
@@ -238,7 +241,7 @@ namespace ME3TweaksModManager
         public void ShowModArchiveImportForDownload(ModDownload downloadedMod, bool priority = true)
         {
             downloadedMod.DownloadedStream.Position = 0;
-            App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import",
+            M3OpenTelemetry.TrackEvent(@"User opened mod archive for import",
                 new Dictionary<string, string>
                 {
                     { @"Filename", downloadedMod.FileName }
@@ -359,11 +362,14 @@ namespace ME3TweaksModManager
 
         public MainWindow()
         {
-            if (CommandLinePending.UpgradingFromME3CMM /* || true*/)
+            if (CommandLinePending.UpgradingFromME3CMM)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 //Show migration window before we load the main UI
                 M3Log.Information(@"Migrating from ME3CMM - showing migration dialog");
+                // This dialog can show before the main window is loaded (code below), but it is very
+                // unlikely this will be shown these days as ME3CMM stopped being updated around
+                // 2020.
                 new ME3CMMMigrationWindow().ShowDialog();
                 App.Current.MainWindow = this;
                 App.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -373,6 +379,15 @@ namespace ME3TweaksModManager
             LoadCommands();
             SetTheme(true);
             InitializeComponent();
+
+            // Must be after InitializeComponent() as it is what loads MMStyles.xaml from App.xaml (no idea why so late...)
+            if (WineWorkaroundsM3.SetWineUIDefaults())
+            {
+                // Because it may change fonts, and InitializeComponent(); sets the default text font, we need to force it to reload so it changes
+                // the used font for the description.
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText))); // Update localized tip shown
+            }
+
             this.ApplyDarkNetWindowTheme();
 
             //Change language if not INT
@@ -478,6 +493,8 @@ namespace ME3TweaksModManager
 
                 SelectedMod = x;
                 ModsList_ListBox.ScrollIntoView(SelectedMod);
+                // This makes the ApplyMod button refresh states so it shows up properly as clickable
+                CommandManager.InvalidateRequerySuggested();
             });
 
             // MOD UPDATER
@@ -507,7 +524,7 @@ namespace ME3TweaksModManager
                     MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
-                    bool done = M3Utilities.CreateDirectoryWithWritePermission(M3Filesystem.GetAppDataFolder(), true);
+                    bool done = MUtilities.CreateDirectoryWithWritePermission(M3Filesystem.GetAppDataFolder(), true);
                     if (done)
                     {
                         M3Log.Information(@"Granted permissions to ProgramData");
@@ -715,8 +732,6 @@ namespace ME3TweaksModManager
         public ICommand CreateTestArchiveCommand { get; set; }
         public ICommand LaunchIniModderCommand { get; set; }
         public ICommand DownloadModMakerModCommand { get; set; }
-        public ICommand UpdaterServiceCommand { get; set; }
-        public ICommand UpdaterServiceSettingsCommand { get; set; }
         public ICommand MixinLibraryCommand { get; set; }
         public ICommand BatchModInstallerCommand { get; set; }
         public ICommand ImportDLCModFromGameCommand { get; set; }
@@ -765,8 +780,6 @@ namespace ME3TweaksModManager
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
             DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
-            UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
-            UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
             MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
             BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
             ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
@@ -1143,90 +1156,104 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
-                    bool isFirstInstall = true;
-                    BatchPanelResult = new PanelResult();
-                    HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
-                    var target = batchLibrary.SelectedGameTarget;
-                    //Install queue
-
-                    bool continueInstalling = true;
-                    int modIndex = 0;
-
-                    //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
-                    void modInstalled(bool successful, bool isfirst = false)
-                    {
-                        if (!isfirst)
-                        {
-                            M3Log.Information($@"ModInstalled() being called - successful: {successful}");
-                        }
-                        else
-                        {
-
-                            // Do an initial reload since we don't reload targets in the mod options panel anymore.
-                            target.ReloadGameTarget(false);
-
-                            if (queue.ContainsTextureMods() && (queue.UseSavedOptions ||
-                                                                // If all options are standalone we don't really care if there are saved options so just show it here
-                                                                queue.ModsToInstall.Where(x => !x.ModMissing).All(x => x.IsStandalone)))
-                            {
-                                // We use batch text if this contains content mods due to the timing difference
-                                continueInstalling = TextureInstallerPanel.ShowTextureInstallWarning(this, queue.ContainsContentMods());
-                            }
-                        }
-
-                        continueInstalling &= successful && !IsOnTrackToClose;
-                        if (continueInstalling && queue.ModsToInstall.Count > modIndex)
-                        {
-                            var bm = queue.ModsToInstall[modIndex];
-                            modIndex++;
-                            if (bm.IsAvailableForInstall())
-                            {
-                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
-                                bm.UseSavedOptions = queue.UseSavedOptions;
-                                bm.IsFirstBatchMod = isFirstInstall;
-                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
-                                isFirstInstall = false;
-                            }
-                            else
-                            {
-                                M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
-                                modInstalled(true); // Trigger next install
-                            }
-                        }
-                        else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
-                        {
-                            if (queue.ASIModsToInstall.Any())
-                            {
-                                ShowRunAndDone(
-                                    (config) => InstallBatchASIs(target, queue).Result,
-                                    M3L.GetString(M3L.string_installingASIMods),
-                                    M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
-                            }
-                            else
-                            {
-                                HandleBatchTextureInstall(target, queue);
-                            }
-                        }
-                        else
-                        {
-                            // Install failed or was aborted
-                            M3Log.Warning($@"Batch install was aborted or one failed, setting HandleBatchPanelResult to true");
-                            HandleBatchPanelResult = true;
-                        }
-                    }
-
-                    if (queue.RestoreBeforeInstall)
-                    {
-                        // Will trigger target reload automatically
-                        RunBatchRestore(queue, target, modInstalled);
-                    }
-                    else
-                    {
-                        modInstalled(true, true); //kick off first installation
-                    }
+                    InstallBatchQueue(batchLibrary.SelectedGameTarget, queue);
                 }
             };
             ShowBusyControl(batchLibrary);
+        }
+
+        /// <summary>
+        /// Installs a batch library install queue to the given target
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="queue"></param>
+        private void InstallBatchQueue(GameTarget target, BatchLibraryInstallQueue queue)
+        {
+            bool isFirstInstall = true;
+            BatchPanelResult = new PanelResult();
+            HandleBatchPanelResult = false; // Panel results should merge instead of running one after another
+            //Install queue
+
+            bool continueInstalling = true;
+            int modIndex = 0;
+
+            //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
+            void modInstalled(bool successful, bool isfirst = false)
+            {
+                if (!isfirst)
+                {
+                    M3Log.Information($@"ModInstalled() being called - successful: {successful}");
+
+                    // Sync HasPromptedForBackup from the just-completed mod back to the queue so subsequent mods skip the backup prompt
+                    if (modIndex > 0)
+                        queue.HasPromptedForBackup |= queue.ModsToInstall[modIndex - 1].HasPromptedForBackup;
+                }
+                else
+                {
+
+                    // Do an initial reload since we don't reload targets in the mod options panel anymore.
+                    target.ReloadGameTarget(false);
+
+                    if (queue.ContainsTextureMods() && (queue.UseSavedOptions ||
+                                                        // If all options are standalone we don't really care if there are saved options so just show it here
+                                                        queue.ModsToInstall.Where(x => !x.ModMissing).All(x => x.IsStandalone)))
+                    {
+                        // We use batch text if this contains content mods due to the timing difference
+                        continueInstalling = TextureInstallerPanel.ShowTextureInstallWarning(this, queue.ContainsContentMods());
+                    }
+                }
+
+                continueInstalling &= successful && !IsOnTrackToClose;
+                if (continueInstalling && queue.ModsToInstall.Count > modIndex)
+                {
+                    var bm = queue.ModsToInstall[modIndex];
+                    modIndex++;
+                    if (bm.IsAvailableForInstall())
+                    {
+                        M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {bm.Mod.ModName}");
+                        bm.UseSavedOptions = queue.UseSavedOptions;
+                        bm.IsFirstBatchMod = isFirstInstall;
+                        bm.HasPromptedForBackup = queue.HasPromptedForBackup; // pass through if user skipped restore option earlier
+                        ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
+                        isFirstInstall = false;
+                    }
+                    else
+                    {
+                        M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
+                        modInstalled(true); // Trigger next install
+                    }
+                }
+                else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
+                {
+                    if (queue.ASIModsToInstall.Any())
+                    {
+                        ShowRunAndDone(
+                            (config) => InstallBatchASIs(target, queue).Result,
+                            M3L.GetString(M3L.string_installingASIMods),
+                            M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(target, queue));
+                    }
+                    else
+                    {
+                        HandleBatchTextureInstall(target, queue);
+                    }
+                }
+                else
+                {
+                    // Install failed or was aborted
+                    M3Log.Warning($@"Batch install was aborted or one failed, setting HandleBatchPanelResult to true");
+                    HandleBatchPanelResult = true;
+                }
+            }
+
+            if (queue.RestoreBeforeInstall)
+            {
+                // Will trigger target reload automatically
+                RunBatchRestore(queue, target, modInstalled);
+            }
+            else
+            {
+                modInstalled(true, true); //kick off first installation
+            }
         }
 
         /// <summary>
@@ -1252,6 +1279,7 @@ namespace ME3TweaksModManager
                 if (shouldRestore == MessageBoxResult.Yes)
                 {
                     // successful, isfirst
+                    queue.HasPromptedForBackup = true;
                     modInstalled(true, true);
                 }
             }
@@ -1381,22 +1409,6 @@ namespace ME3TweaksModManager
             return true;
         }
 
-        private void OpenUpdaterServicePanelEditorMode()
-        {
-            var updaterServicePanel = new UpdaterServicePanel();
-            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(updaterServicePanel);
-        }
-
-        private void OpenUpdaterServicePanel()
-        {
-            var updaterServicePanel = new UpdaterServicePanel(SelectedMod);
-            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(updaterServicePanel);
-        }
-
-        private bool CanOpenUpdaterServicePanel() => SelectedMod != null && SelectedMod.ModClassicUpdateCode > 0;
-
         private void OpenModMakerPanel()
         {
             var modmakerPanel = new ModMakerPanel();
@@ -1475,7 +1487,7 @@ namespace ME3TweaksModManager
             var result = m.ShowDialog(this);
             if (result.Value)
             {
-                TelemetryInterposer.TrackEvent(@"User opened mod archive for import",
+                M3OpenTelemetry.TrackEvent(@"User opened mod archive for import",
                     new Dictionary<string, string>
                         { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
                 var archiveFile = m.FileName;
@@ -1821,7 +1833,7 @@ namespace ME3TweaksModManager
 
                     control.Close += (a, b) => { ReleaseBusyControl(); };
                     ShowBusyControl(control);
-                    TelemetryInterposer.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
+                    M3OpenTelemetry.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
                     {
                         { @"Invocation method", @"Installation Information" }
                     });
@@ -2033,7 +2045,7 @@ namespace ME3TweaksModManager
                     var configTool = M3Utilities.GetGameConfigToolPath(target);
                     try
                     {
-                        M3Utilities.RunProcess(configTool, "", false, true, false, false);
+                        MUtilities.RunProcess(configTool, allowReattemptAsAdmin: true, waitForProcess: false);
                     }
                     catch (Exception e)
                     {
@@ -2184,14 +2196,14 @@ namespace ME3TweaksModManager
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
         /// <param name="recordOptionsToBM">If options chosen should be saved back to the BatchMod object</param>
         /// <param name="useSavedBatchOptions">If options saved in the BatchMod object should be used</param>
-        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null,
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, BatchMod batchMod = null,
             bool? installCompressed = null, Action<bool, bool> installCompletedCallback = null)
         {
             if (!MRunningGameInfo.IsGameRunning(mod.Game))
             {
                 if (forcedTarget == null && SelectedGameTarget == null)
                 {
-                    TelemetryInterposer.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
+                    M3OpenTelemetry.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
                 }
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
                 var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod);
@@ -2213,6 +2225,11 @@ namespace ME3TweaksModManager
                                 modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
                             }
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+
+                            // Propagate HasDoneBackupCheck back to the BatchMod so the queue can update for subsequent mods
+                            if (batchMod != null && miop.HasDoneBackupCheck)
+                                batchMod.HasPromptedForBackup = true;
+
                             ReleaseBusyControl(); // Release the mod installer. This may cause merges to occur if batch panel handling is set to false.
 
                             // This must go after releasing the control because in batch mode it will begin setting up the next panel.
@@ -2266,11 +2283,11 @@ namespace ME3TweaksModManager
                     });
                     if (result)
                     {
-                        TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                        M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                             new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
+                            MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
                                 .ToList());
                         }
                         catch (Exception e)
@@ -2281,15 +2298,15 @@ namespace ME3TweaksModManager
                     else
                     {
                         M3Log.Warning(@"User denied permission to grant write permissions");
-                        TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                        M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                             new Dictionary<string, string>() { { @"Granted?", @"No" } });
                     }
                 }
                 else
                 {
-                    TelemetryInterposer.TrackEvent(@"Granting write permissions",
+                    M3OpenTelemetry.TrackEvent(@"Granting write permissions",
                         new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
-                    M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
+                    MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
                         .ToList());
                 }
             }
@@ -2403,22 +2420,13 @@ namespace ME3TweaksModManager
                 var data = new Dictionary<string, string>();
                 try
                 {
-                    ManagementObjectSearcher mosProcessor =
-                        new ManagementObjectSearcher(@"SELECT * FROM Win32_Processor");
-                    foreach (ManagementObject moProcessor in mosProcessor.Get())
-                    {
-                        // For seeing AMD vs Intel (for ME1 lighting)
-                        if (moProcessor[@"name"] != null)
-                        {
-                            data[@"Processor"] = moProcessor[@"name"].ToString();
-                            App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD");
-                        }
-                    }
+                    data[@"Processor"] = new ComputerInfo().CPUName;
+                    App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD"); // For seeing AMD vs Intel (for ME1 lighting)
 
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
                     data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
-
-                    App.SubmitAnalyticTelemetryEvent(@"Hardware Info", data);
+                    data[@"Memory"] = new ComputerInfo().TotalPhysicalMemory.ToString(); // 07/27/2026 probably would be nice to know what average size of userbase memory is for optimizing
+                    M3OpenTelemetry.TrackEvent(@"Version and Hardware Info", data);
                 }
                 catch //(Exception e)
                 {
@@ -2576,7 +2584,6 @@ namespace ME3TweaksModManager
             {
                 VisitWebsiteText = "";
                 SetWebsitePanelVisibility(false);
-                CurrentDescriptionText = DefaultDescriptionText;
             }
 
             CanApplyMod(); // This sets the text. Good design MG
@@ -3241,7 +3248,7 @@ namespace ME3TweaksModManager
         {
             if (tool != null)
             {
-                TelemetryInterposer.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
+                M3OpenTelemetry.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
                 {
                     { @"Tool name", tool },
                     { @"Arguments", arguments }
@@ -3254,7 +3261,7 @@ namespace ME3TweaksModManager
 
         private void OpenASIManager()
         {
-            TelemetryInterposer.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
+            M3OpenTelemetry.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
             {
                 { @"Invocation method", @"Menu" }
             });

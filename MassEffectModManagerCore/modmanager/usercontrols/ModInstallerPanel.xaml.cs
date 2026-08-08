@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -99,11 +100,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Installer.SetPercentVisibility = SetPercentVisibility;
 
             M3Log.Information($@"BeginInstallingMod(): {InstallOptionsPackage.ModBeingInstalled.ModName}");
+            Installer.PerformPrecheck();
+            if (Installer.InstallationResult.Aborted == true)
+            {
+                // Precheck failed
+                ModInstallationCompleted(null);
+                return;
+            }
+
 
             Exception error = null;
             try
             {
-                // Contains syncrhonous work so must run on background thread still.
+                // Contains synchronous work so must run on background thread still.
                 await Task.Run(async () => await Installer.InstallMod());
             }
             catch (Exception ex)
@@ -221,7 +230,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 telemetryInfo[@"Alternate Options Selected"] = alternateOptionsPicked;
             }
 
-            TelemetryInterposer.TrackEvent(@"Installed a mod", telemetryInfo);
+            M3OpenTelemetry.TrackEvent(@"Installed a mod", telemetryInfo);
             OnClosing(DataEventArgs.Empty);
         }
 

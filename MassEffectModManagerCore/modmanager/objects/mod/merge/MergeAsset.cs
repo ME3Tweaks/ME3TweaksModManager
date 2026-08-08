@@ -1,8 +1,10 @@
-﻿using System.Text;
-using LegendaryExplorerCore.Compression;
+﻿using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Exceptions;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge
 {
@@ -116,6 +118,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
                     return; // Cannot load asset at a later time if the loaded from path is not set.
 
                 using var fs = File.OpenRead(OwningMM.LoadedFromPath);
+                if (fs.Length != OwningMM.SizeAtLoadTime)
+                {
+                    throw new NoTelemetryException(M3L.GetString(M3L.string_interp_mergeModFileChangedReload, Path.GetFileName(OwningMM.LoadedFromPath)));
+                }
                 ReadAssetBinary(fs);
             }
         }

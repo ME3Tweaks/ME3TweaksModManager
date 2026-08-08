@@ -1,5 +1,6 @@
 ﻿using AdonisUI.Controls;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.telemetry;
 
 namespace ME3TweaksModManager.modmanager.localizations
 {
@@ -219,7 +220,7 @@ namespace ME3TweaksModManager.modmanager.localizations
             catch (Exception e)
             {
                 M3Log.Error($@"Error fetching string with key {resourceKey}: {e.ToString()}.");
-                TelemetryInterposer.TrackError(e, new Dictionary<string, string> { { @"String key", resourceKey } });
+                M3OpenTelemetry.TrackError(e, new Dictionary<string, string> { { @"String key", resourceKey } });
                 return $@"Error fetching string with key {resourceKey}: {e.ToString()}! Please report this to Mgamerz";
             }
         }

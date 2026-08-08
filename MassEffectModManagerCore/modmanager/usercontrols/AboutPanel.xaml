@@ -31,7 +31,7 @@
                 Width="35*" />
         </Grid.ColumnDefinitions>
         <Image
-            Source="/appicon.ico"
+            Source="{ui:MippedIcon Source={StaticResource appIcon}, Size=128}"
             Grid.Row="0"
             Grid.Column="0"
             Margin="4"
