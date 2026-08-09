@@ -128,7 +128,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             var originalSelectedObject = SelectedASIObject;
             InstallInProgress = true;
-            var target = Games.First(x => x.Game == asi.Game);
+            var target = Games.First(x => x.Game == asi.OwningMod.Game);
             try
             {
                 // We don't read the result cause we don't really care
