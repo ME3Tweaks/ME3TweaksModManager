@@ -159,7 +159,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             else
             {
                 M3Log.Error($"Milan base installation failed: {message}");
-                // We need to handle the error here.
+                Dispatcher.Invoke(() =>
+                {
+                    StatusText = "Installation failed.";
+                    M3L.ShowDialog(window, $"The installation failed with the following error:\n\n{message}", "Installation Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
         }
 
