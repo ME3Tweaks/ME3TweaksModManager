@@ -74,7 +74,7 @@ namespace ME3TweaksModManager
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support. The maximum precision allowed is tenths, the rest will be truncated.
         /// </summary>
-        public const double HighestSupportedModDesc = 9.2;
+        public const double HighestSupportedModDesc = 10.0;
 
         public void OnInstanceInvoked(string[] args)
         {
