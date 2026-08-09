@@ -1,11 +1,11 @@
-﻿using LegendaryExplorerCore.Unreal.BinaryConverters;
-using ME3TweaksCore.Localization;
+﻿using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
+using System.Diagnostics;
 
 namespace ME3TweaksModManager.modmanager.milan
 {
@@ -33,21 +33,21 @@ namespace ME3TweaksModManager.modmanager.milan
         /// Files from CookedPCConsole folder. A few extra ones are plucked from METR, but they are hardcoded into the installer.
         /// </summary>
         private static readonly string[] CookedFiles = [
-            // Binaries file 
-
             // Base required files for game boot
             "Core.pcc",
             "Engine.pcc",
             "SFXGame.pcc",
             "Startup.pcc",
+            "Coalesced.bin",
+            "GlobalShaderCache-PC-D3D-SM5.bin",
+            "IpDrv.pcc",
+            "RefShaderCache-PC-D3D-SM5.upk",
+            "SFXOnlineFoundation.pcc",
+            "WwiseAudio.pcc",
+            "GuidCache.pcc", // Installed by Milan
 
             // Gestures (animations, especially in menus)
             "GesturesConfig.pcc",
-
-            // Game executable directory is already included by default
-
-
-
             // Required for main menu to load
             "EntryMenu.pcc",
 
@@ -105,14 +105,57 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXWeapon_SniperRifle_Viper.pcc",
             "SFXWeapon_SniperRifle_Widow.pcc",
             
-            // Basegame Weapon Mods
-            "SFXWEaponMods_AssaultRifles.pcc",
-            "SFXWEaponMods_Pistols.pcc",
-            "SFXWEaponMods_Shotguns.pcc",
-            "SFXWEaponMods_SMGs.pcc",
-            "SFXWEaponMods_SniperRifles.pcc",
+            // Basegame MP Level Files (excluding BioP which break things)
+            // Includes level audio
+            "BioA_MPCer.pcc",
+            "BioA_MPCer_White.pcc",
+            "BioA_MPDish.pcc",
+            "BioA_MPDish_000_BG.pcc",
+            "BioA_MPDish_200.pcc",
+            "BioA_MPDish_300.pcc",
+            "BioA_MPDish_300_rails.pcc",
+            "BioA_MPDish_400.pcc",
+            "BioA_MPNov.pcc",
+            "BioA_MPNov_000_BG.pcc",
+            "BioA_MPNov_100Exterior.pcc",
+            "BioA_MPNov_White.pcc",
+            "BioA_MPRctr.pcc",
+            "BioA_MPRctr_100Cover.pcc",
+            "BioA_MPSlum_100.pcc",
+            "BioA_MPSlum_200.pcc",
+            "BioA_MPSlum_400TempVista.pcc",
+            "BioA_MPTowr.pcc",
+            "BioA_MPTowr_200.pcc",
+            "BioA_MPTowr_300_UI_Lights.pcc",
+            "BioD_MPCer.pcc",
+            "BioD_MPDish.pcc",
+            "BioD_MPNov.pcc",
+            "BioD_MPRctr.pcc",
+            "BioD_MPSlum.pcc",
+            "BioD_MPTowr.pcc",
+            "BioSnd_MPCer.pcc",
+            "BioSnd_MPDish.pcc",
+            "BioSnd_MPNov.pcc",
+            "BioSnd_MPRctr.pcc",
+            "BioSnd_MPSlum.pcc",
+            "BioSnd_MPTowr.pcc",
+            "wwise_mpcer_streaming.afc",
+            "wwise_mpdish_streaming.afc",
+            "wwise_mpnov_streaming.afc",
+            "wwise_mprctr_streaming.afc",
+            "Wwise_MPSlum_NonStreaming.afc",
+            "wwise_mpslum_streaming.afc",
+            "Wwise_MPTowr_NonStreaming.afc",
+            "Wwise_MPTowr_Streaming.afc",
 
-            // Basegame MP
+            // Basegame Weapon Mods
+            "SFXWeaponMods_AssaultRifles.pcc",
+            "SFXWeaponMods_Pistols.pcc",
+            "SFXWeaponMods_Shotguns.pcc",
+            "SFXWeaponMods_SMGs.pcc",
+            "SFXWeaponMods_SniperRifles.pcc",
+
+            // Pawns
             "SFXPawn_Atlas.pcc",
             "SFXPawn_Banshee.pcc",
             "SFXPawn_Brute.pcc",
@@ -134,14 +177,8 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXPawn_Trooper.pcc",
 
             // Audio - Enemies
-            "ss_cerberus_trooper_S_DEU.afc",
-            "ss_cerberus_trooper_S_FRA.afc",
-            "ss_cerberus_trooper_S_Int.afc",
-            "ss_cerberus_trooper_S_ITA.afc",
-            "ss_exertion_palette_D_DEU.afc",
-            "ss_exertion_palette_D_FRA.afc",
-            "ss_exertion_palette_D_Int.afc",
-            "ss_exertion_palette_D_ITA.afc",
+            "ss_cerberus_trooper_S.afc", // Localized
+            "ss_exertion_palette_D.afc", // Localized
             "Wwise_Crt_Cerb_Nem_SFX.afc",
             "Wwise_Crt_Cerb_Phtm_SFX.afc",
             "Wwise_Crt_Geth_Hunter_SFX.afc",
@@ -157,8 +194,6 @@ namespace ME3TweaksModManager.modmanager.milan
             "wwise_crt_reap_ravenger_sfx.afc",
             "Wwise_Crt_Reap_Swarmer_SFX.afc",
 
-
-
             "AreaMap_NumIcon.pcc",
             "BIOGame_DEU.tlk",
             "BIOGame_ESN.tlk",
@@ -169,27 +204,15 @@ namespace ME3TweaksModManager.modmanager.milan
             "BIOGame_POL.tlk",
             "BIOGame_RUS.tlk",
             "BIOG_UIWorld.pcc",
-            "Coalesced.bin",
-            "Core.pcc",
-            "Engine.pcc",
-            "EntryMenu.pcc",
             "GameFramework.pcc",
-            "GFxUI.pcc",
-            "GlobalShaderCache-PC-D3D-SM5.bin",
-            "GuidCache.pcc",
-            "IpDrv.pcc",
-            "RefShaderCache-PC-D3D-SM5.upk",
-            "SFXGame.pcc",
+            "GFxUI.pcc",            
             "SFXGUI_A_LegalLogos.pcc",
             "SFXGUI_Fonts.pcc",
-            "SFXOnlineFoundation.pcc",
-            "Startup.pcc",
             "Textures.tfc",
-            "WwiseAudio.pcc",
             "Wwise_Generic_GUI.afc",
             "Wwise_Main_Menu_NonStreaming.afc",
             "Wwise_Main_Menu_Streaming.afc"
-            ];
+        ];
 
         /// <summary>
         /// Required movies for the game to boot. I am not sure why it needs both startup loops.
@@ -262,8 +285,12 @@ namespace ME3TweaksModManager.modmanager.milan
                 M3Log.Information($"Copying {file} to {destFile}");
                 File.Copy(file, destFile, true);
 
-                // Copy localizations
-                CopyLocalizationsOfFile(file, destFolder);
+                // Copy package localizations
+                var extension = Path.GetExtension(file);
+                if (extension is @".pcc" or @".afc")
+                {
+                    CopyLocalizationsOfFile(file, destFolder);
+                }
             }
         }
 
@@ -283,20 +310,22 @@ namespace ME3TweaksModManager.modmanager.milan
             foreach (var loc in SupportedVOLanguages)
             {
                 // LOC_
-                var name = file.SetUnrealLocalization(MEGame.LMP, loc, true);
-                var testPath = Path.Combine(dir, name + @".pcc");
-                if (File.Exists(testPath))
+                var locName = Path.GetFileName(file.SetUnrealLocalization(MEGame.LMP, loc, true));
+                var testPath = Path.Combine(dir, locName);
+                if (File.Exists(testPath)) // Is there localized version in LE3?
                 {
-                    var outPath = Path.Combine(destFolder, name);
+                    // Copy LOC version to Milan
+                    var outPath = Path.Combine(destFolder, locName);
                     File.Copy(testPath, outPath);
                 }
 
                 // Straight loc
-                name = file.SetUnrealLocalization(MEGame.LMP, loc, false);
-                testPath = Path.Combine(dir, name + @".pcc");
-                if (File.Exists(testPath))
+                locName = Path.GetFileName(file.SetUnrealLocalization(MEGame.LMP, loc, false));
+                testPath = Path.Combine(dir, locName);
+                if (File.Exists(testPath)) // Is there a unreal localized version in LE3?
                 {
-                    var outPath = Path.Combine(destFolder, name);
+                    // Copy _LANG version to Milan
+                    var outPath = Path.Combine(destFolder, locName);
                     File.Copy(testPath, outPath);
                 }
             }
@@ -323,6 +352,14 @@ namespace ME3TweaksModManager.modmanager.milan
             // Copy the source files over.
             try
             {
+                // Wipe the destination directory so we start from a clean slate.
+                interop.SetStatus?.Invoke("Preparing installation directory...");
+                if (Directory.Exists(destinationFolderPath))
+                {
+                    MUtilities.DeleteFilesAndFoldersRecursively(destinationFolderPath, throwOnFailed: true, deleteDirectoryItself: false);
+                }
+                MUtilities.CreateDirectoryWithWritePermission(destinationFolderPath);
+
                 CopySourceFiles(sourceGameTarget.TargetPath, BinaryFiles, destinationFolderPath, "Binaries");
                 CopySourceFiles(sourceGameTarget.TargetPath, CookedFiles, destinationFolderPath, "BioGame\\CookedPCConsole", "*.tfc");
                 CopySourceFiles(sourceGameTarget.TargetPath, MovieFiles, destinationFolderPath, "BioGame\\Movies");
