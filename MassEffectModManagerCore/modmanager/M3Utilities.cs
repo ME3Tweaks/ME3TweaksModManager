@@ -493,12 +493,14 @@ namespace ME3TweaksModManager.modmanager
                     case MEGame.ME3:
                         executableNames += "MassEffect3.exe";
                         break;
+                    case MEGame.LMP:
+                        executableNames += "MassEffectMultiplayer.exe";
+                        break;
                     case MEGame.LELauncher:
                         executableNames += "MassEffectLauncher.exe";
                         break;
                 }
             }
-
 
             string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|{executableNames}"; //only partially localizable.
             ofd.Filter = filter;
