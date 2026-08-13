@@ -139,8 +139,9 @@
         <Resource Include="appicon.ico" />
         <Resource Include="images\darktheme.png" />
         <Resource Include="images\lighttheme.png" />
-        <Resource Include="images\me3tweaks.png" />
-        <Resource Include="images\modmaker.png" />
+		<Resource Include="images\me3tweaks.png" />
+		<Resource Include="images\milan.png" />
+		<Resource Include="images\modmaker.png" />
         <Resource Include="images\nexusmods_scenethemed.png" />
         <Resource Include="images\unknown.png" />
         <Resource Include="images\windowicon.png" />
