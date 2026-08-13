@@ -155,6 +155,75 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXWeaponMods_SMGs.pcc",
             "SFXWeaponMods_SniperRifles.pcc",
 
+            // Gui Assets for weapons
+            "SFXGUI_WMod_AssaultRifleAccuracy.pcc",
+            "SFXGUI_WMod_AssaultRifleDamage.pcc",
+            "SFXGUI_WMod_PistolAccuracy.pcc",
+            "SFXGUI_WMod_PistolDamage.pcc",
+            "SFXGUI_WMod_PistolStability.pcc",
+            "SFXGUI_WMod_ShotgunDamage.pcc",
+            "SFXGUI_WMod_ShotgunMeleeDamage.pcc",
+            "SFXGUI_WMod_SMGAccuracy.pcc",
+            "SFXGUI_WMod_SMGDamage.pcc",
+            "SFXGUI_WMod_SniperRifleAccuracy.pcc",
+            "SFXGUI_WMod_SniperRifleDamage.pcc",
+            "SFXGUI_W_A_Argus.pcc",
+            "SFXGUI_W_A_Avenger.pcc",
+            "SFXGUI_W_A_Cobra.pcc",
+            "SFXGUI_W_A_Collector.pcc",
+            "SFXGUI_W_A_Falcon.pcc",
+            "SFXGUI_W_A_Geth.pcc",
+            "SFXGUI_W_A_Mattock.pcc",
+            "SFXGUI_W_A_Reckoning.pcc",
+            "SFXGUI_W_A_Revenant.pcc",
+            "SFXGUI_W_A_Saber.pcc",
+            "SFXGUI_W_A_Valkyrie.pcc",
+            "SFXGUI_W_A_Vindicator.pcc",
+            "SFXGUI_W_H_ArcProjector.pcc",
+            "SFXGUI_W_H_Avalanche.pcc",
+            "SFXGUI_W_H_Blackstorm.pcc",
+            "SFXGUI_W_H_Cain.pcc",
+            "SFXGUI_W_H_Flamethrower_Player.pcc",
+            "SFXGUI_W_H_GrenadeLauncher.pcc",
+            "SFXGUI_W_H_MiniGun.pcc",
+            "SFXGUI_W_H_MissileLauncher.pcc",
+            "SFXGUI_W_H_ParticleBeam.pcc",
+            "SFXGUI_W_H_RocketLauncher.pcc",
+            "SFXGUI_W_H_TitanMissileLauncher.pcc",
+            "SFXGUI_W_P_Carnifex.pcc",
+            "SFXGUI_W_P_Eagle.pcc",
+            "SFXGUI_W_P_Ivory.pcc",
+            "SFXGUI_W_P_Phalanx.pcc",
+            "SFXGUI_W_P_Predator.pcc",
+            "SFXGUI_W_P_Scorpion.pcc",
+            "SFXGUI_W_P_Talon.pcc",
+            "SFXGUI_W_P_Thor.pcc",
+            "SFXGUI_W_SG_Claymore.pcc",
+            "SFXGUI_W_SG_Crusader.pcc",
+            "SFXGUI_W_SG_Disciple.pcc",
+            "SFXGUI_W_SG_Eviscerator.pcc",
+            "SFXGUI_W_SG_Geth.pcc",
+            "SFXGUI_W_SG_Graal.pcc",
+            "SFXGUI_W_SG_Katana.pcc",
+            "SFXGUI_W_SG_Raider.pcc",
+            "SFXGUI_W_SG_Scimitar.pcc",
+            "SFXGUI_W_SG_Striker.pcc",
+            "SFXGUI_W_SMG_Hornet.pcc",
+            "SFXGUI_W_SMG_Hurricane.pcc",
+            "SFXGUI_W_SMG_Locust.pcc",
+            "SFXGUI_W_SMG_Shuriken.pcc",
+            "SFXGUI_W_SMG_Tempest.pcc",
+            "SFXGUI_W_S_BlackWidow.pcc",
+            "SFXGUI_W_S_Incisor.pcc",
+            "SFXGUI_W_S_Indra.pcc",
+            "SFXGUI_W_S_Javelin.pcc",
+            "SFXGUI_W_S_Mantis.pcc",
+            "SFXGUI_W_S_Raptor.pcc",
+            "SFXGUI_W_S_Valiant.pcc",
+            "SFXGUI_W_S_Viper.pcc",
+            "SFXGUI_W_S_Widow.pcc",
+
+
             // Pawns
             "SFXPawn_Atlas.pcc",
             "SFXPawn_Banshee.pcc",
@@ -208,6 +277,7 @@ namespace ME3TweaksModManager.modmanager.milan
             "GFxUI.pcc",            
             "SFXGUI_A_LegalLogos.pcc",
             "SFXGUI_Fonts.pcc",
+            "SFXGUI_FontsJPN.pcc",
             "Textures.tfc",
             "Wwise_Generic_GUI.afc",
             "Wwise_Main_Menu_NonStreaming.afc",
@@ -364,6 +434,11 @@ namespace ME3TweaksModManager.modmanager.milan
                 CopySourceFiles(sourceGameTarget.TargetPath, CookedFiles, destinationFolderPath, "BioGame\\CookedPCConsole", "*.tfc");
                 CopySourceFiles(sourceGameTarget.TargetPath, MovieFiles, destinationFolderPath, "BioGame\\Movies");
 
+                // Rename game executable. This is used a lot by tooling to identify the target game
+                var existingExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffect3.exe");
+                var newNameExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffectMultiplayer.exe");
+                File.Move(existingExe, newNameExe);
+
                 // Create stub directories, some of our tooling requires them to exist, even if they're empty.
                 // Required by AutoTOC. I don't want to have to add a folder check to this, so we make it exist
                 Directory.CreateDirectory(Path.Combine(destinationFolderPath, @"Engine", @"Shaders"));
@@ -392,21 +467,18 @@ namespace ME3TweaksModManager.modmanager.milan
                 // Patch to shrink them?
 
                 // Unapply bink. This will be a common problem, so we can just handle it here.
-                // EARLY DEV - Make LE3 target so we can use LE3 ASIs
-                var le3Target = new GameTargetWPF(MEGame.LE3, destinationFolderPath, false, skipInit: true);
-                le3Target.UninstallBinkBypass();
+                //lmpTarget.UninstallBinkBypass();
 
                 // TOC game so game can find files.
-                AutoTOC.RunTOCOnGameTarget(le3Target);
+                AutoTOC.RunTOCOnGameTarget(lmpTarget);
 
-#if DEBUG
-                // Debug only for now!
-                interop?.AddTarget(le3Target);
+                lmpTarget.ValidateTarget(); // Triggers validation which unlocks UI options
+
+                // Add target to Mod Manager
+                interop?.AddTarget(lmpTarget);
 
                 // This makes it easier to debug 
-                le3Target.InstallBinkBypass(false);
-                ASIManager.InstallASIToTargetByGroupID(ASIModUpdateGroupID.LE3_DebugLogger, @"DebugLogger", le3Target);
-#endif
+                lmpTarget.InstallBinkBypass(false);
             }
             catch (Exception e)
             {
