@@ -17,8 +17,10 @@ namespace ME3TweaksModManager.modmanager.converters
                 switch (tabName)
                 {
                     case "DLCMods":
-                    case "Textures":
                         return game != MEGame.LELauncher && game != MEGame.UDK ? Visibility.Visible : Visibility.Collapsed;
+                    case "Textures":
+                        // LMP will not support MEM textures.
+                        return game != MEGame.LELauncher && game != MEGame.UDK && game != MEGame.LMP ? Visibility.Visible : Visibility.Collapsed;
                     case "Other":
                         // Since we dont have a LauncherDirectory class we don't have list of vanilla Dlls. 
                         // So we don't actually show the Other tab.

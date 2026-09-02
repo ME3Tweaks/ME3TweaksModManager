@@ -93,7 +93,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <summary>
         /// If this result needs any merges performed
         /// </summary>
-        public bool NeedsMergeDLC => TargetsToEmailMergeSync.Any() || TargetsToSquadmateMergeSync.Any();
+        public bool NeedsMergeDLC => SelectedTarget?.Game != MEGame.LMP && (TargetsToEmailMergeSync.Any() || TargetsToSquadmateMergeSync.Any());
 
         /// <summary>
         /// What moddesc files have been modified by this panel

@@ -13,8 +13,6 @@ using ME3TweaksCore.ME3Tweaks.ModManager;
 using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using System.Globalization;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {

@@ -349,7 +349,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         Result.TargetsToEmailMergeSync.Add(selectedTarget);
                     }
 
-                    if (selectedTarget.Game.IsGame3() || selectedTarget.Game == MEGame.LE2) // ME2 is not supported for merge due to having to edit the SWF
+                    if ((selectedTarget.Game.IsGame3() && selectedTarget.Game != MEGame.LMP) || selectedTarget.Game == MEGame.LE2) // ME2 is not supported for merge due to having to edit the SWF
                     {
                         Result.TargetsToSquadmateMergeSync.Add(selectedTarget);
                     }
