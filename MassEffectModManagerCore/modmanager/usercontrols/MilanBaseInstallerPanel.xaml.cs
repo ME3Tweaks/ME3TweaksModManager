@@ -29,6 +29,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         #region Commands
         public GenericCommand InstallCommand { get; private set; }
         public GenericCommand CancelCommand { get; private set; }
+        public GenericCommand BrowseLocationCommand { get; private set; }
         #endregion
 
         /// <summary>
@@ -60,6 +61,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InstallCommand = new GenericCommand(Install, CanInstall);
             CancelCommand = new GenericCommand(Cancel, CanCancel);
+            //BrowseLocationCommand = new GenericCommand(SelectTargetFolder, );
         }
 
         private void Install()

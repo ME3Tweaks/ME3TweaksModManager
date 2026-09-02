@@ -46,7 +46,7 @@
             </DockPanel>
             <DockPanel Margin="0,5,0,0">
                 <TextBlock Text="Install location" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120"  FontWeight="Bold"/>
-                <Button Content="Browse" DockPanel.Dock="Right"/>
+                <Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseLocationCommand}"/>
                 <xctk:WatermarkTextBox Text="{Binding InstallLocation, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
         

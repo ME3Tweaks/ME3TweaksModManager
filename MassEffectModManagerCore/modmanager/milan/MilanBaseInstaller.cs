@@ -1,4 +1,8 @@
-﻿using ME3TweaksCore.Helpers;
+﻿using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions.IO;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.installer;
@@ -6,6 +10,8 @@ using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
 using System.Diagnostics;
+using System.Text;
+using System.Text.Json;
 
 namespace ME3TweaksModManager.modmanager.milan
 {
@@ -14,6 +20,9 @@ namespace ME3TweaksModManager.modmanager.milan
     /// </summary>
     internal class MilanBaseInstaller
     {
+
+
+        #region Files To Copy
         /// <summary>
         /// Files from Binaries folder
         /// </summary>
@@ -246,6 +255,7 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXPawn_Trooper.pcc",
 
             // Audio - Enemies
+            "VocalizationBanks.afc", // Also has localizations
             "ss_cerberus_trooper_S.afc", // Localized
             "ss_exertion_palette_D.afc", // Localized
             "Wwise_Crt_Cerb_Nem_SFX.afc",
@@ -263,6 +273,7 @@ namespace ME3TweaksModManager.modmanager.milan
             "wwise_crt_reap_ravenger_sfx.afc",
             "Wwise_Crt_Reap_Swarmer_SFX.afc",
 
+            // Misc
             "AreaMap_NumIcon.pcc",
             "BIOGame_DEU.tlk",
             "BIOGame_ESN.tlk",
@@ -274,14 +285,27 @@ namespace ME3TweaksModManager.modmanager.milan
             "BIOGame_RUS.tlk",
             "BIOG_UIWorld.pcc",
             "GameFramework.pcc",
-            "GFxUI.pcc",            
+            "GFxUI.pcc",
             "SFXGUI_A_LegalLogos.pcc",
             "SFXGUI_Fonts.pcc",
             "SFXGUI_FontsJPN.pcc",
             "Textures.tfc",
+
+            // Other audio
+            "Wwise_VO_Exertions.afc", // Contains MP-specific stuff
+            "Wwise_GUI_MultiPlayer_Specific.afc", // MP Promotion
+            "Wwise_Generic_Explosions.afc",
+            "Wwise_Generic_Foley.afc",
             "Wwise_Generic_GUI.afc",
+            "Wwise_Generic_Gameplay.afc",
             "Wwise_Main_Menu_NonStreaming.afc",
-            "Wwise_Main_Menu_Streaming.afc"
+            "Wwise_Main_Menu_Streaming.afc",
+        ];
+
+        private static readonly string[] Patch02Files = [
+            // Patch02
+            "SFXGUI_FontsJPN_DLC.pcc",
+            "SFXGUI_Fonts_DLC.pcc",
         ];
 
         /// <summary>
@@ -292,6 +316,47 @@ namespace ME3TweaksModManager.modmanager.milan
             "StartupLoop.bik",
             "StartupLoop_a.bik",
         ];
+
+        #endregion
+
+        #region Manifests
+        // This must go after Files to copy or Files will be null
+        private static readonly CopyManifest[] installManifests = new[]
+        {
+            // Copy main binary dependencies
+            new CopyManifest(
+                SourceSubFolder: "Binaries",
+                DestSubFolder: "Binaries",
+                Files: BinaryFiles
+            ),
+
+            // Base CookedPCConsole assets + TFC textures
+            new CopyManifest(
+                SourceSubFolder: @"BioGame\CookedPCConsole",
+                DestSubFolder: @"BioGame\CookedPCConsole",
+                Files: CookedFiles,
+                UseRelativePathing: false,
+                ExtraPatterns: [ "*.tfc" ]
+            ),
+
+            // Re-route DLC Patch02 files into BioGame/CookedPCConsole
+            new CopyManifest(
+                SourceSubFolder: @"BioGame\DLC\DLC_UPD_Patch02\CookedPCConsole",
+                DestSubFolder: @"BioGame\CookedPCConsole",
+                UseRelativePathing: false,
+                Files: Patch02Files
+            ),
+
+            // Startup & Loading Movies
+            new CopyManifest(
+                SourceSubFolder: @"BioGame\Movies",
+                DestSubFolder: @"BioGame\Movies",
+                UseRelativePathing: false,
+                Files: MovieFiles
+            )
+        };
+
+        #endregion
 
         /// <summary>
         /// Names of mods that are considered 'Project Milan' and are used to install the MP component to LMP
@@ -323,44 +388,269 @@ namespace ME3TweaksModManager.modmanager.milan
             // Initialize the base installation for Milan
         }
 
-        private void CopySourceFiles(string sourceDirectory, string[] files, string destGamePath, string subFolder, params string[] extraPatterns)
-        {
-            var sourceBasePath = Path.Combine(sourceDirectory, subFolder);
-            var destFolder = Path.Combine(destGamePath, subFolder);
-            Directory.CreateDirectory(destFolder);
-            var sourceFiles = Directory.GetFiles(sourceBasePath, "*.*", SearchOption.AllDirectories)
-                .Where(f => files.Contains(Path.GetFileName(f))).ToList();
+        #region MilanDelta manifest
 
-            foreach (var pattern in extraPatterns)
+        private const string MilanDeltaFolderName = "MilanDelta";
+        private const string MilanDeltaManifestFileName = "manifest.json";
+        private const double SupportedMilanDeltaVersion = 0.1;
+
+        /// <summary>
+        /// Folder containing the MilanDelta manifest and its patch files.
+        /// </summary>
+        private string milanDeltaFolder;
+
+        /// <summary>
+        /// Delta entries from the MilanDelta manifest, keyed by destination filename.
+        /// </summary>
+        private Dictionary<string, MilanDeltaFileEntry> milanDeltaLookup;
+
+        /// <summary>
+        /// Loads and verifies the MilanDelta manifest shipped with the Project Milan mod. Throws if the
+        /// manifest is missing, unparsable, of an unsupported version, or its signature does not match
+        /// its contents - any of these mean the build is invalid and installation must not continue.
+        /// </summary>
+        private void LoadMilanDeltaManifest(Mod milanMod)
+        {
+            var deltaFolder = Path.Combine(milanMod.ModPath, MilanDeltaFolderName);
+            var manifestPath = Path.Combine(deltaFolder, MilanDeltaManifestFileName);
+            if (!File.Exists(manifestPath))
             {
-                sourceFiles.AddRange(Directory.GetFiles(sourceBasePath, pattern, SearchOption.AllDirectories));
+                throw new Exception($"Project Milan mod is missing its {MilanDeltaFolderName} manifest ({MilanDeltaManifestFileName}). This is not a valid Project Milan build.");
             }
 
-            foreach (var file in sourceFiles)
+            MilanDeltaManifest manifest;
+            try
             {
-                interop.SetStatus?.Invoke(Path.GetFileName(file));
+                manifest = JsonSerializer.Deserialize<MilanDeltaManifest>(File.ReadAllText(manifestPath));
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to parse {MilanDeltaManifestFileName}: {e.Message}");
+            }
 
-                // Check to see if this is a nested file
-                var fileName = Path.GetFileName(file);
-                var destFile = Path.Combine(destFolder, fileName);
-                var sRelPath = Path.GetRelativePath(sourceBasePath, file);
-                var dRelPath = Path.GetRelativePath(destFolder, destFile);
-                if (sRelPath != dRelPath)
+            if (manifest == null || !manifest.Milan)
+            {
+                throw new Exception($"{MilanDeltaManifestFileName} is not a valid Milan delta manifest.");
+            }
+
+            if (manifest.Version != SupportedMilanDeltaVersion)
+            {
+                throw new Exception($"{MilanDeltaManifestFileName} has unsupported version {manifest.Version} (expected {SupportedMilanDeltaVersion}).");
+            }
+
+            // Verify the manifest hasn't been corrupted or tampered with: recompute the signature over
+            // the exact same compact {milan, version, deltas} body that was originally signed.
+            var bodyJson = JsonSerializer.Serialize<MilanDeltaSignableBody>(manifest);
+            var computedSignature = MUtilities.CalculateHash(Encoding.UTF8.GetBytes(bodyJson), "sha256");
+            if (!string.Equals(computedSignature, manifest.Signature, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception($"{MilanDeltaManifestFileName} signature does not match its contents. This build may be corrupted or tampered with.");
+            }
+
+            milanDeltaFolder = deltaFolder;
+            milanDeltaLookup = manifest.Deltas.ToDictionary(f => f.Filename, StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Applies a MilanDelta JPatch delta to <paramref name="sourceFile"/> and writes the resulting
+        /// package, recompressed, to <paramref name="destFile"/>. The delta is diffed against the
+        /// decompressed package data, so the source is decompressed before patching and the result is
+        /// recompressed afterwards; both the input and the patched output are verified against the
+        /// manifest's recorded size and SHA-256 hash before being trusted.
+        /// </summary>
+        private void ApplyMilanDelta(string sourceFile, string destFile, MilanDeltaFileEntry entry)
+        {
+            var sourceBytes = File.ReadAllBytes(sourceFile);
+            using var sourceStream = new MemoryStream(sourceBytes);
+            using var decompressedStream = MEPackage.GetDecompressedPackageStream(sourceStream);
+            decompressedStream.Position = 0;
+
+            VerifySizeAndHash(decompressedStream.Length, () => MUtilities.CalculateHash(decompressedStream, "sha256"),
+                entry.SourceSize, entry.SourceHash, entry.Filename, "source");
+
+            var patchPath = Path.Combine(milanDeltaFolder, entry.Delta);
+            if (!File.Exists(patchPath))
+            {
+                throw new Exception($"Milan delta patch file is missing: {patchPath}");
+            }
+
+            decompressedStream.Position = 0;
+            using var patchStream = File.OpenRead(patchPath);
+            using var patchedStream = new MemoryStream();
+            JPatch.ApplyJPatch(decompressedStream, patchStream, patchedStream);
+
+            VerifySizeAndHash(patchedStream.Length, () => MUtilities.CalculateHash(patchedStream, "sha256"),
+                entry.DestSize, entry.DestHash, entry.Filename, "output");
+
+            // Re-compress the verified, patched data - this becomes the final data written to destFile.
+            patchedStream.Position = 0;
+            var package = MEPackageHandler.OpenMEPackageFromStream(patchedStream);
+            package.Save(destFile, compress: true);
+        }
+
+        /// <summary>
+        /// Verifies actual data against an expected size and hash, checking size first (cheap) so a
+        /// mismatch aborts immediately without paying for a hash computation.
+        /// </summary>
+        private static void VerifySizeAndHash(long actualSize, Func<string> computeHash, long expectedSize, string expectedHash, string fileName, string stage)
+        {
+            if (actualSize != expectedSize)
+            {
+                throw new Exception($"Milan delta {stage} size mismatch for {fileName}: expected {expectedSize}, got {actualSize}.");
+            }
+
+            var actualHash = computeHash();
+            if (!string.Equals(actualHash, expectedHash, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception($"Milan delta {stage} hash mismatch for {fileName}: expected {expectedHash}, got {actualHash}.");
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Defines a source-to-destination mapping manifest for a batch of files.
+        /// </summary>
+        public record CopyManifest(
+            string SourceSubFolder,
+            string DestSubFolder,
+            IReadOnlyList<string> Files,
+            bool UseRelativePathing = true,
+            IReadOnlyList<string>? ExtraPatterns = null
+        );
+
+        private void CopySourceFiles(string sourceDirectory, string destGamePath, IEnumerable<CopyManifest> manifests)
+        {
+            // Pre-scan the entire source folder tree once into a case-insensitive lookup table by file name
+            //var filesInSourceFolder = Directory.EnumerateFiles(sourceBasePath, "*.*", SearchOption.AllDirectories)
+            //    .ToLookup(f => Path.GetFileName(f), StringComparer.OrdinalIgnoreCase);
+
+            // Pre-scan the entire source folder tree once into a case-insensitive lookup table by file name
+            var filesInSourceFolder = MELoadedFiles.GetAllFilesLoadedInGame(MEGame.LE3, forceReload: true, includeModDLC: false, gameRootOverride: sourceDirectory);
+
+            foreach (var manifest in manifests)
+            {
+                var sourceBasePath = Path.Combine(sourceDirectory, manifest.SourceSubFolder);
+                var destFolder = Path.Combine(destGamePath, manifest.DestSubFolder);
+
+                if (!Directory.Exists(sourceBasePath))
                 {
-                    // It's in a subfolder
-                    destFile = Path.Combine(destFolder, sRelPath);
-                    Directory.GetParent(destFile).Create();
+                    M3Log.Warning($"Source directory does not exist: {sourceBasePath}");
+                    continue;
                 }
 
-                M3Log.Information($"Copying {file} to {destFile}");
-                File.Copy(file, destFile, true);
+                Directory.CreateDirectory(destFolder);
 
-                // Copy package localizations
-                var extension = Path.GetExtension(file);
-                if (extension is @".pcc" or @".afc")
+
+
+                var filesToCopy = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var baseFilesToProcessLocs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                // 1. Resolve explicitly requested files and localized variants
+                foreach (var fileName in manifest.Files)
                 {
-                    CopyLocalizationsOfFile(file, destFolder);
+                    // Exact match lookup (O(1))
+                    if (filesInSourceFolder.TryGetValue(fileName, out var file))
+                    {
+                        filesToCopy.Add(file);
+                        baseFilesToProcessLocs.Add(file);
+                    }
+                    else
+                    {
+                        // Fallback: look for direct localized matches (e.g. File_INT.pcc)
+                        var baseName = Path.GetFileNameWithoutExtension(fileName);
+                        var ext = Path.GetExtension(fileName);
+
+                        var localizedMatches = filesInSourceFolder
+                            .Values.Where(f =>
+                            {
+                                var fn = Path.GetFileName(f);
+                                return Path.GetFileNameWithoutExtension(fn).StartsWith(baseName + "_", StringComparison.OrdinalIgnoreCase)
+                                       && Path.GetExtension(fn).Equals(ext, StringComparison.OrdinalIgnoreCase);
+                            });
+
+                        foreach (var match in localizedMatches)
+                        {
+                            filesToCopy.Add(match);
+                        }
+                    }
                 }
+
+                // 2. Resolve additional wildcards (e.g., *.tfc)
+                if (manifest.ExtraPatterns != null)
+                {
+                    foreach (var pattern in manifest.ExtraPatterns)
+                    {
+                        foreach (var file in Directory.EnumerateFiles(sourceBasePath, pattern, SearchOption.AllDirectories))
+                        {
+                            filesToCopy.Add(file);
+                        }
+                    }
+                }
+
+                // 3. Perform file copying and header updating
+                foreach (var file in filesToCopy)
+                {
+                    var fileName = Path.GetFileName(file);
+                    if (file.Contains("Indra"))
+                    {
+                        Debug.WriteLine("h");
+                    }
+                    interop.SetStatus?.Invoke(fileName);
+
+                    // Maintain nested directory layout if the source file is inside subdirectories
+                    var relativePath = manifest.UseRelativePathing ? Path.GetRelativePath(sourceBasePath, file) : fileName;
+                    var destFile = Path.Combine(destFolder, relativePath);
+
+                    var parentDir = Path.GetDirectoryName(destFile);
+                    if (!string.IsNullOrEmpty(parentDir))
+                    {
+                        Directory.CreateDirectory(parentDir);
+                    }
+
+                    
+
+                    CopyFile(file, destFile);
+
+                    // Copy localization packages if this file was explicitly requested as a base file
+                    var extension = Path.GetExtension(file);
+                    if ((extension.Equals(".pcc", StringComparison.OrdinalIgnoreCase) ||
+                         extension.Equals(".afc", StringComparison.OrdinalIgnoreCase)) &&
+                        baseFilesToProcessLocs.Contains(file))
+                    {
+                        CopyLocalizationsOfFile(file, destFolder);
+                    }
+                }
+            }
+        }
+
+        private void CopyFile(string file, string destFile)
+        {
+            M3Log.Information($"Copying {file} to {destFile}");
+
+            var extension = Path.GetExtension(file);
+            var isPackage = extension.Equals(".pcc", StringComparison.OrdinalIgnoreCase);
+
+            // If a MilanDelta patch targets this file, apply it (decompress -> patch -> verify -> recompress)
+            // instead of a plain byte copy. This must happen before the licensee version is changed below,
+            // since the delta was diffed against the original LE3 data.
+            if (isPackage && milanDeltaLookup != null && milanDeltaLookup.TryGetValue(Path.GetFileName(destFile), out var deltaEntry))
+            {
+                ApplyMilanDelta(file, destFile, deltaEntry);
+            }
+            else
+            {
+                using var sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                using var destStream = new FileStream(destFile, FileMode.Create, FileAccess.ReadWrite);
+                sourceStream.CopyTo(destStream);
+            }
+
+            // Update the licensee value for .pcc files
+            if (isPackage)
+            {
+                using var destStream = new FileStream(destFile, FileMode.Open, FileAccess.ReadWrite);
+                destStream.Seek(0x6, SeekOrigin.Begin);
+                destStream.WriteByte((byte)MEPackage.LMPLicenseeVersion);
             }
         }
 
@@ -386,7 +676,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 {
                     // Copy LOC version to Milan
                     var outPath = Path.Combine(destFolder, locName);
-                    File.Copy(testPath, outPath);
+                    CopyFile(testPath, outPath);
                 }
 
                 // Straight loc
@@ -396,7 +686,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 {
                     // Copy _LANG version to Milan
                     var outPath = Path.Combine(destFolder, locName);
-                    File.Copy(testPath, outPath);
+                    CopyFile(testPath, outPath);
                 }
             }
         }
@@ -422,6 +712,16 @@ namespace ME3TweaksModManager.modmanager.milan
             // Copy the source files over.
             try
             {
+                // Validate the Project Milan mod and its MilanDelta manifest before touching the
+                // destination directory - an invalid/missing/tampered manifest must reject the build.
+                interop.SetStatus?.Invoke("Validating Project Milan build...");
+                var milanmod = GetMilanMod();
+                if (milanmod == null)
+                {
+                    throw new Exception("No Project Milan mod found in the mod library.");
+                }
+                LoadMilanDeltaManifest(milanmod);
+
                 // Wipe the destination directory so we start from a clean slate.
                 interop.SetStatus?.Invoke("Preparing installation directory...");
                 if (Directory.Exists(destinationFolderPath))
@@ -430,9 +730,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
                 MUtilities.CreateDirectoryWithWritePermission(destinationFolderPath);
 
-                CopySourceFiles(sourceGameTarget.TargetPath, BinaryFiles, destinationFolderPath, "Binaries");
-                CopySourceFiles(sourceGameTarget.TargetPath, CookedFiles, destinationFolderPath, "BioGame\\CookedPCConsole", "*.tfc");
-                CopySourceFiles(sourceGameTarget.TargetPath, MovieFiles, destinationFolderPath, "BioGame\\Movies");
+                CopySourceFiles(sourceGameTarget.TargetPath, destinationFolderPath, installManifests);
 
                 // Rename game executable. This is used a lot by tooling to identify the target game
                 var existingExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffect3.exe");
@@ -446,7 +744,6 @@ namespace ME3TweaksModManager.modmanager.milan
 
                 // Install Project Milan
                 var lmpTarget = new GameTargetWPF(MEGame.LMP, destinationFolderPath, true);
-                var milanmod = GetMilanMod();
                 var optionsPackage = new ModInstallOptionsPackage()
                 {
                     InstallTarget = lmpTarget,
@@ -485,6 +782,9 @@ namespace ME3TweaksModManager.modmanager.milan
                 M3Log.Exception(e, $@"Error building base milan installation:");
                 successful = false;
                 errorMessage = e.Message;
+#if DEBUG
+                throw;
+#endif
             }
             finally
             {
