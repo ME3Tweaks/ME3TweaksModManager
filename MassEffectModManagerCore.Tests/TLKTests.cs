@@ -22,7 +22,8 @@ namespace ME3TweaksModManager.Tests
                 var talkFileMe2 = new ME2ME3TalkFile(tlk);
                 var tlkStream = LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkStream(talkFileMe2.StringRefs);
                 tlkStream.Position = 0;
-                var reloadedTlk = new ME2ME3TalkFile(tlkStream);
+                // The stream constructor takes the originating path too, for diagnostics.
+                var reloadedTlk = new ME2ME3TalkFile(tlkStream, tlk);
 
                 foreach (var v in talkFileMe2.StringRefs)
                 {
