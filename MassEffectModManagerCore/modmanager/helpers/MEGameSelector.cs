@@ -15,7 +15,7 @@ namespace ME3TweaksModManager.modmanager.helpers
             Game = game;
         }
 
-        private static readonly MEGame[] allSupportedGames = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LELauncher };
+        private static readonly MEGame[] allSupportedGames = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LMP, MEGame.LELauncher };
 
         // EnabledGeneration // for searching
 
