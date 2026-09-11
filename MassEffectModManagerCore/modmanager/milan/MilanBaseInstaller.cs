@@ -232,6 +232,17 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXGUI_W_S_Viper.pcc",
             "SFXGUI_W_S_Widow.pcc",
 
+            // GUI assets for weapons and other stuff
+            "SFXNotificationImages_AssaultRifles.pcc",
+            "SFXNotificationImages_GAW_1.pcc",
+            "SFXNotificationImages_GAW_2.pcc",
+            "SFXNotificationImages_HeavyPistols.pcc",
+            "SFXNotificationImages_HeavyWeapons.pcc",
+            "SFXNotificationImages_Shotguns.pcc",
+            "SFXNotificationImages_SMGs.pcc",
+            "SFXNotificationImages_SniperRifles.pcc",
+            "SFXNotification_ModLarge.pcc",
+            "SFXNotification_WeaponUpgrades.pcc",
 
             // Pawns
             "SFXPawn_Atlas.pcc",
