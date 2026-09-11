@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Packages;
@@ -51,7 +52,13 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             if (!ServiceLoaded || Database == null) return true; //Not loaded - fallback to everything is supported (server will enforce)gi
             // This shouldn't happen but it *might* show up as Unknown if the mod fails to load
             if (!game.IsLEGame() && !game.IsOTGame() && game != MEGame.LELauncher) return false;
-            return Database[game.ToString()].Contains(nexusCode);
+            if (Database.TryGetValue(game.ToString(), out var db)) 
+            {
+                return db.Contains(nexusCode);
+            }
+
+            Debug.WriteLine("FIX THIS!!!!!!!!!!!!!!!!");
+            return false; // NOT IN DB
         }
 
         public static bool LoadService(JToken data)
@@ -99,6 +106,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 {
                     var cached = File.ReadAllText(GetServiceCacheFile());
                     Database = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(cached);
+                    Database[MEGame.LMP.ToString()] = new(); // TODO FIX THIS ONCE LMP IS UP AND RUNNING
                     ServiceLoaded = true;
                     M3Log.Information($@"Loaded cached {ServiceLoggingName}");
                     return true;
