@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.extensions;
 using ME3TweaksModManager.modmanager.objects.launcher;
@@ -15,14 +16,22 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
     public partial class LaunchOptionSelectorDialog : Window
     {
         public MEGame Game { get; set; }
+
+        /// <summary>
+        /// The target these launch options are being configured for. Used to locate its ASI directory
+        /// so ASI-provided command line switches can be listed.
+        /// </summary>
+        public GameTargetWPF Target { get; set; }
+
         public LaunchOptionsPackage ChosenOption { get; set; }
 
         public ObservableCollectionExtended<LaunchOptionsPackage> AvailableLaunchOptionsPackages { get; } = new();
 
-        public LaunchOptionSelectorDialog(Window owner, MEGame game)
+        public LaunchOptionSelectorDialog(Window owner, GameTargetWPF target)
         {
             Owner = owner;
-            Game = game;
+            Target = target;
+            Game = target.Game;
             PopulatePackages();
 
             var matchGuid = Guid.NewGuid();
@@ -68,7 +77,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
 
         private void EditOption()
         {
-            LaunchParametersDialog lpd = new LaunchParametersDialog(this, Game, ChosenOption);
+            LaunchParametersDialog lpd = new LaunchParametersDialog(this, Target, ChosenOption);
             lpd.ShowDialog();
 
             // Reload packages to locate the item by Guid
@@ -85,7 +94,7 @@ namespace ME3TweaksModManager.modmanager.windows.dialog
 
         private void CreateNewLaunchOption()
         {
-            LaunchParametersDialog lpd = new LaunchParametersDialog(this, Game, null);
+            LaunchParametersDialog lpd = new LaunchParametersDialog(this, Target, null);
             lpd.ShowDialog();
 
             var option = lpd.LaunchPackage;

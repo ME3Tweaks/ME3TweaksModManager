@@ -1,5 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.NativeMods;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
@@ -31,6 +34,18 @@ namespace ME3TweaksModManager.modmanager.windows
         /// List of custom command line parameters
         /// </summary>
         public ObservableCollectionExtended<LauncherCustomParameter> CustomOptions { get; } = new();
+
+        /// <summary>
+        /// List of command line switches discovered from ASI mods installed to this target's ASI directory
+        /// </summary>
+        public ObservableCollectionExtended<LauncherCustomParameter> AsiOptions { get; } = new();
+
+        /// <summary>
+        /// The target these launch options are being configured for. Used to locate its ASI directory
+        /// so ASI-provided command line switches can be listed. May be null if not known, in which case
+        /// no ASI-provided switches will be listed.
+        /// </summary>
+        public GameTargetWPF Target { get; set; }
 
         #region Commands
         public GenericCommand DeletePackageCommand { get; private set; }
@@ -67,12 +82,14 @@ namespace ME3TweaksModManager.modmanager.windows
         private Guid PackageGuid { get; set; }
         #endregion
 
-        public LaunchParametersDialog(Window window, MEGame game, LaunchOptionsPackage package)
+        public LaunchParametersDialog(Window window, GameTargetWPF target, LaunchOptionsPackage package)
         {
             Owner = window;
-            Game = game;
+            Target = target;
+            Game = target.Game;
 
             LoadPackage(package);
+            LoadAsiOptions();
             LoadCommands();
             InitializeComponent();
             this.ApplyDarkNetWindowTheme();
@@ -164,6 +181,75 @@ namespace ME3TweaksModManager.modmanager.windows
             }
 
             CustomArguments = LaunchPackage.CustomExtraArgs;
+        }
+
+        /// <summary>
+        /// Scans the target's ASI directory for installed ASI mods that embed a list of command line
+        /// switches they support, and populates <see cref="AsiOptions"/> with them. Options whose switch
+        /// already appears in the current custom arguments are shown as checked.
+        /// </summary>
+        private void LoadAsiOptions()
+        {
+            AsiOptions.Clear();
+            if (Target == null)
+                return;
+
+            var asiDirectory = Target.GetASIPath();
+            var discovered = AsiCommandLineArgsReader.ScanDirectoryForCommandLineSwitches(asiDirectory);
+
+            // The same switch may be declared by more than one installed ASI file (e.g. -trace-log-level
+            // is shared by every ASI that links Common); only list it once, and only ever show it once
+            foreach (var group in discovered.GroupBy(x => x.Switch.Name, StringComparer.OrdinalIgnoreCase))
+            {
+                var name = group.Key;
+                var distinctDescriptions = group.Select(x => x.Switch.Description).Distinct().ToList();
+                var sourceFiles = string.Join(@", ", group.Select(x => x.SourceAsiFileName).Distinct());
+
+                // If ASI switch descriptions don't match, show every description rather than
+                // silently picking one and hiding the rest.
+                var description = distinctDescriptions.Count == 1
+                    ? distinctDescriptions[0]
+                    : string.Join(@" | ", distinctDescriptions);
+
+                AsiOptions.Add(new LauncherCustomParameter()
+                {
+                    DisplayString = name,
+                    ToolTip = $@"{description} ({sourceFiles})",
+                    CommandLineText = name,
+                    IsSelected = CustomArgumentsContainsToken(name)
+                });
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the given token (e.g. a command line switch) is already present in <see cref="CustomArguments"/>.
+        /// </summary>
+        private bool CustomArgumentsContainsToken(string token)
+        {
+            var tokens = (CustomArguments ?? string.Empty).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return tokens.Any(t => string.Equals(t, token, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Adds or removes the given token (e.g. a command line switch) from <see cref="CustomArguments"/>.
+        /// </summary>
+        private void SetTokenInCustomArguments(string token, bool present)
+        {
+            var tokens = (CustomArguments ?? string.Empty).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            tokens.RemoveAll(t => string.Equals(t, token, StringComparison.OrdinalIgnoreCase));
+            if (present)
+            {
+                tokens.Add(token);
+            }
+            CustomArguments = string.Join(@" ", tokens);
+        }
+
+        private void AsiOptionToggled(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox { DataContext: LauncherCustomParameter lcp })
+            {
+                SetTokenInCustomArguments(lcp.CommandLineText, lcp.IsSelected);
+            }
         }
 
         private void LoadCommands()

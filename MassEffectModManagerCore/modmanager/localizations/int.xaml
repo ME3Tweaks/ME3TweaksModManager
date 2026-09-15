@@ -2985,6 +2985,7 @@
     <system:String x:Key="string_subtitles">Subtitles</system:String>
     <system:String x:Key="string_size">Size:</system:String>
     <system:String x:Key="string_customOptions">Custom options</system:String>
+    <system:String x:Key="string_asiModOptions">ASI mod options</system:String>
     <system:String x:Key="string_automaticallyResumeLastSave">Automatically resume last save</system:String>
     <system:String x:Key="string_launchParametersSetName">Launch Parameters set name:</system:String>
     <system:String x:Key="string_customArguments">Custom arguments:</system:String>

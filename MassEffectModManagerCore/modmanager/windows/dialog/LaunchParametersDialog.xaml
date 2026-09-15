@@ -1,7 +1,7 @@
 ﻿<Window
     x:Class="ME3TweaksModManager.modmanager.windows.LaunchParametersDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.windows"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:launcher="clr-namespace:ME3TweaksModManager.modmanager.objects.launcher"
+    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:launcher="clr-namespace:ME3TweaksModManager.modmanager.objects.launcher" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     WindowStartupLocation="CenterOwner"
     SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
@@ -13,6 +13,10 @@
             TargetType="Window"
             BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
+    <Window.Resources>
+        <converters:NotZeroVisibilityConverter
+            x:Key="NotZeroVisibilityConverter" />
+    </Window.Resources>
     <DockPanel
         Margin="5">
         <DockPanel
@@ -125,6 +129,23 @@
                             Text="{Binding CustomArguments, UpdateSourceTrigger=PropertyChanged}" />
                     </DockPanel>
                 </StackPanel>
+            </GroupBox>
+            <GroupBox
+                Header="{DynamicResource string_asiModOptions}"
+                Visibility="{Binding AsiOptions.Count, Converter={StaticResource NotZeroVisibilityConverter}}">
+                <ItemsControl
+                    ItemsSource="{Binding AsiOptions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                ToolTip="{Binding ToolTip}"
+                                Content="{Binding DisplayString}"
+                                IsChecked="{Binding IsSelected}"
+                                Checked="AsiOptionToggled"
+                                Unchecked="AsiOptionToggled" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </GroupBox>
         </DockPanel>
         <Button
