@@ -578,12 +578,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // 06/01/2024 - Change to allow showing packages files if texture modded,
                     // but only if they are tracked. Untracked will show nothing. I guess we
                     // could technically track non-vanilla before texture install.
-                    selectedTarget?.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
-                        restoreSfarConfirmationCallback,
-                        notifyStartingSfarRestoreCallback,
-                        notifyStartingBasegameFileRestoreCallback,
-                        notifyRestoredCallback);
+
+                    // 09/17/2026 - Try/catch as LMP does not have a DB during its development
+                    try {
+                        selectedTarget?.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
+                            restoreSfarConfirmationCallback,
+                            notifyStartingSfarRestoreCallback,
+                            notifyStartingBasegameFileRestoreCallback,
+                            notifyRestoredCallback);
+                    } catch (Exception ex)
+                    {
+                        M3Log.Exception(ex, $"Error populating modified basegame files:");
+                    }
                 }
+
 
                 SFARBeingRestored = false;
 
