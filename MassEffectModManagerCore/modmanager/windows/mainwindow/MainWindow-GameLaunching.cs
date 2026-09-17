@@ -96,7 +96,7 @@ namespace ME3TweaksModManager
         {
             if (SelectedGameTarget?.Game.IsLEGame() ?? false) // Nice and hard to read
             {
-                LaunchOptionSelectorDialog losd = new LaunchOptionSelectorDialog(this, SelectedGameTarget.Game);
+                LaunchOptionSelectorDialog losd = new LaunchOptionSelectorDialog(this, SelectedGameTarget);
                 losd.ShowDialog();
                 UpdateSelectedLaunchOption();
             }

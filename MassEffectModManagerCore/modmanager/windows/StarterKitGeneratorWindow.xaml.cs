@@ -50,6 +50,7 @@ namespace ME3TweaksModManager.modmanager.windows
                     case MEGame.LE1:
                     case MEGame.LE2:
                     case MEGame.LE3:
+                    case MEGame.LMP:
                         return 32000;
                 }
                 return 500;
@@ -74,6 +75,8 @@ namespace ME3TweaksModManager.modmanager.windows
                         return 2500;
                     case MEGame.LE3:
                         return 4000;
+                    case MEGame.LMP:
+                        return 10;
                 }
                 return 1;
             }
