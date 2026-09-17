@@ -5,8 +5,6 @@
     <BuildType Name="Release" />
     <BuildType Name="WinAzureRelease" />
     <BuildType Name="WinAzureTest" />
-    <BuildType Name="WinDebug" />
-    <BuildType Name="WinRelease" />
     <Platform Name="Any CPU" />
     <Platform Name="x64" />
   </Configurations>
@@ -15,9 +13,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -28,9 +26,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -41,25 +39,23 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
     <Build Solution="Release|*" Project="false" />
     <Build Solution="WinAzureRelease|x64" Project="false" />
-    <Build Solution="WinDebug|x64" Project="false" />
-    <Build Solution="WinRelease|x64" Project="false" />
   </Project>
   <Project Path="IniFileParser/IniFileParser.csproj">
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -70,9 +66,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -83,9 +79,9 @@
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -98,9 +94,9 @@
     <BuildType Solution="DebugNoAC|Any CPU" Project="Debug" />
     <BuildType Solution="WinAzureRelease|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -111,9 +107,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
     <Build Solution="Release|Any CPU" Project="false" />
@@ -122,8 +118,8 @@
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Debug" />
-    <BuildType Solution="WinDebug|*" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|*" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Solution="DebugNoAC|*" Project="x64" />
     <Platform Solution="Debug|*" Project="x64" />
     <Platform Solution="Release|x64" Project="x64" />
@@ -134,9 +130,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -146,17 +142,17 @@
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Debug" />
-    <BuildType Solution="WinDebug|*" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|*" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
   </Project>
   <Project Path="submodules/ME3TweaksCore/ME3TweaksCore/ME3TweaksCore.csproj">
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|Any CPU" Project="Debug" />
     <BuildType Solution="WinAzureRelease|x64" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Debug" />
-    <BuildType Solution="WinDebug|*" Project="Debug" />
-    <BuildType Solution="WinRelease|Any CPU" Project="Debug" />
-    <BuildType Solution="WinRelease|x64" Project="Release" />
+    <BuildType Solution="Debug|*" Project="Debug" />
+    <BuildType Solution="Release|Any CPU" Project="Debug" />
+    <BuildType Solution="Release|x64" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -167,9 +163,9 @@
     <BuildType Solution="WinAzureRelease|Any CPU" Project="Debug" />
     <BuildType Solution="WinAzureRelease|x64" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Debug" />
-    <BuildType Solution="WinDebug|*" Project="Debug" />
-    <BuildType Solution="WinRelease|Any CPU" Project="Debug" />
-    <BuildType Solution="WinRelease|x64" Project="Release" />
+    <BuildType Solution="Debug|*" Project="Debug" />
+    <BuildType Solution="Release|Any CPU" Project="Debug" />
+    <BuildType Solution="Release|x64" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -180,31 +176,31 @@
     <BuildType Solution="WinAzureRelease|Any CPU" Project="Debug" />
     <BuildType Solution="WinAzureRelease|x64" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Debug" />
-    <BuildType Solution="WinDebug|*" Project="Debug" />
+    <BuildType Solution="Debug|*" Project="Debug" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
     <Build Solution="Release|Any CPU" Project="false" />
-    <Build Solution="WinRelease|Any CPU" Project="false" />
+  </Project>
+  <Project Path="submodules/ME3TweaksCore/ME3TweaksCore/submodules/LegendaryExplorer/LegendaryExplorer/LegendaryExplorerCore.SourceGenerators/LegendaryExplorerCore.SourceGenerators.csproj">
+    <BuildType Solution="DebugNoAC|*" Project="WinAzureRelease" />
   </Project>
   <Project Path="submodules/ME3TweaksCore/ME3TweaksCore/submodules/LegendaryExplorer/LegendaryExplorer/LegendaryExplorerCore/LegendaryExplorerCore.csproj">
-    <BuildType Solution="DebugNoAC|*" Project="WinDebug" />
-    <BuildType Solution="Debug|*" Project="WinDebug" />
-    <BuildType Solution="Release|Any CPU" Project="WinDebug" />
-    <BuildType Solution="Release|x64" Project="WinRelease" />
+    <BuildType Solution="DebugNoAC|*" Project="Debug" />
+    <BuildType Solution="Debug|*" Project="Debug" />
+    <BuildType Solution="Release|Any CPU" Project="Debug" />
+    <BuildType Solution="Release|x64" Project="Release" />
     <BuildType Solution="WinAzureRelease|x64" Project="WinAzureTest" />
     <Platform Project="x64" />
     <Build Solution="WinAzureRelease|Any CPU" Project="false" />
     <Build Solution="WinAzureTest|Any CPU" Project="false" />
-    <Build Solution="WinDebug|Any CPU" Project="false" />
-    <Build Solution="WinRelease|Any CPU" Project="false" />
   </Project>
   <Project Path="submodules/ME3TweaksCore/ME3TweaksCore/submodules/RoboSharp/RoboSharp/RoboSharp.csproj">
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Debug" />
-    <BuildType Solution="WinDebug|*" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|*" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
   </Project>
   <Project Path="submodules/ME3TweaksCore/ME3TweaksCoreWPF/ME3TweaksCoreWPF.csproj">
@@ -212,9 +208,9 @@
     <BuildType Solution="WinAzureRelease|Any CPU" Project="Debug" />
     <BuildType Solution="WinAzureRelease|x64" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Debug" />
-    <BuildType Solution="WinDebug|*" Project="Debug" />
-    <BuildType Solution="WinRelease|Any CPU" Project="Debug" />
-    <BuildType Solution="WinRelease|x64" Project="Release" />
+    <BuildType Solution="Debug|*" Project="Debug" />
+    <BuildType Solution="Release|Any CPU" Project="Debug" />
+    <BuildType Solution="Release|x64" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -224,17 +220,17 @@
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|*" Project="Release" />
-    <BuildType Solution="WinDebug|*" Project="Release" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|*" Project="Release" />
+    <BuildType Solution="Release|*" Project="Release" />
   </Project>
   <Project Path="TestArchiveGenerator/TestArchiveGenerator.csproj">
     <BuildType Solution="DebugNoAC|*" Project="Debug" />
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -246,9 +242,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
@@ -260,9 +256,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
     <Build Solution="Release|Any CPU" Project="false" />
@@ -274,9 +270,9 @@
     <BuildType Solution="WinAzureRelease|*" Project="Release" />
     <BuildType Solution="WinAzureTest|Any CPU" Project="Release" />
     <BuildType Solution="WinAzureTest|x64" Project="Debug" />
-    <BuildType Solution="WinDebug|Any CPU" Project="Release" />
-    <BuildType Solution="WinDebug|x64" Project="Debug" />
-    <BuildType Solution="WinRelease|*" Project="Release" />
+    <BuildType Solution="Debug|Any CPU" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Debug" />
+    <BuildType Solution="Release|*" Project="Release" />
     <Platform Project="x64" />
     <Build Solution="DebugNoAC|Any CPU" Project="false" />
     <Build Solution="Debug|Any CPU" Project="false" />
