@@ -923,6 +923,8 @@
     <!-- 0={Message prefix string} 1={Object property name} 2={integer} 3={Full object path of referenced object} 4={Object type name, like 'SFXDamageType'} 5={Referenced object property name} -->
     <system:String x:Key="string_interp_nested_warningWrongObjectPropertyTypingWrongMessage">{0} [Nested Property] references entry {1} {2}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {3}, but the referenced one is of type {4}</system:String>
     <!-- 0={Message prefix string} 1={integer} 2={Full object path string} 3={Object type name, like 'SFXDamageType'} 4={Object type name, like 'SFXDamageType'} -->
+    <system:String x:Key="string_interp_warningWrongBinaryReferenceTyping">{0} Binary reference {1} references entry {2} {3}, but it appears to be wrong type. It should be an instance of an object of class (or subclass) {4}, but the referenced one is of type {5}</system:String>
+    <!-- 0={Message prefix string} 1={Binary field path} 2={integer} 3={Full object path string} 4={Accepted object type name} 5={Referenced object type name} -->
     <system:String x:Key="string_interp_warningDelegatePropertyIsOutsideOfExportTable">{0} DelegateProperty {1} is outside of export table</system:String>
     <!-- 0={Message prefix string} 1={Property name string} -->
     <system:String x:Key="string_interp_fatalExportCircularReference">{0}, export {1} has a circular self reference for its link. The game and the toolset will be unable to handle this condition</system:String>
@@ -959,6 +961,10 @@
     <!-- 0={Message prefix string} 1={Exception message} -->
     <system:String x:Key="string_interp_warningImportLinkOutideOfTables">{0}, import {1} has an invalid link value that is outside of the import/export table: {2}</system:String>
     <!-- 0={Relative filepath} 1={integer} 2={integer} -->
+    <system:String x:Key="string_interp_XDoesNotSupportGameY">{0} does not support game {1}</system:String>
+    <!-- 0={Object name (e.g. ConfigAssetBundle)} 1={game name (ME1,ME2, etc)} -->
+    <system:String x:Key="string_interp_invalidNameIndexonNameProperty">{0} Invalid name table index for NameProperty value on property {1}</system:String>
+    <!-- 0={Message prefix string} 1={Property name string} -->
     <system:String xml:space="preserve" x:Key="string_interp_dialog_dlcFolderNotInTPMI">The following mods contain DLC folders that are not in the Third Party Mod Identification Service (TPMI). If this mod is about to be released, you should submit telemetry for this mod, so it can be identified in various tools such as Mod Manager diagnostics and be in the DLC mod database.\n\n{0}\n\nMods are only entered into the database once they have a public mod page.</system:String>
     <!-- 0={List of mod names} -->
     <system:String x:Key="string_interp_gamenameValidationTarget">{0} validation target</system:String>
@@ -3211,6 +3217,7 @@
     
     <!-- Log Viewer -->
     <system:String x:Key="string_title_logViewer">ME3Tweaks Mod Manager Log Viewer</system:String>
+    <system:String x:Key="string_title_modMaker">ME3Tweaks ModMaker</system:String>
 
     <!-- Text Shortening Toggle -->
     <system:String x:Key="string_showLess">Show less</system:String>

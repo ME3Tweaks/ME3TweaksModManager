@@ -783,6 +783,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_nested_warningWrongClassPropertyTypingWrongMessage = "string_interp_nested_warningWrongClassPropertyTypingWrongMessage";
 		public const string string_interp_warningWrongObjectPropertyTypingWrongMessage = "string_interp_warningWrongObjectPropertyTypingWrongMessage";
 		public const string string_interp_nested_warningWrongObjectPropertyTypingWrongMessage = "string_interp_nested_warningWrongObjectPropertyTypingWrongMessage";
+		public const string string_interp_warningWrongBinaryReferenceTyping = "string_interp_warningWrongBinaryReferenceTyping";
 		public const string string_interp_warningDelegatePropertyIsOutsideOfExportTable = "string_interp_warningDelegatePropertyIsOutsideOfExportTable";
 		public const string string_interp_fatalExportCircularReference = "string_interp_fatalExportCircularReference";
 		public const string string_interp_warningGenericExportPrefix = "string_interp_warningGenericExportPrefix";
@@ -801,6 +802,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_warningBinaryNameReferenceOutsideNameTable = "string_interp_warningBinaryNameReferenceOutsideNameTable";
 		public const string string_interp_warningUnableToParseBinary = "string_interp_warningUnableToParseBinary";
 		public const string string_interp_warningImportLinkOutideOfTables = "string_interp_warningImportLinkOutideOfTables";
+		public const string string_interp_XDoesNotSupportGameY = "string_interp_XDoesNotSupportGameY";
+		public const string string_interp_invalidNameIndexonNameProperty = "string_interp_invalidNameIndexonNameProperty";
 		public const string string_interp_dialog_dlcFolderNotInTPMI = "string_interp_dialog_dlcFolderNotInTPMI";
 		public const string string_interp_gamenameValidationTarget = "string_interp_gamenameValidationTarget";
 		public const string string_deploymentValidationTargetDesc = "string_deploymentValidationTargetDesc";
