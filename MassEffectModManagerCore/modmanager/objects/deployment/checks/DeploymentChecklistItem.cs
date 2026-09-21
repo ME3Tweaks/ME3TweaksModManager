@@ -29,6 +29,12 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         public EFontAwesomeIcon Icon { get; private set; }
         public SolidColorBrush Background { get; private set; } = Brushes.White;
         public EFontAwesomeIcon BackgroundIcon { get; private set; }
+        /// <summary>
+        /// If the hand-drawn triangle backer should be shown instead of <see cref="BackgroundIcon"/>. The warning
+        /// triangle glyph has its own transparent cutout (the '!'), so a shrunk copy of the same glyph can't fully
+        /// fill it the way a hole-free shape (like the circle used for the other states) can.
+        /// </summary>
+        public bool ShowTriangleBackground { get; private set; }
         public bool Spinning { get; private set; }
 
         /// <summary>
@@ -124,6 +130,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     Icon = EFontAwesomeIcon.Solid_CheckCircle;
                     BackgroundIcon = EFontAwesomeIcon.Solid_Circle;
                     Background = Brushes.White;
+                    ShowTriangleBackground = false;
                 }
                 else if (GetBlockingErrors().Any())
                 {
@@ -131,13 +138,15 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     Icon = EFontAwesomeIcon.Solid_TimesCircle;
                     BackgroundIcon = EFontAwesomeIcon.Solid_Circle;
                     Background = Brushes.White;
+                    ShowTriangleBackground = false;
                 }
                 else if (GetSignificantIssues().Any())
                 {
                     Foreground = Brushes.Orange;
                     Icon = EFontAwesomeIcon.Solid_ExclamationTriangle;
-                    BackgroundIcon = EFontAwesomeIcon.Solid_Square;
+                    BackgroundIcon = EFontAwesomeIcon.None; // Handled by ShowTriangleBackground instead - see below
                     Background = Brushes.Black;
+                    ShowTriangleBackground = true;
                 }
                 else if (GetInfoWarnings().Any())
                 {
@@ -145,6 +154,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     Icon = EFontAwesomeIcon.Solid_InfoCircle;
                     BackgroundIcon = EFontAwesomeIcon.Solid_Circle;
                     Background = Brushes.White;
+                    ShowTriangleBackground = false;
                 }
             }
             else
@@ -161,6 +171,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 }
                 BackgroundIcon = EFontAwesomeIcon.None;
                 Background = Brushes.Transparent;
+                ShowTriangleBackground = false;
             }
 
             SetDone();

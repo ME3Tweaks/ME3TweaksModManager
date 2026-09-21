@@ -176,9 +176,18 @@
                                                     <fa5:ImageAwesome
                                                         Icon="{Binding BackgroundIcon}"
                                                         Foreground="{Binding Background}"
-                                                        Width="10" 
+                                                        Width="10"
                                                         Height="11"
                                                         Visibility="{Binding CheckDone, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    <!-- The warning triangle's own '!' cutout can't be plugged by a shrunk copy of itself
+                                                         (the copy has the same cutout, just smaller), so it gets a hand-drawn, hole-free
+                                                         triangle instead, inset slightly so it never peeks out past the icon's rounded corners. -->
+                                                    <Polygon
+                                                        Points="8,1.9 2.4,13.2 13.6,13.2"
+                                                        Width="16"
+                                                        Height="14.2"
+                                                        Fill="{Binding Background}"
+                                                        Visibility="{Binding ShowTriangleBackground, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                     <fa5:ImageAwesome
                                                         Icon="{Binding Icon}"
                                                         Foreground="{Binding Foreground}"
