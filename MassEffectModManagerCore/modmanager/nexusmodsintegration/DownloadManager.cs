@@ -208,7 +208,8 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 if (item.DownloadState is EModDownloadState.QUEUED
                     or EModDownloadState.FINISHED
                     or EModDownloadState.FAILED
-                    or EModDownloadState.DOWNLOADCANCELED)
+                    or EModDownloadState.DOWNLOADCANCELED
+                    || (item.DownloadState == EModDownloadState.DOWNLOADCOMPLETE && !item.AutoImport)) // Waiting on user to import, no longer uses a slot
                 {
                     TryStartDownload();
 
@@ -366,9 +367,12 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 }
 
                 // Enforce cap on number of downloads / imports we can concurrently run.
-                // We also count download complete cause its about to conduct import
+                // We also count download complete if it's set to auto import cause its about to conduct import.
+                // Download complete without auto import is idle until the user imports it, so it does not count.
                 // Importing counts as it uses significant resources.
-                var currentDownloadCount = Downloads.Count(x => x.Value.IsDownloadActive || x.Value.DownloadState is EModDownloadState.DOWNLOADCOMPLETE or EModDownloadState.IMPORTING);
+                var currentDownloadCount = Downloads.Count(x => x.Value.IsDownloadActive
+                                                                || x.Value.DownloadState is EModDownloadState.IMPORTING
+                                                                || (x.Value.DownloadState is EModDownloadState.DOWNLOADCOMPLETE && x.Value.AutoImport));
 
                 M3Log.Information($"TryStartDownload() - Current active download count: {currentDownloadCount}");
                 foreach (var dl in queue)
@@ -480,6 +484,10 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                         });
                     }
                     OnDownloadRemoved?.Invoke(downloadedMod, EventArgs.Empty);
+
+                    // A slot may have opened up. This must be done here as downloads that are removed by
+                    // manual import will not go through a state change that triggers this.
+                    TryStartDownload();
                 }
             }
         }
