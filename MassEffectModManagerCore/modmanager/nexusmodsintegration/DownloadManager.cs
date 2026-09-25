@@ -137,7 +137,14 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     return null;
                 }
 
-                if (Downloads.ContainsKey(dl.CreateDownloadKey()))
+                if (Downloads.TryGetValue(dl.CreateDownloadKey(), out var existingDownload)
+                    && existingDownload is NexusModDownload { DownloadState: EModDownloadState.WAITINGFORUSER } waitingDownload)
+                {
+                    // The user started a download we were waiting on from the website. Use the existing download object.
+                    waitingDownload.AdoptNXMLink(nxmLink);
+                    dl = waitingDownload;
+                }
+                else if (existingDownload != null)
                 {
                     M3Log.Information(@"Rejecting nxm download: Already being handled by the download manager.");
                     // Add event and then invoke event to update the UI, then
@@ -155,17 +162,81 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     }
                     return dl;
                 }
+                else
+                {
+                    // Attach listeners for when object changes states so the manager can handle it
+                    dl.DownloadStateChanged += DownloadStateChanged;
 
-                // Attach listeners for when object changes states so the manager can handle it
-                dl.DownloadStateChanged += DownloadStateChanged;
-
-                AddDownload(dl);
+                    AddDownload(dl);
+                }
             }
 
-            // Initialize the metadata for the NexusMod object. 
+            // Initialize the metadata for the NexusMod object.
             dl.Initialize();
             return dl;
         }
+
+        /// <summary>
+        /// Adds downloads for specific NexusMods files that will be imported into the library automatically once downloaded.
+        /// Premium users will begin downloading immediately; other users will have to start each download from the website.
+        /// Files that are already in the download manager are skipped.
+        /// </summary>
+        /// <param name="files">The files to download, and the names to show until file information is available</param>
+        /// <returns>The downloads that were added</returns>
+        public static List<NexusModDownload> AddAutoImportDownloads(IEnumerable<(NexusFileInfo fileInfo, string displayName)> files)
+        {
+            var requiresUserToStart = NexusModsUtilities.UserInfo?.IsPremium != true;
+            var added = new List<NexusModDownload>();
+            lock (_queueSyncObj)
+            {
+                foreach (var file in files)
+                {
+                    var dl = NexusModDownload.CreateAutoImportDownload(file.fileInfo, file.displayName, requiresUserToStart);
+                    if (Downloads.ContainsKey(dl.CreateDownloadKey()))
+                    {
+                        M3Log.Information($@"Not adding download for {dl.CreateDownloadKey()}: Already being handled by the download manager");
+                        continue;
+                    }
+
+                    M3Log.Information($@"Queueing {(requiresUserToStart ? @"user-started" : @"automatic")} download: {dl.NXMLink} ({file.displayName})");
+                    dl.DownloadStateChanged += DownloadStateChanged;
+                    AddDownload(dl);
+                    added.Add(dl);
+                }
+            }
+
+            foreach (var dl in added)
+            {
+                if (requiresUserToStart)
+                {
+                    dl.LoadPendingMetadata();
+                }
+                else
+                {
+                    dl.Initialize();
+                }
+            }
+
+            return added;
+        }
+
+        /// <summary>
+        /// Cancels all downloads that can currently be canceled.
+        /// </summary>
+        public static void CancelAllDownloads()
+        {
+            M3Log.Information(@"Canceling all downloads");
+            foreach (var dl in Downloads.Values.OrderByDescending(x => x.QueueOrder).ToList())
+            {
+                // Newest first so canceling does not start queued downloads that are about to be canceled
+                dl.Cancel();
+            }
+        }
+
+        /// <summary>
+        /// If any download can currently be canceled
+        /// </summary>
+        public static bool CanCancelAnyDownload() => Downloads.Values.Any(x => x.CanCancel);
 
         /// <summary>
         /// Adds a download object to the manager and notifies listeners.
@@ -225,7 +296,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     // Signal download has completed.
                     OnDownloadCompleted?.Invoke(item, EventArgs.Empty);
 
-                    if (item.AutoImport)
+                    if (item.AutoImport && !item.IsCancelRequested)
                     {
                         // We must obtain a reference to the current active panel, if any.
                         // This is because we must handle the result of import - e.g. reloading mods
@@ -315,8 +386,17 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                 case EModArchiveImportState.FAILED:
                     {
                         OnDownloadImportFailed?.Invoke(matchingObj, EventArgs.Empty);
+                        // Status must be set before state as the download is moved to the failed list on state change
+                        matchingObj.Status = mai.AutomatedFailureReason ?? M3L.GetString(M3L.string_importFailed);
                         matchingObj.DownloadState = EModDownloadState.FAILED;
-                        matchingObj.Status = M3L.GetString(M3L.string_importFailed);
+                    }
+                    break;
+                case EModArchiveImportState.CANCELED:
+                    {
+                        // Import was canceled before anything was extracted
+                        OnDownloadImportFailed?.Invoke(matchingObj, EventArgs.Empty);
+                        matchingObj.CleanupDownloadedData(Settings.ModDownloadCacheFolder == null);
+                        matchingObj.MarkCanceled();
                     }
                     break;
                 case EModArchiveImportState.SCANNING:
@@ -330,7 +410,10 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     {
                         OnDownloadScanCompleted?.Invoke(matchingObj, EventArgs.Empty);
                         matchingObj.DownloadState = EModDownloadState.IMPORTING;
-                        matchingObj.Status = M3L.GetString(M3L.string_importQueued);
+                        if (!mai.IsCancelRequested)
+                        {
+                            matchingObj.Status = M3L.GetString(M3L.string_importQueued);
+                        }
                     }
                     break;
                 case EModArchiveImportState.IMPORTING:
@@ -348,6 +431,9 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                     }
                     break;
             }
+
+            // Import state changes do not always change the download state, which is what normally updates this
+            matchingObj.UpdateCanCancel();
         }
 
         /// <summary>

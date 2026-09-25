@@ -72,6 +72,24 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public string DownloadLink { get; set; }
 
         /// <summary>
+        /// The NexusMods domain the source file for this mod is hosted on, if known
+        /// </summary>
+        [JsonProperty(@"nexusdomain", NullValueHandling = NullValueHandling.Ignore)]
+        public string NexusDomain { get; set; }
+
+        /// <summary>
+        /// The NexusMods mod id of the source file for this mod, if known
+        /// </summary>
+        [JsonProperty(@"nexusmodid", NullValueHandling = NullValueHandling.Ignore)]
+        public int? NexusModId { get; set; }
+
+        /// <summary>
+        /// The NexusMods file id of the source file for this mod, if known
+        /// </summary>
+        [JsonProperty(@"nexusfileid", NullValueHandling = NullValueHandling.Ignore)]
+        public int? NexusFileId { get; set; }
+
+        /// <summary>
         /// List of user selections, in order
         /// </summary>
         [JsonProperty(@"userchosenoptions")]
@@ -197,8 +215,37 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     DownloadLink = sourceLink;
                 }
 
+                // If the source is not known locally we keep existing values, so queues
+                // shared from another system do not lose their source when re-saved
+                var nexusInfo = NexusFileInfo.FromNexusDownloadPageLink(DownloadLink);
+                if (nexusInfo != null)
+                {
+                    NexusDomain = nexusInfo.Domain;
+                    NexusModId = nexusInfo.ModId;
+                    NexusFileId = nexusInfo.FileId;
+                }
+
                 ModName = Mod.ModName;
             }
+        }
+
+        /// <summary>
+        /// Gets the NexusMods file that is the source of this mod, if known.
+        /// </summary>
+        /// <returns>File info, or null if the source is not known</returns>
+        public NexusFileInfo GetNexusFileInfo()
+        {
+            if (!string.IsNullOrWhiteSpace(NexusDomain) && NexusModId > 0 && NexusFileId > 0)
+            {
+                return new NexusFileInfo()
+                {
+                    Domain = NexusDomain,
+                    ModId = NexusModId.Value,
+                    FileId = NexusFileId.Value
+                };
+            }
+
+            return NexusFileInfo.FromNexusDownloadPageLink(DownloadLink);
         }
 
         public bool IsAvailableForInstall()

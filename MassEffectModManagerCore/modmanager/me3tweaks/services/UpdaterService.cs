@@ -668,7 +668,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             public void OnDownloadStateChanged(object sender, EventArgs e)
             {
                 // This makes progress bar disappear, as we have no associated download anymore
-                if (DownloadFlow != null && DownloadFlow.DownloadState is EModDownloadState.FAILED or EModDownloadState.FINISHED)
+                if (DownloadFlow != null && DownloadFlow.DownloadState is EModDownloadState.FAILED or EModDownloadState.FINISHED or EModDownloadState.DOWNLOADCANCELED)
                 {
                     // Locks out further update attempts
                     UpdateInProgress = false;
