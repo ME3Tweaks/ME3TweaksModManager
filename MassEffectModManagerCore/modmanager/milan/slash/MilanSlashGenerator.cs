@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Text.Json;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
@@ -87,6 +86,17 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             return generator.Run();
         }
 
+        /// <summary>
+        /// Records the size and hash of every file in the finished installation into the manifest and re-saves it. Call this
+        /// once the manifest has been applied and the installer has finished modifying the game.
+        /// </summary>
+        public static void RecordFinalState(MilanSlashManifest manifest, string milanDeltaFolder, string gameRoot, Action<string> setStatus = null)
+        {
+            manifest.FinalFiles = MilanFinalState.Capture(gameRoot, setStatus);
+            manifest.Save(milanDeltaFolder);
+            M3Log.Information($"Recorded final state of {manifest.FinalFiles.Count} files ({FileSize.FormatSize(manifest.FinalFiles.Sum(x => x.Size))}) into the slash manifest");
+        }
+
         private MilanSlashManifest Run()
         {
             // Remove the previous slash output so stale deltas never ship alongside a new manifest
@@ -110,9 +120,8 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             CreateTexturePackagePatches();
             SlashRefShaderCache(Path.Combine(bioGame, "CookedPCConsole", RefShaderCacheName));
 
-            manifest.Signature = manifest.ComputeSignature();
-            Directory.CreateDirectory(milanDeltaFolder);
-            File.WriteAllText(manifestPath, JsonSerializer.Serialize(manifest, new JsonSerializerOptions { WriteIndented = true }));
+            // Final file state is recorded later by RecordFinalState, once the installer has finished writing to the game
+            manifest.Save(milanDeltaFolder);
 
             long before = manifest.TFCs.Sum(x => x.Sources.Sum(s => s.Size)) + manifest.Deletions.Sum(x => x.Size) + manifest.Patches.Sum(x => x.SourceFileSize);
             long after = manifest.TFCs.Sum(x => x.DestSize) + manifest.Patches.Sum(x => x.DestSize);

@@ -523,6 +523,11 @@ namespace ME3TweaksModManager.modmanager.milan
         #region Slash
 
         /// <summary>
+        /// The slash manifest that was applied to this installation, if any.
+        /// </summary>
+        private MilanSlashManifest slashManifest;
+
+        /// <summary>
         /// Applies the Project Milan mod's slash manifest (MilanDelta/slash.json), if it has one, which compacts the TFCs and
         /// RefShaderCache copied from LE3 down to what LMP uses. Must run after the mod is installed and before the game is TOC'd.
         /// </summary>
@@ -552,6 +557,42 @@ namespace ME3TweaksModManager.modmanager.milan
 
             interop.SetStatus?.Invoke(@"Optimizing installation...");
             MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
+            slashManifest = manifest;
+        }
+
+        /// <summary>
+        /// Verifies every file in the finished installation against the final state recorded in the slash manifest when it
+        /// was generated, so we know the user's game is exactly the one we built and tested.
+        /// </summary>
+        private void VerifyFinalState(string gamePath)
+        {
+            if (slashManifest == null)
+                return; // Nothing was slashed, so there is no recorded state this installation should match
+
+            if (slashManifest.FinalFiles.Count == 0)
+            {
+                M3Log.Warning(@"The slash manifest has no recorded final file state; the installation cannot be verified");
+                return;
+            }
+
+            interop.SetStatus?.Invoke(@"Verifying installation...");
+            var problems = MilanFinalState.Verify(slashManifest.FinalFiles, gamePath, s => interop.SetStatus?.Invoke(s));
+            if (problems.Count == 0)
+            {
+                M3Log.Information($@"Installation verified: all {slashManifest.FinalFiles.Count} files match the expected final state");
+                return;
+            }
+
+            foreach (var problem in problems)
+            {
+                M3Log.Error($@"Installation verification: {problem}");
+            }
+
+#if DEBUG
+            M3Log.Warning($@"The installation does not match the final state recorded in the slash manifest ({problems.Count} difference(s)). Continuing as this is a development build.");
+#else
+            throw new Exception($"The installation does not match the expected result ({problems.Count} difference(s); see the log for all of them). First difference: {problems[0]}");
+#endif
         }
 
 #if DEBUG
@@ -568,6 +609,7 @@ namespace ME3TweaksModManager.modmanager.milan
 
             interop.SetStatus?.Invoke(@"Applying generated slash manifest...");
             MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
+            slashManifest = manifest;
         }
 #endif
 
@@ -855,11 +897,23 @@ namespace ME3TweaksModManager.modmanager.milan
 
                 lmpTarget.ValidateTarget(); // Triggers validation which unlocks UI options
 
-                // Add target to Mod Manager
-                interop?.AddTarget(lmpTarget);
-
                 // This makes it easier to debug 
                 lmpTarget.InstallBinkBypass(false);
+
+                // Must be the last thing that writes to the game
+#if DEBUG
+                if (generateSlashManifest)
+                {
+                    MilanSlashGenerator.RecordFinalState(slashManifest, milanDeltaFolder, destinationFolderPath, s => interop.SetStatus?.Invoke(s));
+                }
+                else
+#endif
+                {
+                    VerifyFinalState(destinationFolderPath);
+                }
+
+                // Add target to Mod Manager
+                interop?.AddTarget(lmpTarget);
             }
             catch (Exception e)
             {

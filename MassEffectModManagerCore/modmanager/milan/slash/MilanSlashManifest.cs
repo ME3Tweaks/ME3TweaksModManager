@@ -33,6 +33,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// </summary>
         [JsonPropertyName("deletions")]
         public List<MilanSlashDeletionEntry> Deletions { get; set; } = new();
+
+        /// <summary>
+        /// Size and hash of every file in the finished installation this manifest was generated from, recorded after
+        /// everything the installer does (slash, TOC, bink bypass). Used to verify an end user's installation matches exactly.
+        /// </summary>
+        [JsonPropertyName("finalfiles")]
+        public List<MilanSlashFinalFileEntry> FinalFiles { get; set; } = new();
     }
 
     /// <summary>
@@ -53,6 +60,16 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         {
             var bodyJson = JsonSerializer.Serialize<MilanSlashSignableBody>(this);
             return MilanSlashHashing.HashBytes(System.Text.Encoding.UTF8.GetBytes(bodyJson));
+        }
+
+        /// <summary>
+        /// Signs the manifest and writes it to the given MilanDelta folder.
+        /// </summary>
+        public void Save(string milanDeltaFolder)
+        {
+            Signature = ComputeSignature();
+            Directory.CreateDirectory(milanDeltaFolder);
+            File.WriteAllText(Path.Combine(milanDeltaFolder, MilanSlashApplier.SlashManifestFileName), JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
         }
     }
 
@@ -216,5 +233,20 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         [JsonPropertyName("size")]
         public long Size { get; set; }
+    }
+
+    internal class MilanSlashFinalFileEntry
+    {
+        /// <summary>
+        /// Path relative to the game root.
+        /// </summary>
+        [JsonPropertyName("filename")]
+        public string Filename { get; set; }
+
+        [JsonPropertyName("size")]
+        public long Size { get; set; }
+
+        [JsonPropertyName("hash")]
+        public string Hash { get; set; }
     }
 }
