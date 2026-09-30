@@ -6,6 +6,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.installer;
+using ME3TweaksModManager.modmanager.milan.slash;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
@@ -519,6 +520,59 @@ namespace ME3TweaksModManager.modmanager.milan
 
         #endregion
 
+        #region Slash
+
+        /// <summary>
+        /// Applies the Project Milan mod's slash manifest (MilanDelta/slash.json), if it has one, which compacts the TFCs and
+        /// RefShaderCache copied from LE3 down to what LMP uses. Must run after the mod is installed and before the game is TOC'd.
+        /// </summary>
+        private void ApplyMilanSlash(string gamePath)
+        {
+            var manifest = MilanSlashApplier.LoadManifest(milanDeltaFolder);
+            if (manifest == null)
+            {
+                M3Log.Warning(@"Project Milan mod has no slash manifest; the installation will not be optimized");
+                return;
+            }
+
+#if DEBUG
+            // In development the mod is rebuilt far more often than its slash manifest is regenerated. Don't fail the whole
+            // install over a stale manifest; just skip it. Release builds treat this as an invalid build (Apply throws).
+            var problems = MilanSlashApplier.Validate(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
+            if (problems.Count > 0)
+            {
+                foreach (var problem in problems)
+                {
+                    M3Log.Warning($@"Slash validation: {problem}");
+                }
+                M3Log.Warning(@"The slash manifest does not match this installation, most likely because the Project Milan mod was rebuilt since it was generated. Skipping slash; regenerate the slash manifest to fix this.");
+                return;
+            }
+#endif
+
+            interop.SetStatus?.Invoke(@"Optimizing installation...");
+            MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
+        }
+
+#if DEBUG
+        /// <summary>
+        /// Generates a new slash manifest for this installation and writes it into the Project Milan mod's MilanDelta folder,
+        /// replacing any existing one. It is then applied here, which both proves it works and leaves this installation
+        /// identical to what users will get.
+        /// </summary>
+        private void GenerateAndApplyMilanSlash(string gamePath)
+        {
+            interop.SetStatus?.Invoke(@"Generating slash manifest...");
+            var manifest = MilanSlashGenerator.Generate(gamePath, milanDeltaFolder, s => interop.SetStatus?.Invoke(s));
+            GC.Collect(); // Generation can hold several GB (the RefShaderCache); release it before applying
+
+            interop.SetStatus?.Invoke(@"Applying generated slash manifest...");
+            MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
+        }
+#endif
+
+        #endregion
+
         /// <summary>
         /// Defines a source-to-destination mapping manifest for a batch of files.
         /// </summary>
@@ -714,7 +768,8 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         /// <param name="le3SourcePath"></param>
         /// <param name="destinationFolderPath"></param>
-        public void CreateInstallation(GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop)
+        /// <param name="generateSlashManifest">Development builds only: instead of applying the Project Milan mod's slash manifest, generate a new one against this installation (see <see cref="MilanSlashGenerator"/>), then apply it.</param>
+        public void CreateInstallation(GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop, bool generateSlashManifest = false)
         {
             this.interop = interop;
 
@@ -770,9 +825,27 @@ namespace ME3TweaksModManager.modmanager.milan
                 mi.SetPercent = setPercent;
                 mi.SetAction = setAction;
                 mi.SetPercentVisibility = setPercentVisibility;
-                mi.InstallMod();
+                // InstallMod is async (it awaits ASI installs), so it must complete before the installation is slashed and TOC'd.
+                // We are on a background thread with no synchronization context, so blocking here is safe.
+                mi.InstallMod().GetAwaiter().GetResult();
+                if (mi.InstallationResult.Result != EModInstallerResult.INSTALL_SUCCESSFUL)
+                {
+                    throw new Exception($"Installing Project Milan failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
+                }
 
-                // Patch to shrink them?
+                // Shrink the installation down to the data LMP actually uses
+#if DEBUG
+                if (generateSlashManifest)
+                {
+                    GenerateAndApplyMilanSlash(destinationFolderPath);
+                }
+                else
+#endif
+                {
+                    ApplyMilanSlash(destinationFolderPath);
+                }
+
+                // TODO: Build the LMP vanilla object database against the (slashed) installation here
 
                 // Unapply bink. This will be a common problem, so we can just handle it here.
                 //lmpTarget.UninstallBinkBypass();

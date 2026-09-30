@@ -22,6 +22,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public string StatusText { get; set; } = @"";
 
         /// <summary>
+        /// Development builds only: generate a new slash manifest for the Project Milan mod instead of applying the existing one.
+        /// </summary>
+        public bool GenerateSlashManifest { get; set; }
+
+        /// <summary>
         /// The install controller for the running install.
         /// </summary>
         private MilanBaseInstaller InstallController { get; set; }
@@ -76,9 +81,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     AddTarget = addTarget
                 };
                 InstallController = new MilanBaseInstaller();
+                var generateSlashManifest = App.IsDebug && GenerateSlashManifest;
                 Task.Run(() =>
                 {
-                    InstallController.CreateInstallation(SelectedTarget, InstallLocation, interop);
+                    InstallController.CreateInstallation(SelectedTarget, InstallLocation, interop, generateSlashManifest);
                 });
             }
         }

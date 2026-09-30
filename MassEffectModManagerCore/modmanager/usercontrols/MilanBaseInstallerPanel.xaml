@@ -4,6 +4,7 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:me3TweaksModManager="clr-namespace:ME3TweaksModManager"
     mc:Ignorable="d"
     MaxWidth="640"
     MinWidth="500"
@@ -49,6 +50,12 @@
                 <Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseLocationCommand}"/>
                 <xctk:WatermarkTextBox Text="{Binding InstallLocation, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
+            <CheckBox Margin="0,8,0,0"
+                      Visibility="{x:Static me3TweaksModManager:App.DebugOnlyVisibility}"
+                      IsChecked="{Binding GenerateSlashManifest}"
+                      ToolTip="Instead of applying the Project Milan mod's slash manifest, compacts this installation's TFCs and RefShaderCache down to what is used and writes a new slash manifest into the mod's MilanDelta folder. This installation is then slashed with it. Can take a long time and several GB of memory.">
+                <TextBlock Text="Generate slash manifest (developer)" TextWrapping="Wrap"/>
+            </CheckBox>
         
         </StackPanel>
 
