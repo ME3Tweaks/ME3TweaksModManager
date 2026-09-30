@@ -232,6 +232,27 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXGUI_W_S_Viper.pcc",
             "SFXGUI_W_S_Widow.pcc",
 
+            // GUI weapon packages referenced by SFXGUI_WeaponUIDataDLC_CON_MPMerged.Data
+            "SFXGUI_W_A_Cerb_GUN01.pcc",
+            "SFXGUI_W_A_Krogan_GUN02.pcc",
+            "SFXGUI_W_A_Lancer.pcc",
+            "SFXGUI_W_A_LMG_GUN02.pcc",
+            "SFXGUI_W_A_Prothean.pcc",
+            "SFXGUI_W_A_Quarian.pcc",
+            "SFXGUI_W_A_Spitfire.pcc",
+            "SFXGUI_W_P_Asari_GUN02.pcc",
+            "SFXGUI_W_P_Bloodpack.pcc",
+            "SFXGUI_W_P_Silencer.pcc",
+            "SFXGUI_W_S_Batarian_GUN02.pcc",
+            "SFXGUI_W_S_Collector.pcc",
+            "SFXGUI_W_S_Turian_GUN01.pcc",
+            "SFXGUI_W_SG_Assault_GUN02.pcc",
+            "SFXGUI_W_SG_Quarian_GUN01.pcc",
+            "SFXGUI_W_SG_Salarian.pcc",
+            "SFXGUI_W_SMG_Bloodpack.pcc",
+            "SFXGUI_W_SMG_Collector.pcc",
+            "SFXGUI_W_SMG_Geth_GUN01.pcc",
+
             // GUI assets for weapons and other stuff
             "SFXNotificationImages_AssaultRifles.pcc",
             "SFXNotificationImages_GAW_1.pcc",
@@ -283,6 +304,20 @@ namespace ME3TweaksModManager.modmanager.milan
             "Wwise_Crt_Reap_Marauder_SFX.afc",
             "wwise_crt_reap_ravenger_sfx.afc",
             "Wwise_Crt_Reap_Swarmer_SFX.afc",
+            "DLC_EXP_Pack003_Base_1_SFX.afc", // Collectors
+            "DLC_EXP_Pack003_Base_2_SFX.afc", // Collectors
+            "DLC_EXP_Pack003_Base_3_SFX.afc", // Collectors
+
+            // Audio - Weapons
+            // Needs merged in some kind of AFC compaction pass.
+            "DLC_CON_GUN01_1_SFX.afc",
+            "DLC_CON_GUN01_2_SFX.afc",
+            "DLC_CON_GUN01_3_SFX.afc",
+            "DLC_CON_GUN02_1_SFX.afc",
+            "DLC_EXP_Pack003_Base_SFX.afc",
+            "DLC_EXP_Pack003_1_SFX.afc",
+            "DLC_EXP_Pack003_2_SFX.afc",
+            "DLC_EXP_Pack003_3_SFX.afc",
 
             // Misc
             "AreaMap_NumIcon.pcc",
@@ -301,6 +336,11 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXGUI_Fonts.pcc",
             "SFXGUI_FontsJPN.pcc",
             "Textures.tfc",
+            // Required for weapon previews
+            "Textures_DLC_CON_GUN01.tfc",
+            "Textures_DLC_CON_GUN02.tfc",
+            "Textures_DLC_EXP_Pack003.tfc", // Lancer, Silencer
+            "Textures_DLC_HEN_PR.tfc", // PPR
 
             // Other audio
             "Wwise_VO_Exertions.afc", // Contains MP-specific stuff
@@ -311,6 +351,15 @@ namespace ME3TweaksModManager.modmanager.milan
             "Wwise_Generic_Gameplay.afc",
             "Wwise_Main_Menu_NonStreaming.afc",
             "Wwise_Main_Menu_Streaming.afc",
+            "Wwise_Power_Tech_Overload.afc",
+            "Wwise_Power_Biotic_DarkChan.afc",
+            "Wwise_Weapons_S_Quarian.afc",
+
+            // Main Menu Audio (might strip later)
+            "Wwise_Smls_NorfTL.afc",
+            "Wwise_Generic_Galaxy_Map.afc",
+            "Wwise_Generic_Scripting.afc",
+            "Wwise_Smls_CaptainsCabin.afc",
         ];
 
         private static readonly string[] Patch02Files = [
@@ -393,6 +442,8 @@ namespace ME3TweaksModManager.modmanager.milan
 
         /** The interop used to communicate back to a UI about the install */
         private MBIInterop interop;
+        private string sourceRootPath;
+        private string sourceBackupPath;
 
         public MilanBaseInstaller()
         {
@@ -404,6 +455,23 @@ namespace ME3TweaksModManager.modmanager.milan
         private const string MilanDeltaFolderName = "MilanDelta";
         private const string MilanDeltaManifestFileName = "manifest.json";
         private const double SupportedMilanDeltaVersion = 0.1;
+
+        private enum MilanDeltaVerificationFailureKind
+        {
+            SizeMismatch,
+            HashMismatch
+        }
+
+        private sealed class MilanDeltaVerificationException : Exception
+        {
+            public MilanDeltaVerificationException(MilanDeltaVerificationFailureKind failureKind, string message)
+                : base(message)
+            {
+                FailureKind = failureKind;
+            }
+
+            public MilanDeltaVerificationFailureKind FailureKind { get; }
+        }
 
         /// <summary>
         /// Folder containing the MilanDelta manifest and its patch files.
@@ -507,13 +575,17 @@ namespace ME3TweaksModManager.modmanager.milan
         {
             if (actualSize != expectedSize)
             {
-                throw new Exception($"Milan delta {stage} size mismatch for {fileName}: expected {expectedSize}, got {actualSize}.");
+                throw new MilanDeltaVerificationException(
+                    MilanDeltaVerificationFailureKind.SizeMismatch,
+                    $"Milan delta {stage} size mismatch for {fileName}: expected {expectedSize}, got {actualSize}.");
             }
 
             var actualHash = computeHash();
             if (!string.Equals(actualHash, expectedHash, StringComparison.OrdinalIgnoreCase))
             {
-                throw new Exception($"Milan delta {stage} hash mismatch for {fileName}: expected {expectedHash}, got {actualHash}.");
+                throw new MilanDeltaVerificationException(
+                    MilanDeltaVerificationFailureKind.HashMismatch,
+                    $"Milan delta {stage} hash mismatch for {fileName}: expected {expectedHash}, got {actualHash}.");
             }
         }
 
@@ -619,7 +691,7 @@ namespace ME3TweaksModManager.modmanager.milan
                         Directory.CreateDirectory(parentDir);
                     }
 
-                    
+
 
                     CopyFile(file, destFile);
 
@@ -647,7 +719,29 @@ namespace ME3TweaksModManager.modmanager.milan
             // since the delta was diffed against the original LE3 data.
             if (isPackage && milanDeltaLookup != null && milanDeltaLookup.TryGetValue(Path.GetFileName(destFile), out var deltaEntry))
             {
-                ApplyMilanDelta(file, destFile, deltaEntry);
+                try
+                {
+                    ApplyMilanDelta(file, destFile, deltaEntry);
+                }
+                catch (MilanDeltaVerificationException deltaEx)
+                {
+                    var backupFile = TryGetFallbackBackupFile(file);
+                    if (backupFile == null)
+                    {
+                        throw;
+                    }
+
+                    M3Log.Warning($"Milan delta verification failed for {Path.GetFileName(destFile)} from source ({file}). Retrying with backup file ({backupFile}).");
+
+                    try
+                    {
+                        ApplyMilanDelta(backupFile, destFile, deltaEntry);
+                    }
+                    catch (Exception backupEx)
+                    {
+                        throw new Exception($"Milan delta verification failed for {Path.GetFileName(destFile)} from both source and backup files. Source: {file}. Backup: {backupFile}.", new AggregateException(deltaEx, backupEx));
+                    }
+                }
             }
             else
             {
@@ -663,6 +757,32 @@ namespace ME3TweaksModManager.modmanager.milan
                 destStream.Seek(0x6, SeekOrigin.Begin);
                 destStream.WriteByte((byte)MEPackage.LMPLicenseeVersion);
             }
+        }
+
+        private string TryGetFallbackBackupFile(string sourceFile)
+        {
+            if (string.IsNullOrWhiteSpace(sourceBackupPath) || string.IsNullOrWhiteSpace(sourceRootPath))
+            {
+                return null;
+            }
+
+            var relativePath = Path.GetRelativePath(sourceRootPath, sourceFile);
+            if (relativePath.StartsWith(".." + Path.DirectorySeparatorChar) ||
+                relativePath.Equals("..", StringComparison.Ordinal) ||
+                Path.IsPathRooted(relativePath))
+            {
+                return null;
+            }
+
+            var backupFile = Path.Combine(sourceBackupPath, relativePath);
+            if (!File.Exists(backupFile))
+            {
+                return null;
+            }
+
+            return string.Equals(backupFile, sourceFile, StringComparison.OrdinalIgnoreCase)
+                ? null
+                : backupFile;
         }
 
         public static readonly MELocalization[] SupportedVOLanguages = new[]
@@ -717,6 +837,8 @@ namespace ME3TweaksModManager.modmanager.milan
         public void CreateInstallation(GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop)
         {
             this.interop = interop;
+            sourceRootPath = sourceGameTarget.TargetPath;
+            sourceBackupPath = BackupService.GetGameBackupPath(sourceGameTarget.Game);
 
             bool successful = true;
             string errorMessage = null;
