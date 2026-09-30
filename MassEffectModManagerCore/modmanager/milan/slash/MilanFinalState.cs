@@ -12,15 +12,18 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     {
         /// <summary>
         /// Files that are expected to differ between otherwise identical installations. These are neither recorded nor
-        /// verified. Paths are relative to the game root; entries ending in a separator match a file name in any folder.
+        /// verified. Paths are relative to the game root. An entry starting with a separator matches that file name in any
+        /// folder; an entry ending with a separator matches everything in that folder.
         /// </summary>
-        private static readonly (string path, string reason)[] ExcludedFiles =
+        private static readonly string[] ExcludedPaths =
         [
             // Records the install time, the Mod Manager build, and the mod's library path
-            (@"\_metacmm.txt", @"install-specific metadata"),
-            // Supplied by Mod Manager, not the game or the mod; changes with Mod Manager versions
-            (@"Binaries\Win64\bink2w64.dll", @"bink bypass from Mod Manager"),
-            (@"Binaries\Win64\bink2w64_original.dll", @"bink bypass from Mod Manager"),
+            @"\_metacmm.txt",
+            // Bink bypass - supplied by Mod Manager, not the game or the mod; changes with Mod Manager versions
+            @"Binaries\Win64\bink2w64.dll",
+            @"Binaries\Win64\bink2w64_original.dll",
+            // ASIs are managed separately from the game content
+            @"Binaries\Win64\ASI\",
         ];
 
         /// <summary>
@@ -28,11 +31,16 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// </summary>
         public static bool IsExcluded(string relativePath)
         {
-            foreach (var (path, _) in ExcludedFiles)
+            foreach (var path in ExcludedPaths)
             {
                 if (path.StartsWith('\\'))
                 {
                     if (relativePath.Equals(path[1..], StringComparison.OrdinalIgnoreCase) || relativePath.EndsWith(path, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+                else if (path.EndsWith('\\'))
+                {
+                    if (relativePath.StartsWith(path, StringComparison.OrdinalIgnoreCase))
                         return true;
                 }
                 else if (relativePath.Equals(path, StringComparison.OrdinalIgnoreCase))
@@ -67,7 +75,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         /// <summary>
         /// Compares the game against the expected final state. Returns a list of differences; empty means the installation
-        /// matches exactly (excluding <see cref="ExcludedFiles"/>).
+        /// matches exactly (excluding <see cref="ExcludedPaths"/>).
         /// </summary>
         public static List<string> Verify(IReadOnlyList<MilanSlashFinalFileEntry> expected, string gameRoot, Action<string> setStatus = null)
         {
