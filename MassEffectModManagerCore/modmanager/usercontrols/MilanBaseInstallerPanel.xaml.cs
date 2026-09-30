@@ -1,9 +1,11 @@
 ﻿using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.milan;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.ui;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,11 +22,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public GameTarget SelectedTarget { get; set; }
         public string InstallLocation { get; set; }
         public string StatusText { get; set; } = @"";
+        public bool MigrateMe3Profile { get; set; }
 
         /// <summary>
         /// The install controller for the running install.
         /// </summary>
         private MilanBaseInstaller InstallController { get; set; }
+        private GameTargetWPF builtTarget;
 
         #region Commands
         public GenericCommand InstallCommand { get; private set; }
@@ -73,19 +77,35 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     SetStatus = (status) => Dispatcher.Invoke(() => StatusText = status),
                     InstallationFinished = installFinished,
-                    AddTarget = addTarget
+                    AddTarget = target => builtTarget = target
                 };
-                InstallController = new MilanBaseInstaller();
-                Task.Run(() =>
-                {
-                    InstallController.CreateInstallation(SelectedTarget, InstallLocation, interop);
-                });
+                var controller = new MilanBaseInstaller();
+                var sourceTarget = SelectedTarget;
+                var destination = InstallLocation;
+                builtTarget = null;
+                InstallController = controller;
+                SourceTargetSelector.IsEnabled = false;
+                MigrateMe3ProfileCheckBox.IsEnabled = false;
+                Task.Run(() => controller.CreateInstallation(sourceTarget, destination, interop));
             }
         }
 
-        private void addTarget(GameTargetWPF target)
+        private static void addTarget(MainWindow owner, GameTargetWPF target)
         {
-            mainwindow.InstallationTargets.Add(target);
+            // Keep the installed target in the selector, replacing an earlier entry for the same installation.
+            var existing = owner.InstallationTargets.FirstOrDefault(x => x.Game == target.Game &&
+                string.Equals(x.TargetPath, target.TargetPath, StringComparison.OrdinalIgnoreCase));
+            var existingIndex = existing == null ? -1 : owner.InstallationTargets.IndexOf(existing);
+            if (existingIndex != -1)
+            {
+                owner.InstallationTargets.RemoveAt(existingIndex);
+                owner.InstallationTargets.Insert(existingIndex, target);
+            }
+            else
+            {
+                owner.InstallationTargets.Add(target);
+            }
+            owner.SelectedGameTarget = target;
         }
 
         // This method should be async cause it's going to be long running for hash checks.
@@ -156,13 +176,27 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (success)
             {
                 M3Log.Information("Milan base installation completed successfully.");
-                OnClosing(DataEventArgs.Empty);
+                Dispatcher.Invoke(() =>
+                {
+                    var owner = mainwindow;
+                    var me3Target = owner.GetME3TargetForProfileMigration();
+                    var migrate = MigrateMe3Profile;
+                    OnClosing(DataEventArgs.Empty);
+                    if (builtTarget != null)
+                        addTarget(owner, builtTarget);
+                    if (migrate && me3Target != null)
+                        _ = Me3ProfileMigration.StartAsync(owner, me3Target);
+                    else if (migrate)
+                        M3L.ShowDialog(owner, "Project Milan was installed, but Mod Manager could not find an original ME3 installation for profile migration.", "ME3 target not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
             else
             {
                 M3Log.Error($"Milan base installation failed: {message}");
                 Dispatcher.Invoke(() =>
                 {
+                    SourceTargetSelector.IsEnabled = true;
+                    MigrateMe3ProfileCheckBox.IsEnabled = true;
                     StatusText = "Installation failed.";
                     M3L.ShowDialog(window, $"The installation failed with the following error:\n\n{message}", "Installation Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 });
@@ -193,6 +227,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
+
+            MigrateMe3ProfileCheckBox.Visibility = !File.Exists(LMPDirectory.LocalProfilePath)
+                ? Visibility.Visible : Visibility.Collapsed;
 
             LE3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.LE3 && !x.TextureModded));
             SelectedTarget = LE3Targets.FirstOrDefault();

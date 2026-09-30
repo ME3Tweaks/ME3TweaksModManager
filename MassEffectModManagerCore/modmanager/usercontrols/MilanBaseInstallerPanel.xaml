@@ -35,7 +35,7 @@
             <TextBlock Text="Project Milan's initial installation must be created from a copy of Mass Effect 3 Legendary Edition." TextWrapping="Wrap" MaxWidth="400"/>
             <DockPanel>
                 <TextBlock Text="Source installation" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120" FontWeight="Bold"/>
-                <usercontrols:TargetSelector
+                <usercontrols:TargetSelector x:Name="SourceTargetSelector"
                         AvailableTargets="{Binding LE3Targets}"
                         SelectedGameTarget="{Binding SelectedTarget}"
                         Grid.Row="0"
@@ -46,9 +46,12 @@
             </DockPanel>
             <DockPanel Margin="0,5,0,0">
                 <TextBlock Text="Install location" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120"  FontWeight="Bold"/>
-                <Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseLocationCommand}"/>
-                <xctk:WatermarkTextBox Text="{Binding InstallLocation, UpdateSourceTrigger=PropertyChanged}"/>
+                <xctk:WatermarkTextBox IsEnabled="False" IsReadOnly="True" Text="{Binding InstallLocation, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
+            <CheckBox x:Name="MigrateMe3ProfileCheckBox" Margin="0,12,0,0" Visibility="Collapsed"
+                      IsChecked="{Binding MigrateMe3Profile}"
+                      Content="Migrate my original ME3 multiplayer profile after installation"
+                      ToolTip="Mod Manager will install the ME3 profile dumper ASI, launch ME3, and ask before writing MP_Profile."/>
         
         </StackPanel>
 

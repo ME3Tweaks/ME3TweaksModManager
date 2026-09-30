@@ -29,6 +29,10 @@ namespace ME3TweaksModManager
         /// </summary>
         private List<GameTargetWPF> InternalLoadedTargets { get; } = new();
 
+        /// <summary>Finds an original ME3 installation even when OT targets are hidden in the UI.</summary>
+        internal GameTargetWPF GetME3TargetForProfileMigration() =>
+            InternalLoadedTargets.FirstOrDefault(x => x.Game == MEGame.ME3);
+
         public GameTargetWPF SelectedGameTarget { get; set; }
 
         /// <summary>
