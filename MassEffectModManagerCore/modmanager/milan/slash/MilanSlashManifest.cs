@@ -75,15 +75,21 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
     /// <summary>
     /// Describes a TFC that is assembled from byte ranges of one or more existing TFCs. The patch file only carries these
-    /// offsets and lengths; all texture data comes from the TFCs already on disk.
+    /// offsets and lengths (plus the new TFC's GUID); all texture data comes from the TFCs already on disk.
     /// </summary>
     internal class MilanSlashTFCEntry
     {
         /// <summary>
-        /// Output TFC, relative to the game root. May be the same file as one of the sources.
+        /// Output TFC, relative to the game root. May be a new file, or the same file as one of the sources.
         /// </summary>
         [JsonPropertyName("filename")]
         public string Filename { get; set; }
+
+        /// <summary>
+        /// GUID written as the TFC's 16 byte header. Textures that use this TFC reference it in their TFCFileGuid property.
+        /// </summary>
+        [JsonPropertyName("guid")]
+        public Guid Guid { get; set; }
 
         /// <summary>
         /// TFCs that data is pulled from, relative to the game root.
@@ -92,11 +98,14 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         public List<MilanSlashSourceFile> Sources { get; set; } = new();
 
         /// <summary>
-        /// Ranges to copy, in output order.
+        /// Ranges to copy, in output order, after the GUID header.
         /// </summary>
         [JsonPropertyName("segments")]
         public List<MilanSlashTFCSegment> Segments { get; set; } = new();
 
+        /// <summary>
+        /// Size of the output, including the 16 byte GUID header.
+        /// </summary>
         [JsonPropertyName("destsize")]
         public long DestSize { get; set; }
 
@@ -226,8 +235,18 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         public string DestHash { get; set; }
     }
 
+    /// <summary>
+    /// A file to delete once everything else has been built, such as a TFC whose used data has all been moved into other
+    /// TFCs, or one nothing references.
+    /// </summary>
     internal class MilanSlashDeletionEntry
     {
+        /// <summary>
+        /// Why the file is deleted.
+        /// </summary>
+        [JsonPropertyName("comment")]
+        public string Comment { get; set; }
+
         [JsonPropertyName("filename")]
         public string Filename { get; set; }
 

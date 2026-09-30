@@ -14,10 +14,12 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     /// though LMP only uses a fraction of them. This scans every package in the installed game to find out what is actually
     /// used, then works out how to transform the installation into one that contains only that:
     /// <list type="bullet">
-    /// <item>TFCs are compacted to only the byte ranges referenced by textures in the game. Each compacted TFC is described
-    /// as a list of (source, offset, length) ranges of the existing TFCs, so the shipped manifest carries no texture data.
-    /// TFC names and GUIDs are kept, so packages only need their mip offsets changed. TFCs nothing uses are deleted.</item>
-    /// <item>Packages whose texture offsets moved get a JPatch delta.</item>
+    /// <item>The byte ranges textures in the game actually use are consolidated out of every TFC we can relocate data in
+    /// into new TFC(s). Each new TFC is described as a GUID plus a list of (source, offset, length) ranges of the existing
+    /// TFCs, so the shipped manifest carries no texture data.</item>
+    /// <item>Packages are repointed to the new TFCs (TextureFileCacheName, TFCFileGuid and mip offsets) and get a JPatch delta.</item>
+    /// <item>Source TFCs that nothing references any more (because their data moved, or because nothing used them) are
+    /// marked for deletion.</item>
     /// <item>The RefShaderCache is reduced to the material shader maps (and their shaders) used by materials in the game,
     /// and gets a JPatch delta.</item>
     /// </list>
@@ -31,7 +33,17 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     internal class MilanSlashGenerator
     {
         private const string RefShaderCacheName = "RefShaderCache-PC-D3D-SM5.upk";
-        private const int TFCHeaderSize = 16; // TFCs start with their GUID
+        private const int TFCHeaderSize = MilanSlashApplier.TFCHeaderSize;
+
+        /// <summary>
+        /// Name of the consolidated TFCs, which are numbered from 0: Textures_LMP0, Textures_LMP1...
+        /// </summary>
+        private const string ConsolidatedTFCBaseName = "Textures_LMP";
+
+        /// <summary>
+        /// Texture data offsets are 32-bit, so a TFC can't be larger than this. Settable so tests can exercise splitting.
+        /// </summary>
+        internal static long MaxTFCSize { get; set; } = int.MaxValue;
 
         private static readonly string[] PackageExtensions = [".pcc", ".upk", ".u", ".sfm"];
 
@@ -123,9 +135,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             // Final file state is recorded later by RecordFinalState, once the installer has finished writing to the game
             manifest.Save(milanDeltaFolder);
 
-            long before = manifest.TFCs.Sum(x => x.Sources.Sum(s => s.Size)) + manifest.Deletions.Sum(x => x.Size) + manifest.Patches.Sum(x => x.SourceFileSize);
+            // Consolidated source TFCs are usually also deleted; count each file once
+            long before = manifest.TFCs.SelectMany(x => x.Sources).Select(x => (x.Filename, x.Size))
+                              .Concat(manifest.Deletions.Select(x => (x.Filename, x.Size)))
+                              .DistinctBy(x => x.Filename, StringComparer.OrdinalIgnoreCase).Sum(x => x.Size)
+                          + manifest.Patches.Sum(x => x.SourceFileSize);
             long after = manifest.TFCs.Sum(x => x.DestSize) + manifest.Patches.Sum(x => x.DestSize);
-            M3Log.Information($"Generated slash manifest: {manifest.TFCs.Count} TFC(s) compacted, {manifest.Deletions.Count} file(s) deleted, {manifest.Patches.Count} file(s) patched. " +
+            M3Log.Information($"Generated slash manifest: {manifest.TFCs.Count} TFC(s) built, {manifest.Deletions.Count} file(s) deleted, {manifest.Patches.Count} file(s) patched. " +
                               $"Affected files go from {FileSize.FormatSize(before)} to roughly {FileSize.FormatSize(after)} (patched packages are measured decompressed)");
             return manifest;
         }
@@ -191,26 +207,22 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
             try
             {
-                bool hasExternalData = false;
+                // All of an export's data must stay in one TFC, as it only names one
+                var ranges = new List<(long start, long length)>();
                 if (Texture2DClasses.Contains(className))
                 {
                     var texture = ObjectBinary.From<UTexture2D>(export);
                     foreach (var mip in texture.Mips)
                     {
-                        if (!HasExternalData(mip))
-                            continue;
-                        tfc.AddRange(mip.DataOffset, mip.CompressedSize);
-                        hasExternalData = true;
+                        if (HasExternalData(mip))
+                            ranges.Add((mip.DataOffset, mip.CompressedSize));
                     }
                 }
                 else if (className == "TextureMovie")
                 {
                     var movie = ObjectBinary.From<TextureMovie>(export);
                     if (movie.IsExternal)
-                    {
-                        tfc.AddRange(movie.DataOffset, movie.DataSize);
-                        hasExternalData = true;
-                    }
+                        ranges.Add((movie.DataOffset, movie.DataSize));
                 }
                 else
                 {
@@ -219,8 +231,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     return;
                 }
 
-                if (hasExternalData)
+                if (ranges.Count > 0)
                 {
+                    tfc.AddExportRanges(ranges);
                     if (!textureRefsByPackage.TryGetValue(packagePath, out var refs))
                     {
                         refs = new List<(int, string)>();
@@ -292,108 +305,245 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         #endregion
 
-        #region TFC compaction
+        #region TFC consolidation
+
+        /// <summary>
+        /// Consolidated TFCs being built.
+        /// </summary>
+        private readonly List<TFCOutput> tfcOutputs = new();
 
         private void PlanTFCs()
         {
+            // Work out which TFCs we can move data out of
+            var sources = new List<TFCUsage>();
             foreach (var tfc in tfcs.Values.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
             {
                 setStatus?.Invoke($"Planning {tfc.Name}.tfc");
                 if (tfc.LockReason != null)
                 {
-                    M3Log.Warning($"Slash: not compacting {tfc.Name}.tfc: {tfc.LockReason}");
+                    M3Log.Warning($"Slash: leaving {tfc.Name}.tfc as is: {tfc.LockReason}");
                     continue;
                 }
 
                 if (tfc.Ranges.Count == 0)
                 {
-                    M3Log.Information($"Slash: {tfc.Name}.tfc is not used by anything and will be deleted");
-                    manifest.Deletions.Add(new MilanSlashDeletionEntry { Filename = GetRelativePath(tfc.Path), Size = tfc.Size });
+                    MarkForDeletion(tfc.Path, "not used by anything");
                     continue;
                 }
 
-                if (!tfc.BuildLayout(TFCHeaderSize, out var layoutError))
+                if (!tfc.BuildIntervals(TFCHeaderSize, out var layoutError))
                 {
-                    M3Log.Warning($"Slash: not compacting {tfc.Name}.tfc: {layoutError}");
+                    tfc.Lock(layoutError);
+                    M3Log.Warning($"Slash: leaving {tfc.Name}.tfc as is: {layoutError}");
                     continue;
                 }
 
-                if (tfc.CompactedSize >= tfc.Size)
+                sources.Add(tfc);
+            }
+
+            if (sources.Count == 0)
+                return;
+
+            // Pack the used data into as few TFCs as the size limit allows. Data that has to stay together (everything one
+            // export uses, and anything overlapping it) is placed as a unit, in source order.
+            foreach (var group in GetIntervalGroups(sources))
+            {
+                long groupSize = group.Sum(x => x.tfc.Intervals[x.interval].Length);
+                if (TFCHeaderSize + groupSize > MaxTFCSize)
+                    throw new Exception($"Texture data that must stay in one TFC is {groupSize} bytes, which is larger than a TFC can be");
+
+                if (tfcOutputs.Count == 0 || tfcOutputs[^1].Size + groupSize > MaxTFCSize)
+                    tfcOutputs.Add(CreateOutput(sources));
+
+                var output = tfcOutputs[^1];
+                foreach (var (tfc, interval) in group)
                 {
-                    M3Log.Information($"Slash: {tfc.Name}.tfc is fully used");
+                    output.Add(tfc, interval);
+                }
+            }
+
+            // Record the new TFCs
+            foreach (var output in tfcOutputs)
+            {
+                setStatus?.Invoke($"Planning {output.Name}.tfc");
+                if (output.IsUnchanged())
+                {
+                    M3Log.Information($"Slash: {output.Name}.tfc is already consolidated");
                     continue;
                 }
 
-                var relPath = GetRelativePath(tfc.Path);
                 var entry = new MilanSlashTFCEntry
                 {
-                    Filename = relPath,
-                    Sources = [new MilanSlashSourceFile { Filename = relPath, Size = tfc.Size }],
-                    Segments = [new MilanSlashTFCSegment(0, 0, TFCHeaderSize), .. tfc.Intervals.Select(x => new MilanSlashTFCSegment(0, x.Start, x.Length))],
-                    DestSize = tfc.CompactedSize,
+                    Filename = GetRelativePath(output.Path),
+                    Guid = output.Guid,
+                    Sources = output.Sources.Select(x => new MilanSlashSourceFile { Filename = GetRelativePath(x.Path), Size = x.Size }).ToList(),
+                    Segments = output.Segments,
+                    DestSize = output.Size,
                 };
-                entry.DestHash = HashTFCSegments(tfc.Path, entry.Segments);
+                entry.DestHash = HashTFC(output);
                 manifest.TFCs.Add(entry);
-                tfc.IsCompacted = true;
-                M3Log.Information($"Slash: {tfc.Name}.tfc {FileSize.FormatSize(tfc.Size)} -> {FileSize.FormatSize(tfc.CompactedSize)} ({entry.Segments.Count} segments)");
+                M3Log.Information($"Slash: {output.Name}.tfc will contain {FileSize.FormatSize(output.Size)} from {output.Sources.Count} TFC(s): {string.Join(", ", output.Sources.Select(x => x.Name))}");
+            }
+
+            // Everything referencing the sources is repointed to the new TFCs, leaving them orphaned
+            foreach (var tfc in sources)
+            {
+                if (tfcOutputs.Any(x => x.Name.Equals(tfc.Name, StringComparison.OrdinalIgnoreCase)))
+                    continue; // Rebuilt in place
+
+                var destinations = string.Join(", ", tfcOutputs.Where(x => x.Sources.Contains(tfc)).Select(x => x.Name + ".tfc"));
+                MarkForDeletion(tfc.Path, $"orphaned: used data moved to {destinations}");
+            }
+
+            M3Log.Information($"Slash: {sources.Count} TFC(s) totalling {FileSize.FormatSize(sources.Sum(x => x.Size))} consolidate into {tfcOutputs.Count} TFC(s) totalling {FileSize.FormatSize(tfcOutputs.Sum(x => x.Size))}");
+        }
+
+        /// <summary>
+        /// Groups every used interval of the source TFCs into sets that must be placed in the same output TFC, ordered by
+        /// where they start in the sources. Intervals are grouped if one export has data in both.
+        /// </summary>
+        private static List<List<(TFCUsage tfc, int interval)>> GetIntervalGroups(List<TFCUsage> sources)
+        {
+            // Union-find over every interval of every source
+            var ids = new List<(TFCUsage tfc, int interval)>();
+            var firstId = new Dictionary<TFCUsage, int>();
+            foreach (var tfc in sources)
+            {
+                firstId[tfc] = ids.Count;
+                for (int i = 0; i < tfc.Intervals.Count; i++)
+                    ids.Add((tfc, i));
+            }
+
+            var parent = Enumerable.Range(0, ids.Count).ToArray();
+            int find(int x)
+            {
+                while (parent[x] != x)
+                {
+                    parent[x] = parent[parent[x]];
+                    x = parent[x];
+                }
+                return x;
+            }
+
+            foreach (var tfc in sources)
+            {
+                foreach (var exportRanges in tfc.ExportRanges)
+                {
+                    int first = firstId[tfc] + tfc.FindInterval(tfc.Ranges[exportRanges[0]].Start);
+                    foreach (var rangeIndex in exportRanges.Skip(1))
+                    {
+                        int other = firstId[tfc] + tfc.FindInterval(tfc.Ranges[rangeIndex].Start);
+                        parent[find(other)] = find(first);
+                    }
+                }
+            }
+
+            return Enumerable.Range(0, ids.Count)
+                .GroupBy(find)
+                .OrderBy(g => g.Min())
+                .Select(g => g.OrderBy(x => x).Select(x => ids[x]).ToList())
+                .ToList();
+        }
+
+        private int nextTFCOutputNumber;
+
+        private TFCOutput CreateOutput(List<TFCUsage> sources)
+        {
+            while (true)
+            {
+                var name = $"{ConsolidatedTFCBaseName}{nextTFCOutputNumber++}";
+                if (!tfcs.TryGetValue(name, out var existing))
+                    return new TFCOutput(name, Path.Combine(gameRoot, "BioGame", "CookedPCConsole", name + ".tfc"), Guid.NewGuid());
+
+                // Regenerating against an already slashed game: rebuild it in place, keeping its GUID
+                if (sources.Contains(existing))
+                    return new TFCOutput(name, existing.Path, existing.ReadGuid());
+
+                // Taken by a TFC we're leaving alone (or deleting); use the next name
             }
         }
 
-        private static string HashTFCSegments(string tfcPath, List<MilanSlashTFCSegment> segments)
+        private static string HashTFC(TFCOutput output)
         {
-            using var fs = new FileStream(tfcPath, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
-            using var hasher = System.Security.Cryptography.IncrementalHash.CreateHash(System.Security.Cryptography.HashAlgorithmName.SHA256);
-            var buffer = new byte[1024 * 1024];
-            foreach (var segment in segments)
+            var streams = output.Sources.Select(x => new FileStream(x.Path, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024)).ToList();
+            try
             {
-                fs.Position = segment.Offset;
-                long remaining = segment.Length;
-                while (remaining > 0)
+                using var hasher = System.Security.Cryptography.IncrementalHash.CreateHash(System.Security.Cryptography.HashAlgorithmName.SHA256);
+                hasher.AppendData(output.Guid.ToByteArray());
+                var buffer = new byte[1024 * 1024];
+                foreach (var segment in output.Segments)
                 {
-                    int read = fs.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
-                    if (read <= 0)
-                        throw new Exception($"Unexpected end of {tfcPath}");
-                    hasher.AppendData(buffer, 0, read);
-                    remaining -= read;
+                    var fs = streams[segment.SourceIndex];
+                    fs.Position = segment.Offset;
+                    long remaining = segment.Length;
+                    while (remaining > 0)
+                    {
+                        int read = fs.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
+                        if (read <= 0)
+                            throw new Exception($"Unexpected end of {output.Sources[segment.SourceIndex].Path}");
+                        hasher.AppendData(buffer, 0, read);
+                        remaining -= read;
+                    }
                 }
+                return Convert.ToHexStringLower(hasher.GetHashAndReset());
             }
-            return Convert.ToHexStringLower(hasher.GetHashAndReset());
+            finally
+            {
+                foreach (var fs in streams)
+                    fs.Dispose();
+            }
+        }
+
+        private void MarkForDeletion(string fullPath, string reason)
+        {
+            M3Log.Information($"Slash: {GetRelativePath(fullPath)} will be deleted ({reason})");
+            manifest.Deletions.Add(new MilanSlashDeletionEntry { Comment = reason, Filename = GetRelativePath(fullPath), Size = new FileInfo(fullPath).Length });
         }
 
         private void CreateTexturePackagePatches()
         {
             var packagesToPatch = textureRefsByPackage
-                .Where(x => x.Value.Any(r => tfcs[r.tfcName].IsCompacted))
+                .Where(x => x.Value.Any(r => tfcs[r.tfcName].IsRelocated))
                 .OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             for (int i = 0; i < packagesToPatch.Count; i++)
             {
                 var (packagePath, refs) = (packagesToPatch[i].Key, packagesToPatch[i].Value);
-                setStatus?.Invoke($"Updating texture offsets ({i + 1}/{packagesToPatch.Count})");
+                setStatus?.Invoke($"Repointing textures ({i + 1}/{packagesToPatch.Count})");
 
                 var fileBytes = File.ReadAllBytes(packagePath);
                 using var package = MEPackageHandler.OpenMEPackageFromStream(new MemoryStream(fileBytes), packagePath);
                 foreach (var (uIndex, tfcName) in refs)
                 {
                     var tfc = tfcs[tfcName];
-                    if (!tfc.IsCompacted)
+                    if (!tfc.IsRelocated)
                         continue;
 
                     var export = package.GetUExport(uIndex);
                     var originalBinaryLength = export.GetBinaryData().Length;
                     var binary = ObjectBinary.From(export);
+                    TFCOutput destination = null;
+                    int remap(int offset)
+                    {
+                        var (output, newOffset) = tfc.Remap(offset);
+                        if (destination != null && destination != output)
+                            throw new Exception($"{export.InstancedFullPath} in {packagePath} would be split across {destination.Name}.tfc and {output.Name}.tfc");
+                        destination = output;
+                        return checked((int)newOffset);
+                    }
+
                     if (binary is UTexture2D texture)
                     {
                         foreach (var mip in texture.Mips)
                         {
                             if (HasExternalData(mip))
-                                mip.DataOffset = checked((int)tfc.Remap(mip.DataOffset));
+                                mip.DataOffset = remap(mip.DataOffset);
                         }
                     }
                     else if (binary is TextureMovie { IsExternal: true } movie)
                     {
-                        movie.DataOffset = checked((int)tfc.Remap(movie.DataOffset));
+                        movie.DataOffset = remap(movie.DataOffset);
                     }
                     else
                     {
@@ -405,9 +555,18 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     // Only offsets changed, so a faithful round trip keeps the binary the same size
                     if (export.GetBinaryData().Length != originalBinaryLength)
                         throw new Exception($"Re-serializing {export.InstancedFullPath} in {packagePath} changed its size; texture binary does not round trip. Cannot safely slash this package.");
+
+                    // Point it at the new TFC
+                    var properties = export.GetProperties();
+                    properties.AddOrReplaceProp(new NameProperty(destination.Name, "TextureFileCacheName"));
+                    if (binary is UTexture2D || properties.GetProp<StructProperty>("TFCFileGuid") != null)
+                    {
+                        properties.AddOrReplaceProp(new FGuid(destination.Guid).ToStructProperty("TFCFileGuid"));
+                    }
+                    export.WriteProperties(properties);
                 }
 
-                AddPackagePatch(packagePath, fileBytes, package, "Texture data offsets updated for compacted TFCs");
+                AddPackagePatch(packagePath, fileBytes, package, "Textures repointed to consolidated TFCs");
             }
         }
 
@@ -537,7 +696,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         #endregion
 
         /// <summary>
-        /// Tracks which byte ranges of a TFC are used, and how they are laid out once compacted.
+        /// Tracks which byte ranges of an installed TFC are used, and where they end up once consolidated.
         /// </summary>
         private class TFCUsage
         {
@@ -550,15 +709,25 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             /// </summary>
             public string LockReason { get; private set; }
 
+            /// <summary>
+            /// Every used range, as found in the scan.
+            /// </summary>
             public List<(long Start, long Length)> Ranges { get; } = new();
 
             /// <summary>
-            /// Merged used ranges in source order, with where each one starts in the compacted TFC.
+            /// Indexes into <see cref="Ranges"/> of the ranges each export uses; these must stay in the same TFC.
             /// </summary>
-            public List<(long Start, long Length, long NewStart)> Intervals { get; } = new();
+            public List<int[]> ExportRanges { get; } = new();
 
-            public long CompactedSize { get; private set; }
-            public bool IsCompacted { get; set; }
+            /// <summary>
+            /// Merged used ranges in source order, and where each one ends up.
+            /// </summary>
+            public List<(long Start, long Length, TFCOutput Output, long NewStart)> Intervals { get; } = new();
+
+            /// <summary>
+            /// If this TFC's data is being moved into consolidated TFCs.
+            /// </summary>
+            public bool IsRelocated => Intervals.Count > 0 && Intervals.All(x => x.Output != null);
 
             public TFCUsage(string name, string path, long size)
             {
@@ -569,13 +738,30 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
             public void Lock(string reason) => LockReason ??= reason;
 
-            public void AddRange(long start, long length) => Ranges.Add((start, length));
+            public void AddExportRanges(List<(long start, long length)> ranges)
+            {
+                var indexes = new int[ranges.Count];
+                for (int i = 0; i < ranges.Count; i++)
+                {
+                    indexes[i] = Ranges.Count;
+                    Ranges.Add(ranges[i]);
+                }
+                ExportRanges.Add(indexes);
+            }
+
+            public Guid ReadGuid()
+            {
+                using var fs = File.OpenRead(Path);
+                var header = new byte[TFCHeaderSize];
+                fs.ReadExactly(header);
+                return new Guid(header);
+            }
 
             /// <summary>
-            /// Merges overlapping and adjacent ranges and lays them out sequentially after the header. Overlaps are merged
-            /// rather than deduplicated so that any offset inside a used range still maps correctly.
+            /// Merges overlapping and adjacent ranges. Overlaps are merged rather than deduplicated so that any offset inside
+            /// a used range still maps correctly.
             /// </summary>
-            public bool BuildLayout(int headerSize, out string error)
+            public bool BuildIntervals(int headerSize, out string error)
             {
                 error = null;
                 foreach (var (start, length) in Ranges)
@@ -587,7 +773,6 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     }
                 }
 
-                long newStart = headerSize;
                 foreach (var (start, length) in Ranges.OrderBy(x => x.Start))
                 {
                     if (Intervals.Count > 0)
@@ -596,24 +781,21 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                         if (start <= last.Start + last.Length)
                         {
                             long end = Math.Max(last.Start + last.Length, start + length);
-                            newStart += end - (last.Start + last.Length);
-                            Intervals[^1] = (last.Start, end - last.Start, last.NewStart);
+                            Intervals[^1] = (last.Start, end - last.Start, null, 0);
                             continue;
                         }
                     }
 
-                    Intervals.Add((start, length, newStart));
-                    newStart += length;
+                    Intervals.Add((start, length, null, 0));
                 }
 
-                CompactedSize = newStart;
                 return true;
             }
 
             /// <summary>
-            /// Maps an offset inside a used range to its offset in the compacted TFC.
+            /// Index of the interval containing the offset.
             /// </summary>
-            public long Remap(long offset)
+            public int FindInterval(long offset)
             {
                 int lo = 0, hi = Intervals.Count - 1;
                 while (lo <= hi)
@@ -625,10 +807,73 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     else if (offset >= interval.Start + interval.Length)
                         lo = mid + 1;
                     else
-                        return interval.NewStart + (offset - interval.Start);
+                        return mid;
                 }
 
                 throw new Exception($"Offset 0x{offset:X} is not in a used range of {Name}.tfc");
+            }
+
+            /// <summary>
+            /// Maps an offset inside a used range to the consolidated TFC it moved to, and its offset there.
+            /// </summary>
+            public (TFCOutput output, long offset) Remap(long offset)
+            {
+                var interval = Intervals[FindInterval(offset)];
+                return (interval.Output, interval.NewStart + (offset - interval.Start));
+            }
+        }
+
+        /// <summary>
+        /// A consolidated TFC being assembled from ranges of source TFCs.
+        /// </summary>
+        private class TFCOutput
+        {
+            public string Name { get; }
+            public string Path { get; }
+            public Guid Guid { get; }
+            public List<TFCUsage> Sources { get; } = new();
+            public List<MilanSlashTFCSegment> Segments { get; } = new();
+            public long Size { get; private set; } = TFCHeaderSize;
+
+            public TFCOutput(string name, string path, Guid guid)
+            {
+                Name = name;
+                Path = path;
+                Guid = guid;
+            }
+
+            /// <summary>
+            /// Appends a source interval, recording where it ends up.
+            /// </summary>
+            public void Add(TFCUsage source, int intervalIndex)
+            {
+                int sourceIndex = Sources.IndexOf(source);
+                if (sourceIndex < 0)
+                {
+                    sourceIndex = Sources.Count;
+                    Sources.Add(source);
+                }
+
+                var interval = source.Intervals[intervalIndex];
+                source.Intervals[intervalIndex] = (interval.Start, interval.Length, this, Size);
+
+                // Keep the manifest small by joining ranges that are also contiguous in the source
+                if (Segments.Count > 0 && Segments[^1].SourceIndex == sourceIndex && Segments[^1].Offset + Segments[^1].Length == interval.Start)
+                    Segments[^1] = Segments[^1] with { Length = Segments[^1].Length + interval.Length };
+                else
+                    Segments.Add(new MilanSlashTFCSegment(sourceIndex, interval.Start, interval.Length));
+
+                Size += interval.Length;
+            }
+
+            /// <summary>
+            /// If this output would be byte-for-byte the TFC already installed under its name.
+            /// </summary>
+            public bool IsUnchanged()
+            {
+                return Sources.Count == 1 && Sources[0].Name.Equals(Name, StringComparison.OrdinalIgnoreCase)
+                       && Size == Sources[0].Size && Segments.Count == 1 && Segments[0].Offset == TFCHeaderSize
+                       && Guid == Sources[0].ReadGuid();
             }
         }
     }

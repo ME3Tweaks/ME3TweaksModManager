@@ -42,9 +42,14 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     {
         public const string SlashManifestFileName = @"slash.json";
         public const string SlashFolderName = @"Slash";
-        public const double SupportedSlashVersion = 0.1;
+        public const double SupportedSlashVersion = 0.2;
 
         private const string StagingExtension = @".slashtmp";
+
+        /// <summary>
+        /// TFCs start with their 16 byte GUID.
+        /// </summary>
+        internal const int TFCHeaderSize = 16;
 
         /// <summary>
         /// Loads and verifies the slash manifest in the given MilanDelta folder.
@@ -120,7 +125,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                         problems.Add($"{source.Filename} is {size} bytes, expected {source.Size}");
                 }
 
-                long totalSize = 0;
+                long totalSize = TFCHeaderSize;
                 foreach (var segment in tfc.Segments)
                 {
                     if (segment.SourceIndex < 0 || segment.SourceIndex >= tfc.Sources.Count || segment.Offset < 0 || segment.Length <= 0
@@ -267,7 +272,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 var path = Resolve(gameRoot, deletion.Filename);
                 if (File.Exists(path))
                 {
-                    M3Log.Information($@"Slash: deleting {deletion.Filename}");
+                    M3Log.Information($@"Slash: deleting {deletion.Filename} ({deletion.Comment})");
                     File.Delete(path);
                 }
             }
@@ -292,6 +297,10 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 var buffer = new byte[1024 * 1024];
                 using (var output = new FileStream(stagingPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024))
                 {
+                    var header = tfc.Guid.ToByteArray();
+                    output.Write(header);
+                    hasher.AppendData(header);
+
                     foreach (var segment in tfc.Segments)
                     {
                         var source = sources[segment.SourceIndex];
