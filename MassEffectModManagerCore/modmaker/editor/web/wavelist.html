@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="chrome.css">
+<script src="chrome.js"></script>
+<title>ModMaker — Wavelists</title>
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #1c2027;
+    --panel-2: #232833;
+    --line: #2f3540;
+    --text: #e6e9ef;
+    --muted: #97a0af;
+    --accent: #4aa3ff;
+    --ok: #46c07a;
+    --warn: #e0a33a;
+    --over: #e05a5a;
+    --filler: #7c8798;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+  }
+  header {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 12px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
+    position: sticky; top: var(--mmc-h, 0px); z-index: 5;
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; }
+  select, button {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; padding: 5px 9px; font: inherit;
+  }
+  .pill {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .pill.off { color: var(--warn); border-color: var(--warn); }
+  .pill.on  { color: var(--ok);   border-color: var(--ok); }
+  .note { color: var(--muted); font-size: 12px; }
+  .spacer { flex: 1; }
+
+  /* The faction's own corner of the bar: whether the lobby offers it, and the picture the player
+     picks it by. Right-aligned, under the chrome's Compile button, because it is about the whole
+     faction rather than about the wave the grid below has selected. */
+  .offer { display: flex; align-items: center; gap: 6px; font-size: 12px; white-space: nowrap; }
+  .offer input { accent-color: var(--accent); margin: 0; }
+  .offer.off { color: var(--warn); }
+  /* Not a checkbox: no lobby choice points at this wavelist, so there is nothing to turn off. */
+  .offer.none { color: var(--muted); }
+  .factionart {
+    height: 38px; width: auto; flex: none; display: block;
+    border: 1px solid var(--line); border-radius: 4px;
+  }
+
+  .wrap { padding: 14px 18px 40px; }
+  .banner {
+    background: rgba(224,163,58,.10); border: 1px solid var(--warn);
+    color: #f0cf95; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; font-size: 12px;
+  }
+
+  /* This is a scroll container in BOTH axes, and that is load-bearing for the sticky headers below:
+     an overflow container becomes the containing block for sticky descendants, so a header row inside
+     it can only stick to the container, never to the viewport. Trying to pin it to the page header
+     instead puts it 56px down from the container's top edge, on top of the first row. */
+  .gridscroll { overflow: auto; max-height: calc(100vh - 120px - var(--mmc-h, 0px)); }
+  table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 900px; }
+  th, td { border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    position: sticky; top: 0; background: var(--panel); z-index: 4;
+    text-align: left; padding: 8px 10px; font-weight: 600; border-bottom: 1px solid var(--line);
+  }
+  .sub { display: block; color: var(--muted); font-weight: 400; font-size: 11px; margin-top: 2px; }
+  th.wave .sub { text-transform: uppercase; letter-spacing: .04em; font-size: 10px; }
+  th.wave {
+    width: 74px; background: var(--panel); position: sticky; left: 0; z-index: 3;
+    padding: 10px; font-weight: 600;
+  }
+  thead th.wave { z-index: 6; }
+  td { padding: 8px; }
+
+  .cell {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+    padding: 8px; cursor: pointer; min-height: 84px;
+  }
+  .cell:hover { border-color: var(--accent); }
+  .cell.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  /* An edited cell has to be findable at a glance across 44 of them, and distinguishable from the
+     one that merely happens to be selected. */
+  .cell.edited { border-left: 3px solid var(--accent); }
+  .cell.edited .badge { float: right; font-size: 10px; color: var(--accent); }
+
+  .slot { display: flex; align-items: baseline; gap: 6px; font-size: 12px; padding: 1px 0; }
+  .slot .n { color: var(--muted); min-width: 22px; }
+  .slot .t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .slot.filler .t { color: var(--filler); font-style: italic; }
+  .slot .cap {
+    font-size: 10px; color: var(--warn); border: 1px solid var(--warn);
+    border-radius: 3px; padding: 0 4px;
+  }
+
+  /* The difficulty heading, built like the lobby's own Create New Match tiles: the game's challenge
+     art with the name written across it. The art is the thing a player recognises a difficulty by,
+     and four columns of near-identical grey text is a grid people mis-read.
+
+     `cover` rather than `contain`, so every column is the same shape whatever the texture is - a
+     column 20px taller than its neighbour because its banner is reads as meaning something. The
+     scrim is not decoration either: these are photographic tiles and white text over an unknown
+     bright region is unreadable. */
+  thead th.diff { padding: 6px; vertical-align: bottom; }
+  .difftile {
+    position: relative; height: 62px; border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--panel-2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .difftile .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .difftile::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(6,8,12,.12), rgba(6,8,12,.68));
+  }
+  .difftile .cap { position: relative; z-index: 1; text-align: center; line-height: 1.25; }
+  .difftile .name {
+    display: block; font-size: 15px; font-weight: 600; letter-spacing: .02em;
+    text-shadow: 0 1px 4px rgba(0,0,0,.95);
+  }
+  .difftile .pts {
+    display: block; font-size: 10px; color: rgba(230,233,239,.78);
+    text-shadow: 0 1px 3px rgba(0,0,0,.95);
+  }
+  /* No art for this difficulty. The tile keeps its shape so the columns still line up. */
+  .difftile.noart::after { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.25)); }
+
+  .bar { height: 5px; border-radius: 3px; background: #2b313c; margin-top: 7px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--ok); }
+  .bar.over > i { background: var(--over); }
+  .cost { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .cost .no { color: var(--muted); font-style: italic; }
+
+  .dup {
+    margin-top: 6px; font-size: 11px; color: var(--warn);
+    border-top: 1px dashed var(--warn); padding-top: 5px;
+  }
+
+  /* The filler's count. An infinity is the honest glyph for it: the slot has no counts at all, and
+     the number beside it is derived from MaxEnemies rather than authored. */
+  .slot .n.inf { color: var(--filler); font-style: normal; }
+  .slot .n.inf b { font-weight: 400; }
+  /* The fixed slots already fill the field, so this one is not in the opening at all. */
+  .slot.idle { opacity: .45; }
+  .slot.idle .n.inf { color: var(--over); }
+
+  /* The composer opens as a row of the grid, directly under the wave it belongs to. It used to sit
+     at the bottom of the page, where clicking a cell could scroll nothing and look like nothing had
+     happened. */
+  tr.detail > td { padding: 0; background: var(--bg); border-bottom: 2px solid var(--accent); }
+  .composer {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 14px 16px; margin: 10px;
+  }
+  /* Parked below the grid when nothing is selected, which is also where it lives before the first
+     click - hidden, but in the document, because it is moved rather than rebuilt. */
+  .wrap > .composer { margin: 18px 0 0; }
+  .composer h2 { font-size: 13px; margin: 0 0 10px; font-weight: 600; }
+  /* The stage sits BESIDE the controls, not above them. Above, it pushed the slot rows - the thing
+     being edited - below the fold, and the rows leave plenty of width unused because a slot is a
+     dropdown and two small numbers. Beside, the panel costs the height of the rows and no more. */
+  .composer .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 420px); gap: 16px; }
+  .composer .cols > .left { min-width: 0; }
+  @media (max-width: 1100px) {
+    .composer .cols { grid-template-columns: minmax(0, 1fr); }
+  }
+  .composer .rows { display: grid; gap: 6px; }
+  .crow {
+    display: grid; grid-template-columns: 70px 1fr 132px 110px 80px;
+    gap: 10px; align-items: center; padding: 6px 8px;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px;
+  }
+  .crow .lab { color: var(--muted); font-size: 11px; }
+  .crow select, .crow input { width: 100%; padding: 3px 6px; font-size: 12px; }
+  .crow input[type=number] { width: 72px; }
+  /* MinCount and MaxCount sit together as one control: they are a range, and two bare boxes side by
+     side read as two unrelated numbers. */
+  .crow .range { display: flex; align-items: center; gap: 5px; }
+  .crow .range input[type=number] { width: 100%; min-width: 0; }
+  .crow .range .dash { color: var(--muted); }
+  .crow input:disabled, .crow select:disabled { opacity: .35; }
+  .crow .chk { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; }
+  .crow .x {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 4px; padding: 2px 7px; cursor: pointer;
+  }
+  .crow .x:hover { color: var(--over); border-color: var(--over); }
+  .tools { display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  .tools .spacer { flex: 1; }
+  .tools button.danger:hover { color: var(--over); border-color: var(--over); }
+  .meter { display: flex; align-items: center; gap: 10px; margin: 10px 0 2px; font-size: 12px; }
+  .meter .bar { flex: 1; margin: 0; height: 7px; }
+  .meter .over { color: var(--over); }
+  .objnote {
+    font-size: 11px; color: var(--over); margin: 2px 0 6px;
+    border-left: 2px solid var(--over); padding-left: 8px;
+  }
+  /* ---------------------------------------------------------------- the stage
+
+     The wave as a group photo. Space is reserved for it whether or not the art exists: the figures
+     are transparent PNGs that are still being made, and a stage that grows when they land would
+     move every control under it on the day they do. */
+  .stage {
+    /* z-index, not just position: the figures inside are stacked against each other, and without a
+       stacking context of its own the stage's z-indexes compete with the grid's sticky header - so a
+       figure paints over the difficulty banners while the composer is scrolled under them. */
+    --fig-h: 250px;
+    position: relative; z-index: 0; min-height: 330px; margin: 0; cursor: zoom-in;
+    background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.25));
+    border: 1px solid var(--line); border-radius: 7px; overflow: hidden;
+  }
+  /* A floor to stand on, so the figures read as a group rather than as icons in a row. */
+  .stage .ground {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 46px;
+    background: radial-gradient(120% 100% at 50% 100%, rgba(74,163,255,.13), transparent 70%);
+    border-top: 1px solid rgba(255,255,255,.05);
+  }
+  .stage .cast { position: absolute; inset: 0; }
+  .fig {
+    position: absolute; bottom: calc(18px + var(--dy));
+    left: calc(50% + var(--dx)); z-index: var(--z);
+    transform: translateX(-50%) scale(var(--s));
+    transform-origin: 50% 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    transition: left .18s ease, bottom .18s ease, transform .18s ease;
+  }
+  /* The renders share one frame - 771x1080 - with each character drawn to its true scale inside it,
+     so a Geth Prime fills more of its frame than a Centurion does. Sizing by the FRAME is therefore
+     what keeps them in proportion to each other; sizing by the character would flatten a two-metre
+     synthetic and a trooper to the same height. */
+  .fig img, .fig .silhouette { display: block; height: var(--fig-h); width: auto; }
+
+  /* The frame's outer edge is faded rather than cut.
+
+     The renders share one frame and a character in a wide stance - the Banshee mid-attack, arms out -
+     reaches the side of it, so the frame's edge slices through the effect and the result is a hard
+     vertical line down empty space. Feathering the last few per cent turns that into a fade, which
+     costs nothing on a character that does not reach the edge and rescues the ones that do.
+
+     Sides and top only: the figures stand on the frame's lower edge, and fading the bottom would
+     dissolve their feet into the floor. The sides get more than the top because that is where the
+     problem is.
+
+     This is NOT the alpha filtering that used to be here and was removed. That inspected pixel
+     VALUES, trying to tell a shader wash from the character, and could not - see art/README.md. This
+     is a fixed geometric fade at the border that reads no pixels and treats every render the same. */
+  .fig img {
+    --feather-x: 7%;
+    --feather-y: 4%;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--feather-x), #000 calc(100% - var(--feather-x)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--feather-y), #000 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--feather-x), #000 calc(100% - var(--feather-x)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--feather-y), #000 100%);
+    /* Both masks apply, so a corner is faded by whichever is stronger there. */
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  /* What stands in until the render exists. Deliberately not a guess at the character - a dashed
+     plate reads as "art goes here", where a wrong silhouette reads as a bug. */
+  /* Sized to the same frame as a render, so a half-finished roster does not jump about as pictures
+     land: the plate occupies the space its character will. It is drawn faintly and only as a
+     figure-shaped hint, not as a filled box - with most of the roster still unpainted, boxes make the
+     stage a wall of grey rectangles that hides the art that IS there. */
+  .fig .silhouette { width: calc(var(--fig-h) * 0.714); position: relative; }
+  .fig .silhouette::after {
+    content: ""; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: calc(var(--fig-h) * 0.24); height: calc(var(--fig-h) * 0.7);
+    border: 1px dashed var(--line); border-radius: 999px 999px 8px 8px;
+    background: rgba(255,255,255,.025); opacity: .8;
+  }
+  /* Above every plate, not just its own figure's: a caption tucked behind the figure in front is
+     the one part of a receding group that must stay readable. */
+  .fig .cap {
+    position: relative; z-index: 60;
+    font-size: 10px; color: var(--muted); white-space: nowrap;
+    background: rgba(0,0,0,.7); border-radius: 3px; padding: 1px 5px;
+  }
+  .fig .cap b { color: var(--text); font-weight: 600; }
+  /* The filler that will not spawn. Present, because it is still in the row and still what covers a
+     type that has hit MaxPerWave - just not in the opening field. */
+  .fig.idle { filter: grayscale(1); opacity: .4; }
+  .stage .empty {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 12px;
+  }
+  .stage .missing {
+    position: absolute; left: 0; right: 0; bottom: 6px; text-align: center;
+    font-size: 11px; color: var(--muted); z-index: 70;
+  }
+  /* The filler's row: an infinity where the two count boxes would be. */
+  .crow .range.inf { justify-content: center; }
+
+  /* The composition, big. The renders are 771x1080 and the inline stage shows them at a quarter of
+     that; this is the "let me actually look at it" view. It is a snapshot rather than an editor - any
+     click closes it, because everything that changes a wave is in the panel underneath. */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    background: rgba(8, 10, 14, .93); cursor: zoom-out;
+  }
+  .lightbox .title { color: var(--text); font-size: 14px; font-weight: 600; }
+  .lightbox .stage {
+    --fig-h: min(60vh, 600px);
+    width: min(94vw, 1400px); height: min(74vh, 760px); min-height: 0;
+    background: transparent; border: 0; cursor: zoom-out;
+  }
+  .lightbox .stage .ground { height: 90px; }
+  .lightbox .fig .cap { font-size: 12px; padding: 2px 7px; }
+  .lightbox .hint { color: var(--muted); font-size: 12px; }
+
+  .raw {
+    margin-top: 10px; font-family: Consolas, monospace; font-size: 11px; color: var(--muted);
+    background: #12151a; border: 1px solid var(--line); border-radius: 5px;
+    padding: 8px; white-space: pre-wrap; word-break: break-all; max-height: 90px; overflow: auto;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Wavelists</h1>
+  <select id="faction"></select>
+  <span id="state" class="pill"></span>
+  <span class="note" id="summary"></span>
+  <span id="edited" class="pill" hidden></span>
+  <span class="spacer"></span>
+  <span id="offer" class="offer"></span>
+  <img id="factionart" class="factionart" alt="" hidden>
+</header>
+
+<div class="wrap">
+  <div id="dormant" class="banner" hidden></div>
+  <div id="nofactions" class="banner" hidden></div>
+  <div class="gridscroll">
+    <table>
+      <thead><tr id="head"></tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+  </div>
+  <div id="composer" class="composer" hidden></div>
+</div>
+
+<script>
+// The payload is injected by the host at runtime; the file load is the standalone fallback so the
+// page can be developed and reviewed without the app running.
+const boot = window.__PAYLOAD__
+  ? Promise.resolve(window.__PAYLOAD__)
+  : fetch('sample-payload.json').then(r => r.json());
+
+boot.then(render).catch(e => {
+  document.getElementById('summary').textContent = 'Could not load payload: ' + e;
+});
+
+let DATA = null, FACTION = null, SELECTED = null;
+
+/// The composer, held as a NODE rather than looked up by id.
+///
+/// It has to be. The composer lives inside the grid now, and drawBody() empties the table body
+/// before it rebuilds - which detaches the composer, so document.getElementById would find nothing
+/// from the second redraw onward. That is not a blank panel, it is an appendChild(null) part-way
+/// through the rebuild, which aborts the loop and leaves the grid truncated at whatever row it had
+/// reached. A detached node is still perfectly good to re-append; an id lookup for one is not.
+const COMPOSER = document.getElementById('composer');
+
+// Edited cells, keyed by the cell's identity. Sparse on purpose and in the same shape the project
+// file stores: a cell that is not in here is not "unchanged", it is absent, and the compiler emits
+// the row the game shipped. Reverting removes the entry rather than writing the shipped values in,
+// which would pin them against a later Milan build.
+const EDITS = new Map();
+
+// type -> points. The palette is the closed, priced vocabulary; a type absent from it has no cost
+// and the cell says so rather than quietly totalling without it.
+const PRICE = new Map();
+
+// The lobby's enemy picker, keyed by the wave class each choice starts, lowercased. The join is by
+// CLASS and not by name: the lobby calls the choice that starts SFXWave_Horde_Cerberus2 "Cerberus",
+// and half the wavelists in the game have no choice pointing at them at all.
+const LOBBY = new Map();
+
+// Factions turned off, keyed by the picker option's id. Sparse in the same way EDITS is: an id that
+// is not here is offered, because being IN the lobby's list is what being offered means - there is
+// no flag to clear, so turning one off is a subtraction and putting it back is removing the entry.
+const PICKERS = new Map();
+
+function cellKey(wave, diff) {
+  return [FACTION.section, wave.instanceId, wave.index, diff.key].join('|').toLowerCase();
+}
+
+/// The slots to draw: what the user composed if they have, otherwise what shipped.
+function effectiveSlots(wave, diff, shipped) {
+  const e = EDITS.get(cellKey(wave, diff));
+  return e ? e.slots : shipped.slots;
+}
+
+/// What the wave puts on the field to open with, and what that costs.
+///
+/// This is the number the bar shows, and it is worth being exact about what it is NOT, because an
+/// earlier version of this page got it wrong in a way that looked plausible:
+///
+///  - MinCount/MaxCount are how many of a type are kept ALIVE AT ONCE. They are not how many spawn
+///    over the wave. A slot of 1 Guardian in a long wave can spawn a Guardian many times.
+///  - The filler is not "whatever is left of the budget". It is whatever is left of the FIELD: the
+///    fixed slots hold their counts and the filler makes the field up to MaxEnemies.
+///  - The budget is spent over the whole wave, on respawns as well as on the opening. It runs out and
+///    the wave stops spawning; it is not a cap on the composition.
+///  - MaxPerWave is the only thing that caps a type's total for the wave. When a type reaches it, the
+///    filler covers its place instead.
+///
+/// So the honest reading is the cost of ONE FULL FIELD - what the wave must be able to afford before
+/// a single enemy has died - and how much of the budget that leaves for everything after it.
+/// Paints a wave's group photo into <paramref name="el"/>.
+///
+/// One painter for both sizes. The inline stage and the enlarged one differ only by how far apart the
+/// figures stand and how tall they are drawn - everything else, the ordering, the centring, which
+/// pose each figure asks for, is arrangement the two must not disagree about.
+function paintCast(el, slots, spread) {
+    const totals = spawnOf(slots);
+    el.innerHTML = '<div class="ground"></div>';
+
+    if (!slots.length) {
+      el.insertAdjacentHTML('beforeend', '<div class="empty">No enemies in this wave.</div>');
+      return;
+    }
+
+    const cast = document.createElement('div');
+    cast.className = 'cast';
+
+
+    // Said out loud while the renders are being made, because a row of dashed plates with no
+    // explanation reads as a broken editor rather than as reserved space.
+    let missing = 0;
+    const note = document.createElement('div');
+    note.className = 'missing';
+    note.hidden = true;
+
+    // The filler first so it is the front-most figure, then the rest in list order - which is also
+    // spawn order, so the arrangement matches the order enemies actually arrive in.
+    const ordered = slots.filter(isFiller).concat(slots.filter(s => !isFiller(s)));
+
+    // Where each figure stands, worked out before any is drawn, so the GROUP can be centred rather
+    // than the front figure. They alternate left and right, so an even number of slots puts one more
+    // on the left than the right - four slots is centre, left, right, left - and centring the front
+    // figure then hangs the whole composition off one side of the stage.
+    const places = ordered.map((_, depth) => {
+      const side = depth === 0 ? 0 : (depth % 2 ? -1 : 1);
+      const rank = Math.ceil(depth / 2);
+      return { side: side, rank: rank, dx: side * rank * spread };
+    });
+    const offsets = places.map(p => p.dx);
+    const centre = (Math.min(...offsets) + Math.max(...offsets)) / 2;
+
+    ordered.forEach((slot, depth) => {
+      const filler = isFiller(slot);
+      const idle = filler && totals.known && totals.filler === 0;
+
+      const { side, rank, dx } = places[depth];
+
+      const fig = document.createElement('figure');
+      fig.className = 'fig' + (filler ? ' front' : '') + (idle ? ' idle' : '');
+      fig.style.setProperty('--dx', (dx - centre) + 'px');
+      fig.style.setProperty('--dy', (rank * spread * 0.32) + 'px');
+      fig.style.setProperty('--s', (1 - rank * 0.08).toFixed(3));
+      // Front-most first, then outward. Both figures of a rank sit above both of the next, which is
+      // what makes the overlap read as depth rather than as an arbitrary pile.
+      fig.style.setProperty('--z', String(50 - depth));
+
+      // The facing names WHERE THE FIGURE STANDS, not which way it looks: `front` is the middle,
+      // `left` goes left of centre and `right` goes right of it. That is how the renders are being
+      // drawn, and it is worth stating because the other reading is just as natural and produces a
+      // group that all faces the same way.
+      //
+      // Decided from the position the figure ENDED UP at rather than from its depth, because the
+      // group is centred: an even composition has no single middle, it has a middle PAIR straddling
+      // it, and both of those want the front pose. Testing the offset keeps that true however the
+      // placement rule changes - a depth-and-parity test would have to be kept in step by hand.
+      const facing = Math.abs(dx - centre) <= spread / 2
+        ? 'front'
+        : (side < 0 ? 'left' : 'right');
+      const art = document.createElement('img');
+      art.alt = '';
+
+      // A missing pose shows the empty plate and nothing else. It deliberately does NOT fall back to
+      // the front pose: the set is still being drawn, and substituting a pose that does exist makes a
+      // half-finished roster look finished - which is the one thing this stage must not do while it
+      // is also the checklist for what is left to draw.
+      art.onerror = () => {
+        art.replaceWith(silhouette());
+        if (++missing === ordered.length) {
+          note.textContent = 'Character art is not in this build yet — the space is reserved for it.';
+          note.hidden = false;
+        }
+      };
+
+      art.src = figureSrc(slot.type, facing);
+      fig.appendChild(art);
+
+      const cap = document.createElement('figcaption');
+      cap.className = 'cap';
+      cap.innerHTML = '<b>' + escapeHtml(pretty(slot.type)) + '</b> '
+        + (filler
+            ? (totals.known ? '∞&#8202;(' + totals.filler + ')' : '∞')
+            : '×' + (slot.max == null ? 1 : slot.max));
+      fig.appendChild(cap);
+
+      fig.title = filler
+        ? (idle
+            ? pretty(slot.type) + ' fills the field out to ' + DATA.maxEnemies + ', but the other slots '
+              + 'already take all of it — none will be in the opening.'
+            : pretty(slot.type) + ' fills the field out to ' + DATA.maxEnemies + '.')
+        : (slot.max == null ? 1 : slot.max) + ' × ' + pretty(slot.type) + ' kept alive at once'
+          + (slot.maxPerWave != null ? ', at most ' + slot.maxPerWave + ' for the whole wave' : '');
+
+      cast.appendChild(fig);
+    });
+
+    el.appendChild(cast);
+    el.appendChild(note);
+  
+}
+
+/// Opens the composition full size over the page.
+///
+/// Deliberately not an editor: it is painted from the same slots by the same painter and any click
+/// dismisses it, so there is no second place a wave can be changed from and nothing to keep in step
+/// with the panel underneath.
+function enlarge(slots, title) {
+  const box = document.createElement('div');
+  box.className = 'lightbox';
+
+  const heading = document.createElement('div');
+  heading.className = 'title';
+  heading.textContent = title;
+  box.appendChild(heading);
+
+  const big = document.createElement('div');
+  big.className = 'stage';
+  box.appendChild(big);
+
+  const hint = document.createElement('div');
+  hint.className = 'hint';
+  hint.textContent = 'Click anywhere to close';
+  box.appendChild(hint);
+
+  document.body.appendChild(box);
+
+  // Spread scales with the figures, so the group overlaps the same way it does inline rather than
+  // spreading out into a row the moment there is room for one.
+  const height = parseFloat(getComputedStyle(big).getPropertyValue('--fig-h')) || 600;
+  paintCast(big, slots, Math.round(SPREAD * height / 250));
+
+  function close() {
+    document.removeEventListener('keydown', esc, true);
+    box.remove();
+  }
+  function esc(e) { if (e.key === 'Escape') { e.preventDefault(); close(); } }
+
+  box.onclick = close;
+  document.addEventListener('keydown', esc, true);
+}
+
+/// How far apart the figures on the stage stand, in pixels.
+///
+/// Close enough that they overlap, which is the point: the wave should read as one team photo rather
+/// than as figures on separate stands. The front one covers the pair behind it, that pair covers the
+/// next, and the z-order does the rest.
+const SPREAD = 62;
+
+function spawnOf(slots) {
+  const cap = DATA && DATA.maxEnemies;
+  let cost = 0, fixed = 0, complete = true;
+  let fillerUnit = null, hasFiller = false;
+
+  slots.forEach(s => {
+    const unit = PRICE.has(s.type) ? PRICE.get(s.type) : null;
+    if (unit == null) complete = false;
+
+    if (isFiller(s)) {
+      hasFiller = true;
+      fillerUnit = unit;
+      return;
+    }
+    // MaxCount, not MinCount: a slot with a range spawns somewhere between the two, and the number
+    // worth showing is the one the wave has to be able to afford.
+    const n = s.max == null ? 1 : s.max;
+    fixed += n;
+    if (unit != null) cost += unit * n;
+  });
+
+  // Unknown field size means the filler count is unknown, and so is the total. Reported rather than
+  // guessed: the scanner leaves MaxEnemies null only when the game set it nowhere.
+  if (cap == null) return { known: false, fixed: fixed, filler: null, field: fixed, cost: cost, complete: complete };
+
+  const filler = hasFiller ? Math.max(0, cap - fixed) : 0;
+  if (filler > 0 && fillerUnit == null) complete = false;
+  if (filler > 0 && fillerUnit != null) cost += fillerUnit * filler;
+
+  return {
+    known: true,
+    fixed: fixed,
+    filler: filler,
+    field: Math.min(cap, fixed + filler),
+    // The fixed counts alone already fill the field, so the filler never gets a place in it and
+    // whatever it names will not be seen until something dies.
+    crowded: fixed > cap,
+    cost: cost,
+    complete: complete
+  };
+}
+
+// Filler is the ABSENCE of counts, exactly as the scanner and the C# edit model derive it, so a row
+// composed here and a row read from the game agree on which slot fills out the field.
+function isFiller(s) {
+  return s.min == null && s.max == null;
+}
+
+/// The filler's count, as "∞ (4)".
+///
+/// The infinity is the truth about the SLOT: it carries no counts, and it keeps covering for other
+/// types for as long as the budget lasts. The number in brackets is a different kind of fact - it is
+/// derived, not authored, from MaxEnemies less what the fixed slots take - so it is bracketed and
+/// explained on hover rather than shown as if someone had typed it.
+function fillerCount(totals) {
+  if (!totals.known) {
+    return '<span class="n inf" title="This slot fills the field out to MaxEnemies, but the game '
+      + 'sets MaxEnemies nowhere this tool can read, so how many that is cannot be worked out.">∞</span>';
+  }
+
+  const n = totals.filler;
+  const why = n === 0
+    ? 'None. The other slots already fill the field of ' + DATA.maxEnemies + ', so this one spawns '
+      + 'nothing until something dies — or until a type hits its MaxPerWave and it covers the place.'
+    : n + ' of these will be on the field: MaxEnemies is ' + DATA.maxEnemies + ' and the other slots '
+      + 'take ' + totals.fixed + '. The slot itself has no count — it keeps refilling the field for '
+      + 'as long as the budget lasts.';
+
+  return '<span class="n inf" title="' + escapeHtml(why) + '">∞&#8202;<b>(' + n + ')</b></span>';
+}
+
+function render(data) {
+  DATA = data;
+  data.palette.forEach(p => PRICE.set(p.type, p.cost));
+  restoreEdits(window.__EDITS__);
+
+  (data.lobbyFactions || []).forEach(o => {
+    if (o.waveClass) LOBBY.set(String(o.waveClass).toLowerCase(), o);
+  });
+
+  const sel = document.getElementById('faction');
+  data.factions.forEach((f, i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    sel.appendChild(o);
+  });
+  labelFactions();
+  sel.onchange = () => selectFaction(+sel.value);
+  selectFaction(0);
+}
+
+/// The names in the faction picker, redrawn whenever one is turned on or off.
+///
+/// The list is where the whole set is visible at once, so it is where "off" has to show. The
+/// selector is also the factions list this page took over from the map editor: one row per faction,
+/// and the row for the one being edited carries its picture and its switch up in the bar.
+function labelFactions() {
+  const sel = document.getElementById('faction');
+  DATA.factions.forEach((f, i) => {
+    const option = sel.options[i];
+    if (!option) return;
+    const lobby = lobbyOf(f);
+    option.textContent = factionTitle(f)
+      // A faction with no waves is real content that has not been built yet - Milan's own Rejects -
+      // so it is offered rather than hidden, and says so.
+      + (f.waves.length ? '' : '  (no waves yet)')
+      + (lobby && !isOffered(lobby) ? '  — turned off' : '');
+  });
+  drawEmptyPickerWarning();
+}
+
+/// The lobby choice that starts this wavelist, or null if none does.
+function lobbyOf(faction) {
+  return LOBBY.get(String(faction.section).toLowerCase()) || null;
+}
+
+function isOffered(option) {
+  // Everything in this list came OUT of the lobby's picker, so shipped state is always "offered".
+  return !PICKERS.has(option.id);
+}
+
+function setOffered(option, enabled) {
+  // Back to what shipped is a REVERT, not an edit that happens to match: storing it would write a
+  // config change that does nothing and pin today's roster into the mod.
+  if (enabled) PICKERS.delete(option.id);
+  else PICKERS.set(option.id, {
+    picker: 'factions', id: option.id,
+    // Not the identity - the id is - but what lets a project written against one install say that
+    // the ids no longer mean the same thing in another.
+    label: option.waveClass || option.name, enabled: false
+  });
+
+  publish();
+  labelFactions();
+  drawOffer();
+}
+
+/// Whether the lobby would have any enemy to pick at all.
+///
+/// Said here rather than only at compile time: a picker with nothing in it is a match settings
+/// screen the lobby cannot get past, and the person who emptied it is looking at this page.
+function drawEmptyPickerWarning() {
+  const box = document.getElementById('nofactions');
+  const offered = [...LOBBY.values()].filter(isOffered).length;
+  box.hidden = LOBBY.size === 0 || offered > 0;
+  box.textContent = 'Every faction is turned off. The lobby would have nothing to pick, and no match '
+    + 'could start.';
+}
+
+/// The selected faction's lobby switch and its banner, at the right of the bar.
+function drawOffer() {
+  const host = document.getElementById('offer');
+  const art = document.getElementById('factionart');
+  host.innerHTML = '';
+  host.className = 'offer';
+
+  const lobby = lobbyOf(FACTION);
+  if (!lobby) {
+    // Not a fault. Half the shipped wavelists have no lobby choice pointing at them - the originals
+    // the Retaliation lists replaced, and Milan's own Rejects - and they are edited all the same.
+    host.classList.add('none');
+    host.textContent = 'No lobby choice starts this wavelist';
+    art.hidden = true;
+    return;
+  }
+
+  const on = isOffered(lobby);
+  const box = document.createElement('input');
+  box.type = 'checkbox';
+  box.checked = on;
+  box.onchange = () => setOffered(lobby, box.checked);
+  host.appendChild(box);
+
+  const text = document.createElement('span');
+  text.textContent = 'Enabled';
+  host.appendChild(text);
+  if (!on) host.classList.add('off');
+
+  // The lobby's own name for the choice, which is not always the wavelist's - "Cerberus" starts
+  // Cerberus2 - so it is worth having on hover rather than nowhere.
+  host.title = (lobby.name ? lobby.name + ' — ' : '')
+    + 'dropping this from the lobby\u2019s enemy list takes every wave below it out of the game.';
+
+  art.hidden = !lobby.banner;
+  if (lobby.banner) {
+    art.src = lobby.banner;
+    art.title = host.title;
+  }
+}
+
+function selectFaction(i) {
+  FACTION = DATA.factions[i];
+  SELECTED = null;
+  parkComposer();
+
+  const state = document.getElementById('state');
+  state.textContent = FACTION.selectable ? ('In rotation · weight ' + FACTION.selectionWeight) : 'Not in rotation';
+  state.className = 'pill ' + (FACTION.selectable ? 'on' : 'off');
+
+  const dormant = document.getElementById('dormant');
+  // The edit is real and correct; it simply will not be reached until the roster says so. Saying
+  // nothing here would let someone tune a faction the game never picks and never find out.
+  dormant.hidden = FACTION.selectable || FACTION.waves.length === 0;
+  dormant.textContent = 'This faction is not in the wave manager’s rotation, so the game will never pick it. '
+    + 'Its wavelists are intact — add it to the faction roster to turn it on.';
+
+  document.getElementById('summary').textContent =
+    FACTION.waves.length + ' waves × ' + DATA.difficulties.length + ' difficulties';
+
+  drawOffer();
+
+  drawHead();
+  drawBody();
+}
+
+/// The difficulty columns, headed like the lobby's own Create New Match tiles: the game's challenge
+/// art with the difficulty's name written across it.
+///
+/// The art is the game's, not ours - the banner a player sees on the Bronze/Silver/Gold tile is the
+/// challenge texture the config names, decoded on the way in. It matters more than it looks: four
+/// columns of near-identical grey text is a grid people mis-read, and the tile is the thing a player
+/// already recognises a difficulty by.
+function drawHead() {
+  const head = document.getElementById('head');
+  head.innerHTML = '<th class="wave">Wave</th>';
+  DATA.difficulties.forEach(d => {
+    const th = document.createElement('th');
+    th.className = 'diff';
+
+    const tile = document.createElement('div');
+    tile.className = 'difftile' + (d.image ? '' : ' noart');
+    // Diagnostic, and the only way to tell a wrong pairing from a wrong texture.
+    tile.title = d.imagePath || '';
+
+    if (d.image) {
+      const art = document.createElement('img');
+      art.className = 'art';
+      art.src = d.image;
+      art.alt = '';
+      tile.appendChild(art);
+    }
+
+    // The name is written ON the art, never replaced by it. A picture alone is not a label: the
+    // fifth difficulty a Milan build adds would have no banner at all, and the convention that pairs
+    // banner n with difficulty n is declared nowhere in the game.
+    const cap = document.createElement('div');
+    cap.className = 'cap';
+    cap.innerHTML = '<span class="name">' + escapeHtml(label(d.key)) + '</span>'
+      + '<span class="pts">' + d.firstWavePoints + ' → ' + d.lastWavePoints + ' pts</span>';
+    tile.appendChild(cap);
+
+    th.appendChild(tile);
+
+    head.appendChild(th);
+  });
+}
+
+/// The rendered cells, so one can be redrawn without rebuilding the grid.
+///
+/// Load-bearing now that the composer is a row INSIDE the grid: rebuilding the body on every
+/// keystroke would re-parent the controls being typed into, and re-parenting blurs them.
+const CELLS = new Map();
+
+function drawBody() {
+  const body = document.getElementById('body');
+  body.innerHTML = '';
+  CELLS.clear();
+
+  FACTION.waves.forEach(w => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th');
+    th.className = 'wave';
+    let tag = '';
+    if (w.index === DATA.extractionWave) tag = '<span class="sub">extraction</span>';
+    else if (DATA.objectiveWaves.includes(w.index)) tag = '<span class="sub">objective</span>';
+    th.innerHTML = w.index + tag;
+    tr.appendChild(th);
+
+    DATA.difficulties.forEach(d => {
+      const td = document.createElement('td');
+      const rows = w.cells[d.key] || [];
+      if (!rows.length) {
+        td.innerHTML = '<div class="cell"><span class="note">no row</span></div>';
+      } else {
+        td.appendChild(cellEl(w, d, rows));
+      }
+      tr.appendChild(td);
+      CELLS.set(w.index + '|' + d.key, td);
+    });
+    body.appendChild(tr);
+
+    // The composer belongs to the wave it is editing, so it opens as the next row rather than at the
+    // bottom of the page - where clicking a cell could scroll nothing and look like nothing had
+    // happened at all.
+    if (SELECTED && SELECTED.wave === w.index) {
+      const detail = document.createElement('tr');
+      detail.className = 'detail';
+      const cell = document.createElement('td');
+      cell.colSpan = DATA.difficulties.length + 1;
+      // Moved, not rebuilt: the composer is a single long-lived node, and rebuilding it would throw
+      // away whatever the user was in the middle of typing.
+      cell.appendChild(COMPOSER);
+      detail.appendChild(cell);
+      body.appendChild(detail);
+    }
+  });
+}
+
+/// Redraws one cell in place. See CELLS - the grid must survive an edit intact.
+function redrawCell(wave, diff, rows) {
+  const td = CELLS.get(wave.index + '|' + diff.key);
+  if (!td) return;
+  td.innerHTML = '';
+  td.appendChild(cellEl(wave, diff, rows));
+}
+
+/// Puts the composer back under the grid when nothing is selected.
+///
+/// Needed because it is moved rather than copied: left inside a detail row that the next redraw
+/// discards, it would be thrown away with it and the next click would have nothing to fill.
+function parkComposer() {
+  const box = COMPOSER;
+  box.hidden = true;
+  document.querySelector('.wrap').appendChild(box);
+}
+
+function cellEl(wave, diff, rows) {
+  const c = rows[0];
+  const edited = EDITS.has(cellKey(wave, diff));
+  const slots = effectiveSlots(wave, diff, c);
+  const totals = spawnOf(slots);
+
+  const el = document.createElement('div');
+  el.className = 'cell' + (edited ? ' edited' : '');
+  if (edited) {
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = 'edited';
+    el.appendChild(badge);
+  }
+
+  slots.forEach(s => {
+    const filler = isFiller(s);
+    const line = document.createElement('div');
+    line.className = 'slot' + (filler ? ' filler' : '') + (filler && totals.filler === 0 ? ' idle' : '');
+    line.innerHTML =
+      (filler ? fillerCount(totals) : '<span class="n">' + (s.min === s.max ? s.max : s.min + '–' + s.max) + '</span>')
+      + '<span class="t">' + pretty(s.type) + '</span>'
+      + (s.maxPerWave != null ? '<span class="cap">max ' + s.maxPerWave + '</span>' : '');
+    el.appendChild(line);
+  });
+
+  // The bar is the OPENING SPAWN against the wave's budget - one full field, before anything has
+  // died - not the wave's total spend. The wave keeps spending on respawns until the budget runs
+  // out, which is why the label says what the bar is measuring rather than leaving it to be guessed.
+  if (c.budgetApplies && c.budget != null && totals.known) {
+    const pct = Math.min(100, Math.round(totals.cost / c.budget * 100));
+    const over = totals.cost > c.budget;
+    const bar = document.createElement('div');
+    bar.className = 'bar' + (over ? ' over' : '');
+    bar.innerHTML = '<i style="width:' + pct + '%"></i>';
+    bar.title = 'The opening field of ' + totals.field + ' costs ' + totals.cost
+      + ' of the wave’s ' + Math.round(c.budget) + ' points. The rest is spent on respawns.';
+    el.appendChild(bar);
+
+    const cost = document.createElement('div');
+    cost.className = 'cost';
+    cost.innerHTML = '<span>opening ' + totals.cost + ' / ' + Math.round(c.budget) + '</span>'
+      + (totals.crowded ? '<span class="no">field full without the filler</span>'
+        : totals.complete ? '' : '<span class="no">unpriced enemy</span>');
+    el.appendChild(cost);
+  } else {
+    const cost = document.createElement('div');
+    cost.className = 'cost';
+    // Not "0 / 0": either the budget genuinely does not apply to this wave, or the field size is
+    // unknown - and a bar in either case is a number the game will not use.
+    cost.innerHTML = '<span>opening ' + totals.cost + ' pts</span>'
+      + '<span class="no">' + (totals.known ? 'no budget' : 'field size unknown') + '</span>';
+    el.appendChild(cost);
+  }
+
+  if (rows.length > 1) {
+    const dup = document.createElement('div');
+    dup.className = 'dup';
+    dup.textContent = rows.length + ' rows for this difficulty — the game’s behaviour here is unverified';
+    el.appendChild(dup);
+  }
+
+  if (SELECTED && SELECTED.wave === wave.index && SELECTED.diff === diff.key) el.classList.add('sel');
+
+  el.onclick = () => {
+    SELECTED = { wave: wave.index, diff: diff.key };
+    // A full rebuild, but only on a click: it is what moves the composer's row under this wave and
+    // takes it out from under the last one.
+    drawBody();
+    compose(wave, diff, rows);
+    // The row it opens under may be the bottom one on screen, and an editor that opened just below
+    // the fold is the problem this whole change is fixing.
+    COMPOSER.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  };
+  return el;
+}
+
+// ---------------------------------------------------------------- composing
+
+function compose(wave, diff, rows) {
+  const c = rows[0];
+  const box = COMPOSER;
+  box.hidden = false;
+
+  const key = cellKey(wave, diff);
+  const slots = effectiveSlots(wave, diff, c).map(s => ({
+    type: s.type, min: s.min == null ? null : s.min, max: s.max == null ? null : s.max,
+    maxPerWave: s.maxPerWave == null ? null : s.maxPerWave
+  }));
+
+  box.innerHTML = '';
+
+  const h = document.createElement('h2');
+  h.textContent = factionTitle(FACTION) + ' — wave ' + wave.index + ', ' + label(diff.key)
+    + (EDITS.has(key) ? '  (edited)' : '');
+  box.appendChild(h);
+
+  const cols = document.createElement('div');
+  cols.className = 'cols';
+  box.appendChild(cols);
+
+  const left = document.createElement('div');
+  left.className = 'left';
+  cols.appendChild(left);
+
+  const stage = document.createElement('div');
+  stage.className = 'stage';
+  cols.appendChild(stage);
+
+  const rowsEl = document.createElement('div');
+  rowsEl.className = 'rows';
+  left.appendChild(rowsEl);
+
+  slots.forEach((slot, i) => rowsEl.appendChild(slotRow(slot, i, () => apply())));
+
+  // Cost against budget, live, so the effect of a change is visible while composing rather than
+  // after saving. Suppressed entirely where the budget does not apply - the extraction wave and the
+  // objective waves - because a bar there shows a number the game will not use.
+  const meter = document.createElement('div');
+  meter.className = 'meter';
+  left.appendChild(meter);
+
+  // The one composition rule that is an error rather than an observation, said while the wave is
+  // being built. Compiling catches it too, but by then the person has moved on.
+  const objective = document.createElement('div');
+  objective.className = 'objnote';
+  objective.hidden = true;
+  left.appendChild(objective);
+
+  const tools = document.createElement('div');
+  tools.className = 'tools';
+
+  const add = document.createElement('button');
+  add.textContent = '+ Add slot';
+  if (slots.length >= DATA.palette.length) {
+    add.disabled = true;
+    add.title = 'Every enemy type this faction can field is already in the wave';
+  }
+  add.onclick = () => {
+    // The first type not already in the wave. Defaulting to palette[0] would create the duplicate the
+    // rule forbids the moment the wave already uses the cheapest enemy, which most do.
+    const used = new Set(slots.map(x => x.type));
+    const free = DATA.palette.find(p => !used.has(p.type));
+    if (!free) return;
+    slots.push({ type: free.type, min: 1, max: 1, maxPerWave: null });
+    apply(true);
+  };
+  tools.appendChild(add);
+
+  const spacer = document.createElement('span');
+  spacer.className = 'spacer';
+  tools.appendChild(spacer);
+
+  const revert = document.createElement('button');
+  revert.className = 'danger';
+  revert.textContent = 'Revert to shipped';
+  revert.disabled = !EDITS.has(key);
+  revert.onclick = () => {
+    EDITS.delete(key);
+    publish();
+    redrawCell(wave, diff, rows);
+    compose(wave, diff, rows);
+  };
+  tools.appendChild(revert);
+  left.appendChild(tools);
+
+  // The row as the game ships it, shown because an untouched row is re-emitted from exactly this
+  // text, byte for byte. The edited row's text is written by the C# side, which owns that format.
+  const raw = document.createElement('div');
+  raw.className = 'raw';
+  raw.textContent = c.raw;
+  left.appendChild(raw);
+
+  drawStage();
+  drawMeter();
+
+  /// The wave as a group photo.
+  ///
+  /// The filler stands at the front, facing the camera, because it is the wave's base enemy and the
+  /// one that keeps coming back. Every other slot falls in behind it, alternating left and right and
+  /// stepping back as it goes, so a composition reads as a squad being assembled rather than as a
+  /// list of rows. A filler that will not spawn - the fixed counts already fill the field - is
+  /// greyed rather than removed, because it is still in the row and still covers for a type that has
+  /// hit its MaxPerWave.
+  ///
+  /// Each figure asks for `art/<Name>-<facing>.png` from the editor's own origin, falls back to the
+  /// front pose when its own is not drawn yet, and to a dashed plate when neither is. See
+  /// editor/web/art/README.md.
+  function drawStage() {
+    paintCast(stage, slots, SPREAD);
+    stage.title = slots.length ? 'Click to see the composition full size' : '';
+  }
+
+  // The stage is a picture, and at 250px a figure it is a small one. Clicking opens the same
+  // composition at whatever the window will give it - the renders are 771x1080, so there is a lot
+  // more to look at than the panel has room for.
+  stage.onclick = () => {
+    if (slots.length) enlarge(slots, factionTitle(FACTION) + ' — wave ' + wave.index + ', ' + label(diff.key));
+  };
+
+  /// Whether an assassination landing on this wave would find a target in time.
+  ///
+  /// Any objective wave can be the assassination - the coordinator decides which objective goes where
+  /// at match start - so the check is on objective waves rather than on a kind of wave that exists in
+  /// the config. Spawning follows the slot order and SKIPS the budget slot, and the window counts
+  /// enemies rather than slots: a slot of three Centurions uses three of the eight.
+  function drawObjectiveNote() {
+    const rule = DATA.assassination;
+    if (!rule || !DATA.objectiveWaves.includes(wave.index)) { objective.hidden = true; return; }
+
+    let spawned = 0;
+    let ok = false;
+    for (const slot of slots) {
+      if (spawned >= rule.window) break;
+      if (isFiller(slot)) continue;
+      const cost = PRICE.get(slot.type);
+      if (cost == null) { ok = true; break; }   // Unpriced: reported elsewhere, not refused here.
+      if (cost >= rule.threshold) { ok = true; break; }
+      spawned += Math.max(1, slot.max || slot.min || 1);
+    }
+
+    objective.hidden = ok;
+    if (!ok) {
+      objective.textContent = 'This is an objective wave, and an assassination could land on it. '
+        + 'None of the first ' + rule.window + ' enemies to spawn costs ' + rule.threshold + ' points '
+        + 'or more, so the objective would have no target and would glitch. Spawning follows the '
+        + 'order below and skips the budget slot — move a heavier enemy up.';
+    }
+  }
+
+  function drawMeter() {
+    drawObjectiveNote();
+    const totals = spawnOf(slots);
+    const field = !totals.known ? 'field size unknown'
+      : totals.crowded ? totals.fixed + ' fixed on a field of ' + DATA.maxEnemies
+      : totals.fixed + (totals.filler ? ' + ' + totals.filler + ' filler' : '')
+        + ' of ' + DATA.maxEnemies + ' on the field';
+
+    if (!c.budgetApplies || c.budget == null || !totals.known) {
+      meter.innerHTML =
+        '<span>opening spawn ' + totals.cost + ' pts</span>'
+        + '<span class="lab">' + field + ' · '
+        + (totals.known ? 'no budget applies to this wave' : 'MaxEnemies was not found, so the wave cannot be costed')
+        + '</span>';
+      return;
+    }
+
+    const pct = Math.min(100, Math.round(totals.cost / c.budget * 100));
+    const over = totals.cost > c.budget;
+    const left = Math.round(c.budget - totals.cost);
+
+    // Says what it is measuring. The bar is one full field, which is what the wave must afford before
+    // anything has died; the budget then keeps paying for respawns until it runs out. Reading it as
+    // the wave's whole spend is the mistake this wording exists to prevent.
+    meter.innerHTML =
+      '<span class="' + (over ? 'over' : '') + '">opening spawn ' + totals.cost + ' / ' + Math.round(c.budget) + ' pts</span>'
+      + '<span class="bar' + (over ? ' over' : '') + '"><i style="width:' + pct + '%"></i></span>'
+      + '<span class="lab">' + field + ' · ' + (
+        over ? 'costs more than the whole wave has — it never fully spawns'
+        : !totals.complete ? 'a slot has no price, so this is an undercount'
+        : totals.crowded ? 'the fixed counts already fill the field; the filler waits for a death'
+        : left + ' pts left for respawns')
+      + '</span>';
+  }
+
+  // Rebuilds the edit from the controls. Every change goes through here, so the grid, the meter and
+  // the host all see the same state and cannot drift apart.
+  function apply(rebuild) {
+    EDITS.set(key, {
+      section: FACTION.section,
+      instanceId: wave.instanceId,
+      waveIndex: wave.index,
+      difficulty: diff.key,
+      slots: slots.map(x => ({
+        type: x.type,
+        min: x.min == null ? null : x.min,
+        max: x.max == null ? null : x.max,
+        maxPerWave: x.maxPerWave == null ? null : x.maxPerWave
+      }))
+    });
+    publish();
+    // Only the cell that changed. The composer is a row of this grid now, so rebuilding the body
+    // would re-parent the control being typed into and blur it mid-edit.
+    redrawCell(wave, diff, rows);
+    if (rebuild) compose(wave, diff, rows);
+    else {
+      drawStage();
+      drawMeter();
+      revert.disabled = false;
+      h.textContent = factionTitle(FACTION) + ' — wave ' + wave.index + ', ' + label(diff.key) + '  (edited)';
+    }
+  }
+
+  function slotRow(slot, i, changed) {
+    const el = document.createElement('div');
+    el.className = 'crow';
+
+    // "Spends the leftover budget" rather than "filler": it names what the slot does, and it is a
+    // checkbox rather than a position because the game decides it by the absence of counts.
+    const chk = document.createElement('label');
+    chk.className = 'chk';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = isFiller(slot);
+    chk.appendChild(cb);
+    chk.appendChild(document.createTextNode('budget'));
+    el.appendChild(chk);
+
+    const type = document.createElement('select');
+
+    // A type already used by another slot is not offered here. An enemy may appear once in a wave:
+    // two slots of the same type do not add up, they compete, and the wave behaves as neither slot
+    // describes. Prevented rather than warned about, because there is no reason to want it.
+    const takenElsewhere = new Set(slots.filter((_, j) => j !== i).map(x => x.type));
+
+    // Grouped by faction. Twenty-five types in one flat list is a wall, and the thing a person is
+    // actually looking for is "another Cerberus unit" far more often than a particular name.
+    const factions = new Map();
+    DATA.palette.forEach(p => {
+      if (takenElsewhere.has(p.type)) return;
+      const f = factionOf(p.type);
+      if (!factions.has(f.key)) factions.set(f.key, { label: f.label, options: [] });
+      const o = document.createElement('option');
+      o.value = p.type;
+      o.textContent = pretty(p.type) + ' — ' + p.cost + ' pts';
+      factions.get(f.key).options.push(o);
+    });
+
+    // Insertion order, which is the palette's order, which is the game's. Sorting them alphabetically
+    // would be a third ordering for the same set of things.
+    for (const group of factions.values()) {
+      const box = document.createElement('optgroup');
+      box.label = group.label;
+      group.options.forEach(o => box.appendChild(o));
+      type.appendChild(box);
+    }
+
+    // A type the palette does not price still has to be selectable, or opening a cell that uses one
+    // would silently rewrite it to something else. In a group of its own, so it does not read as the
+    // last faction's.
+    if (!PRICE.has(slot.type)) {
+      const box = document.createElement('optgroup');
+      box.label = 'Not in the palette';
+      const o = document.createElement('option');
+      o.value = slot.type;
+      o.textContent = pretty(slot.type) + ' — unpriced';
+      box.appendChild(o);
+      type.appendChild(box);
+    }
+
+    type.value = slot.type;
+    // apply(true), not changed(): every OTHER slot's picker hides the types this wave already uses,
+    // so changing this one frees a type the others are still leaving out of their lists. Rebuilding
+    // is what puts it back. Without it, switching a slot away from Assault Trooper left Assault
+    // Trooper unpickable everywhere until the cell was closed and reopened.
+    type.onchange = () => { slot.type = type.value; apply(true); };
+    el.appendChild(type);
+
+    // Two fields, because MinCount and MaxCount are two fields. Most of the time they are equal -
+    // every shipped slot has them equal - but a range is a real composition: it lets the game decide
+    // how many of this type to bring back when several of the group die at once and there is more
+    // than one free slot on the field. Collapsing them into one box makes that unsayable.
+    const range = document.createElement('div');
+    range.className = 'range';
+
+    const min = numberBox(slot.min, 'MinCount — the fewest that spawn at once');
+    const max = numberBox(slot.max, 'MaxCount — the most that spawn at once');
+
+    // The pair is kept in order by moving the OTHER end, never by refusing what was typed: someone
+    // raising a group types over the min first about as often as the max, and an entry that snaps
+    // back to its old value looks like a broken field rather than a rule.
+    min.onchange = () => {
+      slot.min = clamp(min.value);
+      if (slot.max == null || slot.max < slot.min) slot.max = slot.min;
+      min.value = slot.min; max.value = slot.max;
+      changed();
+    };
+    max.onchange = () => {
+      slot.max = clamp(max.value);
+      if (slot.min == null || slot.min > slot.max) slot.min = slot.max;
+      min.value = slot.min; max.value = slot.max;
+      changed();
+    };
+
+    if (cb.checked) {
+      // Two disabled empty boxes say nothing about what this slot does. The filler has no counts to
+      // show, so it shows the one number there is: how many of it the field has room for.
+      range.classList.add('inf');
+      range.innerHTML = fillerCount(spawnOf(slots));
+    } else {
+      const dash = document.createElement('span');
+      dash.className = 'dash';
+      dash.textContent = '–';
+      range.appendChild(min);
+      range.appendChild(dash);
+      range.appendChild(max);
+    }
+    el.appendChild(range);
+
+    function numberBox(value, title) {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '1';
+      input.value = value == null ? '' : value;
+      input.disabled = cb.checked;
+      input.title = title;
+      return input;
+    }
+
+    function clamp(raw) {
+      const n = parseInt(raw, 10);
+      return (isNaN(n) || n < 1) ? 1 : n;
+    }
+
+    const cap = document.createElement('input');
+    cap.type = 'number';
+    cap.min = '1';
+    cap.placeholder = 'max / wave';
+    cap.value = slot.maxPerWave == null ? '' : slot.maxPerWave;
+    cap.title = 'Cap on how many the whole wave may contain, as opposed to at once';
+    cap.onchange = () => {
+      const n = parseInt(cap.value, 10);
+      slot.maxPerWave = (isNaN(n) || n < 1) ? null : n;
+      cap.value = slot.maxPerWave == null ? '' : slot.maxPerWave;
+      changed();
+    };
+    el.appendChild(cap);
+
+    const x = document.createElement('button');
+    x.className = 'x';
+    x.textContent = '✕';
+    x.title = 'Remove this slot';
+    x.onclick = () => { slots.splice(i, 1); apply(true); };
+    el.appendChild(x);
+
+    cb.onchange = () => {
+      // Clearing the counts is what makes it the filler; writing a zero would leave an ordinary slot
+      // that spawns nothing.
+      if (cb.checked) { slot.min = slot.max = null; }
+      else { slot.min = slot.max = 1; }
+      apply(true);
+    };
+
+    return el;
+  }
+}
+
+// ---------------------------------------------------------------- host bridge
+
+function editDocument() {
+  return {
+    format: 1,
+    rows: Array.from(EDITS.values()),
+    pickers: Array.from(PICKERS.values()),
+  };
+}
+
+function restoreEdits(doc) {
+  if (!doc) return;
+  (doc.rows || []).forEach(r => {
+    const key = [r.section, r.instanceId, r.waveIndex, r.difficulty].join('|').toLowerCase();
+    EDITS.set(key, r);
+  });
+  // Written by this page, and by the map editor before the faction toggles moved here - a project
+  // from then is migrated on load, so anything that arrives is a faction either way.
+  (doc.pickers || []).forEach(p => { if (p.id != null && !p.enabled) PICKERS.set(p.id, p); });
+  updateEditedPill();
+}
+
+function updateEditedPill() {
+  const pill = document.getElementById('edited');
+  const bits = [];
+  if (EDITS.size) bits.push(EDITS.size + (EDITS.size === 1 ? ' edited cell' : ' edited cells'));
+  if (PICKERS.size) bits.push(PICKERS.size + (PICKERS.size === 1 ? ' faction off' : ' factions off'));
+  pill.hidden = bits.length === 0;
+  pill.className = 'pill on';
+  pill.textContent = bits.join(' · ');
+}
+
+// Every change is posted, not batched behind a save button: the host owns the project file and its
+// dirty state, and a page that holds unsent edits loses them if the window is closed.
+function publish() {
+  updateEditedPill();
+  const host = window.chrome && window.chrome.webview;
+  if (!host) return;
+  try { host.postMessage({ type: 'modmaker.edits', collection: 'wavelist', document: editDocument() }); }
+  catch (e) { /* Standalone in a browser, or the host went away; the page stays usable either way. */ }
+}
+
+function label(key) {
+  // The difficulty tokens are what the game uses; the friendly names are a display convention and
+  // deliberately fall back to the token rather than inventing one for a difficulty we do not know.
+  const known = { DO_Level1: 'Bronze', DO_Level2: 'Silver', DO_Level3: 'Gold', DO_Level4: 'Platinum' };
+  return known[key] || key;
+}
+
+/// Renders whose file name is not simply the type with its faction prefix removed.
+///
+/// Empty, and that is the point: the derivation below already produces "Centurion", "GethHunter" and
+/// "GethPrime" for WAVE_CER_Centurion, WAVE_GTH_GethHunter and WAVE_GTH_GethPrime. An entry here is
+/// for a picture whose name genuinely disagrees, not a list of twenty-five that mostly agree - a
+/// table that restates a rule is a table that drifts from it.
+const ART_NAMES = {
+  // 'WAVE_XXX_TypeName': 'FileBaseName',
+};
+
+/// Where a character's render lives: `art/<name>-<facing>.png`.
+///
+/// The name is the enemy type with its faction prefix stripped and its casing kept - WAVE_CER_Atlas
+/// is `Atlas-front.png`. The prefix is what the game uses to keep the roster unique across factions;
+/// the pictures do not need it, because the names underneath are already distinct.
+///
+/// Three facings: `front` in the middle, `left` to the left of centre, `right` to the right. The set
+/// is incomplete while it is being drawn, and a missing one is not an error - the figure falls back
+/// to its plate, which is exactly what GethPrime's left-hand pose does today.
+function figureSrc(type, facing) {
+  const name = ART_NAMES[type] || String(type).replace(/^WAVE_[A-Z]{3}_/, '');
+  return 'art/' + name + '-' + facing + '.png';
+}
+
+/// The plate a figure stands in until its render exists.
+function silhouette() {
+  const el = document.createElement('div');
+  el.className = 'silhouette';
+  return el;
+}
+
+/// Which faction an enemy belongs to, for grouping the picker.
+///
+/// Declared or not at all. The type name carries a three-letter tag - `WAVE_CER_`, `WAVE_RPR_` - and
+/// no rule expands it: CER is Cerberus, RPR is Reapers, GTH is Geth. The letters do not say so and
+/// cannot be made to. So the answer comes from `factionNames`, written down by ModMaker for the
+/// shipped roster and by a mod for its own, in `DLC_MOD_Whatever/ModMaker/textlayer.json`.
+///
+/// There is deliberately NO guess underneath. The obvious one - read the faction out of the enemy's
+/// archetype path, `Char_Enemies.Archetypes.Reapers.Ravager` - is wrong exactly where it matters:
+/// Rejects is assembled from units that were never in multiplayer, drawn from several factions, so
+/// its members' archetypes name Reapers and Cerberus and Geth between them. A guess would file the
+/// whole group under whichever one happened to come first, and look entirely convincing doing it.
+///
+/// An undeclared tag is therefore shown AS the tag, and says so. That is a prompt to declare it, and
+/// it is honest; a plausible wrong name is neither.
+function factionOf(type) {
+  const key = (String(type).match(/^WAVE_([A-Z0-9]{2,4})_/) || [])[1] || '';
+  const declared = key && (DATA.factionNames || {})[key];
+
+  if (declared) return { key, label: declared };
+  if (key) return { key, label: 'WAVE_' + key + '_ — faction not declared' };
+  return { key: 'other', label: 'No faction tag' };
+}
+
+/// What to call a wavelist.
+///
+/// Its declared title where there is one, and otherwise the class name tidied up - which gives
+/// "Cerberus2", readable but not a name. A mod ships the real one for its own factions.
+function factionTitle(faction) {
+  return faction.title || pretty(faction.name);
+}
+
+function pretty(name) {
+  return String(name)
+    .replace(/^WAVE_[A-Z]{3}_/, '')
+    .replace(/^SFXWave_Horde_?/, '')
+    .replace(/([a-z])([A-Z])/g, '$1 $2') || name;
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="chrome.css">
+<script src="chrome.js"></script>
+<title>ModMaker — Enemies</title>
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #1c2027;
+    --panel-2: #232833;
+    --line: #2f3540;
+    --text: #e6e9ef;
+    --muted: #97a0af;
+    --accent: #4aa3ff;
+    --ok: #46c07a;
+    --warn: #e0a33a;
+    --edited: #4aa3ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 12px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
+    position: sticky; top: var(--mmc-h, 0px); z-index: 5;
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; }
+  select, button, input {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; padding: 5px 9px; font: inherit;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; border-color: var(--line); }
+  .pill {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .pill.on { color: var(--accent); border-color: var(--accent); }
+  .note { color: var(--muted); font-size: 12px; }
+  .spacer { flex: 1; }
+
+  .wrap { padding: 14px 18px 40px; }
+  .banner {
+    background: rgba(224,163,58,.10); border: 1px solid var(--warn);
+    color: #f0cf95; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; font-size: 12px;
+  }
+
+  .intro { color: var(--muted); max-width: 78ch; margin: 0 0 14px; }
+  .catname { font-size: 18px; font-weight: 600; margin: 0 0 2px; }
+  .catid { font-family: Consolas, monospace; font-size: 11px; color: var(--muted); }
+
+  .group { margin: 0 0 18px; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+  .group > h2 {
+    margin: 0; padding: 9px 12px; font-size: 13px; font-weight: 600;
+    background: var(--panel); border-bottom: 1px solid var(--line);
+  }
+  .group > h2 .sub { font-weight: 400; color: var(--muted); margin-left: 10px; font-size: 12px; }
+  .group > p { margin: 0; padding: 9px 12px; color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--line); }
+
+  /* Fixed, so the stat column is the same width in every group and the difficulty columns line
+     up down the whole page. Auto layout sizes each group's table to its own longest stat name, and
+     four columns that shift by a few pixels per group are unreadable as a grid. */
+  table { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; }
+  th, td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child > td { border-bottom: none; }
+  thead th {
+    text-align: left; font-weight: 600; font-size: 12px; color: var(--muted);
+    background: var(--panel-2); border-bottom: 1px solid var(--line);
+  }
+  th.statcol { width: 34%; }
+  .statname { font-family: Consolas, monospace; font-size: 11px; color: var(--muted); }
+  .unlabelled { color: var(--warn); }
+  .unit { color: var(--muted); font-size: 11px; margin-left: 6px; }
+
+  .pair { display: flex; align-items: center; gap: 4px; }
+  .pair input {
+    width: 74px; padding: 3px 5px; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .pair input.changed { border-color: var(--edited); color: var(--edited); }
+  .pair .sep { color: var(--muted); }
+  .absent { color: var(--muted); }
+  .shipped {
+    display: block; font-size: 11px; color: var(--muted); margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The enemy's identity and the per-difficulty tools, in one row.
+
+     The level bar is indented to the stat column's width so its four boxes stand over the four
+     difficulty columns of every table below. That left a third of the page empty, with the enemy's
+     name and description sitting ABOVE the gap rather than in it - so the identity moves into that
+     column and the render stands at its right edge, between the description and Bronze.
+
+     The column tools are above the groups rather than in every group's header for a reason of their
+     own: scaling a whole difficulty is the common enemy edit, it applies to the whole enemy, and
+     repeating the control thirteen times down the page says otherwise. */
+  .topbar { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 14px; }
+  .topbar > .head { width: 34%; flex: none; display: flex; align-items: flex-start; gap: 12px; }
+  .head .txt { flex: 1 1 auto; min-width: 0; }
+  .head .txt .intro { margin-bottom: 0; }
+
+  /* The same picture the wavelist composer stands this enemy up with, in the pose it uses when it
+     stands left of centre - so it faces into the page from the right of this block.
+
+     The renders share one frame, 771x1080, with each character drawn to its true scale inside it, so
+     the width sizes the box and the height follows. The border is feathered exactly as the stage
+     feathers it: a wide stance - the Banshee mid-attack, arms out - reaches the frame edge, and a
+     hard cut there reads as a broken picture. */
+  .head .portrait { flex: none; }
+  .head .portrait img {
+    /* Sized by HEIGHT, as the stage sizes it, and not by width. The frames share a height and not a
+       width - the Banshee's is wider, because the pose is - so a fixed width would draw the wide ones
+       smaller than the narrow ones and quietly undo the true-scale the set is drawn at. */
+    display: block; height: 148px; width: auto;
+    --feather-x: 7%;
+    --feather-y: 4%;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--feather-x), #000 calc(100% - var(--feather-x)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--feather-y), #000 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--feather-x), #000 calc(100% - var(--feather-x)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--feather-y), #000 100%);
+    /* Both masks apply, so a corner is faded by whichever is stronger there. */
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  .levelbar {
+    display: flex; gap: 10px; flex: 1; min-width: 0; margin: 0;
+  }
+
+  /* Not enough width for the identity to live inside the stat column - the description would be a
+     ribbon. It goes back above the bar at full width, and the bar keeps the indent that lines its
+     boxes up with the table columns. */
+  @media (max-width: 1180px) {
+    .topbar { display: block; }
+    .topbar > .head { width: auto; margin-bottom: 14px; }
+    /* Stops stretching, so the render stays beside the description instead of being pushed to the
+       far side of a full-width row with the paragraph stranded at the other end. */
+    .topbar > .head .txt { flex: 0 1 auto; max-width: 78ch; }
+    .levelbar { padding-left: 34%; }
+  }
+  .levelbar .lvl {
+    flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 7px 9px;
+  }
+  .levelbar .lvl > div:first-child { font-weight: 600; margin-bottom: 5px; }
+  .tools { display: flex; gap: 4px; }
+  .tools button, .tools input { font-size: 11px; padding: 2px 5px; }
+  .tools input { width: 52px; text-align: right; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Enemies</h1>
+  <select id="category"></select>
+  <input id="filter" type="search" placeholder="Filter stats…" style="width:180px">
+  <span class="spacer"></span>
+  <span id="edited" class="pill on" hidden></span>
+  <button id="revertCategory">Revert this enemy</button>
+</header>
+
+<div class="wrap">
+  <div id="warnings"></div>
+  <div class="topbar">
+    <div id="head" class="head"></div>
+    <div id="levels" class="levelbar"></div>
+  </div>
+  <div id="groups"></div>
+</div>
+
+<script>
+// The payload is injected by the host at runtime; the file load is the standalone fallback so the
+// page can be developed and reviewed without the app running.
+const boot = window.__PAYLOAD__
+  ? Promise.resolve(window.__PAYLOAD__)
+  : fetch('sample-enemy-payload.json').then(r => r.json());
+
+boot.then(render).catch(e => {
+  document.getElementById('warnings').innerHTML =
+    '<div class="banner">Could not load payload: ' + escapeHtml(e) + '</div>';
+});
+
+let DATA = null, CATEGORY = null;
+
+// Edited stats, keyed the way the project file keys them. Sparse: a stat that is not in here is
+// absent rather than "unchanged", so the compiler re-emits what the game shipped. Reverting removes
+// the entry instead of writing today's numbers into one, which would pin them against a later Milan.
+const EDITS = new Map();
+
+function key(category, stat, level) {
+  return [DATA.handler.section, level, category, stat].join('|').toLowerCase();
+}
+
+/// What to draw: what the user typed if they have, otherwise what shipped.
+function effective(category, stat, level) {
+  const e = EDITS.get(key(category, stat.name, level));
+  return e ? { x: e.x, y: e.y } : stat.values[level];
+}
+
+function shippedOf(stat, level) {
+  return stat.values[level];
+}
+
+function render(data) {
+  DATA = data;
+  restoreEdits(window.__EDITS__);
+
+  if (data.warnings && data.warnings.length) {
+    document.getElementById('warnings').innerHTML =
+      '<div class="banner">' + data.warnings.map(escapeHtml).join('<br>') + '</div>';
+  }
+
+  const sel = document.getElementById('category');
+  data.categories.forEach((c, i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = c.title === c.name ? c.name : c.title + ' (' + c.name + ')';
+    sel.appendChild(o);
+  });
+  sel.onchange = () => selectCategory(data.categories[sel.value]);
+
+  document.getElementById('filter').oninput = drawGroups;
+  document.getElementById('revertCategory').onclick = revertCategory;
+
+  selectCategory(data.categories[0]);
+}
+
+function selectCategory(category) {
+  CATEGORY = category;
+  const head = document.getElementById('head');
+  head.innerHTML = '';
+
+  const text = document.createElement('div');
+  text.className = 'txt';
+  head.appendChild(text);
+
+  const h = document.createElement('div');
+  h.className = 'catname';
+  h.textContent = category.title;
+  text.appendChild(h);
+
+  // The internal name is always shown, not only when it differs from the title. It is what the
+  // config row is keyed by, so it is the thing to quote when something does not behave.
+  const id = document.createElement('div');
+  id.className = 'catid';
+  id.textContent = category.name;
+  text.appendChild(id);
+
+  if (category.intro) {
+    const p = document.createElement('p');
+    p.className = 'intro';
+    p.style.marginTop = '8px';
+    p.textContent = category.intro;
+    text.appendChild(p);
+  }
+
+  const art = portrait(category);
+  if (art) head.appendChild(art);
+
+  drawLevelBar();
+  drawGroups();
+}
+
+/// The render the wavelist composer stands this enemy up with, or nothing.
+///
+/// The same picture, the same folder and the same naming rule the stage uses: `art/<Name>-left.png`,
+/// where the name is the enemy type with its faction prefix stripped. The stat categories are
+/// already named that way - `Atlas`, `GethPrime` - so there is nothing to map, and a category whose
+/// name does not match a file simply shows no picture. That is also what an enemy whose render has
+/// not been drawn yet does, and there is no placeholder here: this page is one enemy rather than a
+/// composition, so an empty plate would be reserving space for nothing.
+function portrait(category) {
+  const name = String(category.name || '').replace(/^WAVE_[A-Z]{3}_/, '');
+  if (!name) return null;
+
+  const box = document.createElement('div');
+  box.className = 'portrait';
+
+  const img = document.createElement('img');
+  img.alt = '';
+  img.onerror = () => box.remove();
+  img.src = 'art/' + name + '-left.png';
+  box.appendChild(img);
+  return box;
+}
+
+function drawGroups() {
+  const filter = document.getElementById('filter').value.trim().toLowerCase();
+  const host = document.getElementById('groups');
+  host.innerHTML = '';
+
+  CATEGORY.groups.forEach(group => {
+    const stats = group.stats.filter(s => !filter
+      || s.name.toLowerCase().includes(filter)
+      || String(s.label).toLowerCase().includes(filter));
+    if (!stats.length) return;
+
+    const box = document.createElement('section');
+    box.className = 'group';
+
+    const title = document.createElement('h2');
+    title.textContent = group.title;
+    if (group.ungrouped) {
+      // Not an error. A mod's new enemy has no authored text at all and arrives here whole, and so
+      // does a stat Milan added to an enemy somebody wrote a page for years ago.
+      const sub = document.createElement('span');
+      sub.className = 'sub';
+      sub.textContent = 'no grouping authored for these yet';
+      title.appendChild(sub);
+    }
+    box.appendChild(title);
+
+    if (group.description) {
+      const p = document.createElement('p');
+      p.textContent = group.description;
+      box.appendChild(p);
+    }
+
+    box.appendChild(table(stats));
+    host.appendChild(box);
+  });
+
+  updateEditedPill();
+}
+
+function table(stats) {
+  const t = document.createElement('table');
+
+  const head = document.createElement('tr');
+  const corner = document.createElement('th');
+  corner.className = 'statcol';
+  corner.textContent = 'Stat';
+  head.appendChild(corner);
+
+  DATA.levels.forEach(level => {
+    const th = document.createElement('th');
+    th.textContent = level.label;
+    head.appendChild(th);
+  });
+  const thead = document.createElement('thead');
+  thead.appendChild(head);
+  t.appendChild(thead);
+
+  const body = document.createElement('tbody');
+  stats.forEach(stat => body.appendChild(row(stat)));
+  t.appendChild(body);
+  return t;
+}
+
+/// Scaling a whole difficulty is what almost every real enemy mod is - "make Gold harder" - so it
+/// is one gesture per column here rather than a number typed into every cell. It applies to the
+/// whole enemy, not to whichever group the control happens to sit in, which is why it lives above
+/// the groups rather than inside one.
+function drawLevelBar() {
+  const bar = document.getElementById('levels');
+  bar.innerHTML = '';
+
+  DATA.levels.forEach(level => {
+    const box = document.createElement('div');
+    box.className = 'lvl';
+
+    const name = document.createElement('div');
+    name.textContent = level.label;
+    box.appendChild(name);
+
+    const tools = document.createElement('div');
+    tools.className = 'tools';
+
+    const factor = document.createElement('input');
+    factor.type = 'number';
+    factor.step = 'any';
+    factor.value = '1.5';
+    factor.title = 'Multiply every value in this column by';
+    tools.appendChild(factor);
+
+    const scale = document.createElement('button');
+    scale.textContent = '×';
+    scale.title = 'Scale every stat of this enemy at this difficulty';
+    scale.onclick = () => scaleColumn(level.level, parseFloat(factor.value));
+    tools.appendChild(scale);
+
+    const revert = document.createElement('button');
+    revert.textContent = 'Revert';
+    revert.title = 'Drop this difficulty’s edits for this enemy';
+    revert.onclick = () => revertColumn(level.level);
+    tools.appendChild(revert);
+
+    box.appendChild(tools);
+    bar.appendChild(box);
+  });
+}
+
+function row(stat) {
+  const tr = document.createElement('tr');
+
+  const label = document.createElement('td');
+  const strong = document.createElement('div');
+  strong.textContent = stat.label;
+  if (stat.unlabelled) {
+    // Said plainly rather than dressed up: this stat has no name yet, and the internal one is
+    // standing in for it.
+    strong.className = 'unlabelled';
+    strong.title = 'No label has been written for this stat yet';
+  }
+  if (stat.unit) {
+    const u = document.createElement('span');
+    u.className = 'unit';
+    u.textContent = stat.unit;
+    strong.appendChild(u);
+  }
+  label.appendChild(strong);
+
+  const id = document.createElement('div');
+  id.className = 'statname';
+  id.textContent = stat.name;
+  label.appendChild(id);
+
+  if (stat.description) label.title = stat.description;
+  tr.appendChild(label);
+
+  DATA.levels.forEach(level => tr.appendChild(cell(stat, level.level)));
+  return tr;
+}
+
+function cell(stat, level) {
+  const td = document.createElement('td');
+  const shipped = shippedOf(stat, level);
+
+  // Absent, not zero. Thirteen (category, stat, level) triples are genuinely missing in LMP and they
+  // are all KaiLeng; offering an input here would write a value BioWare left out.
+  if (!shipped) {
+    td.className = 'absent';
+    td.textContent = '—';
+    td.title = 'The game does not define this stat for this enemy at this difficulty';
+    return td;
+  }
+
+  const value = effective(CATEGORY.name, stat, level);
+  const pair = document.createElement('div');
+  pair.className = 'pair';
+
+  const x = numberBox(value.x, shipped.x, 'X — one end of the interpolation');
+  const sep = document.createElement('span');
+  sep.className = 'sep';
+  sep.textContent = '→';
+  const y = numberBox(value.y, shipped.y, 'Y — the other end');
+
+  const commit = () => {
+    setStat(stat, level, num(x.value, shipped.x), num(y.value, shipped.y));
+    // Redrawn from the model rather than from the inputs, so a reverted cell loses its highlight.
+    const fresh = effective(CATEGORY.name, stat, level);
+    x.value = fresh.x; y.value = fresh.y;
+    mark(x, fresh.x, shipped.x); mark(y, fresh.y, shipped.y);
+    renderShipped();
+  };
+  x.onchange = commit;
+  y.onchange = commit;
+
+  pair.appendChild(x); pair.appendChild(sep); pair.appendChild(y);
+  td.appendChild(pair);
+
+  const was = document.createElement('span');
+  was.className = 'shipped';
+  td.appendChild(was);
+
+  function renderShipped() {
+    const now = effective(CATEGORY.name, stat, level);
+    const changed = now.x !== shipped.x || now.y !== shipped.y;
+    was.textContent = changed ? 'was ' + shipped.x + ' → ' + shipped.y : '';
+  }
+
+  mark(x, value.x, shipped.x);
+  mark(y, value.y, shipped.y);
+  renderShipped();
+  return td;
+}
+
+function numberBox(value, shipped, title) {
+  const el = document.createElement('input');
+  el.type = 'number';
+  el.step = 'any';
+  el.value = value;
+  el.title = title + ' (shipped: ' + shipped + ')';
+  return el;
+}
+
+function mark(el, value, shipped) {
+  el.classList.toggle('changed', value !== shipped);
+}
+
+function num(raw, fallback) {
+  const v = parseFloat(raw);
+  return Number.isFinite(v) ? v : fallback;
+}
+
+// ---------------------------------------------------------------- edits
+
+function setStat(stat, level, x, y) {
+  const k = key(CATEGORY.name, stat.name, level);
+  const shipped = shippedOf(stat, level);
+
+  // Back to what shipped is a REVERT, not an edit that happens to match. Storing it would pin those
+  // numbers into the mod and stop a later Milan build from reaching them.
+  if (x === shipped.x && y === shipped.y) {
+    EDITS.delete(k);
+  } else {
+    EDITS.set(k, { section: DATA.handler.section, level, category: CATEGORY.name, stat: stat.name, x, y });
+  }
+  publish();
+}
+
+/// Every stat of this enemy at this difficulty, not only the ones the filter is showing: a scale
+/// that quietly skipped the filtered-out half would be indistinguishable from one that worked.
+function scaleColumn(level, factor) {
+  if (!Number.isFinite(factor) || factor === 0) return;
+  CATEGORY.groups.flatMap(g => g.stats).forEach(stat => {
+    const shipped = shippedOf(stat, level);
+    if (!shipped) return;
+    const now = effective(CATEGORY.name, stat, level);
+    setStat(stat, level, round(now.x * factor), round(now.y * factor));
+  });
+  drawGroups();
+}
+
+function revertColumn(level) {
+  [...EDITS.keys()]
+    .filter(k => EDITS.get(k).level === level
+              && EDITS.get(k).category.toLowerCase() === CATEGORY.name.toLowerCase())
+    .forEach(k => EDITS.delete(k));
+  publish();
+  drawGroups();
+}
+
+function revertCategory() {
+  [...EDITS.keys()]
+    .filter(k => EDITS.get(k).category.toLowerCase() === CATEGORY.name.toLowerCase())
+    .forEach(k => EDITS.delete(k));
+  publish();
+  drawGroups();
+}
+
+/// Six decimals is past anything the game's own values use, and it stops a scale from turning
+/// 0.3 into 0.44999999999999996 in the config text.
+function round(v) {
+  return Math.round(v * 1e6) / 1e6;
+}
+
+function restoreEdits(saved) {
+  if (!saved || !saved.stats) return;
+  saved.stats.forEach(s => {
+    EDITS.set([s.section, s.level, s.category, s.stat].join('|').toLowerCase(), {
+      section: s.section, level: s.level, category: s.category, stat: s.stat, x: s.x, y: s.y,
+    });
+  });
+}
+
+function editDocument() {
+  return { format: 1, stats: [...EDITS.values()] };
+}
+
+function updateEditedPill() {
+  const pill = document.getElementById('edited');
+  pill.hidden = EDITS.size === 0;
+  pill.textContent = EDITS.size + (EDITS.size === 1 ? ' edited stat' : ' edited stats');
+}
+
+// Every change is posted, not batched behind a save button: the host owns the project file and its
+// dirty state, and a page that holds unsent edits loses them if the window is closed.
+function publish() {
+  updateEditedPill();
+  const host = window.chrome && window.chrome.webview;
+  if (!host) return;
+  try { host.postMessage({ type: 'modmaker.edits', collection: 'enemy', document: editDocument() }); }
+  catch (e) { /* Standalone in a browser, or the host went away; the page stays usable either way. */ }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+}
+</script>
+</body>
+</html>

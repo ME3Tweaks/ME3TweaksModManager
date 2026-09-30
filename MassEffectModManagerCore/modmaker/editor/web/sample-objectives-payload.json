@@ -1,0 +1,899 @@
+{
+  "format": 1,
+  "coordinatorSection": "SFXGameMPContent.SFXWaveCoordinator_HordeOperation",
+  "maxWaves": 11,
+  "maxWavesFromConfig": true,
+  "extractionWave": 11,
+  "waves": [
+    {
+      "waveIndex": 3,
+      "waveNumber": 2,
+      "creditScale": 0.15,
+      "raw": "(WaveNumber=2, CreditScale=0.15)",
+      "shadowed": false
+    },
+    {
+      "waveIndex": 6,
+      "waveNumber": 5,
+      "creditScale": 0.25,
+      "raw": "(WaveNumber=5, CreditScale=0.25)",
+      "shadowed": false
+    },
+    {
+      "waveIndex": 6,
+      "waveNumber": 5,
+      "creditScale": 0.35,
+      "raw": "(WaveNumber=5, CreditScale=0.35)",
+      "shadowed": true
+    },
+    {
+      "waveIndex": 10,
+      "waveNumber": 9,
+      "creditScale": 0.6,
+      "raw": "(WaveNumber=9, CreditScale=0.6)",
+      "shadowed": false
+    },
+    {
+      "waveIndex": 10,
+      "waveNumber": 9,
+      "creditScale": 0.5,
+      "raw": "(WaveNumber=9, CreditScale=0.5)",
+      "shadowed": true
+    },
+    {
+      "waveIndex": 11,
+      "waveNumber": 10,
+      "creditScale": null,
+      "raw": "(WaveNumber=10)",
+      "shadowed": false
+    }
+  ],
+  "families": [
+    {
+      "classSection": "SFXGameMPContent.SFXEngagement_Annex",
+      "className": "SFXEngagement_Annex",
+      "title": "Annex",
+      "shared": {
+        "knobs": [
+          {
+            "name": "operationfirstwarning",
+            "label": "First warning at",
+            "value": "30.0f",
+            "unit": "seconds"
+          },
+          {
+            "name": "operationsecondwarning",
+            "label": "Second warning at",
+            "value": "240.0f",
+            "unit": "seconds"
+          },
+          {
+            "name": "spawndistanceideal",
+            "label": "Ideal spawn distance",
+            "value": "3500",
+            "unit": "uu",
+            "help": "How far from the squad the game tries to place the objective."
+          },
+          {
+            "name": "spawnpenaltylongdistance",
+            "label": "Too-far penalty",
+            "value": "0.2"
+          },
+          {
+            "name": "spawnpenaltyshortdistance",
+            "label": "Too-close penalty",
+            "value": "0.8"
+          }
+        ],
+        "text": [],
+        "other": []
+      },
+      "variants": [
+        {
+          "sectionKey": "sfxengagement_annex_0 SFXEngagement_Annex",
+          "instanceId": "sfxengagement_annex_0",
+          "className": "SFXEngagement_Annex",
+          "type": "AnnexZoneHack",
+          "title": "Annex Zone Hack",
+          "weight": 0.5,
+          "weightScope": "instance",
+          "weightOnInstance": 0.5,
+          "dormant": false,
+          "share": 0.1,
+          "rules": {
+            "knobs": [],
+            "text": [
+              {
+                "name": "srannexprogressticker",
+                "label": "srannexprogressticker",
+                "value": "701600",
+                "text": "player hacking +"
+              },
+              {
+                "name": "srannexprogresstickerplural",
+                "label": "srannexprogresstickerplural",
+                "value": "701541",
+                "text": "players hacking +"
+              },
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "581493",
+                "text": "Hack the Computer!"
+              },
+              {
+                "name": "srendwavemessage",
+                "label": "srendwavemessage",
+                "value": "581494",
+                "text": "Hacking Completed!"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "627006",
+                "text": "HACK PROGRESS"
+              },
+              {
+                "name": "srwavefailedhint",
+                "label": "srwavefailedhint",
+                "value": "724698",
+                "text": "Failed to complete the hack in time"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "AnnexZoneHack",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=AnnexZoneHack, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            }
+          ]
+        },
+        {
+          "sectionKey": "sfxengagement_annex_1 SFXEngagement_Annex",
+          "instanceId": "sfxengagement_annex_1",
+          "className": "SFXEngagement_Annex",
+          "type": "AnnexZoneUpload",
+          "title": "Annex Zone Upload",
+          "weight": 0.5,
+          "weightScope": "instance",
+          "weightOnInstance": 0.5,
+          "dormant": false,
+          "share": 0.1,
+          "rules": {
+            "knobs": [],
+            "text": [
+              {
+                "name": "srannexprogressticker",
+                "label": "srannexprogressticker",
+                "value": "701601",
+                "text": "player uploading +"
+              },
+              {
+                "name": "srannexprogresstickerplural",
+                "label": "srannexprogresstickerplural",
+                "value": "701542",
+                "text": "players uploading +"
+              },
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "628647",
+                "text": "Upload the Data!"
+              },
+              {
+                "name": "srendwavemessage",
+                "label": "srendwavemessage",
+                "value": "628649",
+                "text": "Upload Completed!"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "629462",
+                "text": "UPLOAD PROGRESS"
+              },
+              {
+                "name": "srwavefailedhint",
+                "label": "srwavefailedhint",
+                "value": "724697",
+                "text": "Failed to complete the upload in time"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "AnnexZoneUpload",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=AnnexZoneUpload, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classSection": "SFXGameMPContent.SFXEngagement_Assassination",
+      "className": "SFXEngagement_Assassination",
+      "title": "Assassination",
+      "shared": {
+        "knobs": [],
+        "text": [],
+        "other": []
+      },
+      "variants": [
+        {
+          "sectionKey": "sfxengagement_assassination_0 SFXEngagement_Assassination",
+          "instanceId": "sfxengagement_assassination_0",
+          "className": "SFXEngagement_Assassination",
+          "type": "AssassinationObjective",
+          "title": "Assassination Objective",
+          "weight": 1.0,
+          "weightScope": "instance",
+          "weightOnInstance": 1.0,
+          "dormant": false,
+          "share": 0.2,
+          "rules": {
+            "knobs": [
+              {
+                "name": "operationtimelimit",
+                "label": "Time limit",
+                "value": "0",
+                "unit": "seconds",
+                "help": "How long the squad has. Zero means the objective is not timed."
+              },
+              {
+                "name": "waveinstructionvodelay",
+                "label": "Instruction VO delay",
+                "value": "4.0f",
+                "unit": "seconds"
+              }
+            ],
+            "text": [
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "712057",
+                "text": "Eliminate all Targets!"
+              },
+              {
+                "name": "srendwavemessage",
+                "label": "srendwavemessage",
+                "value": "602479",
+                "text": "Operation Failed!"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "713163",
+                "text": "Targets Eliminated"
+              },
+              {
+                "name": "srwavefailedhint",
+                "label": "srwavefailedhint",
+                "value": "724694",
+                "text": "Failed to kill the assigned target in time"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "AssassinationObjective",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=AssassinationObjective, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classSection": "SFXGameMPContent.SFXEngagement_Disarm",
+      "className": "SFXEngagement_Disarm",
+      "title": "Disarm",
+      "shared": {
+        "knobs": [
+          {
+            "name": "activatenextbombdelay",
+            "label": "Delay between devices",
+            "value": "3.0f",
+            "unit": "seconds"
+          },
+          {
+            "name": "instructionreminderdelay",
+            "label": "Reminder delay",
+            "value": "35.0f",
+            "unit": "seconds"
+          },
+          {
+            "name": "numdisarmsrequired",
+            "label": "Bombs to disarm",
+            "value": "4",
+            "help": "How many devices the squad must deal with before the wave is done."
+          },
+          {
+            "name": "spawndistanceideal",
+            "label": "Ideal spawn distance",
+            "value": "3000",
+            "unit": "uu",
+            "help": "How far from the squad the game tries to place the objective."
+          },
+          {
+            "name": "spawnpenaltylongdistance",
+            "label": "Too-far penalty",
+            "value": "0.2"
+          },
+          {
+            "name": "spawnpenaltyshortdistance",
+            "label": "Too-close penalty",
+            "value": "0.8"
+          },
+          {
+            "name": "waveinstructionvodelay",
+            "label": "Instruction VO delay",
+            "value": "4.0f",
+            "unit": "seconds"
+          }
+        ],
+        "text": [],
+        "other": []
+      },
+      "variants": [
+        {
+          "sectionKey": "sfxengagement_disarm_0 SFXEngagement_Disarm",
+          "instanceId": "sfxengagement_disarm_0",
+          "className": "SFXEngagement_Disarm",
+          "type": "DisarmEnable",
+          "title": "Disarm Enable",
+          "weight": 0.5,
+          "weightScope": "instance",
+          "weightOnInstance": 0.5,
+          "dormant": false,
+          "share": 0.1,
+          "rules": {
+            "knobs": [],
+            "text": [
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "601210",
+                "text": "Enable All Devices!"
+              },
+              {
+                "name": "srbombdisarmedticker",
+                "label": "srbombdisarmedticker",
+                "value": "701536",
+                "text": "enabled device +"
+              },
+              {
+                "name": "srdisarmbombmessage",
+                "label": "srdisarmbombmessage",
+                "value": "601802",
+                "text": "/ Devices Enabled"
+              },
+              {
+                "name": "srdisarmnextbombmessage",
+                "label": "srdisarmnextbombmessage",
+                "value": "601803",
+                "text": "Get to the next device!"
+              },
+              {
+                "name": "srendwavemessage",
+                "label": "srendwavemessage",
+                "value": "601211",
+                "text": "Success! All Devices Enabled!"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "627008",
+                "text": "DEVICES ENABLED"
+              },
+              {
+                "name": "srwavefailedhint",
+                "label": "srwavefailedhint",
+                "value": "724695",
+                "text": "Failed to activate the device in time"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "DisarmEnable",
+              "minimum": 4,
+              "maximum": 4,
+              "raw": "(ObjectiveType=DisarmEnable, MinimumObjectivesRequired=4, MaximumObjectivesAllowed=4)"
+            }
+          ]
+        },
+        {
+          "sectionKey": "sfxengagement_disarm_1 SFXEngagement_Disarm",
+          "instanceId": "sfxengagement_disarm_1",
+          "className": "SFXEngagement_Disarm",
+          "type": "DisarmDisable",
+          "title": "Disarm Disable",
+          "weight": 0.5,
+          "weightScope": "instance",
+          "weightOnInstance": 0.5,
+          "dormant": false,
+          "share": 0.1,
+          "rules": {
+            "knobs": [],
+            "text": [
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "667724",
+                "text": "Disable All Devices!"
+              },
+              {
+                "name": "srbombdisarmedticker",
+                "label": "srbombdisarmedticker",
+                "value": "701537",
+                "text": "disabled device +"
+              },
+              {
+                "name": "srdisarmbombmessage",
+                "label": "srdisarmbombmessage",
+                "value": "667726",
+                "text": "/ Devices Disabled"
+              },
+              {
+                "name": "srdisarmnextbombmessage",
+                "label": "srdisarmnextbombmessage",
+                "value": "601803",
+                "text": "Get to the next device!"
+              },
+              {
+                "name": "srendwavefailure",
+                "label": "srendwavefailure",
+                "value": "602479",
+                "text": "Operation Failed!"
+              },
+              {
+                "name": "srendwavesuccess",
+                "label": "srendwavesuccess",
+                "value": "667725",
+                "text": "Success! All Devices Disabled!"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "667727",
+                "text": "DEVICES DISABLED"
+              },
+              {
+                "name": "srwavefailedhint",
+                "label": "srwavefailedhint",
+                "value": "724696",
+                "text": "Failed to deactivate the device in time"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "DisarmDisable",
+              "minimum": 4,
+              "maximum": 4,
+              "raw": "(ObjectiveType=DisarmDisable, MinimumObjectivesRequired=4, MaximumObjectivesAllowed=4)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classSection": "SFXGameMPContent.SFXEngagement_Extraction",
+      "className": "SFXEngagement_Extraction",
+      "title": "Extraction",
+      "shared": {
+        "knobs": [
+          {
+            "name": "finishwavedelay",
+            "label": "Delay after finishing",
+            "value": "0",
+            "unit": "seconds"
+          },
+          {
+            "name": "operationscorereward",
+            "label": "Score reward",
+            "value": "0"
+          },
+          {
+            "name": "operationtimelimit",
+            "label": "Time limit",
+            "value": "120",
+            "unit": "seconds",
+            "help": "How long the squad has. Zero means the objective is not timed."
+          },
+          {
+            "name": "operationtimelimitbuffer",
+            "label": "Time limit buffer",
+            "value": "0",
+            "unit": "seconds"
+          },
+          {
+            "name": "spawndistanceideal",
+            "label": "Ideal spawn distance",
+            "value": "3500",
+            "unit": "uu",
+            "help": "How far from the squad the game tries to place the objective."
+          },
+          {
+            "name": "spawnpenaltylongdistance",
+            "label": "Too-far penalty",
+            "value": "0.2"
+          },
+          {
+            "name": "spawnpenaltyshortdistance",
+            "label": "Too-close penalty",
+            "value": "0.8"
+          }
+        ],
+        "text": [],
+        "other": [
+          {
+            "name": "musiceventname",
+            "label": "musiceventname",
+            "value": "Set_mus_gameplaymode_finalwave"
+          },
+          {
+            "name": "srendwavefailure",
+            "label": "srendwavefailure",
+            "value": "0"
+          }
+        ]
+      },
+      "variants": [
+        {
+          "sectionKey": "sfxengagement_extraction_0 SFXEngagement_Extraction",
+          "instanceId": "sfxengagement_extraction_0",
+          "className": "SFXEngagement_Extraction",
+          "type": "ExtractionPoint",
+          "title": "Extraction Point",
+          "weight": 0.0,
+          "weightScope": "family",
+          "weightOnInstance": null,
+          "dormant": true,
+          "share": null,
+          "rules": {
+            "knobs": [],
+            "text": [
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "665458",
+                "text": "Get to the extraction zone!"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "ExtractionPoint",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=ExtractionPoint, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classSection": "SFXGameContentDLC_CON_MP3_MobileAnnex.SFXEngagement_MobileAnnex",
+      "className": "SFXEngagement_MobileAnnex",
+      "title": "Mobile Annex",
+      "shared": {
+        "knobs": [],
+        "text": [],
+        "other": []
+      },
+      "variants": [
+        {
+          "sectionKey": "sfxengagement_mobileannex_0 SFXEngagement_MobileAnnex",
+          "instanceId": "sfxengagement_mobileannex_0",
+          "className": "SFXEngagement_MobileAnnex",
+          "type": "MobileAnnex",
+          "title": "Mobile Annex",
+          "weight": 1.0,
+          "weightScope": "instance",
+          "weightOnInstance": 1.0,
+          "dormant": false,
+          "share": 0.2,
+          "rules": {
+            "knobs": [
+              {
+                "name": "spawndistanceideal",
+                "label": "Ideal spawn distance",
+                "value": "3000",
+                "unit": "uu",
+                "help": "How far from the squad the game tries to place the objective."
+              },
+              {
+                "name": "spawnpenaltylongdistance",
+                "label": "Too-far penalty",
+                "value": "0.2"
+              },
+              {
+                "name": "spawnpenaltyshortdistance",
+                "label": "Too-close penalty",
+                "value": "0.8"
+              }
+            ],
+            "text": [
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "744350",
+                "text": "Escort!"
+              },
+              {
+                "name": "srendwavemessage",
+                "label": "srendwavemessage",
+                "value": "596062",
+                "text": "Success! Objective Completed!"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "744361",
+                "text": "Escort Progress"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "MobileAnnex",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=MobileAnnex, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classSection": "SFXGameMPContent.SFXEngagement_Retrieve",
+      "className": "SFXEngagement_Retrieve",
+      "title": "Retrieve",
+      "shared": {
+        "knobs": [],
+        "text": [],
+        "other": []
+      },
+      "variants": [
+        {
+          "sectionKey": "sfxengagement_retrieve_0 SFXEngagement_Retrieve",
+          "instanceId": "sfxengagement_retrieve_0",
+          "className": "SFXEngagement_Retrieve",
+          "type": "RetrievePickup",
+          "title": "Retrieve Pickup",
+          "weight": 0.0,
+          "weightScope": "instance",
+          "weightOnInstance": 0.0,
+          "dormant": true,
+          "share": null,
+          "rules": {
+            "knobs": [
+              {
+                "name": "numdropoffsrequired",
+                "label": "Drop-offs required",
+                "value": "3",
+                "help": "How many packages must reach the delivery point."
+              },
+              {
+                "name": "spawndistanceideal",
+                "label": "Ideal spawn distance",
+                "value": "3000",
+                "unit": "uu",
+                "help": "How far from the squad the game tries to place the objective."
+              },
+              {
+                "name": "spawnpenaltylongdistance",
+                "label": "Too-far penalty",
+                "value": "0.2"
+              },
+              {
+                "name": "spawnpenaltyshortdistance",
+                "label": "Too-close penalty",
+                "value": "0.8"
+              }
+            ],
+            "text": [
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "596061",
+                "text": "Retrieve!"
+              },
+              {
+                "name": "srendwavemessage",
+                "label": "srendwavemessage",
+                "value": "596062",
+                "text": "Success! Objective Completed!"
+              },
+              {
+                "name": "srobjectivecompletedreward",
+                "label": "srobjectivecompletedreward",
+                "value": "597257",
+                "text": "Objective Done"
+              },
+              {
+                "name": "srpickupdroppedoff",
+                "label": "srpickupdroppedoff",
+                "value": "596616",
+                "text": "returned an artifact!"
+              },
+              {
+                "name": "srretrieveprogress",
+                "label": "srretrieveprogress",
+                "value": "596615",
+                "text": "Artifacts Returned: /"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "627007",
+                "text": "ARTIFACTS RETURNED"
+              },
+              {
+                "name": "srteamscorereward",
+                "label": "srteamscorereward",
+                "value": "597255",
+                "text": "Squad Score"
+              }
+            ],
+            "other": []
+          },
+          "requirements": [
+            {
+              "type": "RetrievePickup",
+              "minimum": 3,
+              "maximum": 3,
+              "raw": "(ObjectiveType=RetrievePickup, MinimumObjectivesRequired=3, MaximumObjectivesAllowed=3)"
+            },
+            {
+              "type": "RetrieveDropOff",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=RetrieveDropOff, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classSection": "SFXGameContentDLC_CON_MP2_Retrieve.SFXEngagement_Retrieve_DLC",
+      "className": "SFXEngagement_Retrieve_DLC",
+      "title": "Retrieve DLC",
+      "shared": {
+        "knobs": [],
+        "text": [],
+        "other": []
+      },
+      "variants": [
+        {
+          "sectionKey": "sfxengagement_retrieve_dlc_0 SFXEngagement_Retrieve_DLC",
+          "instanceId": "sfxengagement_retrieve_dlc_0",
+          "className": "SFXEngagement_Retrieve_DLC",
+          "type": "RetrieveDropOffDLC",
+          "title": "Retrieve Drop Off DLC",
+          "weight": 1.0,
+          "weightScope": "instance",
+          "weightOnInstance": 1.0,
+          "dormant": false,
+          "share": 0.2,
+          "rules": {
+            "knobs": [
+              {
+                "name": "activateobjectivedelay",
+                "label": "Delay before it starts",
+                "value": "4.0f",
+                "unit": "seconds"
+              },
+              {
+                "name": "mindistancetodropoffzone",
+                "label": "Minimum drop-off distance",
+                "value": "2500.0f",
+                "unit": "uu"
+              },
+              {
+                "name": "numdropoffsrequired",
+                "label": "Drop-offs required",
+                "value": "2",
+                "help": "How many packages must reach the delivery point."
+              },
+              {
+                "name": "spawndistanceideal",
+                "label": "Ideal spawn distance",
+                "value": "3000",
+                "unit": "uu",
+                "help": "How far from the squad the game tries to place the objective."
+              },
+              {
+                "name": "spawnpenaltylongdistance",
+                "label": "Too-far penalty",
+                "value": "0.2"
+              },
+              {
+                "name": "spawnpenaltyshortdistance",
+                "label": "Too-close penalty",
+                "value": "0.8"
+              }
+            ],
+            "text": [
+              {
+                "name": "srbeginwavemessage",
+                "label": "srbeginwavemessage",
+                "value": "596061",
+                "text": "Retrieve!"
+              },
+              {
+                "name": "srendwavemessage",
+                "label": "srendwavemessage",
+                "value": "596062",
+                "text": "Success! Objective Completed!"
+              },
+              {
+                "name": "srpickupdroppedoff",
+                "label": "srpickupdroppedoff",
+                "value": "731646",
+                "text": "recovered an object!"
+              },
+              {
+                "name": "srscorehudobjectivetitle",
+                "label": "srscorehudobjectivetitle",
+                "value": "731647",
+                "text": "OBJECTS RECOVERED"
+              }
+            ],
+            "other": [
+              {
+                "name": "dropoffzoneobjectivetype",
+                "label": "dropoffzoneobjectivetype",
+                "value": "RetrieveDropOffDLC"
+              },
+              {
+                "name": "dropoffzonespawntag",
+                "label": "dropoffzonespawntag",
+                "value": "ExtractionPoint"
+              },
+              {
+                "name": "objectreturnedvolines",
+                "label": "objectreturnedvolines",
+                "value": "5"
+              }
+            ]
+          },
+          "requirements": [
+            {
+              "type": "RetrieveDropOffDLC",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=RetrieveDropOffDLC, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            },
+            {
+              "type": "RetrievePickupDLC1",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=RetrievePickupDLC1, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            },
+            {
+              "type": "RetrievePickupDLC2",
+              "minimum": 1,
+              "maximum": 1,
+              "raw": "(ObjectiveType=RetrievePickupDLC2, MinimumObjectivesRequired=1, MaximumObjectivesAllowed=1)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

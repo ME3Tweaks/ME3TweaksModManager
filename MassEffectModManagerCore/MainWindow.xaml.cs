@@ -35,6 +35,7 @@ using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.textures;
 using ME3TweaksModManager.modmanager.usercontrols;
+using ME3TweaksModManager.modmaker.editor;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.Win32;
@@ -749,7 +750,16 @@ namespace ME3TweaksModManager
         public ICommand AddStarterKitContentCommand { get; set; }
         public ICommand ConvertMEMToTOCommand { get; set; }
         public ICommand BuildBaseMilanCommand { get; set; }
+        public ICommand OpenModMakerEditorCommand { get; set; }
 
+
+        /// <summary>
+        /// Opens the ModMaker editor against the installed Project Milan game.
+        /// </summary>
+        private void OpenModMakerEditor()
+        {
+            ModMakerLauncher.Open(this, ModMakerLauncher.PreferredTarget(InstallationTargets));
+        }
 
         private void LoadCommands()
         {
@@ -809,6 +819,7 @@ namespace ME3TweaksModManager
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
             ConvertMEMToTOCommand = new GenericCommand(ConvertMEMToTextureOverride, () => M3LoadedMods.Instance.ModsLoaded);
             BuildBaseMilanCommand = new GenericCommand(() => MilanBaseInstallerPanel.BuildBaseMilan(this), () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any(x => x.Game == MEGame.LE3));
+            OpenModMakerEditorCommand = new GenericCommand(OpenModMakerEditor, () => ModMakerLauncher.PreferredTarget(InstallationTargets) != null);
             LoadNexusCommands();
             LoadHeadmorphCommands();
             LoadMergeCommands();
@@ -1611,6 +1622,10 @@ namespace ME3TweaksModManager
             }
 
             var canDeployMod = ArchiveDeployment.CanDeployMod(SelectedMod);
+            if (SelectedMod.Game == MEGame.LMP)
+            {
+                canDeployMod = true;
+            }
             if (canDeployMod)
             {
                 var archiveDeploymentPane = new ArchiveDeploymentPanel(SelectedMod);

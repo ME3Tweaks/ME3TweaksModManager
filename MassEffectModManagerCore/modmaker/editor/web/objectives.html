@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="chrome.css">
+<script src="chrome.js"></script>
+<title>ModMaker — Objectives</title>
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #1c2027;
+    --panel-2: #232833;
+    --line: #2f3540;
+    --text: #e6e9ef;
+    --muted: #97a0af;
+    --accent: #4aa3ff;
+    --ok: #46c07a;
+    --warn: #e0a33a;
+    --over: #e05a5a;
+    --edited: #4aa3ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 12px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
+    position: sticky; top: var(--mmc-h, 0px); z-index: 5;
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; }
+  h2 { font-size: 13px; font-weight: 600; margin: 0 0 10px; }
+  select, button, input {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; padding: 5px 9px; font: inherit;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; border-color: var(--line); }
+  .note { color: var(--muted); font-size: 12px; }
+  .spacer { flex: 1; }
+  .pill {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .pill.on { color: var(--accent); border-color: var(--accent); }
+  .pill.off { color: var(--warn); border-color: var(--warn); }
+
+  .wrap { padding: 16px 18px 60px; max-width: 1180px; }
+  .banner {
+    background: rgba(224,163,58,.10); border: 1px solid var(--warn);
+    color: #f0cf95; padding: 9px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 12px;
+  }
+
+  section.card {
+    border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .intro { color: var(--muted); margin: -4px 0 12px; max-width: 82ch; }
+
+  /* ---------------------------------------------------------------- the roll */
+
+  table { border-collapse: separate; border-spacing: 0; width: 100%; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; }
+  .objname { font-weight: 600; }
+  .objwhere { display: block; font-family: Consolas, monospace; font-size: 10px; color: var(--muted); }
+  input.weight { width: 82px; text-align: right; }
+  .scope { font-size: 10px; color: var(--muted); }
+  .scope.family { color: var(--warn); }
+
+  /* The share of the roll each objective's weight buys it. Derived, so it is drawn rather than
+     typed - a number beside an editable weight invites the reading that it is another input. */
+  .share { display: flex; align-items: center; gap: 8px; min-width: 130px; }
+  .share .bar { flex: 1; height: 6px; border-radius: 3px; background: #2b313c; overflow: hidden; }
+  .share .bar > i { display: block; height: 100%; background: var(--accent); }
+  .share .pct { font-size: 11px; color: var(--muted); min-width: 42px; text-align: right; }
+  tr.dormant .objname { color: var(--muted); }
+  tr.dormant .share .pct { color: var(--warn); }
+
+  /* ---------------------------------------------------------------- waves */
+
+  .waves { display: flex; gap: 10px; flex-wrap: wrap; }
+  .wave {
+    border: 1px solid var(--line); border-radius: 7px; background: var(--panel-2);
+    padding: 10px 12px; min-width: 150px;
+  }
+  .wave.off { opacity: .5; }
+  .wave .n { font-size: 15px; font-weight: 600; }
+  .wave .tag { font-size: 11px; color: var(--muted); display: block; margin-bottom: 6px; }
+  .wave label { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .wave input[type=number] { width: 74px; }
+
+  /* A wave this project changed. The same accent every other edited control uses, so "I touched
+     this" reads the same way across the editor rather than being relearned per page. */
+  .wave.edited { border-color: var(--edited); }
+
+  /* The config naming one wave more than once. Said on the card rather than in a footnote: it
+     changes what an edit to this wave means, so it has to be where the edit is made. */
+  .wave .dup {
+    margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line);
+    font-size: 10px; line-height: 1.35; color: var(--warn); max-width: 190px;
+  }
+
+  .intro.warn { color: var(--warn); }
+
+  /* ---------------------------------------------------------------- rules */
+
+  .rules { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px 18px; }
+  .rule { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .rule > label { flex: 1; color: var(--muted); }
+  .rule input { width: 110px; text-align: right; }
+  .rule .unit { font-size: 11px; color: var(--muted); min-width: 48px; }
+  .rule.changed input { border-color: var(--edited); }
+  .rule .was { font-size: 11px; color: var(--muted); }
+
+  .lines { display: grid; gap: 4px; }
+  .line { display: flex; gap: 10px; align-items: baseline; font-size: 12px; }
+  .line .k { color: var(--muted); min-width: 190px; }
+  .line .v { color: var(--text); opacity: .85; }
+  .line .r { font-family: Consolas, monospace; font-size: 10px; color: var(--muted); }
+
+  details { margin-top: 10px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  .empty { color: var(--muted); padding: 30px 0; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Objectives</h1>
+  <span class="note" id="summary"></span>
+  <span class="spacer"></span>
+  <span id="edited" class="pill on" hidden></span>
+  <button id="revertAll" disabled>Revert all</button>
+</header>
+
+<div class="wrap">
+  <div id="warnings" class="banner" hidden></div>
+  <div id="main"></div>
+</div>
+
+<script>
+// The payload is injected by the host at runtime; the file load is the standalone fallback so the
+// page can be developed and reviewed without the app running.
+const boot = window.__PAYLOAD__
+  ? Promise.resolve(window.__PAYLOAD__)
+  : fetch('sample-objectives-payload.json').then(r => r.json());
+
+boot.then(render).catch(e => {
+  document.getElementById('main').innerHTML =
+    '<div class="empty">Could not load payload: ' + escapeHtml(e) + '</div>';
+});
+
+const HOST = window.chrome && window.chrome.webview;
+
+let DATA = null;
+
+// Sparse, in the shape the project file stores. A section/property not in here is absent rather than
+// "unchanged", so the compiler leaves the shipped config alone. Reverting REMOVES the entry rather
+// than writing today's value in, which would pin it against a later Milan release.
+const EDITS = new Map();   // "<section>|<property>" -> { section, property, value }
+const WAVES = new Map();   // waveIndex -> { waveIndex, enabled, creditScale }
+
+function key(section, property) { return (section + '|' + property).toLowerCase(); }
+
+function render(data) {
+  DATA = data;
+  restore(window.__EDITS__);
+
+  if ((data.warnings || []).length) {
+    const box = document.getElementById('warnings');
+    box.hidden = false;
+    box.innerHTML = data.warnings.map(escapeHtml).join('<br>');
+  }
+
+  document.getElementById('revertAll').onclick = () => {
+    EDITS.clear();
+    WAVES.clear();
+    publish();
+    draw();
+  };
+
+  draw();
+}
+
+function restore(saved) {
+  if (!saved) return;
+  for (const [k, v] of Object.entries(saved.values || {})) EDITS.set(k, v);
+  for (const [k, v] of Object.entries(saved.waves || {})) WAVES.set(Number(k), v);
+}
+
+function draw() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  main.appendChild(rollSection());
+  main.appendChild(waveSection());
+  (DATA.families || []).forEach(f => main.appendChild(familySection(f)));
+
+  const variants = (DATA.families || []).reduce((n, f) => n + f.variants.length, 0);
+  document.getElementById('summary').textContent =
+    variants + ' objectives across ' + (DATA.families || []).length + ' types';
+
+  updatePill();
+}
+
+// ---------------------------------------------------------------- the roll
+
+/// Every objective the game may pick, and how likely it is to pick each.
+///
+/// One table rather than a weight box buried in each type's card, because the weights are only
+/// meaningful against each other: what an author wants to know is "how often do I see Disarm", and
+/// that is this objective's weight over the sum of them all.
+function rollSection() {
+  const box = document.createElement('section');
+  box.className = 'card';
+  box.innerHTML = '<h2>What the game can choose</h2>'
+    + '<p class="intro">On an objective wave the game rolls once across every objective below. '
+    + 'A weight of zero is never chosen — it is not a disabled flag, it is a weight, so an objective '
+    + 'the game has stopped using still has all of its rules and is one number from coming back.</p>';
+
+  const table = document.createElement('table');
+  table.innerHTML = '<thead><tr><th>Objective</th><th>Type</th><th class="num">Weight</th>'
+    + '<th>Share of the roll</th><th></th></tr></thead>';
+  const body = document.createElement('tbody');
+  table.appendChild(body);
+
+  const rows = [];
+  (DATA.families || []).forEach(f => f.variants.forEach(v => rows.push({ family: f, variant: v })));
+
+  // The share is recomputed from the CURRENT weights, edits included. Showing the shipped share
+  // beside an edited weight would be two numbers that disagree about the same thing.
+  const live = rows.map(r => Math.max(0, currentWeight(r.family, r.variant) ?? 0));
+  const total = live.reduce((a, b) => a + b, 0);
+
+  rows.forEach((row, i) => {
+    const { family, variant } = row;
+    const weight = currentWeight(family, variant);
+    const share = total > 0 && live[i] > 0 ? live[i] / total : 0;
+
+    const tr = document.createElement('tr');
+    if (!(live[i] > 0)) tr.className = 'dormant';
+
+    const name = document.createElement('td');
+    name.innerHTML = '<span class="objname">' + escapeHtml(variant.title) + '</span>'
+      + '<span class="objwhere">' + escapeHtml(variant.sectionKey) + '</span>';
+    tr.appendChild(name);
+
+    const type = document.createElement('td');
+    type.textContent = variant.type || '—';
+    tr.appendChild(type);
+
+    const weightCell = document.createElement('td');
+    weightCell.className = 'num';
+    const input = document.createElement('input');
+    input.className = 'weight';
+    input.type = 'number';
+    input.step = 'any';
+    input.min = '0';
+    input.value = weight == null ? '' : weight;
+    input.onchange = () => {
+      const n = input.value === '' ? null : Number(input.value);
+      if (n === null || Number.isNaN(n) || n < 0) { input.value = weight == null ? '' : weight; return; }
+      setValue(weightSection(family, variant), 'WeightedChanceOfSelection', renderNumber(n), weight);
+      draw();
+    };
+    weightCell.appendChild(input);
+
+    // Which section the weight lives in, said before the edit rather than after: a family weight is
+    // shared by every variant under it, so changing one there changes them all.
+    if (variant.weightScope === 'family') {
+      const scope = document.createElement('span');
+      scope.className = 'scope family';
+      scope.textContent = ' shared';
+      scope.title = 'This weight is set on ' + family.classSection + ', so it applies to every '
+        + family.title + ' objective.';
+      weightCell.appendChild(scope);
+    }
+    tr.appendChild(weightCell);
+
+    const shareCell = document.createElement('td');
+    const bar = document.createElement('div');
+    bar.className = 'share';
+    bar.innerHTML = '<span class="bar"><i style="width:' + Math.round(share * 100) + '%"></i></span>'
+      + '<span class="pct">' + (share > 0 ? (share * 100).toFixed(1) + '%' : 'never') + '</span>';
+    shareCell.appendChild(bar);
+    tr.appendChild(shareCell);
+
+    const tools = document.createElement('td');
+    const revert = document.createElement('button');
+    revert.textContent = 'Revert';
+    revert.disabled = !EDITS.has(key(weightSection(family, variant), 'WeightedChanceOfSelection'));
+    revert.onclick = () => {
+      EDITS.delete(key(weightSection(family, variant), 'WeightedChanceOfSelection'));
+      publish();
+      draw();
+    };
+    tools.appendChild(revert);
+    tr.appendChild(tools);
+
+    body.appendChild(tr);
+  });
+
+  box.appendChild(table);
+  return box;
+}
+
+/// Which section a weight edit writes to: the variant's own, unless the family is what sets it.
+function weightSection(family, variant) {
+  return variant.weightScope === 'family' ? family.classSection : variant.sectionKey;
+}
+
+function currentWeight(family, variant) {
+  const k = key(weightSection(family, variant), 'WeightedChanceOfSelection');
+  if (EDITS.has(k)) return Number(EDITS.get(k).value);
+  return variant.weight == null ? null : Number(variant.weight);
+}
+
+// ---------------------------------------------------------------- waves
+
+function waveSection() {
+  const box = document.createElement('section');
+  box.className = 'card';
+
+  const cap = maxWave();
+  box.innerHTML = '<h2>Which waves carry an objective</h2>'
+    + '<p class="intro">Tick any wave you want an objective on — as many as you like. An objective '
+    + 'wave is unbudgeted until its objective completes, so this also decides which waves the '
+    + 'wavelist editor stops costing. The credit scale is what finishing it pays; leave it empty for '
+    + 'a wave that pays nothing extra, as the extraction does.</p>';
+
+  // Said out loud when the cap is a fallback rather than a reading. The number looks identical
+  // either way, and the difference is exactly what decides whether it can be trusted.
+  if (!DATA.maxWavesFromConfig) {
+    const note = document.createElement('p');
+    note.className = 'intro warn';
+    note.textContent = 'The match length could not be read from this install, so only the waves that '
+      + 'already carry an objective are offered. Waves beyond ' + cap + ' may exist.';
+    box.appendChild(note);
+  }
+
+  const list = document.createElement('div');
+  list.className = 'waves';
+
+  for (let index = 1; index <= cap; index++) list.appendChild(waveCard(index));
+
+  // Anything the config already puts an objective on that is past the cap. Shown rather than
+  // dropped: a wave that exists in the data is not made unreal by a number that says it cannot.
+  for (const wave of shippedBeyond(cap)) list.appendChild(waveCard(wave));
+
+  box.appendChild(list);
+  return box;
+}
+
+/// The last wave the editor offers. From the game where it could be read - never a constant here,
+/// because a page-level 11 is exactly the assumption that survives a mod changing it.
+function maxWave() {
+  const n = Number(DATA.maxWaves);
+  return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+function shippedBeyond(cap) {
+  const out = [];
+  for (const wave of DATA.waves || []) if (wave.waveIndex > cap && out.indexOf(wave.waveIndex) < 0) out.push(wave.waveIndex);
+  for (const index of WAVES.keys()) if (index > cap && out.indexOf(index) < 0) out.push(index);
+  return out.sort((a, b) => a - b);
+}
+
+/// Every entry the shipped array has for one wave. Usually none or one; four of them have two,
+/// which is a fact about the install rather than about this page - see docs/13 §2.
+function entriesFor(index) {
+  return (DATA.waves || []).filter(w => w.waveIndex === index);
+}
+
+function waveCard(index) {
+  const entries = entriesFor(index);
+  const shipped = entries.length > 0;
+  const edit = WAVES.get(index);
+
+  const enabled = edit ? edit.enabled !== false : shipped;
+  const scale = edit
+    ? (edit.creditScale == null ? null : edit.creditScale)
+    : (shipped ? entries[0].creditScale : null);
+
+  const card = document.createElement('div');
+  card.className = 'wave' + (enabled ? '' : ' off') + (edit ? ' edited' : '');
+
+  const n = document.createElement('div');
+  n.className = 'n';
+  n.textContent = 'Wave ' + index;
+  card.appendChild(n);
+
+  const tag = document.createElement('span');
+  tag.className = 'tag';
+  if (index === DATA.extractionWave) {
+    tag.textContent = 'extraction';
+    tag.title = 'The last wave of the match. Its objective is always the extraction.';
+  } else if (!shipped) {
+    tag.textContent = 'none as shipped';
+  }
+  card.appendChild(tag);
+
+  const on = document.createElement('label');
+  const check = document.createElement('input');
+  check.type = 'checkbox';
+  check.checked = enabled;
+  check.onchange = () => { setWave(index, check.checked, scale); draw(); };
+  on.appendChild(check);
+  on.appendChild(document.createTextNode('has an objective'));
+  card.appendChild(on);
+
+  const row = document.createElement('label');
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.step = 'any';
+  input.min = '0';
+  input.value = scale == null ? '' : scale;
+  input.disabled = !enabled;
+  input.placeholder = 'none';
+  input.onchange = () => {
+    const v = input.value === '' ? null : Number(input.value);
+    if (v !== null && (Number.isNaN(v) || v < 0)) { input.value = scale == null ? '' : scale; return; }
+    setWave(index, enabled, v);
+    draw();
+  };
+  row.appendChild(document.createTextNode('credit scale'));
+  row.appendChild(input);
+  card.appendChild(row);
+
+  // The duplicates, spelled out. AddUnique only suppresses a byte-identical value, so a re-add with
+  // a changed credit scale leaves BOTH rows in the running game and which one it honours is not
+  // established. An editor that showed one row and silently rewrote both would be hiding the thing
+  // an author most needs to know before touching this wave.
+  if (entries.length > 1) {
+    const dup = document.createElement('div');
+    dup.className = 'dup';
+    const scales = entries.map(e => e.creditScale == null ? 'no scale' : String(e.creditScale));
+    const same = scales.every(v => v === scales[0]);
+    dup.textContent = same
+      ? 'the config names this wave ' + entries.length + ' times, identically'
+      : 'the config names this wave ' + entries.length + ' times: ' + scales.join(' and ');
+    dup.title = entries.map(e => e.raw).join('\n');
+    card.appendChild(dup);
+  }
+
+  return card;
+}
+
+/// Records a wave change, or drops it when it lands back on what the game already does.
+///
+/// Keyed by wave number rather than by array entry: a wave the config names twice is still one wave
+/// to a player, and the compiler applies the change to every entry that names it.
+function setWave(index, enabled, creditScale) {
+  const entries = entriesFor(index);
+  const shipped = entries.length > 0;
+
+  const unchanged = shipped
+    ? enabled === true && entries.every(e => nearly(creditScale, e.creditScale))
+    : enabled === false;
+
+  if (unchanged) WAVES.delete(index);
+  else WAVES.set(index, { waveIndex: index, enabled: enabled, creditScale: creditScale });
+  publish();
+}
+
+function nearly(a, b) {
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
+  return Math.abs(Number(a) - Number(b)) < 1e-9;
+}
+
+// ---------------------------------------------------------------- one objective type
+
+function familySection(family) {
+  const box = document.createElement('section');
+  box.className = 'card';
+
+  const h = document.createElement('h2');
+  h.textContent = family.title;
+  box.appendChild(h);
+
+  // Shared first, and labelled, because the split is the thing that goes wrong: these two are
+  // different config sections holding different properties, and writing to the wrong one produces a
+  // mod that installs and does nothing.
+  if ((family.shared.knobs || []).length) {
+    const shared = document.createElement('div');
+    shared.innerHTML = '<p class="intro">Shared by every ' + escapeHtml(family.title)
+      + ' objective — <span class="objwhere">' + escapeHtml(family.classSection) + '</span></p>';
+    shared.appendChild(ruleGrid(family.classSection, family.shared.knobs));
+    box.appendChild(shared);
+  }
+
+  family.variants.forEach(variant => box.appendChild(variantBlock(family, variant)));
+  return box;
+}
+
+function variantBlock(family, variant) {
+  const block = document.createElement('div');
+  block.style.marginTop = '14px';
+
+  const head = document.createElement('p');
+  head.className = 'intro';
+  head.innerHTML = '<b>' + escapeHtml(variant.title) + '</b> — <span class="objwhere">'
+    + escapeHtml(variant.sectionKey) + '</span>';
+  block.appendChild(head);
+
+  if ((variant.requirements || []).length) {
+    const reqs = document.createElement('p');
+    reqs.className = 'note';
+    reqs.textContent = 'Requires: ' + variant.requirements
+      .map(r => r.type + (r.minimum != null ? ' ×' + r.minimum : ''))
+      .join(', ');
+    block.appendChild(reqs);
+  }
+
+  if ((variant.rules.knobs || []).length) block.appendChild(ruleGrid(variant.sectionKey, variant.rules.knobs));
+
+  const words = (variant.rules.text || []).concat(family.shared.text || []);
+  if (words.length) {
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = words.length + ' line(s) of text this objective shows';
+    details.appendChild(summary);
+
+    const lines = document.createElement('div');
+    lines.className = 'lines';
+    words.forEach(w => {
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.innerHTML = '<span class="k">' + escapeHtml(w.label) + '</span>'
+        + '<span class="v">' + escapeHtml(w.text) + '</span>'
+        + '<span class="r">' + escapeHtml(w.value) + '</span>';
+      lines.appendChild(line);
+    });
+    details.appendChild(lines);
+    block.appendChild(details);
+  }
+
+  return block;
+}
+
+function ruleGrid(section, knobs) {
+  const grid = document.createElement('div');
+  grid.className = 'rules';
+
+  knobs.forEach(knob => {
+    const k = key(section, knob.name);
+    const current = EDITS.has(k) ? EDITS.get(k).value : knob.value;
+
+    const row = document.createElement('div');
+    row.className = 'rule' + (EDITS.has(k) ? ' changed' : '');
+
+    const label = document.createElement('label');
+    label.textContent = knob.label;
+    label.title = (knob.help ? knob.help + '\n\n' : '') + knob.name;
+    row.appendChild(label);
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.step = 'any';
+    input.value = numberOf(current);
+    input.onchange = () => {
+      if (input.value === '') { input.value = numberOf(current); return; }
+      const n = Number(input.value);
+      if (Number.isNaN(n)) { input.value = numberOf(current); return; }
+      setValue(section, knob.name, renderNumber(n), numberOf(knob.value));
+      draw();
+    };
+    row.appendChild(input);
+
+    const unit = document.createElement('span');
+    unit.className = 'unit';
+    unit.textContent = knob.unit || '';
+    row.appendChild(unit);
+
+    const was = document.createElement('span');
+    was.className = 'was';
+    if (EDITS.has(k)) was.textContent = 'was ' + knob.value;
+    row.appendChild(was);
+
+    grid.appendChild(row);
+  });
+
+  return grid;
+}
+
+/// The number out of a config value, so "0.5f" and "30.0f" edit as numbers.
+function numberOf(text) {
+  const m = /^[+-]?\d*\.?\d+/.exec(String(text == null ? '' : text).trim());
+  return m ? m[0] : '';
+}
+
+/// A number back as config text. Floats keep a decimal point, which is how the game writes them and
+/// how a reader tells 1 from 1.0 - the second is a float property and the first reads as an int.
+function renderNumber(n) {
+  return Number.isInteger(n) ? String(n) : String(n);
+}
+
+function setValue(section, property, value, shipped) {
+  const k = key(section, property);
+
+  // An edit back to the shipped value is a non-edit. Recorded as one it would write the game's own
+  // number into the mod and pin it against a later Milan release for no reason.
+  if (shipped != null && Number(value) === Number(shipped)) EDITS.delete(k);
+  else EDITS.set(k, { section: section, property: property, value: value });
+
+  publish();
+}
+
+// ---------------------------------------------------------------- host bridge
+
+function editDocument() {
+  const values = {};
+  for (const [k, v] of EDITS) values[k] = v;
+  const waves = {};
+  for (const [k, v] of WAVES) waves[String(k)] = v;
+  return { format: 1, values: values, waves: waves };
+}
+
+function updatePill() {
+  const n = EDITS.size + WAVES.size;
+  const pill = document.getElementById('edited');
+  pill.hidden = n === 0;
+  pill.textContent = n + (n === 1 ? ' change' : ' changes');
+  document.getElementById('revertAll').disabled = n === 0;
+}
+
+// Every change is posted, not batched behind a save button: the host owns the project file and its
+// dirty state, and a page that holds unsent edits loses them if the window is closed.
+function publish() {
+  updatePill();
+  if (!HOST) return;
+  try { HOST.postMessage({ type: 'modmaker.edits', collection: 'objectives', document: editDocument() }); }
+  catch (e) { /* Standalone in a browser, or the host went away; the page stays usable either way. */ }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+}
+</script>
+</body>
+</html>

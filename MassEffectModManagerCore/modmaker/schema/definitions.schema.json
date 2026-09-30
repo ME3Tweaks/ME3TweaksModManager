@@ -1,0 +1,917 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://me3tweaks.com/schemas/modmaker/definitions-2.json",
+  "title": "ModMaker definition bundle",
+  "description": "The catalogue the editor reads. It is the JOIN of two things with different lifecycles: a DATA layer generated on the user's machine from their installed game (classes, properties, defaults, instances, images) and a TEXT layer shipped with ModMaker (curation decisions, groups, labels, prose) - see textlayer.schema.json. Anything discovered in the data layer with no match in the text layer still appears, with fallback titles and no prose, which is how content from a user's other mods shows up. The generator excludes DLC_MOD_ModMaker, the compiler's own output folder; reading that back would make the last mod's edits look like the game's defaults.",
+  "type": "object",
+  "required": [
+    "format",
+    "bundleVersion",
+    "game",
+    "groups",
+    "classes",
+    "properties"
+  ],
+  "patternProperties": {
+    "^_": true
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "description": "Bundle schema version. The editor refuses bundles newer than it understands.",
+      "type": "integer",
+      "const": 2
+    },
+    "bundleVersion": {
+      "type": "string"
+    },
+    "game": {
+      "type": "string",
+      "enum": [
+        "LE3",
+        "LMP"
+      ]
+    },
+    "targetMilanVersion": {
+      "description": "Milan build this catalogue was generated against. Mismatch is a warning, not an error.",
+      "type": "string"
+    },
+    "environment": {
+      "description": "Fingerprint of the install this bundle's data layer was generated from. The editor compares it at startup and offers a manual rebuild when it no longer matches; regeneration is never automatic, because it redefines 'default' for every value in every open project. A project records the fingerprint it was authored against so opening it elsewhere warns with a diff.",
+      "type": "object",
+      "required": [
+        "gamePath",
+        "dlc",
+        "generatorVersion"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^_": true
+      },
+      "properties": {
+        "gamePath": {
+          "description": "Install root the scan ran against.",
+          "type": "string"
+        },
+        "gameVersion": {
+          "description": "Executable version, when it can be read.",
+          "type": "string"
+        },
+        "generatedUtc": {
+          "description": "When the data layer was built.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "generatorVersion": {
+          "description": "Version of the catalogue generator. A generator change invalidates the cache as surely as a game change.",
+          "type": "string"
+        },
+        "textLayerVersion": {
+          "description": "Version of the shipped text-and-curation layer this was joined against.",
+          "type": "string"
+        },
+        "dlc": {
+          "description": "Installed DLC in mount order, as scanned. DLC_MOD_ModMaker is always absent: it is the compiler's own output and is excluded from every scan. A folder appearing, disappearing or changing mount priority is the clearest signal the bundle is stale.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "folder",
+              "mountPriority"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "folder": {
+                "type": "string"
+              },
+              "mountPriority": {
+                "type": "integer"
+              },
+              "version": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "files": {
+          "description": "Identity of the scanned inputs - coalesced files and packages - so a changed install is detectable without rescanning it. Size and modified time to start with; a hash where that proves unreliable.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "size": {
+                "type": "integer"
+              },
+              "modifiedUtc": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "hash": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "anchorsMissing": {
+          "description": "Anchors the generator looked for and did not find - e.g. \"SFXWave_Horde\". An empty editor is otherwise indistinguishable from a game with no factions, so a missing anchor must surface as a named warning rather than as absent content.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "migrations": {
+      "description": "Leaf id renames, applied when loading older project files.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "dimensions": {
+      "description": "Named axes a property can be repeated over. The canonical one is difficulty: enemy stats exist once per difficulty, each writing to a different coalesced path.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "values"
+        ],
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "key"
+              ],
+              "patternProperties": {
+                "^_": true
+              },
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "image": {
+                  "description": "Instanced full path to a Texture2D banner for this value, resolved from the game at generation time. The difficulty pickers ship one per difficulty and they head the difficulty pages; the count is current data, not a constant.",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "descriptions": {
+      "description": "Shared prose pool. Most properties mean the same thing everywhere they appear - every power's cooldowntime is the same concept - so the text is written once here and referenced by leaves, which may append a clarification or replace it outright.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9_.]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "unit": {
+            "description": "Default unit for leaves using this description; a leaf may still override it.",
+            "type": "string"
+          },
+          "label": {
+            "description": "Default UI label for leaves using this description.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/group"
+      }
+    },
+    "classes": {
+      "description": "The config class hierarchy, read from the game's own class definitions. A group's editable set is the union of its class's own properties and everything it inherits.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/classDef"
+      }
+    },
+    "properties": {
+      "description": "Every config property the editor can write, declared once on the class that defines it.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/property"
+      }
+    },
+    "checks": {
+      "description": "Cross-leaf validation a single leaf's constraints cannot express.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/check"
+      }
+    },
+    "collections": {
+      "description": "Areas whose shape is dynamic rather than a fixed value tree. The wavelist editor is the most important of these and the most gameplay-relevant part of the whole application.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/collection"
+      }
+    }
+  },
+  "$defs": {
+    "group": {
+      "description": "A page in the editor's navigation. Usually backed by one config class.",
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(\\.[a-z0-9_]+)*$"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "blurb": {
+          "type": "string"
+        },
+        "class": {
+          "description": "Config class this page edits. Determines the inherited property set.",
+          "type": "string"
+        },
+        "image": {
+          "description": "Path relative to the extracted asset zip root.",
+          "type": "string"
+        },
+        "accent": {
+          "description": "Optional decorative tint carried over from the old card classes (faction or difficulty colouring). Never load-bearing.",
+          "type": "string"
+        },
+        "order": {
+          "type": "integer"
+        }
+      }
+    },
+    "classDef": {
+      "description": "One config class as it exists in the game packages.",
+      "type": "object",
+      "required": [
+        "id",
+        "section"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Stable class identifier, normally the lowercase section name.",
+          "type": "string"
+        },
+        "section": {
+          "description": "Coalesced section this class writes to, e.g. \"sfxgamecontent.sfxpowercustomaction_pull\". Real ME3/LE3 section names can contain spaces. NULL for a per-object-config class that has no class-path section of its own - SFXWave_Horde_Cerberus has none, and its shared values come from SFXWave_Horde by class inheritance. When null, only instance-scoped properties are writable on this class.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "title": {
+          "description": "Page title. Resolved at generation time, never at display time.",
+          "type": "string"
+        },
+        "titleSource": {
+          "description": "Which rung of the fallback chain produced `title` (02-data-model.md 1.5.1): the class's own TLK display name, the MP store card table, or the class name with package and scaffolding stripped. Recorded so the UI can de-emphasise fallbacks and a later authoring pass can find them - 1,836 of 2,304 classes have no name in the game, and whole families such as SFXProjectile have none at all.",
+          "type": "string",
+          "enum": [
+            "authored",
+            "tlk",
+            "storeCard",
+            "className"
+          ]
+        },
+        "group": {
+          "type": "string",
+          "description": "The group this class is filed under, from curation. Always present: a class no curation names is filed under 'unrecognised' rather than left ungrouped, so an editor never has to invent a home for it."
+        },
+        "recognised": {
+          "description": "False when the class was discovered in the data layer but the shipped text layer knows nothing about it - the normal case for content from a user's other mods. Such classes are INCLUDED and flagged, not hidden: an exclusion list cannot anticipate a mod. The UI groups them apart and expects them to have fallback titles and no prose.",
+          "type": "boolean",
+          "default": true
+        },
+        "extends": {
+          "description": "Parent class id. Properties defined on ancestors are editable here unless their inheritance mode says otherwise.",
+          "type": "string"
+        },
+        "file": {
+          "description": "Coalesced sub-file this class lives in: BioGame, BioWeapon, BioAI, BioUI, BioDifficulty, ...",
+          "type": "string"
+        },
+        "abstract": {
+          "description": "True for classes that exist only to hold shared properties and have no page of their own.",
+          "type": "boolean",
+          "default": false
+        },
+        "perObject": {
+          "description": "Present when the class carries EClassFlags.PerObjectConfig, i.e. it is configured per named object in sections keyed \"<instance> <classToken>\" rather than \"<package>.<class>\". Such a class is ONE page with an instance selector, not one page per instance.",
+          "type": "object",
+          "required": [
+            "classToken",
+            "instances"
+          ],
+          "additionalProperties": false,
+          "patternProperties": {
+            "^_": true
+          },
+          "properties": {
+            "classToken": {
+              "description": "The class half of the section key, verbatim and lowercased - the bare class name with no package. Carried separately from `id` and from the instance ids because none of the three can be computed from the others: SFXWave_Horde_Cerberus2 has classToken \"sfxwave_horde_cerberus2\" but its instances are named \"sfxwave_horde_cerberus1..11\", after the BASE faction.",
+              "type": "string"
+            },
+            "instances": {
+              "description": "The instances the game ships, read from the merged config. NEVER synthesised: four different naming conventions are in use across the 47 flagged classes. May be empty - 25 classes are flagged but ship no instances.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": false,
+                "patternProperties": {
+                  "^_": true
+                },
+                "properties": {
+                  "id": {
+                    "description": "Instance name as it appears in the section key. Unique within this class only - the same instance name can exist under a different class.",
+                    "type": "string"
+                  },
+                  "label": {
+                    "description": "Display name. Authored: \"sfxobjdata_annexhack\" has no useful name in it. Falls back to `id`.",
+                    "type": "string"
+                  },
+                  "order": {
+                    "description": "Sort position in the instance selector.",
+                    "type": "integer"
+                  }
+                }
+              }
+            },
+            "canCreate": {
+              "description": "Whether the editor offers \"add an instance\". Authored per class, NOT derived, because a config section does not create an object: the game must already construct something with that name for the section to be read at all. Waves qualify (the coordinator looks up \"<factionClass><n>\" by convention); most per-object classes do not.",
+              "type": "boolean",
+              "default": false
+            },
+            "newInstancePattern": {
+              "description": "Pattern the editor offers when creating an instance, e.g. \"sfxwave_horde_rejects{n}\". Authored alongside canCreate.",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "property": {
+      "description": "One config property, declared on its defining class. Its value is a tree; the leaves are what the user edits.",
+      "type": "object",
+      "required": [
+        "class",
+        "name",
+        "value"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Optional stable id, used in build and compile diagnostics.",
+          "type": "string"
+        },
+        "class": {
+          "description": "Class id that DEFINES this property. Subclasses inherit it per `inheritance`.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Property name within the section.",
+          "type": "string"
+        },
+        "file": {
+          "description": "Overrides the class's coalesced sub-file, for the rare property that lives elsewhere.",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/node"
+        },
+        "inheritance": {
+          "description": "How this property appears on subclasses. \"cascade\": always editable on every subclass (cooldowntime and friends). \"optional\": hidden by default on subclasses, revealed on request - the subclass inherits the base value unless the user sets it. \"own\": editable only on the defining class.",
+          "type": "string",
+          "enum": [
+            "cascade",
+            "optional",
+            "own"
+          ],
+          "default": "optional"
+        },
+        "scope": {
+          "description": "Only meaningful on a per-object-config class, where BOTH section shapes are live and carry disjoint halves of the properties. \"shared\": written to the class-path section, one value for every instance (enemylist, numdisarmsrequired). \"instance\": written to \"<instance> <classToken>\", one value per instance (enemies, weightedchanceofselection). \"unverified\": the shipped config sets it in neither shape, so which one the game reads is unknown - hidden until curation says otherwise, because writing into the wrong shape produces a mod that builds, installs, mounts and does nothing. NOTE the EPropertyFlags.GlobalConfig flag does NOT predict this and must not be used for it: 1 of 638 properties carries it. Read the scope from which shape the shipped config used.",
+          "type": "string",
+          "enum": [
+            "shared",
+            "instance",
+            "unverified"
+          ],
+          "default": "unverified"
+        },
+        "scopeByClass": {
+          "description": "Per-subclass overrides of `scope`, sparse, mirroring `defaultByClass`. Scope is a property of the (class, property) PAIR, not of the property declaration: SFXWave_Operation.WeightedChanceOfSelection is instance-scoped on six SFXEngagement_* subclasses and shared on SFXEngagement_Extraction, which has only one instance and so had no reason to split it. Six inherited properties disagree this way in LMP. A single `scope` on the declaring class would silently write several of them into the wrong section.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "shared",
+              "instance",
+              "unverified"
+            ]
+          }
+        },
+        "valueType": {
+          "description": "Coalesced value type (LegendaryExplorerCore CoalesceParseAction): 0 New/overwrite, 1 RemoveProperty, 2 Add, 3 AddUnique, 4 Remove. Matters because the generated DLC coalesced mounts above Milan's.",
+          "type": "integer",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "default": 0
+        },
+        "arrayType": {
+          "description": "Emit as an array property with this arraytype attribute.",
+          "type": "string"
+        },
+        "matchOnType": {
+          "description": "For an array property: which struct member identifies the entry.",
+          "type": "string"
+        },
+        "repeat": {
+          "description": "Instantiate once per value of a named dimension. The class's `section` may reference it as {dimension}, and every leaf id gains a [key] suffix. This is how per-difficulty enemy stats work.",
+          "type": "string"
+        },
+        "group": {
+          "description": "Default group for leaves that do not override it.",
+          "type": "string"
+        },
+        "originalValue": {
+          "description": "VERBATIM original config text of a single-valued property as shipped, captured byte-for-byte and never reserialized. See originalValues for the multi-entry form.",
+          "type": "string"
+        },
+        "originalValues": {
+          "description": "VERBATIM original config text of EVERY entry of an array property, in shipped order, byte-for-byte and never reserialized. Required for array properties, under both emission mechanisms. A GENERIC array edit replaces the whole array (parse action 0), so the compiler re-emits every entry and the untouched ones must come back exactly as they shipped - regenerating them from the parsed tree would rewrite float renderings, spacing and member order across values nobody edited. An array owned by a DEDICATED editor is exempt from wholesale replacement, because that editor models every entry and their order carries no meaning; it still needs this text, because a per-entry Remove matches on it. See 02-data-model.md 0.1.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "originalValueByClass": {
+          "description": "Per-subclass verbatim originals, where a subclass ships its own value for an inherited array property. Keyed by class id.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "arrayType"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "originalValues"
+                ]
+              },
+              {
+                "required": [
+                  "originalValue"
+                ]
+              },
+              {
+                "required": [
+                  "originalValueByClass"
+                ]
+              }
+            ],
+            "description": "An array property must carry its shipped text verbatim. An array edit replaces the whole array, so the compiler re-emits every entry and the untouched ones have to come back out exactly as they shipped - originalValues is the general form, one string per entry in shipped order."
+          }
+        }
+      ]
+    },
+    "node": {
+      "description": "A value tree node. `struct` and `array` are containers; `literal` is fixed text preserved from the game; everything else is an editable leaf.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/structNode"
+        },
+        {
+          "$ref": "#/$defs/arrayNode"
+        },
+        {
+          "$ref": "#/$defs/literalNode"
+        },
+        {
+          "$ref": "#/$defs/leafNode"
+        }
+      ]
+    },
+    "structNode": {
+      "description": "Serializes as (Name=value,Name=value). Member order is preserved as authored.",
+      "type": "object",
+      "required": [
+        "kind",
+        "members"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "struct"
+        },
+        "widget": {
+          "description": "Optional UI hint. \"range\" renders a two-member struct as a paired min/max control; \"flags\" renders an all-boolean struct as a checkbox block. Purely presentational - it never changes serialization.",
+          "type": "string",
+          "enum": [
+            "range",
+            "flags",
+            "point"
+          ]
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "patternProperties": {
+              "^_": true
+            },
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "description": "Member name as it appears in config text, e.g. \"BaseValue\", \"X\".",
+                "type": "string"
+              },
+              "value": {
+                "$ref": "#/$defs/node"
+              }
+            }
+          }
+        }
+      }
+    },
+    "arrayNode": {
+      "description": "Indexed members: each item serializes as Name[i]=value, flattened into the containing struct. Item count is discovered from the game, never assumed.",
+      "type": "object",
+      "required": [
+        "kind",
+        "items"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "array"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      }
+    },
+    "literalNode": {
+      "description": "Fixed text carried through from the game's value, e.g. Formula=BonusIsHardValue. Not editable, but preserved on write.",
+      "type": "object",
+      "required": [
+        "kind",
+        "text"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "literal"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "leafNode": {
+      "description": "An editable value. Serialization follows `kind`: float appends 'f', string is quoted, bool writes true/false. Human text may come from a shared `descriptions` entry.",
+      "type": "object",
+      "required": [
+        "kind",
+        "id"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "float",
+            "int",
+            "bool",
+            "enum",
+            "string"
+          ]
+        },
+        "id": {
+          "description": "Stable identifier, unique within the defining class. The project key that addresses one editable value is \"<classId>/<leafId>\", plus a [dimensionKey] suffix for repeated properties - because a cascaded property is editable on every subclass and each needs its own slot. Never reuse an id; rename only via a migration entry.",
+          "type": "string",
+          "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*$"
+        },
+        "label": {
+          "description": "UI label. Falls back to the referenced description's label when omitted.",
+          "type": "string"
+        },
+        "describedBy": {
+          "description": "Key into the top-level `descriptions` pool. Supplies text, and optionally label and unit.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Full prose override. Mutually exclusive with `descriptionAppend`.",
+          "type": "string"
+        },
+        "descriptionAppend": {
+          "description": "Sentence appended to the referenced description, e.g. \"Cooldown starts once you detonate the power.\" Requires `describedBy`.",
+          "type": "string"
+        },
+        "unit": {
+          "description": "Display-only suffix, e.g. \"cm\", \"newtons\", \"sec\".",
+          "type": "string"
+        },
+        "stringref": {
+          "description": "True when this int is a TLK string reference (a StringRefProperty). It is still edited and written as an int - this says only that the number names a line of text, so an editor can show the words behind it. Set for top-level StringRefProperty declarations; string refs nested inside structs are NOT marked, because a value tree is built from config text where a string ref and an ordinary int are indistinguishable.",
+          "type": "boolean"
+        },
+        "group": {
+          "description": "Overrides the owning property's group, where one property's members belong on different pages.",
+          "type": "string"
+        },
+        "default": {
+          "description": "The value the game uses as shipped - what \"revert\" reverts to. Generated, never hand-authored. It is the EFFECTIVE shipped value, not the compiled class default alone: config REPLACES class defaults rather than merging with them, so this is the merged config's value where it sets the property, UClass.Defaults resolved up the SuperClass chain otherwise, and the type's ZERO VALUE when nothing sets it at all - a default object serialises only what differs from zero, so its absence is the value rather than the absence of one. Every scalar leaf therefore has a default; an omitted one would report a known zero as unknown."
+        },
+        "options": {
+          "description": "Required when kind is \"enum\". Ideally populated from the property's declared type in the game packages.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "value",
+              "label"
+            ],
+            "patternProperties": {
+              "^_": true
+            },
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean"
+                ]
+              },
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "patternProperties": {
+            "^_": true
+          },
+          "additionalProperties": false,
+          "properties": {
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "step": {
+              "type": "number"
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "maxLength": {
+              "type": "integer"
+            }
+          }
+        },
+        "advanced": {
+          "type": "boolean",
+          "default": false
+        },
+        "order": {
+          "type": "integer"
+        },
+        "defaultByClass": {
+          "description": "Defaults for subclasses that ship their own value, keyed by class id. Sparse - only where a subclass differs from what it would inherit. The editor shows this as the class default; the EFFECTIVE value it displays alongside also accounts for the user's own edits to ancestor classes in the same project.",
+          "type": "object",
+          "additionalProperties": {}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "enum"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "options"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "descriptionAppend"
+            ]
+          },
+          "then": {
+            "required": [
+              "describedBy"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "description",
+              "descriptionAppend"
+            ]
+          }
+        }
+      ]
+    },
+    "check": {
+      "type": "object",
+      "required": [
+        "kind",
+        "a",
+        "b",
+        "message"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "lte",
+            "lt",
+            "gte",
+            "gt",
+            "neq"
+          ]
+        },
+        "a": {
+          "description": "Leaf id (left side).",
+          "type": "string"
+        },
+        "b": {
+          "description": "Leaf id (right side).",
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "collection": {
+      "type": "object",
+      "required": [
+        "id",
+        "editor",
+        "group"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "editor": {
+          "type": "string",
+          "enum": [
+            "wavelist",
+            "wavebudget",
+            "wavecost",
+            "factions",
+            "enemy",
+            "maplist",
+            "objectives"
+          ],
+          "description": "Kept in step with the same list in textlayer.schema.json: the two disagreed, definitions omitting the enemy stat editor and textlayer offering a store editor that is out of scope."
+        },
+        "group": {
+          "type": "string"
+        },
+        "schemaRef": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

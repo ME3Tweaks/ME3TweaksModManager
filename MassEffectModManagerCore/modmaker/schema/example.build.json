@@ -1,0 +1,117 @@
+{
+  "format": 1,
+  "kind": "me3tweaks.modmaker.build",
+  "game": "LMP",
+  "_comment": [
+    "What example.project.json compiles to, resolved against example.definitions.json.",
+    "",
+    "The DLC folder is always DLC_MOD_ModMaker - a ModMaker mod is a single DLC, and it is the name",
+    "the generator excludes from its own scans so a built mod never becomes its own baseline.",
+    "",
+    "Everything is already resolved: inheritance applied, defaults filled in for struct members the",
+    "user did not touch, the {difficulty} dimension expanded to a concrete section, and each value",
+    "serialized to final config text. The compiler reads only this file.",
+    "",
+    "Two things to notice:",
+    "  - cooldowntime is written whole. The user set only BaseValue; Formula and the rank bonuses",
+    "    come from bundle defaults, because config text has no partial structs.",
+    "  - biodifficulty uses `replace`, not `value`. Overriding an array entry is a type-4 subtraction",
+    "    of the EXACT shipped text followed by a type-3 re-add. If `remove` is off by so much as a",
+    "    trailing 'f' the subtraction silently fails and the game sees both entries."
+  ],
+  "generator": {
+    "app": "ME3TweaksModManager 10.0.0.140",
+    "bundleVersion": "0.0.2-draft",
+    "milanVersion": "0.0.0",
+    "generatedAt": "2026-09-01T12:00:00Z"
+  },
+  "mod": {
+    "name": "Silver Grind",
+    "author": "Mgamerz",
+    "description": "Slower, heavier Silver. Pull actually does something.",
+    "version": "1.4",
+    "dlcFolder": "DLC_MOD_ModMaker",
+    "mount": {
+      "_note": "read from the install at compile time: one above the highest-mounting DLC, and that DLC's own load flags",
+      "priority": 4800,
+      "tlkId": 1928400,
+      "flags": 14
+    }
+  },
+  "jobs": [
+    {
+      "type": "coalesced",
+      "files": {
+        "BioGame": {
+          "sections": [
+            {
+              "name": "sfxgamecontent.sfxpowercustomaction_pull",
+              "properties": [
+                {
+                  "name": "impactradius",
+                  "value": "(BaseValue=750.0,Formula=BonusIsHardValue)",
+                  "valueType": 0,
+                  "source": "sfxpowercustomaction_pull/pull.impactradius.base"
+                },
+                {
+                  "_note": "cooldowntime is defined on the base power class and cascaded; writing it on the subclass overrides the inherited value",
+                  "name": "cooldowntime",
+                  "value": "(BaseValue=4.5f,Formula=DivideByBonusSum,RankBonuses[0]=0.0f,RankBonuses[1]=0.25f)",
+                  "valueType": 0,
+                  "source": "sfxpowercustomaction_pull/power.cooldowntime.base"
+                }
+              ]
+            },
+            {
+              "_note": "Singularity inherits cooldowntime from the power base class and the user overrode it here too",
+              "name": "sfxgamecontent.sfxpowercustomaction_singularity",
+              "properties": [
+                {
+                  "name": "cooldowntime",
+                  "value": "(BaseValue=8.0f,Formula=DivideByBonusSum,RankBonuses[0]=0.0f,RankBonuses[1]=0.25f)",
+                  "valueType": 0,
+                  "source": "sfxpowercustomaction_singularity/power.cooldowntime.base"
+                }
+              ]
+            }
+          ]
+        },
+        "BioAI": {
+          "sections": [
+            {
+              "name": "sfxgamecontent.sfxweapon_ai_hornet",
+              "properties": [
+                {
+                  "name": "ai_aimdelay",
+                  "value": "(X=0.35f,Y=0.9f)",
+                  "valueType": 0,
+                  "source": "sfxweapon_ai_hornet/hornet.ai_aimdelay.x"
+                }
+              ]
+            }
+          ]
+        },
+        "BioDifficulty": {
+          "sections": [
+            {
+              "_note": "the {difficulty} placeholder resolved to gold; section&property form for an array property",
+              "name": "sfxgamempcontent.sfxdifficultyhandlermp&level3difficultydata",
+              "properties": [
+                {
+                  "name": "biodifficulty",
+                  "arrayType": "biodifficulty",
+                  "matchOnType": "StatName",
+                  "source": "difficultyhandler_mp/enemies.assaulttrooper.maxhealth.x[gold]",
+                  "replace": {
+                    "remove": "(StatName=\"MaxHealth\",StatRange=(X=500.0f,Y=500.0f))",
+                    "add": "(StatName=\"MaxHealth\",StatRange=(X=1200.0f,Y=1200.0f))"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

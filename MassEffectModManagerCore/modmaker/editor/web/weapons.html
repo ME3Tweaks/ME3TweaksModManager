@@ -1,0 +1,748 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="chrome.css">
+<script src="chrome.js"></script>
+<title>ModMaker — Weapons</title>
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #191d24;
+    --panel-2: #1e232b;
+    --line: #2a2f39;
+    --text: #d7dce4;
+    --muted: #8b95a5;
+    --accent: #4aa3ff;
+    --warn: #e0a33a;
+    --edited: #4aa3ff;
+    --own: #5ec27a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--line);
+    position: sticky; top: var(--mmc-h, 0px); z-index: 5;
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; }
+  input[type=search], input[type=text], input[type=number], select {
+    background: #0f1216; color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; padding: 4px 7px; font: inherit;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+  button {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; padding: 4px 9px; font: inherit; cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  .pill {
+    font-size: 11px; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 999px; padding: 2px 9px;
+  }
+  .pill.on { color: var(--accent); border-color: var(--accent); }
+
+  /* Two panes: the roster, and the weapon. The roster is its own scroller so picking a weapon two
+     categories down does not lose your place in the list. */
+  .split { display: grid; grid-template-columns: 300px 1fr; height: calc(100vh - 96px - var(--mmc-h, 0px)); }
+  .roster { border-right: 1px solid var(--line); overflow: auto; background: var(--panel); }
+  .detail { overflow: auto; padding: 16px 18px 40px; }
+
+  /* The detail pane stops growing and centres instead.
+
+     A stat row is a label and three narrow controls, so a row stretched across a 1440p pane puts the
+     name hard left and the value hard right with a foot of nothing between them, and reading across
+     to the right box means tracking a line with no landmarks on it. Capped and centred, a row is
+     short enough to read in one go. */
+  .page { max-width: 1780px; margin: 0 auto; }
+
+  /* Stat categories flow into up to three columns, as the legacy ModMaker did.
+
+     `columns: 3 570px` is a maximum and a minimum together: three columns where there is room for
+     three 570px ones, two where there is room for two, one on a narrow window. 570 is measured
+     rather than guessed - the widest label in the set, "Accuracy cone, maximum (degrees)", is 187px,
+     and the value, scope and revert controls plus the gaps between them come to 376 - so no label
+     ever wraps and the controls are never squeezed.
+
+     Multi-column rather than a grid because the categories are wildly different heights: a grid
+     would align them into rows and leave a hole under every short one, where column flow packs them. */
+  .groups { columns: 3 570px; column-gap: 18px; }
+
+  /* The two top-level groups. Player and enemy weapons are different surfaces, not one list with a
+     flag - the AI Hornet is a separate class with its own numbers, and a single roster would show
+     two rows called "Hornet" with no way to tell them apart. */
+  .group > h2 {
+    margin: 0; padding: 9px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); background: var(--panel-2); border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 2;
+  }
+  .group > h2 .n { float: right; opacity: .7; }
+  .cat {
+    padding: 7px 14px 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--muted); opacity: .8;
+  }
+  /* The card art sits on the right, so the names stay left-aligned and scannable and the pictures
+     form their own column rather than pushing every label along by a different amount. */
+  .item {
+    display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+    border: 0; border-left: 2px solid transparent;
+    background: transparent; padding: 4px 10px 4px 14px; cursor: pointer; color: var(--text);
+    border-radius: 0;
+  }
+  .item:hover { background: rgba(255,255,255,.04); }
+  .item.on { background: rgba(74,163,255,.12); border-left-color: var(--accent); }
+  .item .txt { flex: 1; min-width: 0; }
+  .item .nm { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item .cls {
+    display: block; font-size: 10px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--edited); flex: none; }
+
+  /* The store card. Every one of them is 2:1 - 256x128, or the 512x256 and 1024x512 versions of the
+     same frame - so the box is 2:1 too. `contain` rather than `cover`: cropping a weapon render to a
+     square cuts the barrel off, which is the half that identifies the gun.
+
+     Fixed size rather than intrinsic, so the column stays put while scrolling; anything that turns
+     out not to be 2:1 letterboxes inside it instead of resizing the row. */
+  .item .card {
+    width: 64px; height: 32px; object-fit: contain; border-radius: 3px; flex: none;
+    border: 1px solid var(--line); background: #0f1216;
+  }
+  .item .card.none { visibility: hidden; }
+
+  /* Inheritance drawn as depth. A weapon that descends from another weapon rather than straight
+     from the base is a variant of it, and a flat list makes those look like siblings. */
+  .item.base { font-weight: 600; }
+  .item .tick { color: var(--muted); font-size: 10px; flex: none; }
+
+  /* Title block on the left, store card on the right. The card is what a player recognises the
+     weapon by - the class name is what the config calls it, and those are not the same thing to
+     anyone who has actually played the game. */
+  /* The text is allowed to reach its natural reading width and no further, so the card sits just to
+     the right of the name instead of being flung to the far edge of a wide pane, half a screen from
+     the thing it is a picture of. */
+  .whead { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 16px; }
+  .whead .txt { flex: 0 1 68ch; min-width: 0; }
+  .wname { font-size: 17px; font-weight: 600; margin: 0 0 2px; }
+  .wsub { color: var(--muted); font-size: 11px; margin: 0; }
+  .wsub code { color: var(--text); }
+  /* A named class that the editor actually has a page for is a link to it. One it does not - an
+     intermediate class, or SFXWeapon itself - stays plain text, because a dead link is worse than
+     no link. */
+  .wsub a.jump { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  .wsub a.jump:hover { border-bottom-style: solid; }
+
+  /* What the game shows under the weapon's name. Its own line, because it is prose rather than
+     more metadata, and it is the one thing on this header a player would recognise from playing. */
+  .wdesc { margin: 8px 0 0; font-size: 12px; line-height: 1.45; max-width: 62ch; }
+  .wdesc.none { color: var(--muted); font-style: italic; }
+  /* Where the text came from. Kept quiet - it matters when it is wrong, not while it is right. */
+  .wdesc .from { display: block; margin-top: 3px; font-size: 10px; color: var(--muted); font-style: normal; }
+  .wdesc .from a.jump { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  .wdesc .from code { color: var(--text); }
+  /* Sized by width alone so a card that is not 2:1 keeps its own shape rather than being letterboxed
+     into a box picked for the ones that are. */
+  .bigcard {
+    width: 176px; flex: none; border: 1px solid var(--line); border-radius: 5px;
+    background: #0f1216; display: block;
+  }
+
+  /* `break-inside: avoid` is what makes the column flow work: without it a category splits across a
+     column boundary and its heading ends up in one column with half its rows in the next. */
+  .knobs {
+    border: 1px solid var(--line); border-radius: 8px; margin: 0 0 14px; overflow: hidden;
+    break-inside: avoid; -webkit-column-break-inside: avoid;
+  }
+  .knobs > h3 {
+    margin: 0; padding: 8px 12px; font-size: 12px; font-weight: 600;
+    background: var(--panel-2); border-bottom: 1px solid var(--line);
+  }
+  .knobs .note { padding: 8px 12px; font-size: 11px; color: var(--warn); border-bottom: 1px solid var(--line); }
+  .row {
+    display: grid; grid-template-columns: 1fr 120px 128px 74px; gap: 10px; align-items: center;
+    padding: 6px 12px; border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: 0; }
+  /* A row lights up under the pointer. Cheap, and it is the thing that answers "which row am I on"
+     while the eye travels from the label to the box. */
+  .row:hover { background: rgba(255,255,255,.03); }
+  .row .lbl { font-size: 12px; }
+  .row .lbl small { display: block; color: var(--muted); font-size: 10px; }
+  .row input { width: 100%; text-align: right; }
+  /* X and Y are the two ends of an interpolation, not a min and a max - either may be the larger
+     (docs/10 §1.1). Drawn as a pair with an arrow so nothing implies an ordering. */
+  .pair { display: flex; align-items: center; gap: 5px; }
+  .pair input { width: 100%; }
+  .pair .sep { color: var(--muted); font-size: 11px; }
+  .row input[type=checkbox] { width: auto; }
+  .row.edited input { border-color: var(--edited); }
+
+  /* Where the value came from. The single most important thing on this page: a weapon inherits far
+     more than it sets, so without this every box looks identical and an author cannot tell what this
+     weapon actually defines from what it merely receives. */
+  .scope { font-size: 10px; color: var(--muted); }
+  .scope.own { color: var(--own); }
+  .scope.unset { color: var(--warn); }
+  .scope code { font-size: 10px; }
+
+  .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+  .warnbox {
+    border: 1px solid var(--warn); border-radius: 7px; padding: 9px 12px; margin-bottom: 14px;
+    font-size: 11px; color: var(--warn);
+  }
+</style>
+
+<header>
+  <h1>Weapons</h1>
+  <input type="search" id="filter" placeholder="Filter weapons…" style="width:200px">
+  <span id="edited" class="pill on" hidden></span>
+  <span style="flex:1"></span>
+  <button id="revertAll">Revert all</button>
+</header>
+
+<div class="split">
+  <div class="roster" id="roster"></div>
+  <div class="detail" id="detail"></div>
+</div>
+
+<script>
+'use strict';
+
+const HOST = window.chrome && window.chrome.webview;
+
+const DATA = window.__PAYLOAD__ || null;
+const EDITS = new Map();   // "section|property" -> {section, property, value}
+
+let selected = null;
+let filterText = '';
+
+const boot = DATA
+  ? Promise.resolve(DATA)
+  : fetch('sample-weapons-payload.json').then(r => r.json());
+
+boot.then(data => {
+  window.DATA = data;
+  restore(window.__EDITS__);
+  const first = (data.groups[0].weapons || [])[0];
+  selected = first ? first.section : null;
+  draw();
+}).catch(err => {
+  document.getElementById('detail').innerHTML =
+    '<p class="empty">Could not load the weapons payload: ' + escapeHtml(String(err)) + '</p>';
+});
+
+function restore(saved) {
+  EDITS.clear();
+  if (!saved || !saved.values) return;
+  for (const [k, v] of Object.entries(saved.values)) EDITS.set(k, v);
+}
+
+function key(section, property) { return (section + '|' + property).toLowerCase(); }
+
+function allWeapons() {
+  const out = [];
+  for (const g of window.DATA.groups) for (const w of g.weapons) out.push(w);
+  return out;
+}
+
+/// The description line, with a note saying where the text came from.
+///
+/// Three provenances, and they are not interchangeable. Text the weapon sets itself is shown plainly.
+/// Text inherited from another weapon is shown too - the game really does show it - but attributed,
+/// because an author reading the AI Mattock's page should know they are reading the Mattock's words
+/// and not something written for the enemy version. And where the game offers only its shared
+/// placeholder there is no description at all, which is said outright along with where to write one.
+function descriptionLine(weapon) {
+  const d = weapon.description || {};
+  const p = document.createElement('p');
+  p.className = 'wdesc' + (d.text ? '' : ' none');
+
+  if (d.text) {
+    p.appendChild(document.createTextNode(d.text));
+  } else {
+    p.appendChild(document.createTextNode(
+      '(No description. The game has none for this weapon - write one in textlayer.json under '
+      + '"classText", keyed by ' + weapon.section + '.)'));
+  }
+
+  const note = document.createElement('span');
+  note.className = 'from';
+  if (d.source === 'custom') {
+    note.innerHTML = d.placeholder
+      ? 'Written for ModMaker in <code>textlayer.json</code>; the game has no description for this weapon.'
+      : 'Written for ModMaker in <code>textlayer.json</code>, replacing what the game shows.';
+  } else if (d.fromSection) {
+    note.innerHTML = 'The game shows this: it is inherited from ' + classRef(d.fromSection, d.fromTitle) + '.';
+  } else if (d.text) {
+    note.innerHTML = 'From the game, <code>' + escapeHtml(d.property || '') + '</code>'
+      + (d.ref ? ' &middot; string ref ' + escapeHtml(d.ref) : '') + '.';
+  } else {
+    note.innerHTML = 'Inherits the shared placeholder from <code>SFXWeapon</code>.';
+  }
+  p.appendChild(note);
+
+  wireJumps(p);
+  return p;
+}
+
+/// A class name, rendered as a link where the editor has a page for it.
+///
+/// `inheritsFrom` is the LITERAL superclass, which is frequently not a weapon anybody carries -
+/// SFXWeapon, or an intermediate like SFXWeapon_Heavy_Beam_Base_Prothean that only exists to be
+/// inherited from. Those are still worth naming, so they are shown; they are just not clickable.
+function classRef(section, name) {
+  const label = '<code>' + escapeHtml(name || section || '') + '</code>';
+  if (!section || !findWeapon(section)) return label;
+  return '<a class="jump" href="#" data-to="' + escapeHtml(section) + '">' + label + '</a>';
+}
+
+function wireJumps(host) {
+  for (const link of host.querySelectorAll('a.jump')) {
+    link.onclick = event => { event.preventDefault(); jumpTo(link.dataset.to); };
+  }
+}
+
+/// Selects a weapon and brings its row into view.
+///
+/// The target may be in the other group, or filtered out of the roster entirely. Clearing the filter
+/// when the row did not render is the only way the jump can be seen to have happened - landing on a
+/// detail pane with nothing selected in the list reads as the click having done nothing.
+function jumpTo(section) {
+  if (!findWeapon(section)) return;
+  selected = section;
+  draw();
+
+  let row = rosterRow(section);
+  if (!row && filterText) {
+    filterText = '';
+    const box = document.getElementById('filter');
+    if (box) box.value = '';
+    draw();
+    row = rosterRow(section);
+  }
+  if (row) row.scrollIntoView({ block: 'nearest' });
+}
+
+function rosterRow(section) {
+  return document.querySelector('.item[data-section="' + section.replace(/"/g, '\\"') + '"]');
+}
+
+function findWeapon(section) {
+  return allWeapons().find(w => w.section === section) || null;
+}
+
+// ---------------------------------------------------------------- drawing
+
+function draw() {
+  drawRoster();
+  drawDetail();
+  updatePill();
+}
+
+function drawRoster() {
+  const host = document.getElementById('roster');
+  host.innerHTML = '';
+
+  const needle = filterText.trim().toLowerCase();
+
+  for (const group of window.DATA.groups) {
+    const matches = group.weapons.filter(w => !needle
+      || w.title.toLowerCase().includes(needle)
+      || w.className.toLowerCase().includes(needle)
+      || w.category.toLowerCase().includes(needle));
+    if (matches.length === 0) continue;
+
+    const box = document.createElement('section');
+    box.className = 'group';
+
+    const head = document.createElement('h2');
+    head.textContent = group.title;
+    const n = document.createElement('span');
+    n.className = 'n';
+    n.textContent = matches.length + (matches.length === group.count ? '' : ' of ' + group.count);
+    head.appendChild(n);
+    box.appendChild(head);
+
+    // Grouped by the game's own bases. Rendered from the payload's category order rather than
+    // from whatever order the weapons happen to arrive in.
+    for (const category of group.categories) {
+      const inCat = matches.filter(w => w.category === category);
+      if (inCat.length === 0) continue;
+
+      const label = document.createElement('div');
+      label.className = 'cat';
+      label.textContent = category;
+      box.appendChild(label);
+
+      for (const weapon of inCat) box.appendChild(item(weapon));
+    }
+
+    host.appendChild(box);
+  }
+
+  if (!host.firstChild) host.innerHTML = '<p class="empty">Nothing matches that filter.</p>';
+}
+
+function item(weapon) {
+  const button = document.createElement('button');
+  button.className = 'item'
+    + (weapon.section === selected ? ' on' : '')
+    + (weapon.isBase ? ' base' : '');
+  button.dataset.section = weapon.section;
+  button.onclick = () => { selected = weapon.section; draw(); };
+
+  // One level of indent per class between this weapon and its base. Capped, because a runaway
+  // chain should not push a name off the panel.
+  // Indent only where the payload placed this weapon UNDER another one. Depth on its own is not
+  // enough: the roster is a flat list of buttons, so an indented row reads as a child of whatever
+  // precedes it, and the payload's tree ordering is what makes that reading true.
+  const depth = Math.max(0, Math.min(Number(weapon.depth) || 0, 4));
+  if (depth > 0 && weapon.parent) {
+    button.style.paddingLeft = (14 + depth * 12) + 'px';
+    const tick = document.createElement('span');
+    tick.className = 'tick';
+    tick.textContent = '└';
+    tick.title = 'Inherits from ' + weapon.parentTitle;
+    button.appendChild(tick);
+  }
+
+  const text = document.createElement('span');
+  text.className = 'txt';
+
+  const name = document.createElement('span');
+  name.className = 'nm';
+  name.textContent = weapon.title;
+  text.appendChild(name);
+
+  const cls = document.createElement('span');
+  cls.className = 'cls';
+  cls.textContent = weapon.className;
+  text.appendChild(cls);
+
+  button.appendChild(text);
+
+  if (editCount(weapon) > 0) {
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.title = editCount(weapon) + ' change(s)';
+    button.appendChild(dot);
+  }
+
+  button.appendChild(cardArt(weapon));
+  return button;
+}
+
+/// The weapon's store card, where the game has one.
+///
+/// A placeholder of the same size rather than nothing when it does not: 65 of the 80 player weapons
+/// have a card, and letting the other 15 collapse would make the whole column jump about while
+/// scrolling. Hidden rather than removed, so the name column stays put.
+function cardArt(weapon) {
+  if (!weapon.card) {
+    const gap = document.createElement('span');
+    gap.className = 'card none';
+    return gap;
+  }
+
+  const img = document.createElement('img');
+  img.className = 'card';
+  img.src = weapon.card;
+  img.alt = '';
+  img.loading = 'lazy';
+  img.title = weapon.rarity ? weapon.rarity.replace(/^Rarity_/, '') : '';
+  return img;
+}
+
+function editCount(weapon) {
+  let n = 0;
+  for (const k of EDITS.keys()) if (k.startsWith(weapon.section.toLowerCase() + '|')) n++;
+  return n;
+}
+
+function drawDetail() {
+  const host = document.getElementById('detail');
+  host.innerHTML = '';
+
+  const weapon = findWeapon(selected);
+  if (!weapon) { host.innerHTML = '<p class="empty">Pick a weapon on the left.</p>'; return; }
+
+  // Everything below hangs off this rather than off the pane, so the width cap and the centring
+  // apply to the header and the stats together and they stay in line with each other.
+  const page = document.createElement('div');
+  page.className = 'page';
+  host.appendChild(page);
+
+  const head = document.createElement('div');
+  head.className = 'whead';
+  const headText = document.createElement('div');
+  headText.className = 'txt';
+  head.appendChild(headText);
+
+  const name = document.createElement('h2');
+  name.className = 'wname';
+  name.textContent = weapon.title;
+  headText.appendChild(name);
+
+  const sub = document.createElement('p');
+  sub.className = 'wsub';
+  // category . class . inherits from . file. The inheritance is the literal superclass, which is
+  // not always a weapon the roster lists - the tree can only draw links between rows it has, and
+  // that is less than the whole truth.
+  const bits = [escapeHtml(weapon.category), '<code>' + escapeHtml(weapon.className) + '</code>'];
+  bits.push(weapon.inheritsFrom
+    ? 'inherits from ' + classRef(weapon.inheritsFromSection, weapon.inheritsFrom)
+    : 'inherits from nothing');
+  if (weapon.asset) bits.push(escapeHtml(weapon.asset));
+  sub.innerHTML = bits.join(' &middot; ');
+  // An enemy weapon that is a variant of a player weapon says so. The two are edited separately -
+  // that is what the segmentation is for - but knowing they are the same gun is what tells an
+  // author the numbers are meant to be compared.
+  if (weapon.pairedTitle) {
+    sub.innerHTML += ' &middot; variant of ' + classRef(weapon.paired, weapon.pairedTitle);
+  } else if (weapon.isAI) {
+    sub.innerHTML += ' &middot; enemy-only, no player counterpart';
+  }
+  wireJumps(sub);
+  headText.appendChild(sub);
+  headText.appendChild(descriptionLine(weapon));
+
+  // Nothing where the weapon has no card: unlike the roster there is no column here to keep aligned,
+  // so an empty box would only be a box.
+  if (weapon.card) {
+    const big = document.createElement('img');
+    big.className = 'bigcard';
+    big.src = weapon.card;
+    big.alt = '';
+    big.title = weapon.rarity ? weapon.rarity.replace(/^Rarity_/, '') : '';
+    head.appendChild(big);
+  }
+
+  page.appendChild(head);
+
+  const groups = document.createElement('div');
+  groups.className = 'groups';
+  page.appendChild(groups);
+
+  for (const group of window.DATA.knobGroups) {
+    const stats = weapon.stats.filter(s => s.group === group.title);
+    if (stats.length === 0) continue;
+    groups.appendChild(knobGroup(weapon, group, stats));
+  }
+}
+
+function knobGroup(weapon, group, stats) {
+  const box = document.createElement('section');
+  box.className = 'knobs';
+
+  const head = document.createElement('h3');
+  head.textContent = group.title;
+  box.appendChild(head);
+
+  if (group.note) {
+    const note = document.createElement('div');
+    note.className = 'note';
+    note.textContent = group.note;
+    box.appendChild(note);
+  }
+
+  for (const stat of stats) box.appendChild(knobRow(weapon, stat));
+  return box;
+}
+
+function knobRow(weapon, stat) {
+  const k = key(weapon.section, stat.name);
+  const edit = EDITS.get(k);
+  const value = edit ? edit.value : stat.value;
+
+  const row = document.createElement('div');
+  row.className = 'row' + (edit ? ' edited' : '');
+
+  const label = document.createElement('div');
+  label.className = 'lbl';
+  label.textContent = stat.label + (stat.unit ? ' (' + stat.unit + ')' : '');
+  if (stat.help) {
+    const help = document.createElement('small');
+    help.textContent = stat.help;
+    label.appendChild(help);
+  }
+  row.appendChild(label);
+
+  row.appendChild(valueCell(weapon, stat, value));
+
+  row.appendChild(scopeCell(weapon, stat, edit));
+
+  const revert = document.createElement('button');
+  revert.textContent = 'Revert';
+  revert.disabled = !edit;
+  revert.onclick = () => { EDITS.delete(k); publish(); draw(); };
+  row.appendChild(revert);
+
+  return row;
+}
+
+/// The control for one stat, matched to what the property actually is.
+///
+/// Most weapon stats are NOT scalars: 2400 of the 3000 cells on this page are `(X=..,Y=..)` structs,
+/// the same StatRange shape the enemy editor edits. A single text box holding "(X=178.1,Y=222.6)"
+/// is a value being displayed rather than a stat being edited, so structs get a pair of boxes and
+/// bools get a checkbox. Anything else stays free text, which is right for the ones we cannot
+/// classify rather than a fallback we are unhappy about.
+function valueCell(weapon, stat, value) {
+  const cell = document.createElement('div');
+
+  if (stat.type === 'BoolProperty') {
+    const box = document.createElement('input');
+    box.type = 'checkbox';
+    box.checked = /^true$/i.test(String(value || '').trim());
+    box.onchange = () => { setValue(weapon, stat, box.checked ? 'True' : 'False'); draw(); };
+    cell.appendChild(box);
+    return cell;
+  }
+
+  const pair = parsePair(value);
+  if (stat.type === 'StructProperty' && pair) {
+    const box = document.createElement('div');
+    box.className = 'pair';
+
+    // Labelled X and Y rather than Min and Max. Almost half of the game's ranges run DOWNWARD, so
+    // "min/max" would be wrong on the ones an author is most likely to be changing.
+    const x = end(pair.x, 'X - one end of the interpolation');
+    const sep = document.createElement('span');
+    sep.className = 'sep';
+    sep.textContent = '\u2192';
+    const y = end(pair.y, 'Y - the other end');
+
+    const commit = () => { setValue(weapon, stat, renderPair(x.value, y.value)); draw(); };
+    x.onchange = commit;
+    y.onchange = commit;
+
+    box.appendChild(x); box.appendChild(sep); box.appendChild(y);
+    cell.appendChild(box);
+    return cell;
+  }
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = value == null ? '' : value;
+  input.placeholder = stat.scope === 'unset' ? 'not set' : '';
+  input.onchange = () => { setValue(weapon, stat, input.value); draw(); };
+  cell.appendChild(input);
+  return cell;
+}
+
+function end(value, title) {
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = value;
+  input.title = title;
+  return input;
+}
+
+/// Reads "(X=1.0f, Y=2.0)" into its two ends, or null when the text is not that shape.
+///
+/// Tolerant of the `f` suffix and of spacing, because the config uses both and the game's parser is
+/// a PREFIX parser - "0.5f" ends at the f. Returning null rather than guessing keeps an unfamiliar
+/// struct in a text box, where at least nothing is lost.
+function parsePair(text) {
+  if (text == null) return null;
+  const m = /^\s*\(\s*X\s*=\s*([^,]+?)\s*,\s*Y\s*=\s*([^)]+?)\s*\)\s*$/i.exec(String(text));
+  return m ? { x: m[1], y: m[2] } : null;
+}
+
+function renderPair(x, y) {
+  return '(X=' + String(x).trim() + ',Y=' + String(y).trim() + ')';
+}
+
+/// Says where the value came from, and - once edited - that the edit lands on this weapon rather
+/// than on whatever it was inherited from.
+function scopeCell(weapon, stat, edit) {
+  const cell = document.createElement('div');
+  cell.className = 'scope ' + (edit ? 'own' : stat.scope);
+
+  if (edit) {
+    cell.textContent = 'set on this weapon';
+    cell.title = 'Written to ' + weapon.section;
+    return cell;
+  }
+
+  switch (stat.scope) {
+    case 'own':
+      cell.textContent = 'set on this weapon';
+      break;
+    case 'inherited':
+      cell.textContent = 'inherited';
+      cell.title = 'From ' + stat.from + '. Editing it here overrides it on this weapon only, '
+        + 'and leaves every other weapon under that class alone.';
+      break;
+    case 'default':
+      cell.textContent = 'class default';
+      cell.title = 'No config sets this; the value is the compiled class default.';
+      break;
+    case 'typedefault':
+      cell.textContent = 'type default';
+      cell.title = 'Nothing sets this anywhere. The value shown is what a ' + (stat.type || 'property')
+        + ' is when unset. See docs/16-weapon-defaults.md.';
+      break;
+    default:
+      cell.textContent = 'not set anywhere';
+      cell.title = 'Neither config nor a compiled default sets this, and its type has no zero we '
+        + 'can confirm - so no value is shown rather than a guessed one.';
+  }
+
+  return cell;
+}
+
+// ---------------------------------------------------------------- edits
+
+/// Records a stat change, or drops it when the value lands back on what the game already does.
+///
+/// The edit is always addressed to the WEAPON's own section, never to the ancestor an inherited
+/// value came from: overriding on the weapon is what the author asked for, and writing to the
+/// ancestor would change every weapon under it.
+function setValue(weapon, stat, text) {
+  const k = key(weapon.section, stat.name);
+  const trimmed = (text || '').trim();
+
+  if (trimmed === '' || same(trimmed, stat.value)) EDITS.delete(k);
+  else EDITS.set(k, { section: weapon.section, property: stat.name, value: trimmed });
+
+  publish();
+}
+
+function same(a, b) {
+  if (a == null || b == null) return a === b;
+  if (String(a).trim() === String(b).trim()) return true;
+  const x = Number(a), y = Number(b);
+  return Number.isFinite(x) && Number.isFinite(y) && Math.abs(x - y) < 1e-9;
+}
+
+function editDocument() {
+  const values = {};
+  for (const [k, v] of EDITS) values[k] = v;
+  return { format: 1, values: values };
+}
+
+function publish() {
+  if (!HOST) return;
+  try { HOST.postMessage({ type: 'modmaker.edits', collection: 'weapons', document: editDocument() }); }
+  catch (e) { /* The page is useful without a host; a failed post must not stop it drawing. */ }
+}
+
+function updatePill() {
+  const pill = document.getElementById('edited');
+  pill.hidden = EDITS.size === 0;
+  pill.textContent = EDITS.size + (EDITS.size === 1 ? ' change' : ' changes');
+  document.getElementById('revertAll').disabled = EDITS.size === 0;
+}
+
+document.getElementById('filter').oninput = e => { filterText = e.target.value; drawRoster(); };
+document.getElementById('revertAll').onclick = () => { EDITS.clear(); publish(); draw(); };
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+</script>

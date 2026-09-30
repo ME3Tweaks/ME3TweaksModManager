@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://me3tweaks.com/schemas/modmaker/build-1.json",
+  "title": "ModMaker build manifest",
+  "description": "The compile contract: a fully resolved description of one mod to build. Successor to the legacy <ModMaker> XML, in JSON. FULLY RESOLVED means the compiler needs neither the definition bundle nor the project file to act on it - inheritance, defaults, dimensions and struct serialization have all already been applied, and every value is final config text. `jobs` is a discriminated list so new kinds of work (package edits, file copies) can be added without disturbing what already exists.",
+  "type": "object",
+  "required": [
+    "format",
+    "kind",
+    "game",
+    "mod",
+    "jobs"
+  ],
+  "patternProperties": {
+    "^_": true
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "description": "Manifest schema version. A compiler seeing a higher value must refuse cleanly rather than partially build.",
+      "type": "integer",
+      "const": 1
+    },
+    "kind": {
+      "description": "Magic string, so a stray .json is not mistaken for a build manifest.",
+      "type": "string",
+      "const": "me3tweaks.modmaker.build"
+    },
+    "game": {
+      "description": "Game identity. LMP is Project Milan's own; LE3 is what a stock Legendary Edition install reports.",
+      "type": "string",
+      "enum": [
+        "LMP",
+        "LE3"
+      ]
+    },
+    "generator": {
+      "description": "Provenance. Diagnostic only - the compiler must never need it to build.",
+      "type": "object",
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "app": {
+          "description": "Producing application and version.",
+          "type": "string"
+        },
+        "bundleVersion": {
+          "type": "string"
+        },
+        "milanVersion": {
+          "type": "string"
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mod": {
+      "description": "Everything needed to write the moddesc and the DLC folder.",
+      "type": "object",
+      "required": [
+        "name",
+        "dlcFolder"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "dlcFolder": {
+          "description": "DLC folder name to generate. Always \"DLC_MOD_ModMaker\": a ModMaker mod is a single DLC, and building a second one replaces the first. The pattern stays permissive so the format can outlive that decision, but the compiler does not choose.",
+          "type": "string",
+          "pattern": "^DLC_[A-Za-z0-9_]+$"
+        },
+        "mount": {
+          "description": "mount.dlc contents. Must mount above Project Milan so this DLC's config overrides it.",
+          "type": "object",
+          "patternProperties": {
+            "^_": true
+          },
+          "additionalProperties": false,
+          "properties": {
+            "priority": {
+              "description": "Mount priority. Higher than Milan's.",
+              "type": "integer"
+            },
+            "tlkId": {
+              "description": "String ref carrying the DLC's display name. Any positive integer; ModMaker uses a fixed one, since there is only ever one ModMaker DLC.",
+              "type": "integer"
+            },
+            "flags": {
+              "description": "Game 3 mount flags (EME3MountFileFlag), as the integer written into mount.dlc: 0x01 SaveFileDependency, 0x02 DLCSetupCanMisMatch, 0x04 LoadsInMultiplayer, 0x08 LoadsInSingleplayer, 0x10 UsedInMatchMaking, 0x20 UsesGoBigFeatures. Resolved at compile time by copying the DLC this mod mounts above, because a config override must load wherever the content it overrides loads.",
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "jobs": {
+      "description": "Ordered work items. Today only `coalesced`; `package` is reserved for the return of binary edits.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/coalescedJob"
+          },
+          {
+            "$ref": "#/$defs/packageJob"
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "coalescedJob": {
+      "description": "Write a coalesced into the generated DLC. Values are final config text; the compiler does not parse or interpret them.",
+      "type": "object",
+      "required": [
+        "type",
+        "files"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "coalesced"
+        },
+        "files": {
+          "description": "Keyed by coalesced sub-file without extension: BioGame, BioWeapon, BioAI, BioDifficulty, BioUI, ...",
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "sections"
+            ],
+            "patternProperties": {
+              "^_": true
+            },
+            "additionalProperties": false,
+            "properties": {
+              "sections": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/section"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": [
+        "name",
+        "properties"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Coalesced section name, e.g. \"sfxgamecontent.sfxpowercustomaction_pull\". Real ME3/LE3 section names can contain spaces, and array-property paths use \"section&property\".",
+          "type": "string"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/propertyWrite"
+          }
+        }
+      }
+    },
+    "propertyWrite": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "description": "Final config text for a plain write, already serialized, e.g. \"(BaseValue=750.0,Formula=BonusIsHardValue)\" or \"1.5f\". Mutually exclusive with `replace`.",
+          "type": "string"
+        },
+        "valueType": {
+          "description": "Coalesced value type (LegendaryExplorerCore CoalesceParseAction): 0 New/overwrite, 1 RemoveProperty, 2 Add, 3 AddUnique, 4 Remove. Matters because this coalesced merges over Milan's.",
+          "type": "integer",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "default": 0
+        },
+        "arrayType": {
+          "type": "string"
+        },
+        "matchOnType": {
+          "type": "string"
+        },
+        "source": {
+          "description": "Originating leaf id. Diagnostic only - lets a bad value in a built mod be traced back to a control in the editor.",
+          "type": "string"
+        },
+        "replace": {
+          "description": "Array-property override. The compiler writes a type-4 (Remove) of `remove` followed by a type-3 (AddUnique) of `add`. Paired deliberately rather than left as two loose entries, because the order is load-bearing and the removal is EXACT-TEXT-SENSITIVE - if `remove` differs from the shipped value in any way the subtraction silently fails and the game ends up with both entries.",
+          "type": "object",
+          "required": [
+            "remove",
+            "add"
+          ],
+          "patternProperties": {
+            "^_": true
+          },
+          "additionalProperties": false,
+          "properties": {
+            "remove": {
+              "description": "Verbatim original config text, byte-for-byte as shipped.",
+              "type": "string"
+            },
+            "add": {
+              "description": "Replacement config text.",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "value"
+          ]
+        },
+        {
+          "required": [
+            "replace"
+          ]
+        }
+      ]
+    },
+    "packageJob": {
+      "description": "RESERVED. Placeholder for the eventual return of package-level edits - the capability MixIns used to provide (feasibility 4.4). Nothing produces or consumes this yet; it exists so the format has a defined shape to grow into rather than being redesigned later.",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "patternProperties": {
+        "^_": true
+      },
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "const": "package"
+        }
+      }
+    }
+  }
+}

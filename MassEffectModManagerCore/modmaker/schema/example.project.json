@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "kind": "me3tweaks.modmaker.project",
+  "_comment": [
+    "Illustrative project file matching example.definitions.json.",
+    "",
+    "Keys are \"<classId>[@<instance>]/<leafId>\", because a cascaded property like cooldowntime is",
+    "editable on every power and each class needs its own slot. Repeated properties add a",
+    "[dimensionKey]; instance-scoped properties on a per-object-config class add @<instance>.",
+    "",
+    "Note both powers' cooldowns are set here. If only the base class had been edited, Singularity",
+    "would inherit that edit - and the editor would show it as the effective value, so the user can",
+    "see what they will get and override it back if they want."
+  ],
+  "meta": {
+    "name": "Silver Grind",
+    "author": "Mgamerz",
+    "description": "Slower, heavier Silver. Pull actually does something.",
+    "revision": 4,
+    "created": "2026-08-20T18:02:11Z",
+    "modified": "2026-08-31T21:40:03Z"
+  },
+  "bundle": {
+    "game": "LE3",
+    "version": "0.0.2-draft",
+    "milanVersion": "0.0.0"
+  },
+  "values": {
+    "sfxpowercustomaction_pull/pull.impactradius.base": 750.0,
+    "sfxpowercustomaction_pull/power.cooldowntime.base": 4.5,
+    "sfxpowercustomaction_singularity/power.cooldowntime.base": 8.0,
+    "sfxweapon_ai_hornet/hornet.ai_aimdelay.x": 0.35,
+    "sfxweapon_ai_hornet/hornet.ai_aimdelay.y": 0.9,
+    "difficultyhandler_mp/enemies.assaulttrooper.maxhealth.x[gold]": 1200.0,
+    "difficultyhandler_mp/enemies.assaulttrooper.maxhealth.y[gold]": 1200.0,
+    "sfxengagement_disarm/disarm.numdisarmsrequired": 3,
+    "sfxengagement_disarm@sfxengagement_disarm_1/operation.weightedchance": 0.75
+  },
+  "instances": {
+    "sfxwave_horde_rejects": [
+      {
+        "id": "sfxwave_horde_rejects1",
+        "label": "Wave 1",
+        "order": 1
+      }
+    ]
+  },
+  "collections": {
+    "wavelist": {
+      "_note": [
+        "One entry per (faction section, instance, difficulty) the user changed - that is how the game stores it: the config section is per INSTANCE, and difficulty is a row INSIDE the enemies array.",
+        "",
+        "The section qualifies the instance because instance names are reused across factions: SFXWave_Horde_Cerberus2's instances carry the base faction's names verbatim, so a key without the section merges two factions' edits into one.",
+        "",
+        "A slot with no counts is the filler - it spends whatever of the wave budget is left. The absence IS the meaning, so the counts are omitted rather than written as null or zero; a zero would leave an ordinary slot that spawns nothing. maxPerWave caps a type's total across the whole wave, as opposed to how many are alive at once.",
+        "",
+        "waveIndex is context, not identity: the instance is what the edit follows. If Milan moves an instance to a different wave, the editor says so rather than repointing the edit."
+      ],
+      "format": 1,
+      "rows": [
+        {
+          "section": "SFXGameContentDLC_CON_MP4_Horde.SFXWave_Horde_Reaper2",
+          "instanceId": "sfxwave_horde_reaper7",
+          "waveIndex": 7,
+          "difficulty": "DO_Level3",
+          "slots": [
+            {
+              "type": "WAVE_RPR_Marauder"
+            },
+            {
+              "type": "WAVE_RPR_Banshee",
+              "min": 2,
+              "max": 2,
+              "maxPerWave": 4
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

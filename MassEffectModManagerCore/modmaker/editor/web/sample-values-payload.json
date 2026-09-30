@@ -1,0 +1,55 @@
+{
+  "game": "LMP",
+  "bundleVersion": "0.0.0-dev",
+  "groups": [
+    { "id": "powers", "title": "Powers" },
+    { "id": "unrecognised", "title": "Unrecognised" }
+  ],
+  "classes": [
+    { "id": "sfxgamecontent.sfxpowercustomaction_pull", "title": "Pull", "group": "powers", "recognised": true, "file": "BioGame", "section": "SFXGameContent.SFXPowerCustomAction_Pull" },
+    { "id": "sfxgame.sfxgamemodebase", "title": "SFXGameModeBase", "group": "unrecognised", "recognised": false, "file": "BioGame", "section": "SFXGame.SFXGameModeBase" }
+  ],
+  "properties": [
+    {
+      "id": "sfxgamecontent.sfxpowercustomaction_pull.cooldowntime",
+      "class": "sfxgamecontent.sfxpowercustomaction_pull",
+      "name": "CoolDownTime",
+      "scope": "shared",
+      "value": {
+        "kind": "struct",
+        "members": [
+          { "name": "BaseValue", "value": { "kind": "float", "id": "cooldowntime.basevalue", "default": 6.0, "label": "Base cooldown", "unit": "seconds" } },
+          { "name": "Formula", "value": { "kind": "literal", "text": "DivideByBonusSum" } },
+          { "name": "RankBonuses", "value": { "kind": "array", "items": [
+            { "kind": "float", "id": "cooldowntime.rankbonuses.0", "default": 0.0 },
+            { "kind": "float", "id": "cooldowntime.rankbonuses.1", "default": 0.25 }
+          ] } }
+        ]
+      }
+    },
+    {
+      "id": "sfxgamecontent.sfxpowercustomaction_pull.maxtargets",
+      "class": "sfxgamecontent.sfxpowercustomaction_pull",
+      "name": "MaxTargets",
+      "value": { "kind": "int", "id": "maxtargets", "default": 1 }
+    },
+    {
+      "id": "sfxgame.sfxgamemodebase.bloadingscreen",
+      "class": "sfxgame.sfxgamemodebase",
+      "name": "bLoadingScreen",
+      "value": { "kind": "bool", "id": "bloadingscreen", "default": true }
+    },
+    {
+      "id": "sfxgame.sfxgamemodebase.displayname",
+      "class": "sfxgame.sfxgamemodebase",
+      "name": "DisplayName",
+      "value": { "kind": "string", "id": "displayname", "default": "Horde" }
+    },
+    {
+      "id": "sfxgame.sfxgamemodebase.prettyname",
+      "class": "sfxgame.sfxgamemodebase",
+      "name": "PrettyName",
+      "value": { "kind": "int", "id": "prettyname", "default": 348159, "stringref": true }
+    }
+  ]
+}

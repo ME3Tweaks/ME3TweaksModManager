@@ -1,0 +1,436 @@
+{
+  "format": 2,
+  "bundleVersion": "0.0.2-draft",
+  "game": "LE3",
+  "targetMilanVersion": "0.0.0",
+  "_comment": [
+    "Hand-written illustrative slice, NOT generated output. Section paths and property names are",
+    "taken from the ME3 originals, which LE3 MP inherits almost unchanged. `default` values are",
+    "placeholders; a real bundle generates them from the game.",
+    "",
+    "It demonstrates:",
+    "  1. class inheritance      - cooldowntime defined once on the power base class, cascaded",
+    "  2. shared descriptions    - one text for cooldowntime, with a per-power addendum",
+    "  3. a struct value         - (BaseValue=..,Formula=..,RankBonuses[0..n]=..)",
+    "  4. a range as a struct    - (X=..f,Y=..f), two members, no special-case type",
+    "  5. an optional inherited  - impactradius editable on the subclass, absent unless set",
+    "  6. a repeated property  - enemy stats, once per difficulty, with a verbatim original",
+    "",
+    "Project keys are \"<classId>/<leafId>\" - cooldowntime is editable on every power, so Pull's",
+    "and Singularity's need separate slots."
+  ],
+  "dimensions": {
+    "difficulty": {
+      "label": "Difficulty",
+      "values": [
+        {
+          "key": "bronze",
+          "label": "Bronze"
+        },
+        {
+          "key": "silver",
+          "label": "Silver"
+        },
+        {
+          "key": "gold",
+          "label": "Gold"
+        },
+        {
+          "key": "platinum",
+          "label": "Platinum"
+        }
+      ]
+    }
+  },
+  "descriptions": {
+    "cooldowntime": {
+      "label": "Recharge Time",
+      "unit": "sec",
+      "text": "How long before this power can be used again after it is cast."
+    },
+    "impactradius": {
+      "label": "Impact Radius",
+      "unit": "cm",
+      "text": "How far from the impact point the power's effect is applied."
+    },
+    "ai_aimdelay": {
+      "label": "Aim Delay",
+      "unit": "sec",
+      "text": "How long the AI hesitates before firing. The game rolls a value between the two bounds."
+    },
+    "maxhealth": {
+      "label": "Max Health",
+      "text": "Base health pool for this enemy at this difficulty."
+    }
+  },
+  "classes": [
+    {
+      "id": "sfxpowercustomaction",
+      "section": "sfxgame.sfxpowercustomaction",
+      "file": "BioGame",
+      "abstract": true,
+      "_note": "Base class for every power. Holds the properties common to all of them."
+    },
+    {
+      "id": "sfxpowercustomaction_pull",
+      "section": "sfxgamecontent.sfxpowercustomaction_pull",
+      "extends": "sfxpowercustomaction",
+      "file": "BioGame"
+    },
+    {
+      "id": "sfxpowercustomaction_singularity",
+      "section": "sfxgamecontent.sfxpowercustomaction_singularity",
+      "extends": "sfxpowercustomaction",
+      "file": "BioGame"
+    },
+    {
+      "id": "sfxweapon_ai_hornet",
+      "section": "sfxgamecontent.sfxweapon_ai_hornet",
+      "file": "BioAI"
+    },
+    {
+      "id": "difficultyhandler_mp",
+      "section": "sfxgamempcontent.sfxdifficultyhandlermp&level{difficulty}difficultydata",
+      "file": "BioDifficulty",
+      "_note": "section carries a {difficulty} placeholder resolved by `repeat`"
+    },
+    {
+      "id": "sfxwave_operation",
+      "section": "sfxgamempcontent.sfxwave_operation",
+      "file": "BioGame",
+      "abstract": true,
+      "_note": "Base class for the objective waves. Declares WeightedChanceOfSelection, whose SCOPE then differs between its subclasses - see the property below."
+    },
+    {
+      "id": "sfxengagement_disarm",
+      "section": "sfxgamempcontent.sfxengagement_disarm",
+      "extends": "sfxwave_operation",
+      "file": "BioGame",
+      "perObject": {
+        "classToken": "sfxengagement_disarm",
+        "instances": [
+          {
+            "id": "sfxengagement_disarm_0",
+            "label": "Bomb A",
+            "order": 0
+          },
+          {
+            "id": "sfxengagement_disarm_1",
+            "label": "Bomb B",
+            "order": 1
+          }
+        ],
+        "canCreate": false
+      },
+      "_note": "Two instances, so BioWare split its config: the timing rules are shared and the per-bomb strings and selection weight are per instance."
+    },
+    {
+      "id": "sfxengagement_extraction",
+      "section": "sfxgamempcontent.sfxengagement_extraction",
+      "extends": "sfxwave_operation",
+      "file": "BioGame",
+      "perObject": {
+        "classToken": "sfxengagement_extraction",
+        "instances": [
+          {
+            "id": "sfxengagement_extraction_0",
+            "label": "Extraction",
+            "order": 0
+          }
+        ],
+        "canCreate": false
+      },
+      "_note": "One instance only, so BioWare kept almost everything in the class-path section. This is why operation.weightedchance needs a scopeByClass entry for it."
+    },
+    {
+      "id": "sfxwave_horde_cerberus",
+      "section": null,
+      "extends": "sfxwave_operation",
+      "file": "BioGame",
+      "perObject": {
+        "classToken": "sfxwave_horde_cerberus",
+        "instances": [
+          {
+            "id": "sfxwave_horde_cerberus1",
+            "label": "Wave 1",
+            "order": 1
+          },
+          {
+            "id": "sfxwave_horde_cerberus2",
+            "label": "Wave 2",
+            "order": 2
+          }
+        ],
+        "canCreate": false
+      },
+      "_note": "section is NULL: this class has no class-path section at all. Its shared values come from SFXWave_Horde by ordinary class inheritance. Abbreviated to two of its eleven instances. Its wave content is a COLLECTION, not values - see collections below."
+    }
+  ],
+  "groups": [
+    {
+      "id": "powers",
+      "title": "Powers",
+      "blurb": "Customize kit powers.",
+      "order": 60
+    },
+    {
+      "id": "powers.pull",
+      "parent": "powers",
+      "class": "sfxpowercustomaction_pull",
+      "title": "Pull",
+      "blurb": "Lifts unprotected enemies off the ground, leaving them very open to attack.",
+      "image": "images/modmaker/powers/pull/pull.jpg",
+      "accent": "purple",
+      "order": 10
+    },
+    {
+      "id": "powers.singularity",
+      "parent": "powers",
+      "class": "sfxpowercustomaction_singularity",
+      "title": "Singularity",
+      "image": "images/modmaker/powers/singularity/singularity.jpg",
+      "accent": "purple",
+      "order": 20
+    },
+    {
+      "id": "aiweapons.hornet",
+      "class": "sfxweapon_ai_hornet",
+      "title": "Hornet",
+      "image": "images/modmaker/aiweapons/hornet.jpg"
+    },
+    {
+      "id": "enemies.assaulttrooper",
+      "class": "difficultyhandler_mp",
+      "title": "Assault Trooper"
+    }
+  ],
+  "properties": [
+    {
+      "_shape": "1 + 2 - defined once on the base class, editable on every power, shared text",
+      "id": "power.cooldowntime",
+      "class": "sfxpowercustomaction",
+      "name": "cooldowntime",
+      "inheritance": "cascade",
+      "value": {
+        "kind": "struct",
+        "members": [
+          {
+            "name": "BaseValue",
+            "value": {
+              "kind": "float",
+              "id": "power.cooldowntime.base",
+              "describedBy": "cooldowntime",
+              "default": 6.0,
+              "constraints": {
+                "min": 0
+              },
+              "defaultByClass": {
+                "sfxpowercustomaction_pull": 5.0
+              },
+              "_note": "base class ships 6.0; Pull ships 5.0. The editor shows the class default AND the effective inherited value once ancestors are edited."
+            }
+          },
+          {
+            "name": "Formula",
+            "value": {
+              "kind": "literal",
+              "text": "DivideByBonusSum"
+            }
+          },
+          {
+            "name": "RankBonuses",
+            "value": {
+              "kind": "array",
+              "items": [
+                {
+                  "kind": "float",
+                  "id": "power.cooldowntime.rank2",
+                  "describedBy": "cooldowntime",
+                  "label": "Recharge Time Rank 2",
+                  "default": 0.0
+                },
+                {
+                  "kind": "float",
+                  "id": "power.cooldowntime.rank3",
+                  "describedBy": "cooldowntime",
+                  "label": "Recharge Time Rank 3",
+                  "default": 0.25
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "_shape": "3 + 5 - inherited but hidden until the user opts in; leaving it unset means the DLC omits it and Pull keeps the base value",
+      "id": "pull.impactradius",
+      "class": "sfxpowercustomaction_pull",
+      "name": "impactradius",
+      "inheritance": "optional",
+      "group": "powers.pull",
+      "value": {
+        "kind": "struct",
+        "members": [
+          {
+            "name": "BaseValue",
+            "value": {
+              "kind": "float",
+              "id": "pull.impactradius.base",
+              "describedBy": "impactradius",
+              "descriptionAppend": "Pull applies its force negatively, dragging the target toward the caster.",
+              "default": 100.0,
+              "constraints": {
+                "min": 0
+              }
+            }
+          },
+          {
+            "name": "Formula",
+            "value": {
+              "kind": "literal",
+              "text": "BonusIsHardValue"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "_shape": "4 - a range is just a two-member struct; `widget` only affects rendering",
+      "id": "hornet.ai_aimdelay",
+      "class": "sfxweapon_ai_hornet",
+      "name": "ai_aimdelay",
+      "group": "aiweapons.hornet",
+      "value": {
+        "kind": "struct",
+        "widget": "range",
+        "members": [
+          {
+            "name": "X",
+            "value": {
+              "kind": "float",
+              "id": "hornet.ai_aimdelay.x",
+              "describedBy": "ai_aimdelay",
+              "label": "Aim Delay (min)",
+              "default": 0.2,
+              "constraints": {
+                "min": 0
+              }
+            }
+          },
+          {
+            "name": "Y",
+            "value": {
+              "kind": "float",
+              "id": "hornet.ai_aimdelay.y",
+              "describedBy": "ai_aimdelay",
+              "label": "Aim Delay (max)",
+              "default": 0.6,
+              "constraints": {
+                "min": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "_shape": "6 - repeated per difficulty; originalValue is verbatim so the type-4 subtraction matches exactly",
+      "id": "assaulttrooper.maxhealth",
+      "class": "difficultyhandler_mp",
+      "name": "biodifficulty",
+      "repeat": "difficulty",
+      "arrayType": "biodifficulty",
+      "matchOnType": "StatName",
+      "valueType": 2,
+      "group": "enemies.assaulttrooper",
+      "value": {
+        "kind": "struct",
+        "members": [
+          {
+            "name": "StatName",
+            "value": {
+              "kind": "literal",
+              "text": "\"MaxHealth\""
+            }
+          },
+          {
+            "name": "StatRange",
+            "value": {
+              "kind": "struct",
+              "widget": "range",
+              "members": [
+                {
+                  "name": "X",
+                  "value": {
+                    "kind": "float",
+                    "id": "enemies.assaulttrooper.maxhealth.x",
+                    "describedBy": "maxhealth",
+                    "default": 500.0
+                  }
+                },
+                {
+                  "name": "Y",
+                  "value": {
+                    "kind": "float",
+                    "id": "enemies.assaulttrooper.maxhealth.y",
+                    "describedBy": "maxhealth",
+                    "default": 500.0
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "originalValue": "(StatName=\"MaxHealth\",StatRange=(X=500.0f,Y=500.0f))"
+    },
+    {
+      "_shape": "per-object: shared scope - one value for both bombs",
+      "id": "disarm.numdisarmsrequired",
+      "class": "sfxengagement_disarm",
+      "name": "numdisarmsrequired",
+      "inheritance": "own",
+      "scope": "shared",
+      "value": {
+        "kind": "int",
+        "id": "disarm.numdisarmsrequired",
+        "label": "Bombs to Disarm",
+        "default": 4,
+        "constraints": {
+          "min": 1
+        }
+      }
+    },
+    {
+      "_shape": "per-object: scope differs by subclass, hence scopeByClass",
+      "id": "operation.weightedchance",
+      "class": "sfxwave_operation",
+      "name": "weightedchanceofselection",
+      "inheritance": "cascade",
+      "scope": "instance",
+      "scopeByClass": {
+        "sfxengagement_extraction": "shared"
+      },
+      "value": {
+        "kind": "float",
+        "id": "operation.weightedchance",
+        "label": "Selection Weight",
+        "default": 0.5,
+        "constraints": {
+          "min": 0
+        },
+        "_note": "Instance-scoped on six SFXEngagement_* subclasses, shared on Extraction, which ships only one instance. Scope is a property of the (class, property) pair."
+      }
+    }
+  ],
+  "collections": [
+    {
+      "id": "wavelist",
+      "editor": "wavelist",
+      "group": "wavelists",
+      "schemaRef": "collections/wavelist.schema.json",
+      "_note": "The single most gameplay-relevant feature. Not optional, not a later phase."
+    }
+  ]
+}

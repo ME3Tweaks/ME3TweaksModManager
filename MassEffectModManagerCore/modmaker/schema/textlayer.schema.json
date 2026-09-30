@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://me3tweaks.com/modmaker/schema/textlayer.schema.json",
+  "title": "ModMaker text and curation layer",
+  "description": "The half of the catalogue that ships with ModMaker and is maintained by hand: which classes become pages, how they are grouped, and every word a user reads. The other half - classes, properties, defaults, instances, images - is generated on the user's machine from their installed game and cannot be authored ahead of time. The two join on class name and property name at generation time (definitions.schema.json). Everything here is keyed by game identifiers rather than by position, so it survives regeneration against a different install. Content this file does not mention still appears, with fallback titles and no prose - that is how a mod-added faction shows up.",
+  "type": "object",
+  "required": [
+    "format",
+    "version"
+  ],
+  "patternProperties": {
+    "^_": true
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "description": "Text layer schema version.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "version": {
+      "description": "Version of this layer's content, recorded in the generated bundle's environment fingerprint so a stale join is detectable.",
+      "type": "string"
+    },
+    "curation": {
+      "description": "Which discovered classes become pages. Keyed by section name, e.g. \"sfxgamecontent.sfxpowercustomaction_pull\". A class absent from this map is UNRECOGNISED, which means included and flagged rather than excluded: an exclusion list cannot anticipate a mod. Produced by propose-curation.py and then edited - the reason text is the point, since the next person to read a decision needs to know why it was made.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "description": "include: a generic page. exclude: not shown. editor: owned by a structured editor (waves, enemy stats, maps) rather than a form. partial: a page, but only the properties in propertyAllowlist - for classes that mix real multiplayer settings with single-player or engine leftovers.",
+            "type": "string",
+            "enum": [
+              "include",
+              "exclude",
+              "editor",
+              "partial"
+            ]
+          },
+          "reason": {
+            "description": "Why, in plain English. Read by the next person deciding whether to change it.",
+            "type": "string"
+          },
+          "propertyAllowlist": {
+            "description": "Required when decision is \"partial\": the only properties of this class that become editable. BioWorldInfo keeps its six AutoBot* multiplayer settings and drops eleven conversation, camera and PS3 leftovers.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "editor": {
+            "description": "Required when decision is \"editor\": which structured editor owns it.",
+            "type": "string",
+            "enum": [
+              "wavelist",
+              "wavebudget",
+              "wavecost",
+              "factions",
+              "enemy",
+              "maplist",
+              "objectives"
+            ]
+          },
+          "group": {
+            "description": "Group id this class's page belongs to. Falls back to the family default.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "groups": {
+      "description": "The navigation tree. Ids are referenced by curation entries and by familyDefaults.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title"
+        ],
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "familyDefaults": {
+      "description": "Fallback grouping and decision for classes whose name shares a prefix, so content nobody has curated - including a mod's - lands somewhere sensible instead of at the root. Keyed by the family prefix, e.g. \"SFXWeapon\". Matched on longest prefix; a curation entry always wins.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "patternProperties": {
+          "^_": true
+        },
+        "properties": {
+          "group": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "include",
+              "exclude"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "descriptions": {
+      "description": "The shared prose pool (02-data-model.md 1.3). Most property names mean the same thing everywhere they appear, so the translatable set is the number of distinct CONCEPTS - hundreds - rather than the number of leaves. Keyed by concept, not by property, because one concept can serve several property names.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "unit": {
+            "description": "Prefer the game's own unit vocabulary where it applies: sec, m, N, %, + %, - % (property-labels.csv).",
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "propertyText": {
+      "description": "Per-property text, keyed \"<section>/<property>\" for a specific class or \"*/<property>\" for every class declaring it. The wildcard form carries the modal label and the specific form the exceptions - MaxHealth is \"Health\" 25 times, \"Armor\" on armoured units and \"Drone Health\" once, and the exceptions are the correct domain distinction rather than noise.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "describedBy": {
+            "description": "Key into `descriptions`.",
+            "type": "string"
+          },
+          "descriptionAppend": {
+            "description": "Specialisation layered on the shared text rather than replacing it.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Full override. Prefer describedBy + descriptionAppend.",
+            "type": "string"
+          },
+          "hidden": {
+            "description": "Present in the class, deliberately not shown. Distinct from being excluded by curation, which is a whole class.",
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "factions": {
+      "description": "Wavelist metadata, keyed by the wavelist's section name, e.g. \"sfxgamecontent_milan.sfxwave_horde_rejects\". Two facts the game states nowhere a tool can read: what the faction is called, and which enemy-type tag belongs to it. A mod that adds a faction ships this for itself in DLC_MOD_Whatever/ModMaker/textlayer.json rather than waiting for ModMaker to be updated.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "description": "What the faction is called. The class name says SFXWave_Horde_Cerberus2 and nothing in it says that is Cerberus's second roster.",
+            "type": "string"
+          },
+          "enemyPrefix": {
+            "description": "The tag this faction's enemy types carry, without WAVE_ or the trailing underscore: \"REJ\" for WAVE_REJ_Something. Not derivable from anything - CER is Cerberus, RPR is Reapers, GTH is Geth - which is why it is written down rather than guessed at. Groups the enemy picker by faction; without it those types are filed under their raw tag and the editor warns that nobody has claimed them.",
+            "type": "string",
+            "pattern": "^[A-Za-z0-9]{2,4}$"
+          }
+        }
+      }
+    },
+    "classText": {
+      "description": "Per-class title and blurb, keyed by section name. A title here overrides the generated one and its titleSource becomes \"authored\" - the way to fix a page called after its class name without touching the generator.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "image": {
+            "description": "Instanced full path to a Texture2D in the game, resolved at generation time. Prefer this over shipping artwork; the game's own art tracks whatever version of Milan is installed.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "enemyStats": {
+      "description": "The enemy editor's text (10-enemy-editor.md). Difficulty stats are rows inside LevelNDifficultyData, not classes, so none of this can come from the game: the stat names are internal, carry no TLK string and no unit. Extracted from the legacy PHP by extract-enemy-ui.py and then edited by hand - a one-way import, never re-read at build time.",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^_": true
+      },
+      "properties": {
+        "categories": {
+          "description": "Keyed by difficulty category, e.g. \"Banshee\". A category the game ships that is missing here still appears, with raw stat names - the expected outcome for a mod's new enemy.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "patternProperties": {
+              "^_": true
+            },
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "intro": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              },
+              "inheritsFrom": {
+                "description": "Another category whose text this one reuses - BansheeAlt is the \"Original Banshee\" the Banshee page already describes.",
+                "type": "string"
+              },
+              "stats": {
+                "description": "Per-stat text for THIS category only, overriding the shared entry in enemyStats.stats. Keyed by StatName. An armoured unit's health is Armor, a biotic's shields are Barriers, and a drone's zap is not a melee attack - 33 stat names carry more than one label across the legacy pages, and the variation is usually meaningful (10-enemy-editor.md 2.2).",
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^_": true
+                  },
+                  "additionalProperties": false,
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "unit": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "groups": {
+                "description": "Authored grouping of stats, in display order. Ungrouped stats the game ships land in a default group at the end rather than disappearing.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "title",
+                    "stats"
+                  ],
+                  "patternProperties": {
+                    "^_": true
+                  },
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "image": {
+                      "type": "string"
+                    },
+                    "stats": {
+                      "description": "StatName values, in display order.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "levels": {
+          "description": "Names for the difficulty levels, keyed by the number the game gives them - \"1\", \"2\", ... A map rather than a list, so this is not another way of counting to four: a level nobody has named is shown by its number, and one Milan adds needs an entry here rather than a code change. The names live here because the game carries them only as TLK strings reached through the challenge banners.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "patternProperties": {
+              "^_": true
+            },
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "stats": {
+          "description": "Per-stat text shared across categories, keyed by StatName. The category-level groups decide placement; this decides wording.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "patternProperties": {
+              "^_": true
+            },
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "legacyPages": {
+      "description": "Which legacy ModMaker page a class corresponds to, where the two names disagree. Kept because the codenames are unrecoverable otherwise - the Kishock Harpoon Gun is SFXWeapon_SniperRifle_Batarian and nothing in the game says so. Reconciled by reconcile-legacy-pages.py; 54 entries still need a human confirm.",
+      "type": "object",
+      "additionalProperties": {
+        "description": "Legacy page name -> section name it maps to, or null for pages whose content LMP does not ship.",
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "anchors": {
+      "description": "The class and property names the generator looks for, in one place rather than scattered through the code (12-generation-and-modded-content.md). Fourteen today. Every one is a base-game name that mods extend rather than replace, which is what makes discovery safe: factions are found by walking SuperClass from SFXWave_Horde, never by listing them. An anchor that goes missing at generation time must surface as a named warning - an empty editor is otherwise indistinguishable from a game with no factions.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "patternProperties": {
+          "^_": true
+        },
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "description": "The class name, property name, or property-name regex to match.",
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "class",
+              "property",
+              "propertyPattern",
+              "section"
+            ]
+          },
+          "usedBy": {
+            "type": "string"
+          },
+          "note": {
+            "description": "Where a convention is being encoded rather than read - the ChallengeTypes ID to DO_Level<n> mapping is positional and declared nowhere in the game.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

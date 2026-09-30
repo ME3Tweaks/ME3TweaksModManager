@@ -1404,6 +1404,10 @@
                         Header="Build Base Milan"
                         Name="BuildBaseMilan_MenuItem"
                         Command="{Binding BuildBaseMilanCommand}" />
+                        <MenuItem
+                        Header="ModMaker Editor"
+                        Name="OpenModMakerEditor_MenuItem"
+                        Command="{Binding OpenModMakerEditorCommand}" />
                 </MenuItem>
                 <MenuItem
                     Header="{DynamicResource string_debug}"

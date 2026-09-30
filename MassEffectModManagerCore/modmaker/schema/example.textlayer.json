@@ -1,0 +1,164 @@
+{
+  "format": 1,
+  "version": "0.0.1-draft",
+  "_comment": [
+    "Illustrative slice of the shipped text-and-curation layer. Every key is a game identifier, so",
+    "this file survives regeneration against a different install - and content it does not mention",
+    "still appears, with a fallback title and no prose. That is how a mod-added faction shows up."
+  ],
+
+  "groups": [
+    { "id": "powers", "title": "Powers", "order": 10 },
+    { "id": "weapons", "title": "Weapons", "order": 20 },
+    { "id": "projectiles", "title": "Projectiles", "order": 30,
+      "description": "Global projectile behaviour. Mostly unnamed in the game; pages are titled from the class name." },
+    { "id": "match", "title": "Match Settings", "order": 40 },
+    { "id": "unrecognised", "title": "Not Recognised", "order": 900,
+      "description": "Discovered in your install but unknown to this version of ModMaker - usually content from another mod. Editable, but with no descriptions." }
+  ],
+
+  "familyDefaults": {
+    "SFXWeapon": { "group": "weapons" },
+    "SFXPowerCustomAction": { "group": "powers" },
+    "SFXPowerCustomActionMP": { "group": "powers" },
+    "SFXProjectile": {
+      "group": "projectiles",
+      "decision": "include",
+      "reason": "Abstract base plus 92 subclasses, no TLK names anywhere. In for global projectile changes; pages fall back to the class name."
+    },
+    "SFXCustomAction": {
+      "decision": "exclude",
+      "reason": "607 classes averaging 2.4 properties, none named - animation stubs, not tunable content. Individual exceptions are listed in `curation`."
+    }
+  },
+
+  "curation": {
+    "sfxgamecontent.sfxpowercustomaction_pull": {
+      "decision": "include", "group": "powers",
+      "reason": "the old app had a page for this (powers, matched on display name)"
+    },
+    "sfxgamempcontent.sfxwave_horde_cerberus": {
+      "decision": "editor", "editor": "wavelist",
+      "reason": "eleven wave instances, not a form page"
+    },
+    "sfxgamempcontent.sfxdifficultyhandlermp": {
+      "decision": "editor", "editor": "enemy",
+      "reason": "2,455 stat values behind four array properties"
+    },
+    "sfxgame.bioworldinfo": {
+      "decision": "partial", "group": "match",
+      "reason": "the multiplayer bot settings; the other eleven own properties are conversation, camera, PS3 and single-player leftovers",
+      "propertyAllowlist": [
+        "m_nAutoBotLevel", "m_nAutoBotMPKit", "m_nAutoBotEnemyDifficulty",
+        "m_fAutoBotAttackPowerPercent", "m_fAutoBotDefensePowerPercent", "m_bAutoBotUseMin1Health"
+      ]
+    },
+    "sfxgame.bioglobalvariabletable": {
+      "decision": "exclude",
+      "reason": "82 own properties, all of them the ME1/ME2 plot import table - single-player, and nothing a multiplayer mod can use"
+    },
+    "sfxgamecontentdlc_con_mp5.sfxcustomaction_gethdestroyermelee": {
+      "decision": "include", "group": "powers",
+      "reason": "the SFXCustomAction family is excluded wholesale, but the old app really did have a page for this one"
+    }
+  },
+
+  "descriptions": {
+    "cooldowntime": {
+      "label": "Recharge Time", "unit": "sec",
+      "text": "How long before this power can be used again after it is cast."
+    },
+    "impactradius": {
+      "label": "Radius", "unit": "m",
+      "text": "How far from the point of impact the effect reaches."
+    }
+  },
+
+  "propertyText": {
+    "*/cooldowntime": { "describedBy": "cooldowntime" },
+    "*/impactradius": { "describedBy": "impactradius" },
+    "sfxgamecontent.sfxpowercustomaction_pull/cooldowntime": {
+      "describedBy": "cooldowntime",
+      "descriptionAppend": "Pull's cooldown starts when the target is released, not when the power is cast."
+    },
+    "sfxgame.bioworldinfo/m_nAutoBotMPKit": {
+      "label": "Bot Kit",
+      "description": "Which multiplayer kit the auto-bot plays as when it fills an empty slot."
+    }
+  },
+
+  "classText": {
+    "sfxgamecontent.sfxpowercustomaction_pull": {
+      "title": "Pull",
+      "description": "Lifts an unprotected target off the ground and holds it in place."
+    }
+  },
+
+  "enemyStats": {
+    "categories": {
+      "Banshee": {
+        "title": "Banshee",
+        "intro": "A Reaper unit that casts biotic pulses and is extremely deadly at close range.",
+        "groups": [
+          { "title": "Armor", "description": "How much damage this unit can take before death.",
+            "stats": ["MaxHealth"] },
+          { "title": "Barriers", "description": "How much damage this unit's barriers deflect before health can be damaged.",
+            "stats": ["MaxBarriers"] },
+          { "title": "Barrier Regeneration", "description": "How the Banshee's barrier regenerates.",
+            "stats": ["MaxEnemyShieldRecharge", "AIShieldRegenDelay", "AIShieldRegenPct"] },
+          { "title": "Teleportation", "description": "How the Banshee teleports.",
+            "stats": ["TeleportInterval", "MaxTeleports"] }
+        ]
+      },
+      "BansheeAlt": {
+        "title": "Original Banshee",
+        "inheritsFrom": "Banshee",
+        "_note": "Ships no legacy page of its own; the Banshee page describes both."
+      }
+    },
+    "stats": {
+      "MaxHealth": { "label": "Health", "_note": "Overridden to \"Armor\" on armoured units via the category groups." },
+      "MaxBarriers": { "label": "Barriers" },
+      "AIShieldRegenDelay": { "label": "Recharge Delay", "unit": "sec" },
+      "AIShieldRegenPct": { "label": "Recharge % per second", "unit": "of 1" },
+      "MaxEnemyShieldRecharge": { "label": "Max Barrier Recharge", "unit": "of 1" },
+      "PowerThreshold_Knockback": {
+        "label": "Knockback Resistance",
+        "description": "Incoming force above this threshold knocks the unit down."
+      }
+    }
+  },
+
+  "legacyPages": {
+    "kishock": "sfxgamecontentdlc_con_mp1.sfxweapon_sniperrifle_batarian",
+    "executioner": "sfxgamecontentdlc_con_mp5.sfxweapon_pistol_bloodpack_mp",
+    "adas": "sfxgamecontentdlc_con_mp5.sfxweapon_assaultrifle_adas_mp",
+    "blackstar": null,
+    "adjutant": null
+  },
+
+  "anchors": {
+    "waveBaseClass": { "value": "SFXWave_Horde", "kind": "class", "usedBy": "wavelist editor",
+      "note": "Factions are its descendants, found by walking SuperClass. Never list them." },
+    "waveEnemyList": { "value": "EnemyList", "kind": "property", "usedBy": "wavelist editor" },
+    "wavePetList": { "value": "PetList", "kind": "property", "usedBy": "wavelist editor" },
+    "waveRoster": { "value": "WaveTypes", "kind": "property", "usedBy": "wavelist editor (faction roster)" },
+    "waveEnemies": { "value": "Enemies", "kind": "property", "usedBy": "wavelist editor" },
+    "waveIndex": { "value": "WaveIndex", "kind": "property", "usedBy": "wavelist editor",
+      "note": "The wave number comes from here, never from the instance name." },
+    "matchSettings": { "value": "sfxonlinefoundation.sfxonlinegamesettings", "kind": "section",
+      "usedBy": "maplist editor, faction picker, difficulty picker" },
+    "mapList": { "value": "MasterMapList", "kind": "property", "usedBy": "maplist editor" },
+    "availableMaps": { "value": "AvailableMaps", "kind": "property", "usedBy": "maplist editor" },
+    "enemyTypes": { "value": "EnemyTypes", "kind": "property", "usedBy": "faction picker",
+      "note": "Second gate on faction reachability, alongside WaveTypes." },
+    "challengeTypes": { "value": "ChallengeTypes", "kind": "property", "usedBy": "difficulty banners",
+      "note": "ID + 1 = DO_Level<n>. Positional, declared nowhere in the game - a convention, not a lookup." },
+    "mpMapNames": { "value": "MPMapNames", "kind": "property", "usedBy": "maplist editor",
+      "note": "Recognised only so it is left alone: stale relative to AvailableMaps, and written with indexed assignment." },
+    "difficultyData": { "value": "^level(?<n>\\d+)difficultydata$", "kind": "propertyPattern",
+      "usedBy": "enemy editor",
+      "note": "Matched across every section - no handler class is named, which is why it found single-player's fifth level for free. Never count to four." },
+    "storeCards": { "value": "CardData", "kind": "property", "usedBy": "display names" }
+  }
+}

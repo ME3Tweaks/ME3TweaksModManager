@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="chrome.css">
+<script src="chrome.js"></script>
+<title>ModMaker — Values</title>
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #1c2027;
+    --panel-2: #232833;
+    --line: #2f3540;
+    --text: #e6e9ef;
+    --muted: #97a0af;
+    --accent: #4aa3ff;
+    --ok: #46c07a;
+    --warn: #e0a33a;
+    --edited: #4aa3ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+    height: 100vh; display: flex; flex-direction: column;
+  }
+  header {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--line);
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; }
+  select, button, input {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; padding: 5px 9px; font: inherit;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; border-color: var(--line); }
+  .pill {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .pill.on { color: var(--accent); border-color: var(--accent); }
+  .note { color: var(--muted); font-size: 12px; }
+  .spacer { flex: 1; }
+
+  /* Two panes: what to edit on the left, the thing itself on the right. */
+  .split { flex: 1; display: grid; grid-template-columns: 320px 1fr; min-height: 0; }
+  .side {
+    border-right: 1px solid var(--line); background: var(--panel);
+    overflow-y: auto; padding: 10px;
+  }
+  .main { overflow-y: auto; padding: 16px 20px 60px; min-width: 0; }
+
+  .classrow {
+    display: block; width: 100%; text-align: left; border: 1px solid transparent;
+    background: none; border-radius: 5px; padding: 6px 8px; margin-bottom: 2px;
+  }
+  .classrow:hover { background: var(--panel-2); }
+  .classrow.on { background: var(--panel-2); border-color: var(--accent); }
+  .classrow .t { display: block; }
+  .classrow .s {
+    display: block; font-family: Consolas, monospace; font-size: 10px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .classrow .n { float: right; color: var(--muted); font-size: 11px; }
+  .classrow.dirty .t::after { content: " ●"; color: var(--edited); }
+
+  .grouphead {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    padding: 10px 8px 4px;
+  }
+
+  .catname { font-size: 18px; font-weight: 600; margin: 0 0 2px; }
+  .catid { font-family: Consolas, monospace; font-size: 11px; color: var(--muted); }
+  .intro { color: var(--muted); max-width: 78ch; margin: 10px 0 18px; }
+
+  .prop { border: 1px solid var(--line); border-radius: 7px; margin-bottom: 12px; overflow: hidden; }
+  .prop > h2 {
+    margin: 0; padding: 8px 12px; font-size: 13px; font-weight: 600;
+    background: var(--panel); border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .prop > h2 .scope { font-weight: 400; font-size: 11px; color: var(--muted); }
+  .prop .body { padding: 10px 12px; }
+
+  .node { margin: 0; }
+  .members { margin: 0; padding: 0 0 0 14px; border-left: 1px solid var(--line); }
+  .member { padding: 4px 0; }
+  .member > .label { color: var(--muted); font-size: 12px; }
+
+  .leaf { display: flex; align-items: center; gap: 8px; padding: 3px 0; flex-wrap: wrap; }
+  .leaf > label { min-width: 200px; color: var(--muted); }
+  .leaf input[type=text], .leaf input[type=number] { width: 190px; }
+  .leaf.changed input { border-color: var(--edited); }
+  .leaf .was { font-size: 11px; color: var(--muted); }
+  .leaf .unit { font-size: 11px; color: var(--muted); }
+  /* The line of text a string reference names. Wide, and allowed to take the row's remaining space:
+     these are sentences, and truncating one to a chip defeats the point of showing it. */
+  .leaf .tlk {
+    font-size: 12px; color: var(--text); opacity: .85;
+    max-width: 46ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .leaf .tlk.none { color: var(--muted); font-style: italic; opacity: .7; }
+
+  .literal { font-family: Consolas, monospace; font-size: 12px; color: var(--muted); }
+  .literal .tag { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
+
+  .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Values</h1>
+  <input id="search" type="text" placeholder="Search classes and properties" style="width:260px">
+  <select id="group"></select>
+  <label class="note"><input id="onlyEdited" type="checkbox"> Edited only</label>
+  <span class="spacer"></span>
+  <span id="edited" class="pill on" hidden></span>
+  <button id="revertAll" disabled>Revert all</button>
+</header>
+
+<div class="split">
+  <div class="side" id="side"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+// The payload is injected by the host at runtime; the file load is the standalone fallback so the
+// page can be developed and reviewed without the app running.
+const boot = window.__PAYLOAD__
+  ? Promise.resolve(window.__PAYLOAD__)
+  : fetch('sample-values-payload.json').then(r => r.json());
+
+boot.then(render).catch(e => {
+  document.getElementById('main').innerHTML =
+    '<div class="empty">Could not load payload: ' + escapeHtml(e) + '</div>';
+});
+
+let DATA = null, SELECTED = null;
+let BY_CLASS = new Map(), GROUP_TITLES = new Map();
+
+// Edited leaves, keyed exactly the way the project file keys them: "<classId>/<leafId>". Sparse - a
+// leaf that is not in here is absent rather than "unchanged", so the compiler leaves the shipped
+// value alone. Reverting REMOVES the entry rather than writing today's number into one, which would
+// pin that value against a later Milan release.
+const EDITS = new Map();
+
+function key(classId, leafId) { return classId + '/' + leafId; }
+
+function render(data) {
+  DATA = data;
+  restoreEdits(window.__EDITS__);
+
+  for (const p of data.properties) {
+    if (!BY_CLASS.has(p.class)) BY_CLASS.set(p.class, []);
+    BY_CLASS.get(p.class).push(p);
+  }
+  for (const g of data.groups || []) GROUP_TITLES.set(g.id, g.title || g.id);
+
+  const sel = document.getElementById('group');
+  sel.appendChild(new Option('All groups', ''));
+  // Only groups that actually have a class in them: an empty group is a dead end in a filter.
+  const present = new Set(data.classes.map(c => c.group).filter(Boolean));
+  for (const id of [...present].sort((a, b) => title(a).localeCompare(title(b)))) {
+    sel.appendChild(new Option(title(id), id));
+  }
+  sel.onchange = drawSide;
+
+  document.getElementById('search').oninput = drawSide;
+  document.getElementById('onlyEdited').onchange = drawSide;
+  document.getElementById('revertAll').onclick = revertAll;
+
+  drawSide();
+  drawMain();
+  updateEditedPill();
+}
+
+function title(groupId) { return GROUP_TITLES.get(groupId) || groupId; }
+
+function restoreEdits(saved) {
+  if (!saved) return;
+  for (const [k, v] of Object.entries(saved)) EDITS.set(k, v);
+}
+
+// ------------------------------------------------------------------ the class list
+
+function matches(cls, needle) {
+  if (!needle) return true;
+  if ((cls.title || '').toLowerCase().includes(needle)) return true;
+  if (cls.id.includes(needle)) return true;
+  // Property names too: a user looking for "cooldown" does not know which class it lives on, and
+  // that is the whole reason this surface is hard to navigate.
+  return (BY_CLASS.get(cls.id) || []).some(p => p.name.toLowerCase().includes(needle));
+}
+
+function visibleClasses() {
+  const needle = document.getElementById('search').value.trim().toLowerCase();
+  const group = document.getElementById('group').value;
+  const editedOnly = document.getElementById('onlyEdited').checked;
+
+  return DATA.classes.filter(c => {
+    if (group && c.group !== group) return false;
+    if (editedOnly && dirtyCount(c.id) === 0) return false;
+    return matches(c, needle);
+  });
+}
+
+function dirtyCount(classId) {
+  let n = 0;
+  const prefix = classId + '/';
+  for (const k of EDITS.keys()) if (k.startsWith(prefix)) n++;
+  return n;
+}
+
+function drawSide() {
+  const side = document.getElementById('side');
+  side.innerHTML = '';
+
+  const shown = visibleClasses();
+  if (shown.length === 0) {
+    side.innerHTML = '<div class="empty">Nothing matches.</div>';
+    return;
+  }
+
+  // Grouped, and recognised classes first inside each group. Curation is still thin, so most of the
+  // game lands in "unrecognised" - sorting rather than hiding keeps the curated ones findable
+  // without pretending the rest do not exist.
+  const byGroup = new Map();
+  for (const c of shown) {
+    const g = c.group || 'unrecognised';
+    if (!byGroup.has(g)) byGroup.set(g, []);
+    byGroup.get(g).push(c);
+  }
+
+  for (const [g, list] of [...byGroup].sort((a, b) => title(a[0]).localeCompare(title(b[0])))) {
+    const head = document.createElement('div');
+    head.className = 'grouphead';
+    head.textContent = title(g) + ' (' + list.length + ')';
+    side.appendChild(head);
+
+    list.sort((a, b) => (b.recognised - a.recognised)
+      || (a.title || a.id).localeCompare(b.title || b.id));
+
+    for (const c of list) {
+      const count = (BY_CLASS.get(c.id) || []).length;
+      const dirty = dirtyCount(c.id);
+
+      const row = document.createElement('button');
+      row.className = 'classrow' + (SELECTED === c.id ? ' on' : '') + (dirty ? ' dirty' : '');
+      row.innerHTML = '<span class="n">' + count + '</span>' +
+        '<span class="t">' + escapeHtml(c.title || c.id) + '</span>' +
+        '<span class="s">' + escapeHtml(c.id) + '</span>';
+      row.onclick = () => { SELECTED = c.id; drawSide(); drawMain(); };
+      side.appendChild(row);
+    }
+  }
+}
+
+// ------------------------------------------------------------------ the class page
+
+function drawMain() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  if (!SELECTED) {
+    main.innerHTML = '<div class="empty">Pick a class on the left.</div>';
+    return;
+  }
+
+  const cls = DATA.classes.find(c => c.id === SELECTED);
+  const props = BY_CLASS.get(SELECTED) || [];
+
+  const head = document.createElement('div');
+  head.innerHTML = '<div class="catname">' + escapeHtml(cls.title || cls.id) + '</div>' +
+    '<div class="catid">' + escapeHtml(cls.id) + (cls.file ? ' · ' + escapeHtml(cls.file) : '') + '</div>';
+  main.appendChild(head);
+
+  if (!cls.recognised) {
+    const note = document.createElement('p');
+    note.className = 'intro';
+    note.textContent = 'This class has not been curated yet, so its names are the game’s own and ' +
+      'there is no description of what these values do. Editing still works.';
+    main.appendChild(note);
+  }
+
+  for (const p of props) {
+    const box = document.createElement('div');
+    box.className = 'prop';
+
+    const h = document.createElement('h2');
+    h.innerHTML = escapeHtml(p.name) +
+      (p.scope ? '<span class="scope">' + escapeHtml(p.scope) + '</span>' : '');
+    box.appendChild(h);
+
+    const body = document.createElement('div');
+    body.className = 'body';
+    body.appendChild(nodeView(p.value, p.class));
+    box.appendChild(body);
+
+    main.appendChild(box);
+  }
+
+  if (props.length === 0) main.innerHTML += '<div class="empty">This class has nothing editable.</div>';
+}
+
+// One node of a value tree. Structs and arrays recurse; a leaf becomes a control; a literal is shown
+// but not offered for editing, because nothing here knows which tokens are legal in it.
+function nodeView(node, classId) {
+  if (!node) return document.createTextNode('');
+
+  if (node.kind === 'struct') {
+    const wrap = document.createElement('div');
+    wrap.className = 'members';
+    for (const m of node.members) {
+      const row = document.createElement('div');
+      row.className = 'member';
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = m.name;
+      row.appendChild(label);
+      row.appendChild(nodeView(m.value, classId));
+      wrap.appendChild(row);
+    }
+    return wrap;
+  }
+
+  if (node.kind === 'array') {
+    const wrap = document.createElement('div');
+    wrap.className = 'members';
+    node.items.forEach((item, i) => {
+      const row = document.createElement('div');
+      row.className = 'member';
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = '[' + i + ']';
+      row.appendChild(label);
+      row.appendChild(nodeView(item, classId));
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
+  if (node.kind === 'literal') {
+    const span = document.createElement('div');
+    span.className = 'literal';
+    span.innerHTML = escapeHtml(node.text) + ' <span class="tag">literal</span>';
+    span.title = 'Preserved exactly as the game writes it. This is an enum value, object path or ' +
+      'formula name, and ModMaker cannot tell which values are legal for it.';
+    return span;
+  }
+
+  return leafView(node, classId);
+}
+
+function leafView(leaf, classId) {
+  const k = key(classId, leaf.id);
+  const row = document.createElement('div');
+  row.className = 'leaf';
+
+  const label = document.createElement('label');
+  label.textContent = leaf.label || leaf.id;
+  label.title = leaf.description || leaf.id;
+  row.appendChild(label);
+
+  const current = EDITS.has(k) ? EDITS.get(k) : leaf.default;
+  const input = document.createElement('input');
+
+  if (leaf.kind === 'bool') {
+    input.type = 'checkbox';
+    input.checked = current === true || current === 'true';
+    input.onchange = () => setLeaf(row, k, leaf, input.checked);
+  } else if (leaf.kind === 'int' || leaf.kind === 'float') {
+    input.type = 'number';
+    if (leaf.kind === 'float') input.step = 'any';
+    input.value = current;
+    input.onchange = () => {
+      const n = input.value === '' ? null : Number(input.value);
+      if (n === null || Number.isNaN(n)) { input.value = current; return; }
+      setLeaf(row, k, leaf, leaf.kind === 'int' ? Math.round(n) : n);
+    };
+  } else {
+    input.type = 'text';
+    input.value = current == null ? '' : current;
+    input.onchange = () => setLeaf(row, k, leaf, input.value);
+  }
+  row.appendChild(input);
+
+  // A string reference is an int and is edited as one - the words are what the number MEANS, and
+  // showing them is the difference between "348159" and "Firebase Glacier". They arrive from the
+  // host rather than from the payload, because the interesting case is a reference the user has just
+  // typed, which no payload could have carried.
+  let tlk = null;
+  if (leaf.stringref) {
+    tlk = document.createElement('span');
+    tlk.className = 'tlk';
+    row.appendChild(tlk);
+    paintString(tlk, current);
+    input.addEventListener('input', () => paintString(tlk, input.value));
+  }
+
+  if (leaf.unit) {
+    const unit = document.createElement('span');
+    unit.className = 'unit';
+    unit.textContent = leaf.unit;
+    row.appendChild(unit);
+  }
+
+  const was = document.createElement('span');
+  was.className = 'was';
+  row.appendChild(was);
+
+  const revert = document.createElement('button');
+  revert.textContent = 'Revert';
+  revert.onclick = () => {
+    EDITS.delete(k);
+    if (leaf.kind === 'bool') input.checked = leaf.default === true;
+    else input.value = leaf.default == null ? '' : leaf.default;
+    paintLeaf(row, k, leaf);
+    publish();
+    drawSide();
+  };
+  row.appendChild(revert);
+
+  paintLeaf(row, k, leaf);
+  return row;
+}
+
+/// Shows the line of text a string reference names, asking the host for it if need be.
+///
+/// Three states, kept distinct because collapsing them is what makes a lookup look broken: not asked
+/// yet, asked and there is no such line, and here it is. The first is silent - a spinner for a
+/// round-trip this fast is noise - and the second says so, because "nothing" and "still loading" look
+/// identical otherwise.
+function paintString(el, value) {
+  const id = Number(value);
+  if (!Number.isInteger(id) || id <= 0) {
+    el.textContent = '';
+    el.title = '';
+    return;
+  }
+
+  if (!STRINGS.has(id)) {
+    el.textContent = '';
+    requestString(id, () => paintString(el, value));
+    return;
+  }
+
+  const text = STRINGS.get(id);
+  el.classList.toggle('none', text == null);
+  el.textContent = text == null ? 'no such string' : '“' + text + '”';
+  el.title = text == null
+    ? 'The installed game has no line ' + id + '.'
+    : text + ' — from the installed game’s TLKs. The mod does not carry this text.';
+}
+
+/// Resolved string references, including the ones that resolve to nothing.
+///
+/// A miss is cached as null on purpose: without it, a reference the game does not have would be
+/// asked about again on every repaint, and every repaint would look like it was still loading.
+const STRINGS = new Map();
+
+/// The host, or nothing when the page is open in a plain browser.
+///
+/// One binding for the page rather than one per function: there are two channels to the host now -
+/// edits out, string lookups both ways - and a second local copy is a second thing to get wrong.
+const HOST = window.chrome && window.chrome.webview;
+
+const pendingStrings = new Set();
+const stringWaiters = [];
+let stringTimer = null;
+
+/// Asks the host about a reference, batching whatever else is asked for in the same tick.
+///
+/// Batched because a class with a dozen string refs would otherwise send a dozen messages to render
+/// once - and they all resolve against the same TLKs on the other side.
+function requestString(id, then) {
+  if (typeof then === 'function') stringWaiters.push(then);
+  if (STRINGS.has(id) || pendingStrings.has(id)) return;
+  pendingStrings.add(id);
+
+  clearTimeout(stringTimer);
+  stringTimer = setTimeout(() => {
+    const ids = Array.from(pendingStrings);
+    if (!HOST || !ids.length) {
+      // Standalone in a browser: nothing will ever answer, so the refs are recorded as unresolved
+      // rather than left pending, which would leave every preview blank and still "loading".
+      ids.forEach(i => STRINGS.set(i, null));
+      pendingStrings.clear();
+      flushStringWaiters();
+      return;
+    }
+    try { HOST.postMessage({ type: 'modmaker.command', command: 'strings', ids: ids }); }
+    catch (e) { ids.forEach(i => STRINGS.set(i, null)); pendingStrings.clear(); flushStringWaiters(); }
+  }, 16);
+}
+
+function flushStringWaiters() {
+  const waiters = stringWaiters.splice(0, stringWaiters.length);
+  waiters.forEach(fn => { try { fn(); } catch (e) { /* the row was replaced; nothing to repaint */ } });
+}
+
+// The host's answer. Every id asked about comes back, hits and misses alike.
+window.__modmakerStrings = {
+  apply: function (found) {
+    if (!found) return;
+    Object.keys(found).forEach(id => {
+      const n = Number(id);
+      STRINGS.set(n, found[id] == null ? null : String(found[id]));
+      pendingStrings.delete(n);
+    });
+    flushStringWaiters();
+  }
+};
+
+function setLeaf(row, k, leaf, value) {
+  // An edit back to the shipped value is a non-edit. Recorded as one, it would write the game's own
+  // number into the mod and pin it against a later Milan release for no reason.
+  if (value === leaf.default) EDITS.delete(k);
+  else EDITS.set(k, value);
+
+  paintLeaf(row, k, leaf);
+  publish();
+  drawSide();
+}
+
+function paintLeaf(row, k, leaf) {
+  const changed = EDITS.has(k);
+  row.classList.toggle('changed', changed);
+  row.querySelector('.was').textContent = changed ? 'was ' + leaf.default : '';
+  row.querySelector('button').disabled = !changed;
+}
+
+// ------------------------------------------------------------------ edits out
+
+function revertAll() {
+  if (EDITS.size === 0) return;
+  EDITS.clear();
+  publish();
+  drawSide();
+  drawMain();
+}
+
+function editDocument() {
+  // A plain object, because `values` is a flat map in the project file rather than a collection with
+  // rows. The host writes it straight through.
+  const out = {};
+  for (const [k, v] of [...EDITS.entries()].sort((a, b) => a[0].localeCompare(b[0]))) out[k] = v;
+  return out;
+}
+
+function updateEditedPill() {
+  const pill = document.getElementById('edited');
+  pill.hidden = EDITS.size === 0;
+  pill.textContent = EDITS.size + (EDITS.size === 1 ? ' edited value' : ' edited values');
+  document.getElementById('revertAll').disabled = EDITS.size === 0;
+}
+
+// Every change is posted, not batched behind a save button: the host owns the project file and its
+// dirty state, and a page that holds unsent edits loses them if the window is closed.
+function publish() {
+  updateEditedPill();
+  if (!HOST) return;
+  try { host.postMessage({ type: 'modmaker.edits', collection: 'values', document: editDocument() }); }
+  catch (e) { /* Standalone in a browser, or the host went away; the page stays usable either way. */ }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+}
+</script>
+</body>
+</html>

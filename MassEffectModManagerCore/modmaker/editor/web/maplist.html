@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="chrome.css">
+<script src="chrome.js"></script>
+<title>ModMaker — Maps</title>
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #1c2027;
+    --panel-2: #232833;
+    --line: #2f3540;
+    --text: #e6e9ef;
+    --muted: #97a0af;
+    --accent: #4aa3ff;
+    --ok: #46c07a;
+    --warn: #e0a33a;
+    --off: #7c8798;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 12px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
+    position: sticky; top: var(--mmc-h, 0px); z-index: 5;
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; }
+  select, button, input {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; padding: 5px 9px; font: inherit;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  .pill {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .pill.on { color: var(--accent); border-color: var(--accent); }
+  .note { color: var(--muted); font-size: 12px; }
+  .spacer { flex: 1; }
+
+  .wrap { padding: 14px 18px 40px; display: grid; grid-template-columns: 1fr 340px; gap: 18px; }
+  @media (max-width: 1100px) { .wrap { grid-template-columns: 1fr; } }
+
+  .banner {
+    background: rgba(224,163,58,.10); border: 1px solid var(--warn);
+    color: #f0cf95; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; font-size: 12px;
+  }
+
+  /* The art is a 512x128 strip, so a row IS a banner. A card grid would have to letterbox or crop
+     the picture the game itself shows uncorrupted, and this reads as the match-settings screen the
+     user is actually editing. */
+  .map {
+    display: grid; grid-template-columns: 256px 1fr auto; gap: 14px; align-items: center;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px; margin-bottom: 10px;
+  }
+  .map.off { opacity: .55; }
+  .map.edited { border-left: 3px solid var(--accent); }
+  .map img { width: 256px; height: 64px; display: block; border-radius: 4px; }
+  .map .noart {
+    width: 256px; height: 64px; border: 1px dashed var(--line); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 11px; text-align: center; padding: 0 8px;
+  }
+  .map h2 { font-size: 14px; margin: 0 0 2px; font-weight: 600; }
+  .map .pkg { font-family: Consolas, monospace; font-size: 11px; color: var(--muted); }
+  /* Where the map is. Printed under the name in the lobby, so it is printed under the name here. */
+  .map .loc { color: var(--text); font-size: 12px; opacity: .75; }
+  .map .desc { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .map .tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .map .right { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+
+  .side > section {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 7px;
+    padding: 12px; margin-bottom: 14px;
+  }
+  .side h2 { font-size: 13px; margin: 0 0 8px; font-weight: 600; }
+  .side .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .side img { width: 100%; height: auto; border-radius: 4px; display: block; }
+  .side .opt { margin-bottom: 10px; }
+  /* A faction that will not be offered. Dimmed rather than hidden - it is still in the install, and
+     the checkbox that put it in this state has to stay reachable. */
+  .side .opt.off img { filter: grayscale(1); opacity: .35; }
+  .side .opt.off .cap { opacity: .55; }
+  .side .opt .cap { font-size: 12px; margin-top: 3px; }
+  /* The class name alone fits the panel with room to spare; the full path did not, which is what the
+     overflow was. Clipped anyway, because a mod is free to name a class something long. */
+  .side .opt .cap .pkg {
+    font-size: 10px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .side .opt .cap .dead { color: var(--warn); }
+  .side .note.warn { color: var(--warn); margin-top: 8px; }
+
+  /* Galaxy at War is a position on the lobby's galaxy picture, so it is edited on that picture.
+     The box is the shape of the coordinate space (614.4 x 512), NOT of the art: the art is square
+     and the game stretches it, so drawing it undistorted would misplace every map horizontally. */
+  .galaxy {
+    position: relative; width: 100%; aspect-ratio: 614.4 / 512;
+    background: #05070a; border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    cursor: crosshair;
+  }
+  /* Stretched to the box on purpose - see above. */
+  .galaxy .art, .galaxy .zone {
+    position: absolute; pointer-events: none; user-select: none;
+  }
+  .galaxy .art { inset: 0; width: 100%; height: 100%; }
+  .galaxy .zone { opacity: 0; transition: opacity .12s ease; mix-blend-mode: screen; }
+  .galaxy .zone.on { opacity: .55; }
+  .galaxy .dot {
+    position: absolute; width: 7px; height: 7px; margin: -4px 0 0 -4px;
+    background: var(--off); border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.75);
+  }
+  .galaxy .dot.sel { background: var(--accent); width: 11px; height: 11px; margin: -6px 0 0 -6px; }
+  .galaxy .dot.moved { background: var(--ok); }
+  .galaxy .outside { outline: 2px solid var(--warn); outline-offset: 2px; }
+
+  .fields { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; margin-top: 10px; }
+  .fields label { color: var(--muted); font-size: 12px; }
+  .fields input, .fields select { width: 100%; }
+  .was { color: var(--muted); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Maps</h1>
+  <input id="filter" type="search" placeholder="Filter maps…" style="width:200px">
+  <label class="note" for="sortBy">Order</label>
+  <select id="sortBy"></select>
+  <label class="note"><input type="checkbox" id="onlyAvailable"> Only playable</label>
+  <span class="spacer"></span>
+  <span id="edited" class="pill on" hidden></span>
+  <button id="revertAll">Revert all</button>
+</header>
+
+<div class="wrap">
+  <div>
+    <div id="warnings"></div>
+    <div id="maps"></div>
+    <div id="unlisted"></div>
+  </div>
+  <div class="side" id="side"></div>
+</div>
+
+<script>
+// The payload is injected by the host at runtime; the file load is the standalone fallback so the
+// page can be developed and reviewed without the app running.
+const boot = window.__PAYLOAD__
+  ? Promise.resolve(window.__PAYLOAD__)
+  : fetch('sample-maplist-payload.json').then(r => r.json());
+
+boot.then(render).catch(e => {
+  document.getElementById('warnings').innerHTML =
+    '<div class="banner">Could not load payload: ' + escapeHtml(e) + '</div>';
+});
+
+let DATA = null, SELECTED = null;
+
+// Two sparse maps, because the two halves of editing a map write to two different config properties:
+// availability is a plain string list, presentation is a struct. Sparse in the usual way - an entry
+// that is not here is absent rather than unchanged, and reverting removes it.
+const AVAILABILITY = new Map();
+const ENTRIES = new Map();
+
+// A third, for the difficulty picker. A choice is offered exactly when its entry is in
+// ChallengeTypes, so turning one off is a list operation like a map's availability and not a field
+// on the choice.
+//
+// Keyed by picker AND id even though only one picker is left here: the ids restart per list, and the
+// FACTIONS are the same kind of edit living in the wavelist collection - where turning one off takes
+// every wave under it out of the game, which is what makes that the page it belongs on. The two
+// halves of one config write must keep agreeing about what an entry looks like.
+const PICKERS = new Map();
+
+function pickerKey(picker, option) { return picker + '/' + option.id; }
+
+function isPickerOn(picker, option) {
+  const e = PICKERS.get(pickerKey(picker, option));
+  // Everything the payload carries came OUT of a picker, so shipped state is always "on".
+  return e ? e.enabled : true;
+}
+
+function entryKey(map) {
+  return map.id != null ? String(map.id) : String(map.package).toLowerCase();
+}
+
+function isAvailable(map) {
+  const e = AVAILABILITY.get(String(map.package).toLowerCase());
+  return e ? e.available : map.available;
+}
+
+/// The presentation to draw: what the user set if they have, otherwise what shipped.
+function presentation(map) {
+  const e = ENTRIES.get(entryKey(map)) || {};
+  return {
+    x: e.gawX != null ? e.gawX : (map.galaxy ? map.galaxy.x : null),
+    y: e.gawY != null ? e.gawY : (map.galaxy ? map.galaxy.y : null),
+    music: e.music != null ? e.music : map.music,
+  };
+}
+
+function isEdited(map) {
+  return AVAILABILITY.has(String(map.package).toLowerCase()) || ENTRIES.has(entryKey(map));
+}
+
+function setPickerOn(picker, option, enabled) {
+  const key = pickerKey(picker, option);
+
+  // Back on is a REVERT rather than an edit that happens to agree: every choice the page can show is
+  // one the install already offers, so storing "enabled" would write nothing and pin today's roster
+  // into the mod.
+  if (enabled) PICKERS.delete(key);
+  else PICKERS.set(key, { picker, id: option.id, label: option.waveClass || option.name, enabled: false });
+
+  publish();
+  drawSide();
+}
+
+function render(data) {
+  DATA = data;
+  restoreEdits(window.__EDITS__);
+
+  // Decoded before the first paint, so no map is ever drawn with its region missing and then
+  // silently gaining one. A zone that fails to decode just never attributes anything.
+  loadZoneMasks().then(() => { if (DATA.galaxy) drawSide(); });
+
+  const warnings = (data.warnings || []).slice();
+  if (!data.stringsAvailable) {
+    // Said plainly: without the TLKs every map is a number, and that is a broken editor rather than
+    // a cosmetic problem.
+    warnings.unshift('The game’s text could not be read, so maps are shown by package name only.');
+  }
+  drawWarnings(warnings);
+
+  document.getElementById('filter').oninput = drawMaps;
+  document.getElementById('onlyAvailable').onchange = drawMaps;
+
+  const sortBy = document.getElementById('sortBy');
+  SORTS.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id;
+    o.textContent = s.label;
+    sortBy.appendChild(o);
+  });
+  sortBy.onchange = drawMaps;
+  document.getElementById('revertAll').onclick = () => {
+    AVAILABILITY.clear();
+    PICKERS.clear();
+    ENTRIES.clear();
+    publish();
+    drawMaps();
+    drawSide();
+  };
+
+  drawMaps();
+  drawSide();
+}
+
+/// Warnings are capped rather than listed. A map pack under development legitimately produces one
+/// per unresolvable banner - two dozen at the time of writing - and a banner that tall pushes the
+/// editor off the screen to say one thing repeatedly.
+function drawWarnings(warnings) {
+  const host = document.getElementById('warnings');
+  host.innerHTML = '';
+  if (!warnings.length) return;
+
+  const box = document.createElement('div');
+  box.className = 'banner';
+
+  const lines = document.createElement('div');
+  box.appendChild(lines);
+
+  let expanded = false;
+  const cap = 4;
+
+  const more = document.createElement('button');
+  more.style.cssText = 'display:block;margin-top:8px';
+  more.onclick = () => { expanded = !expanded; draw(); };
+
+  function draw() {
+    lines.innerHTML = '';
+    const shown = expanded ? warnings : warnings.slice(0, cap);
+    shown.forEach(w => {
+      const line = document.createElement('div');
+      line.textContent = w;
+      lines.appendChild(line);
+    });
+    more.textContent = expanded ? 'Show fewer' : 'Show ' + (warnings.length - cap) + ' more';
+    more.hidden = warnings.length <= cap;
+  }
+
+  draw();
+  box.appendChild(more);
+  host.appendChild(box);
+}
+
+/// The orderings the list offers, in the order they appear in the control.
+///
+/// A table rather than a switch so another one is an entry rather than an edit in three places. ID
+/// leads because it is the order the lobby puts the maps in, which is the order a player already
+/// knows them in - sorting by name is a librarian's answer to "where is Firebase Ghost".
+const SORTS = [
+  { id: 'id', label: 'As shown in game', compare: (a, b) => num(a.id) - num(b.id) },
+  { id: 'name', label: 'Name', compare: (a, b) => text(a).localeCompare(text(b)) },
+];
+
+function num(v) { return v == null ? Number.MAX_SAFE_INTEGER : v; }
+function text(map) { return String(map.name || map.package || ''); }
+
+function sorter() {
+  const picked = document.getElementById('sortBy');
+  const found = SORTS.find(s => s.id === (picked && picked.value));
+  return (found || SORTS[0]).compare;
+}
+
+function drawMaps() {
+  const filter = document.getElementById('filter').value.trim().toLowerCase();
+  const onlyAvailable = document.getElementById('onlyAvailable').checked;
+  const host = document.getElementById('maps');
+  host.innerHTML = '';
+
+  let shown = 0;
+  // A copy: DATA.maps is the payload's order and other things read it.
+  DATA.maps.slice().sort(sorter()).forEach(map => {
+    if (onlyAvailable && !isAvailable(map)) return;
+    if (filter && !(String(map.name || '') + ' ' + map.package).toLowerCase().includes(filter)) return;
+    host.appendChild(mapRow(map));
+    shown++;
+  });
+
+  if (!shown) {
+    const empty = document.createElement('div');
+    empty.className = 'note';
+    empty.textContent = 'No maps match.';
+    host.appendChild(empty);
+  }
+
+  drawUnlisted();
+  updateEditedPill();
+}
+
+function mapRow(map) {
+  const el = document.createElement('div');
+  el.className = 'map' + (isAvailable(map) ? '' : ' off') + (isEdited(map) ? ' edited' : '');
+
+  el.appendChild(art(map));
+
+  const mid = document.createElement('div');
+  const h = document.createElement('h2');
+  h.textContent = map.name || map.package || '(unnamed)';
+  mid.appendChild(h);
+
+  // What the lobby shows under the name. The game files it as GalaxyAtWarMapSubtitle, but the
+  // Galaxy at War screen is not where most people read it.
+  if (map.location) {
+    const loc = document.createElement('div');
+    loc.className = 'loc';
+    loc.textContent = map.location;
+    mid.appendChild(loc);
+  }
+
+  // The package and nothing else. The id was here and is gone: it is an internal key the lobby never
+  // shows, and it cost a line on every row to say so. The description went the same way - also never
+  // shown in game, and long enough to push everything else down.
+  const pkg = document.createElement('div');
+  pkg.className = 'pkg';
+  pkg.textContent = map.package || '(no package)';
+  mid.appendChild(pkg);
+
+  const tags = document.createElement('div');
+  tags.className = 'tags';
+  if (map.variants) tags.appendChild(pill(map.variants.length + ' modifier variants'));
+  const shown = presentation(map);
+  if (shown.music) tags.appendChild(pill(shown.music));
+  if (!map.available && !AVAILABILITY.has(String(map.package).toLowerCase())) {
+    // Described but not playable. A real state, and one worth naming rather than showing as a
+    // greyed row nobody can account for.
+    tags.appendChild(pill('described but not playable', 'warn'));
+  }
+  mid.appendChild(tags);
+  el.appendChild(mid);
+
+  const right = document.createElement('div');
+  right.className = 'right';
+
+  const toggle = document.createElement('label');
+  toggle.className = 'note';
+  const cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.checked = isAvailable(map);
+  cb.onchange = () => setAvailable(map, cb.checked);
+  toggle.appendChild(cb);
+  toggle.appendChild(document.createTextNode(' playable'));
+  right.appendChild(toggle);
+
+  const edit = document.createElement('button');
+  edit.textContent = 'Edit';
+  edit.onclick = () => { SELECTED = map; drawSide(); };
+  right.appendChild(edit);
+
+  el.appendChild(right);
+  return el;
+}
+
+function art(map) {
+  if (map.banner) {
+    const img = document.createElement('img');
+    img.src = map.banner;
+    img.alt = map.name || map.package || '';
+    return img;
+  }
+
+  const box = document.createElement('div');
+  box.className = 'noart';
+  // The reason, not just the absence: "this map has no banner" and "this map's banner was written
+  // in a form nothing can look up" are different problems with different fixes.
+  box.textContent = map.bannerProblem ? 'banner could not be read'
+                  : map.image ? 'banner not decoded'
+                  : 'no banner';
+  if (map.bannerProblem) box.title = map.bannerProblem;
+  return box;
+}
+
+function pill(text, cls) {
+  const s = document.createElement('span');
+  s.className = 'pill' + (cls ? ' ' + cls : '');
+  if (cls === 'warn') s.style.color = 'var(--warn)', s.style.borderColor = 'var(--warn)';
+  s.textContent = text;
+  return s;
+}
+
+function drawUnlisted() {
+  const host = document.getElementById('unlisted');
+  host.innerHTML = '';
+  if (!DATA.unlistedPackages || !DATA.unlistedPackages.length) return;
+
+  const box = document.createElement('section');
+  box.style.cssText = 'background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:12px';
+  const h = document.createElement('h2');
+  h.style.cssText = 'font-size:13px;margin:0 0 6px';
+  h.textContent = 'Playable, but not described';
+  box.appendChild(h);
+
+  const p = document.createElement('div');
+  p.className = 'note';
+  // Not an error and not hidden: these are packages the lobby can pick with no name and no art,
+  // which is a thing a map pack under development legitimately does.
+  p.textContent = DATA.unlistedPackages.length + ' package(s) are in the playable list with no '
+    + 'MasterMapList entry, so the lobby shows them with no name and no banner.';
+  box.appendChild(p);
+
+  const list = document.createElement('div');
+  list.className = 'pkg';
+  list.style.marginTop = '6px';
+  list.textContent = DATA.unlistedPackages.join(', ');
+  box.appendChild(list);
+
+  host.appendChild(box);
+}
+
+// ---------------------------------------------------------------- the side panel
+
+function drawSide() {
+  const side = document.getElementById('side');
+  side.innerHTML = '';
+
+  side.appendChild(galaxySection());
+  if (SELECTED) side.appendChild(editSection(SELECTED));
+  // An entry present is a choice offered, so subtracting one removes it from the lobby. The budget
+  // table keeps its rows for a difficulty turned off - they are simply unreachable, which is what
+  // turning it off means.
+  //
+  // The FACTIONS were here too, and are on the Wavelists tab now. Turning one off takes every wave
+  // under it out of the game, so the switch belongs beside the waves it silences - and that page
+  // already lists every faction, which is what this panel was duplicating.
+  side.appendChild(pickerSection('Difficulties', DATA.difficulties, 'difficulties'));
+}
+
+function galaxySection() {
+  const box = document.createElement('section');
+  const h = document.createElement('h2');
+  h.textContent = 'Galaxy at War';
+  box.appendChild(h);
+
+  const bounds = DATA.galaxyBounds;
+  const galaxy = DATA.galaxy;
+  if (!bounds && !galaxy) {
+    const p = document.createElement('div');
+    p.className = 'note';
+    p.textContent = 'No map carries a position.';
+    box.appendChild(p);
+    return box;
+  }
+
+  const field = document.createElement('div');
+  field.className = 'galaxy';
+
+  // The real coordinate space, read out of the movie that draws the lobby map. Without the galaxy
+  // the page falls back to scaling the shipped values against each other - which is proportionally
+  // right and absolutely wrong, so the note below says so rather than letting it look authoritative.
+  const spaceW = galaxy ? galaxy.width : Math.max(1, bounds.maxX - bounds.minX);
+  const spaceH = galaxy ? galaxy.height : Math.max(1, bounds.maxY - bounds.minY);
+  const originX = galaxy ? 0 : bounds.minX;
+  const originY = galaxy ? 0 : bounds.minY;
+  const toPctX = v => ((v - originX) / spaceW) * 100;
+  const toPctY = v => ((v - originY) / spaceH) * 100;
+
+  if (galaxy) {
+    const art = document.createElement('img');
+    art.className = 'art';
+    art.src = galaxy.image;
+    art.alt = '';
+    field.appendChild(art);
+
+    // One overlay per region, all present and all off. Lighting one up is then a class change
+    // rather than a decode, which matters because these are data URIs.
+    (galaxy.zones || []).forEach(zone => {
+      if (!zone.image) return;
+      const layer = document.createElement('img');
+      layer.className = 'zone';
+      layer.dataset.zone = String(zone.id);
+      layer.src = zone.image;
+      layer.alt = '';
+      layer.style.left = toPctX(zone.x0) + '%';
+      layer.style.top = toPctY(zone.y0) + '%';
+      layer.style.width = ((zone.x1 - zone.x0) / spaceW) * 100 + '%';
+      layer.style.height = ((zone.y1 - zone.y0) / spaceH) * 100 + '%';
+      field.appendChild(layer);
+    });
+  }
+
+  DATA.maps.forEach(map => {
+    const at = presentation(map);
+    if (at.x == null || at.y == null) return;
+
+    const dot = document.createElement('div');
+    const moved = ENTRIES.has(entryKey(map)) &&
+      (ENTRIES.get(entryKey(map)).gawX != null || ENTRIES.get(entryKey(map)).gawY != null);
+
+    // A position outside the drawable space is marked rather than clipped to an edge: it is a real
+    // thing a mod can write, and it means the lobby draws that map's marker off the picture.
+    const outside = galaxy && (at.x < 0 || at.x > spaceW || at.y < 0 || at.y > spaceH);
+    dot.className = 'dot' + (SELECTED === map ? ' sel' : '') + (moved ? ' moved' : '') +
+      (outside ? ' outside' : '');
+    dot.style.left = Math.max(0, Math.min(100, toPctX(at.x))) + '%';
+    dot.style.top = Math.max(0, Math.min(100, toPctY(at.y))) + '%';
+    const region = galaxy ? zoneAt(at.x, at.y) : null;
+    dot.title = (map.name || map.package) + '  (' + at.x + ', ' + at.y + ')' +
+      (region ? '  -  ' + region.name : '') +
+      (outside ? '  -  outside the galaxy map' : '');
+    dot.onclick = e => { e.stopPropagation(); SELECTED = map; drawSide(); };
+    field.appendChild(dot);
+  });
+
+  // Click to place the selected map. Only with one selected: a click with nothing chosen would
+  // otherwise have to guess which map was meant.
+  field.onclick = e => {
+    if (!SELECTED) return;
+    const rect = field.getBoundingClientRect();
+    const x = Math.round(originX + spaceW * (e.clientX - rect.left) / rect.width);
+    const y = Math.round(originY + spaceH * (e.clientY - rect.top) / rect.height);
+    setEntry(SELECTED, { gawX: x, gawY: y });
+    drawSide();
+    drawMaps();
+  };
+
+  box.appendChild(field);
+
+  const here = SELECTED ? presentation(SELECTED) : null;
+  const region = here ? zoneAt(here.x, here.y) : null;
+  highlightZone(field, region ? region.id : null);
+
+  const note = document.createElement('div');
+  note.className = 'note';
+  note.style.marginTop = '6px';
+  if (!galaxy) {
+    note.textContent = (bounds ? bounds.count + ' maps placed. ' : '') +
+      'The galaxy picture could not be read, so positions are shown scaled against each other rather ' +
+      'than where the lobby draws them.';
+  } else if (SELECTED) {
+    note.textContent = 'Click to move ' + (SELECTED.name || SELECTED.package) + '.' +
+      (region ? '  In ' + region.name + '.' : '');
+  } else {
+    note.textContent = (bounds ? bounds.count : 0) + ' maps placed. Pick a map to move it.';
+  }
+  box.appendChild(note);
+
+  return box;
+}
+
+// Which region a position falls in, worked out here rather than only read off the payload.
+//
+// The payload's `zone` is the region a map SHIPS in, and stops being true the moment the map is
+// moved - so a dragged map would keep reporting where it used to be, which is worse than reporting
+// nothing. The regions are irregular shapes and the answer is in the art's alpha, so each zone image
+// is decoded to a small offscreen canvas once, up front, and sampled from then on. The images are
+// inline data URIs from the same origin, so reading their pixels back does not taint the canvas.
+const ZONE_MASKS = new Map();
+
+function loadZoneMasks() {
+  const zones = (DATA.galaxy && DATA.galaxy.zones) || [];
+  return Promise.all(zones.filter(z => z.image).map(zone => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0);
+        ZONE_MASKS.set(zone.id, ctx.getImageData(0, 0, canvas.width, canvas.height));
+      } catch (e) {
+        // A zone whose pixels cannot be read costs that zone's attribution and nothing else.
+      }
+      resolve();
+    };
+    img.onerror = () => resolve();
+    img.src = zone.image;
+  })));
+}
+
+function zoneAt(x, y) {
+  const galaxy = DATA.galaxy;
+  if (!galaxy || x == null || y == null) return null;
+
+  for (const zone of galaxy.zones || []) {
+    if (x < zone.x0 || x > zone.x1 || y < zone.y0 || y > zone.y1) continue;
+
+    const mask = ZONE_MASKS.get(zone.id);
+    if (!mask) continue;
+
+    const u = Math.min(mask.width - 1, Math.max(0, Math.floor((x - zone.x0) / (zone.x1 - zone.x0) * mask.width)));
+    const v = Math.min(mask.height - 1, Math.max(0, Math.floor((y - zone.y0) / (zone.y1 - zone.y0) * mask.height)));
+    if (mask.data[(v * mask.width + u) * 4 + 3] >= (galaxy.alphaThreshold || 32)) return zone;
+  }
+  return null;
+}
+
+// The region under the selected map, lit. Only one at a time: the regions overlap, and showing them
+// all at once is a wash of colour that says nothing about where any single map is.
+function highlightZone(field, zoneId) {
+  field.querySelectorAll('.zone').forEach(layer => {
+    layer.classList.toggle('on', zoneId != null && layer.dataset.zone === String(zoneId));
+  });
+}
+
+function editSection(map) {
+  const box = document.createElement('section');
+  const h = document.createElement('h2');
+  h.textContent = map.name || map.package;
+  box.appendChild(h);
+
+  const at = presentation(map);
+  const fields = document.createElement('div');
+  fields.className = 'fields';
+
+  addField(fields, 'X', numberInput(at.x, v => setEntry(map, { gawX: v })));
+  addField(fields, 'Y', numberInput(at.y, v => setEntry(map, { gawY: v })));
+
+  // A closed vocabulary taken from the shipped values, never free text: an event name the game does
+  // not have is a map that loads in silence, and nothing in the config says which names are legal.
+  const music = document.createElement('select');
+  (DATA.musicEvents || []).forEach(name => {
+    const o = document.createElement('option');
+    o.value = name;
+    o.textContent = name;
+    music.appendChild(o);
+  });
+  if (at.music && !(DATA.musicEvents || []).includes(at.music)) {
+    const o = document.createElement('option');
+    o.value = at.music;
+    o.textContent = at.music + ' (not in the shipped set)';
+    music.appendChild(o);
+  }
+  music.value = at.music || '';
+  music.onchange = () => { setEntry(map, { music: music.value }); drawMaps(); };
+  addField(fields, 'Music', music);
+
+  box.appendChild(fields);
+
+  // The name and description are TLK string refs. Shown because they are what the user recognises,
+  // not editable because changing one is a localisation change rather than a config write.
+  const refs = document.createElement('div');
+  refs.className = 'note';
+  refs.style.marginTop = '10px';
+  refs.textContent = 'Name and description come from the game’s text'
+    + (map.nameRef ? ' (refs ' + map.nameRef + (map.descriptionRef ? ', ' + map.descriptionRef : '') + ')' : '')
+    + ' and are not editable here.';
+  box.appendChild(refs);
+
+  if (ENTRIES.has(entryKey(map))) {
+    const revert = document.createElement('button');
+    revert.style.marginTop = '10px';
+    revert.textContent = 'Revert to shipped';
+    revert.onclick = () => {
+      ENTRIES.delete(entryKey(map));
+      publish();
+      drawSide();
+      drawMaps();
+    };
+    box.appendChild(revert);
+  }
+
+  return box;
+}
+
+function addField(host, label, control) {
+  const l = document.createElement('label');
+  l.textContent = label;
+  host.appendChild(l);
+  host.appendChild(control);
+}
+
+function numberInput(value, onSet) {
+  const el = document.createElement('input');
+  el.type = 'number';
+  el.step = '1';
+  el.value = value == null ? '' : value;
+  el.onchange = () => {
+    const v = parseFloat(el.value);
+    if (!Number.isFinite(v)) { el.value = value == null ? '' : value; return; }
+    onSet(v);
+    drawSide();
+    drawMaps();
+  };
+  return el;
+}
+
+/// The lobby's difficulty list, with a switch on each.
+///
+/// One picker rather than two: the faction list moved to the wavelist editor, where the waves a
+/// faction being turned off would silence are on the same page. What is left is here because it is
+/// where the budget table is, and a difficulty turned off is a column of that table nothing reaches.
+function pickerSection(title, options, picker) {
+  const box = document.createElement('section');
+  const h = document.createElement('h2');
+  h.textContent = title;
+  box.appendChild(h);
+
+  (options || []).forEach(option => {
+    const wrap = document.createElement('div');
+    wrap.className = 'opt';
+
+    if (option.banner) {
+      const img = document.createElement('img');
+      img.src = option.banner;
+      img.alt = option.name || '';
+      wrap.appendChild(img);
+    }
+
+    const cap = document.createElement('div');
+    cap.className = 'cap';
+    cap.textContent = option.name || ('id ' + option.id);
+
+    if (picker && option.id != null) {
+      const toggle = document.createElement('label');
+      toggle.className = 'note';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = isPickerOn(picker, option);
+      cb.onchange = () => setPickerOn(picker, option, cb.checked);
+      toggle.appendChild(cb);
+      toggle.appendChild(document.createTextNode(' Enabled'));
+      cap.appendChild(toggle);
+      if (!isPickerOn(picker, option)) wrap.classList.add('off');
+    }
+
+    wrap.appendChild(cap);
+    box.appendChild(wrap);
+  });
+
+  const togglable = (options || []).filter(o => o.id != null);
+  if (picker && togglable.length && !togglable.some(o => isPickerOn(picker, o))) {
+    // Said here rather than only at compile time. A picker with nothing in it is a match settings
+    // screen the lobby cannot get past, and the person who emptied it is looking at this panel.
+    const p = document.createElement('div');
+    p.className = 'note warn';
+    // Named by the heading rather than by depluralising it. "Difficulties" minus an s is
+    // "Difficultie", and a rule that works for Factions and not for Difficulties is not a rule.
+    p.textContent = 'Nothing in ' + title + ' is enabled. The lobby would have nothing to pick.';
+    box.appendChild(p);
+  }
+
+  return box;
+}
+
+// ---------------------------------------------------------------- edits
+
+function setAvailable(map, available) {
+  const key = String(map.package).toLowerCase();
+
+  // Back to what shipped is a REVERT, not an edit that happens to match: storing it would write a
+  // config change that does nothing and pin today's roster into the mod.
+  if (available === map.available) AVAILABILITY.delete(key);
+  else AVAILABILITY.set(key, { package: map.package, available });
+
+  publish();
+  drawMaps();
+  drawSide();
+}
+
+function setEntry(map, patch) {
+  const key = entryKey(map);
+  const current = ENTRIES.get(key) || { id: map.id, package: map.package };
+  const next = Object.assign({}, current, patch);
+
+  const shippedX = map.galaxy ? map.galaxy.x : null;
+  const shippedY = map.galaxy ? map.galaxy.y : null;
+  if (next.gawX === shippedX) delete next.gawX;
+  if (next.gawY === shippedY) delete next.gawY;
+  if (next.music === map.music) delete next.music;
+
+  // Nothing left that differs from shipped: the entry goes, rather than sitting in the project as a
+  // record of values the user put back.
+  if (next.gawX == null && next.gawY == null && next.music == null) ENTRIES.delete(key);
+  else ENTRIES.set(key, next);
+
+  publish();
+}
+
+function restoreEdits(saved) {
+  if (!saved) return;
+  (saved.availability || []).forEach(a => AVAILABILITY.set(String(a.package).toLowerCase(), a));
+  (saved.entries || []).forEach(e => ENTRIES.set(e.id != null ? String(e.id) : String(e.package).toLowerCase(), e));
+  (saved.pickers || []).forEach(f => PICKERS.set(pickerKey(f.picker, f), f));
+}
+
+function editDocument() {
+  return {
+    format: 1,
+    availability: [...AVAILABILITY.values()],
+    entries: [...ENTRIES.values()],
+    pickers: [...PICKERS.values()],
+  };
+}
+
+function updateEditedPill() {
+  const pill = document.getElementById('edited');
+  const n = AVAILABILITY.size + ENTRIES.size + PICKERS.size;
+  pill.hidden = n === 0;
+  pill.textContent = n + (n === 1 ? ' change' : ' changes');
+}
+
+// Every change is posted, not batched behind a save button: the host owns the project file and its
+// dirty state, and a page that holds unsent edits loses them if the window is closed.
+function publish() {
+  updateEditedPill();
+  const host = window.chrome && window.chrome.webview;
+  if (!host) return;
+  try { host.postMessage({ type: 'modmaker.edits', collection: 'maplist', document: editDocument() }); }
+  catch (e) { /* Standalone in a browser, or the host went away; the page stays usable either way. */ }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+}
+</script>
+</body>
+</html>

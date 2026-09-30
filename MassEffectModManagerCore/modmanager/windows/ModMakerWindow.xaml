@@ -1,0 +1,28 @@
+﻿<Window
+    x:Class="ME3TweaksModManager.modmanager.windows.ModMakerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="{DynamicResource string_title_modMaker}"
+    Height="800"
+    Width="1200"
+    MinHeight="500"
+    MinWidth="900"
+    Closing="ModMakerWindow_OnClosing"
+    WindowStartupLocation="CenterOwner">
+    <Window.Style>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
+    <!-- Nothing but the page.
+
+         There was a WPF strip here holding New/Open/Save/Compile. It was a piece of another
+         application's design language pasted across the top of every editor: its own font, its own
+         metrics, none of the page's palette, and no way to show which editor was current. The bar is
+         drawn by the page now (chrome.js) and posts commands back; this window still owns the
+         project file, the dialogs and the compile, which is the part that never belonged in a page. -->
+    <ContentControl Name="EditorHost" Background="#FF14171C" />
+</Window>

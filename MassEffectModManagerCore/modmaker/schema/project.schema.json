@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://me3tweaks.com/schemas/modmaker/project-1.json",
+  "title": "ModMaker project file (.mmproj)",
+  "description": "A user's in-progress mod. A SPARSE override document: it stores only values that differ from the definition bundle's generated defaults, keyed by leaf id. Never a full snapshot. Sparseness maps directly onto the generated DLC, which mounts above Project Milan - anything absent here is absent there and simply inherits.",
+  "type": "object",
+  "required": [
+    "format",
+    "kind",
+    "meta",
+    "bundle",
+    "values"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "format": {
+      "description": "Project schema version. A loader that sees a higher value must refuse cleanly and tell the user to update Mod Manager, never partially parse.",
+      "type": "integer",
+      "const": 1
+    },
+    "kind": {
+      "description": "Magic string, so a stray .json is not mistaken for a project.",
+      "type": "string",
+      "const": "me3tweaks.modmaker.project"
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "type": "string"
+        },
+        "description": {
+          "description": "Short description used for moddesc.",
+          "type": "string"
+        },
+        "requireAllPlayers": {
+          "description": "Drops the DLC's DLCSetupCanMisMatch mount flag, so the game will not put this player in a lobby with anyone who does not have the mod. Off by default: config differences do desync host and clients, but not usually harmfully, and a mod that cannot be played with strangers costs more than the desync for most of what ModMaker builds.",
+          "type": "boolean",
+          "default": false
+        },
+        "extendedDescription": {
+          "type": "string"
+        },
+        "revision": {
+          "description": "Incremented on each compile, mirroring the old server-side revision counter.",
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "image": {
+          "description": "Mod banner: either a path relative to the project file, or a data: URI.",
+          "type": "string"
+        }
+      }
+    },
+    "bundle": {
+      "description": "Which definition bundle this project was last edited against. A mismatch is a warning with a diff, not a refusal.",
+      "type": "object",
+      "required": [
+        "game",
+        "version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "game": {
+          "description": "The game the bundle was generated from. LMP is Project Milan's own identity; LE3 is what a bundle generated from a stock Legendary Edition install reports.",
+          "type": "string",
+          "enum": [
+            "LMP",
+            "LE3"
+          ]
+        },
+        "version": {
+          "type": "string"
+        },
+        "milanVersion": {
+          "type": "string"
+        }
+      }
+    },
+    "values": {
+      "description": "Sparse map of \"<classId>[@<instance>]/<leafId>\" -> overridden value, with a [dimensionKey] suffix for repeated properties. The class qualifier is required because a cascaded property is editable on every subclass that inherits it. The @instance segment appears only for instance-scoped properties on a per-object-config class, so every key written under the class-only model stays valid. Keys not present inherit - from an edited ancestor class in this same project if there is one, otherwise from the game. Keys unknown to the current bundle MUST be preserved on round-trip, not dropped.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*(@[a-z0-9_]+)?/[a-z0-9]+(\\.[a-z0-9_]+)*(\\[[a-z0-9_]+\\])?$"
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "description": "range control",
+            "type": "object",
+            "required": [
+              "min",
+              "max"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "description": "vector2 control",
+            "type": "object",
+            "required": [
+              "x",
+              "y"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "instances": {
+      "description": "Instances the USER created, keyed by class id - never a copy of what the bundle already ships. Only meaningful for a class whose perObject.canCreate is true; a config section alone does not make the game construct an object.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "order": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "collections": {
+      "description": "Payloads for the structured editors, keyed by collection id. Shape is defined by each collection's own schemaRef.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    }
+  }
+}

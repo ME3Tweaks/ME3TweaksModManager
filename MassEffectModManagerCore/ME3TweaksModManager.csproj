@@ -159,6 +159,21 @@
         <EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
         <EmbeddedResource Include="modmanager\meim\propertymaps\BioParty.xml" />
         <EmbeddedResource Include="modmanager\objects\mod\merge\vanillaclasses.json.lzma" />
+        <!-- ModMaker editor pages. Served out of the assembly by ModMakerEditorControl;
+             sample-payload.json is development-only and deliberately not shipped. -->
+        <!-- The title bar every page draws, shared so it cannot drift between them. -->
+        <EmbeddedResource Include="modmaker\editor\web\chrome.css" />
+        <EmbeddedResource Include="modmaker\editor\web\chrome.js" />
+        <EmbeddedResource Include="modmaker\editor\web\wavelist.html" />
+        <EmbeddedResource Include="modmaker\editor\web\enemy.html" />
+        <EmbeddedResource Include="modmaker\editor\web\maplist.html" />
+        <EmbeddedResource Include="modmaker\editor\web\objectives.html" />
+        <EmbeddedResource Include="modmaker\editor\web\values.html" />
+        <EmbeddedResource Include="modmaker\editor\web\weapons.html" />
+        <!-- Character renders for the wavelist stage. A wildcard, so adding one is dropping
+             a file in: see modmaker\editor\web\art\README.md for the naming. -->
+        <EmbeddedResource Include="modmaker\editor\web\art\*.png" />
+        <EmbeddedResource Include="modmaker\data\textlayer.json" />
         <EmbeddedResource Include="updater\ME3CMM.exe" />
         <EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
     </ItemGroup>

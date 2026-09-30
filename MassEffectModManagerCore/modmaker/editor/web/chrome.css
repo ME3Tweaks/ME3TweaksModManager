@@ -1,0 +1,111 @@
+/* The editor's own title bar.
+
+   This used to be a WPF strip above the WebView2, and it looked like exactly what it was: a piece of
+   another application sitting on top of the page, with its own fonts, its own metrics and none of
+   the page's palette. It is a page element now, and the buttons post commands to the host rather
+   than the host owning the controls.
+
+   Shared by every editor page, so the bar does not drift between them. Everything here is prefixed
+   `mmc-` (ModMaker chrome) because these rules land in pages that have their own `button` and
+   `select` styling and must not disturb it. */
+
+:root {
+  --mmc-h: 44px;
+
+  /* Defaulted rather than assumed: a page that does not define the palette still gets a bar that
+     reads, instead of black text on a black bar. Every page currently defines all of these. */
+  --mmc-bg: var(--panel, #1c2027);
+  --mmc-line: var(--line, #2f3540);
+  --mmc-text: var(--text, #e6e9ef);
+  --mmc-muted: var(--muted, #97a0af);
+  --mmc-accent: var(--accent, #4aa3ff);
+}
+
+/* The canvas the browser paints before any page CSS applies.
+
+   `color-scheme: dark` is what stops Chromium using its white default for the initial canvas,
+   scrollbars and form controls; the explicit background covers the same instant for anything that
+   ignores it. Here rather than in each page because this file is linked first in every page's head,
+   so it is the earliest shared place that can win the first paint.
+
+   The host sets the same colour on the WebView2 itself (ModMakerEditorControl.PageBackground) for
+   the window BEFORE a document exists. Both are needed: switching pages rebuilds the control, so
+   there is a white gap on either side of the document's own lifetime. */
+:root {
+  color-scheme: dark;
+  background: #14171c;
+}
+
+.mmc {
+  position: sticky; top: 0; z-index: 40; flex: none;
+  display: flex; align-items: center; gap: 10px;
+  height: var(--mmc-h); padding: 0 12px;
+  background: linear-gradient(180deg, #20252e, #191d24);
+  border-bottom: 1px solid var(--mmc-line);
+  color: var(--mmc-text);
+  font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+  user-select: none;
+}
+
+.mmc button {
+  background: transparent; color: var(--mmc-text);
+  border: 1px solid transparent; border-radius: 5px;
+  padding: 5px 10px; font: inherit; cursor: pointer;
+}
+.mmc button:hover { background: rgba(255,255,255,.07); }
+.mmc button:disabled { opacity: .45; cursor: default; background: transparent; }
+
+/* ---------------------------------------------------------------- the project */
+
+.mmc .proj {
+  display: flex; align-items: center; gap: 7px;
+  border: 1px solid var(--mmc-line); border-radius: 6px;
+  padding: 4px 9px; background: rgba(0,0,0,.25);
+  max-width: 280px;
+}
+.mmc .proj .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The unsaved marker is a dot rather than the asterisk the window title used: an asterisk beside a
+   file name reads as part of the name. */
+.mmc .proj .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mmc-accent); flex: none; }
+.mmc .proj .caret { color: var(--mmc-muted); font-size: 10px; }
+
+.mmc-menu {
+  position: fixed; z-index: 60; min-width: 230px;
+  background: #232833; border: 1px solid var(--mmc-line); border-radius: 7px;
+  box-shadow: 0 12px 34px rgba(0,0,0,.55);
+  padding: 5px; color: var(--mmc-text);
+  font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+}
+.mmc-menu button {
+  display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+  background: transparent; color: inherit; border: 0; border-radius: 5px;
+  padding: 7px 9px; font: inherit; cursor: pointer;
+}
+.mmc-menu button:hover { background: rgba(255,255,255,.08); }
+.mmc-menu .sep { height: 1px; background: var(--mmc-line); margin: 5px 3px; }
+.mmc-menu .key { margin-left: auto; color: var(--mmc-muted); font-size: 11px; }
+.mmc-menu .tick { width: 13px; color: var(--mmc-accent); }
+/* Wraps, unlike everything else in the menu: this one is a caveat, not a label, and truncating it
+   would leave "Config edits do desync host and clients, but" as the whole warning. */
+.mmc-menu .why { color: var(--mmc-muted); font-size: 11px; padding: 0 9px 7px 31px; max-width: 300px; }
+
+/* ---------------------------------------------------------------- the pages */
+
+.mmc .tabs { display: flex; gap: 2px; margin-left: 6px; }
+.mmc .tabs button {
+  color: var(--mmc-muted); border-radius: 5px 5px 0 0;
+  border-bottom: 2px solid transparent; padding: 5px 11px;
+}
+.mmc .tabs button.on { color: var(--mmc-text); border-bottom-color: var(--mmc-accent); }
+
+/* ---------------------------------------------------------------- state and compile */
+
+.mmc .spacer { flex: 1; }
+.mmc .status { color: var(--mmc-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mmc .status .bad { color: var(--over, #e05a5a); }
+.mmc .compile {
+  border-color: var(--mmc-accent); color: #fff; font-weight: 600;
+  background: var(--mmc-accent); padding: 5px 16px;
+}
+.mmc .compile:hover { filter: brightness(1.1); background: var(--mmc-accent); }
+.mmc .compile:disabled { filter: none; }
