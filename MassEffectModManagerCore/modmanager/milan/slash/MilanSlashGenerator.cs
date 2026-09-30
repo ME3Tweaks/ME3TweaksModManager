@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.Unreal.Collections;
@@ -11,41 +12,53 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     /// Development tool that generates a <see cref="MilanSlashManifest"/> for a freshly built Project Milan base installation.
     /// <para>
     /// The base installation copies whole asset caches from LE3 - every basegame TFC and the full RefShaderCache - even
-    /// though LMP only uses a fraction of them. This scans every package in the installed game to find out what is actually
-    /// used, then works out how to transform the installation into one that contains only that:
-    /// <list type="bullet">
-    /// <item>The byte ranges textures in the game actually use are consolidated out of every TFC we can relocate data in
-    /// into new TFC(s). Each new TFC is described as a GUID plus a list of (source, offset, length) ranges of the existing
-    /// TFCs, so the shipped manifest carries no texture data.</item>
-    /// <item>Packages are repointed to the new TFCs (TextureFileCacheName, TFCFileGuid and mip offsets) and get a JPatch delta.</item>
-    /// <item>Source TFCs that nothing references any more (because their data moved, or because nothing used them) are
-    /// marked for deletion.</item>
-    /// <item>The RefShaderCache is reduced to the material shader maps (and their shaders) used by materials in the game,
-    /// and gets a JPatch delta.</item>
+    /// though LMP only uses a fraction of them. To find out what the slashed game should look like, this actually slashes the
+    /// development installation, then records the difference as a manifest:
+    /// <list type="number">
+    /// <item>The game is snapshotted, so there are original files to diff against and restore from.</item>
+    /// <item>The game is transformed: the RefShaderCache is reduced to the shader maps materials in the game use, and the
+    /// TFCs are compacted with LEC's <see cref="TFCCompactor"/>, which builds new TFCs from the texture data the game
+    /// uses and repoints every package at them.</item>
+    /// <item>The before and after states are diffed. Changed packages get a JPatch delta. New files (the compacted TFCs) are
+    /// described as ranges of the original files - for a TFC, the offsets its textures moved from - so almost no data is
+    /// shipped. Removed files, and TFCs nothing references any more, are marked for deletion.</item>
+    /// <item>The game is restored from the snapshot, so the caller can apply the manifest exactly as it will be applied on
+    /// users' machines.</item>
     /// </list>
-    /// </para>
-    /// <para>
-    /// The game is not modified here. The caller applies the generated manifest with <see cref="MilanSlashApplier"/>, which
-    /// both transforms the development installation and proves the manifest works before it ships.
     /// </para>
     /// </summary>
     [Localizable(false)]
     internal class MilanSlashGenerator
     {
         private const string RefShaderCacheName = "RefShaderCache-PC-D3D-SM5.upk";
-        private const int TFCHeaderSize = MilanSlashApplier.TFCHeaderSize;
 
         /// <summary>
-        /// Name of the consolidated TFCs, which are numbered from 0: Textures_LMP0, Textures_LMP1...
+        /// Folder in the game root used for the snapshot and staging. It is outside BioGame, so nothing scans it.
         /// </summary>
-        private const string ConsolidatedTFCBaseName = "Textures_LMP";
+        private const string WorkFolderName = "MilanSlashWork";
 
         /// <summary>
-        /// Texture data offsets are 32-bit, so a TFC can't be larger than this. Settable so tests can exercise splitting.
+        /// Name the TFC compactor gives the TFCs it builds: Textures1_LMP, Lighting1_LMP...
         /// </summary>
-        internal static long MaxTFCSize { get; set; } = int.MaxValue;
+        private const string CompactedTFCName = "LMP";
+
+        /// <summary>
+        /// TFC compactor passes, in order. Lightmaps (root textures) and other textures go into separate TFCs, as in the
+        /// Project Milan build pipeline.
+        /// </summary>
+        private static readonly (string tfcType, bool rootTexturesOnly)[] CompactionPasses =
+        [
+            ("Lighting", true),
+            ("Textures", false),
+        ];
 
         private static readonly string[] PackageExtensions = [".pcc", ".upk", ".u", ".sfm"];
+
+        /// <summary>
+        /// Test seam: replaces the TFC compactor step. Called with the game root and the names of the installed TFCs. LEC's
+        /// compactor can only run on Windows (LEC's settings read the registry), so tests use this to exercise everything else.
+        /// </summary>
+        internal static Action<string, IReadOnlyList<string>> TFCCompactionOverride { get; set; }
 
         /// <summary>
         /// Texture classes whose binary <see cref="ObjectBinary.From(ExportEntry, PackageCache, int?)"/> parses as <see cref="UTexture2D"/>.
@@ -56,18 +69,11 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         };
 
         private readonly string gameRoot;
+        private readonly string bioGame;
+        private readonly string workRoot;
         private readonly string milanDeltaFolder;
         private readonly Action<string> setStatus;
-
-        /// <summary>
-        /// Installed TFCs, keyed by TFC name (filename without extension).
-        /// </summary>
-        private readonly Dictionary<string, TFCUsage> tfcs = new(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Exports that reference TFC data, keyed by package path.
-        /// </summary>
-        private readonly Dictionary<string, List<(int uIndex, string tfcName)>> textureRefsByPackage = new(StringComparer.OrdinalIgnoreCase);
+        private MilanSlashSnapshot snapshot;
 
         /// <summary>
         /// Every static parameter set used by a material in the game.
@@ -84,13 +90,16 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         private MilanSlashGenerator(string gameRoot, string milanDeltaFolder, Action<string> setStatus)
         {
             this.gameRoot = Path.GetFullPath(gameRoot);
+            bioGame = Path.Combine(this.gameRoot, "BioGame");
+            workRoot = Path.Combine(this.gameRoot, WorkFolderName);
             this.milanDeltaFolder = milanDeltaFolder;
             this.setStatus = setStatus;
         }
 
         /// <summary>
         /// Generates a slash manifest and its delta files for the game at <paramref name="gameRoot"/>, writing them into
-        /// <paramref name="milanDeltaFolder"/> (replacing any previous slash output). Does not modify the game.
+        /// <paramref name="milanDeltaFolder"/> (replacing any previous slash output). The game is slashed while the manifest
+        /// is generated, then restored, so it is unchanged when this returns.
         /// </summary>
         public static MilanSlashManifest Generate(string gameRoot, string milanDeltaFolder, Action<string> setStatus = null)
         {
@@ -119,49 +128,75 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             if (File.Exists(manifestPath))
                 File.Delete(manifestPath);
 
-            var bioGame = Path.Combine(gameRoot, "BioGame");
-            var packages = Directory.EnumerateFiles(bioGame, "*.*", SearchOption.AllDirectories)
-                .Where(x => PackageExtensions.Contains(Path.GetExtension(x), StringComparer.OrdinalIgnoreCase))
-                .Where(x => !Path.GetFileName(x).Equals(RefShaderCacheName, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            if (Directory.Exists(workRoot))
+                Directory.Delete(workRoot, true);
 
-            FindTFCs(bioGame);
-            ScanPackages(packages);
-            PlanTFCs();
-            CreateTexturePackagePatches();
-            SlashRefShaderCache(Path.Combine(bioGame, "CookedPCConsole", RefShaderCacheName));
+            // Packages can be rewritten in place, so they are copied. The RefShaderCache is only ever replaced (see
+            // SlashRefShaderCache), so like the TFCs it can be hard linked instead of copying 1.3GB.
+            snapshot = MilanSlashSnapshot.Create(gameRoot, Path.Combine(workRoot, "Snapshot"),
+                copyFile: x => IsPackage(x) && !IsRefShaderCache(x),
+                excludeFromGame: IsWorkPath,
+                setStatus);
 
-            // Final file state is recorded later by RecordFinalState, once the installer has finished writing to the game
-            manifest.Save(milanDeltaFolder);
+            try
+            {
+                var originalScan = ScanGame(scanMaterials: true);
+                SlashRefShaderCache(Path.Combine(bioGame, "CookedPCConsole", RefShaderCacheName));
+                CompactTFCs();
+                var slashedScan = ScanGame(scanMaterials: false);
+                RecordChanges(originalScan, slashedScan);
+                manifest.Save(milanDeltaFolder); // Final file state is recorded later, once the installer has finished
+            }
+            finally
+            {
+                // Put the game back how it was, so the manifest gets applied to it the same way it will be for users
+                try
+                {
+                    snapshot.Restore(setStatus);
+                }
+                finally
+                {
+                    if (Directory.Exists(workRoot))
+                        Directory.Delete(workRoot, true);
+                }
+            }
 
-            // Consolidated source TFCs are usually also deleted; count each file once
-            long before = manifest.TFCs.SelectMany(x => x.Sources).Select(x => (x.Filename, x.Size))
+            long before = manifest.Builds.SelectMany(x => x.Sources).Where(x => !x.Payload).Select(x => (x.Filename, x.Size))
                               .Concat(manifest.Deletions.Select(x => (x.Filename, x.Size)))
                               .DistinctBy(x => x.Filename, StringComparer.OrdinalIgnoreCase).Sum(x => x.Size)
                           + manifest.Patches.Sum(x => x.SourceFileSize);
-            long after = manifest.TFCs.Sum(x => x.DestSize) + manifest.Patches.Sum(x => x.DestSize);
-            M3Log.Information($"Generated slash manifest: {manifest.TFCs.Count} TFC(s) built, {manifest.Deletions.Count} file(s) deleted, {manifest.Patches.Count} file(s) patched. " +
-                              $"Affected files go from {FileSize.FormatSize(before)} to roughly {FileSize.FormatSize(after)} (patched packages are measured decompressed)");
+            long after = manifest.Builds.Sum(x => x.DestSize) + manifest.Patches.Sum(x => x.DestSize);
+            long payload = manifest.Builds.SelectMany(x => x.Sources).Where(x => x.Payload).Sum(x => x.Size);
+            M3Log.Information($"Generated slash manifest: {manifest.Builds.Count} file(s) built, {manifest.Deletions.Count} file(s) deleted, {manifest.Patches.Count} file(s) patched. " +
+                              $"Affected files go from {FileSize.FormatSize(before)} to roughly {FileSize.FormatSize(after)} (patched packages are measured decompressed). " +
+                              $"Payload shipped for built files: {FileSize.FormatSize(payload)}");
             return manifest;
         }
 
+        private static bool IsPackage(string relativePath) => PackageExtensions.Contains(Path.GetExtension(relativePath.Replace('\\', Path.DirectorySeparatorChar)), StringComparer.OrdinalIgnoreCase);
+        private static bool IsTFC(string relativePath) => relativePath.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase);
+        private static bool IsRefShaderCache(string relativePath) => relativePath.EndsWith("\\" + RefShaderCacheName, StringComparison.OrdinalIgnoreCase);
+        private static bool IsWorkPath(string relativePath) => relativePath.StartsWith(WorkFolderName + "\\", StringComparison.OrdinalIgnoreCase);
+        private static string GetFileName(string relativePath) => relativePath[(relativePath.LastIndexOf('\\') + 1)..];
+
         #region Scanning
 
-        private void FindTFCs(string bioGame)
-        {
-            foreach (var tfcPath in Directory.EnumerateFiles(bioGame, "*.tfc", SearchOption.AllDirectories))
-            {
-                var name = Path.GetFileNameWithoutExtension(tfcPath);
-                if (tfcs.TryGetValue(name, out var existing))
-                {
-                    // We can't tell which of these the game will resolve a texture to
-                    existing.Lock($"multiple TFCs named {name} are installed");
-                    continue;
-                }
+        /// <summary>
+        /// Where one export's TFC data is.
+        /// </summary>
+        private record TextureData(string TFCName, List<(long Offset, long Length)> Ranges);
 
-                tfcs[name] = new TFCUsage(name, tfcPath, new FileInfo(tfcPath).Length);
-            }
+        private class GameScan
+        {
+            /// <summary>
+            /// TFC data of every texture/movie export we can read, keyed by (game-relative package path, export UIndex).
+            /// </summary>
+            public Dictionary<(string package, int uIndex), TextureData> Textures { get; } = new();
+
+            /// <summary>
+            /// Names of every TFC referenced by any export, including classes we can't read the data of.
+            /// </summary>
+            public HashSet<string> ReferencedTFCs { get; } = new(StringComparer.OrdinalIgnoreCase);
         }
 
         private static bool ShouldLoadExport(ExportEntry export)
@@ -172,24 +207,29 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                    || (className.Contains("Material", StringComparison.OrdinalIgnoreCase) && !className.Contains("Expression", StringComparison.OrdinalIgnoreCase));
         }
 
-        private void ScanPackages(List<string> packages)
+        private GameScan ScanGame(bool scanMaterials)
         {
+            var scan = new GameScan();
+            var packages = snapshot.EnumerateGameFiles().Where(x => IsPackage(x) && !IsRefShaderCache(x)).ToList();
             for (int i = 0; i < packages.Count; i++)
             {
-                var packagePath = packages[i];
+                var relativePath = packages[i];
                 setStatus?.Invoke($"Scanning packages ({i + 1}/{packages.Count})");
-                using var package = MEPackageHandler.UnsafePartialLoad(packagePath, ShouldLoadExport);
+                using var package = MEPackageHandler.UnsafePartialLoad(snapshot.GetGamePath(relativePath), ShouldLoadExport);
                 foreach (var export in package.Exports.Where(ShouldLoadExport))
                 {
-                    ScanTextureExport(packagePath, export);
-                    ScanMaterialExport(packagePath, export);
+                    ScanTextureExport(scan, relativePath, export);
+                    if (scanMaterials)
+                        ScanMaterialExport(relativePath, export);
                 }
             }
 
-            M3Log.Information($"Slash scan: {packages.Count} packages, {textureRefsByPackage.Sum(x => x.Value.Count)} exports with TFC data, {usedStaticParameterSets.Count} used material static parameter sets");
+            M3Log.Information($"Slash scan: {packages.Count} packages, {scan.Textures.Count} exports with TFC data, {scan.ReferencedTFCs.Count} referenced TFCs" +
+                              (scanMaterials ? $", {usedStaticParameterSets.Count} used material static parameter sets" : ""));
+            return scan;
         }
 
-        private void ScanTextureExport(string packagePath, ExportEntry export)
+        private static void ScanTextureExport(GameScan scan, string packagePath, ExportEntry export)
         {
             var className = export.ClassName;
             if (!className.Contains("Texture", StringComparison.OrdinalIgnoreCase) && !className.Contains("Movie", StringComparison.OrdinalIgnoreCase))
@@ -199,20 +239,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             if (string.IsNullOrEmpty(tfcName))
                 return; // No external data
 
-            if (!tfcs.TryGetValue(tfcName, out var tfc))
-            {
-                M3Log.Warning($"Slash scan: {export.InstancedFullPath} in {Path.GetFileName(packagePath)} references TFC {tfcName}, which is not installed");
-                return;
-            }
-
+            scan.ReferencedTFCs.Add(tfcName);
             try
             {
-                // All of an export's data must stay in one TFC, as it only names one
-                var ranges = new List<(long start, long length)>();
+                var ranges = new List<(long, long)>();
                 if (Texture2DClasses.Contains(className))
                 {
-                    var texture = ObjectBinary.From<UTexture2D>(export);
-                    foreach (var mip in texture.Mips)
+                    foreach (var mip in ObjectBinary.From<UTexture2D>(export).Mips)
                     {
                         if (HasExternalData(mip))
                             ranges.Add((mip.DataOffset, mip.CompressedSize));
@@ -224,27 +257,14 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     if (movie.IsExternal)
                         ranges.Add((movie.DataOffset, movie.DataSize));
                 }
-                else
-                {
-                    // We don't know how this class stores its offsets, so we can't move its data
-                    tfc.Lock($"{export.InstancedFullPath} ({className}) in {Path.GetFileName(packagePath)} references it and is not a supported texture class");
-                    return;
-                }
 
+                // Other classes still count as references to the TFC above; their data just can't be located
                 if (ranges.Count > 0)
-                {
-                    tfc.AddExportRanges(ranges);
-                    if (!textureRefsByPackage.TryGetValue(packagePath, out var refs))
-                    {
-                        refs = new List<(int, string)>();
-                        textureRefsByPackage[packagePath] = refs;
-                    }
-                    refs.Add((export.UIndex, tfc.Name));
-                }
+                    scan.Textures[(packagePath, export.UIndex)] = new TextureData(tfcName, ranges);
             }
             catch (Exception e)
             {
-                tfc.Lock($"could not read {export.InstancedFullPath} in {Path.GetFileName(packagePath)}: {e.Message}");
+                M3Log.Warning($"Slash scan: could not read {export.InstancedFullPath} in {packagePath}: {e.Message}");
             }
         }
 
@@ -283,7 +303,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             catch (Exception e)
             {
                 materialScanFailed = true;
-                M3Log.Error($"Slash scan: could not read material {export.InstancedFullPath} in {Path.GetFileName(packagePath)}: {e.Message}");
+                M3Log.Error($"Slash scan: could not read material {export.InstancedFullPath} in {packagePath}: {e.Message}");
             }
         }
 
@@ -305,275 +325,11 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         #endregion
 
-        #region TFC consolidation
+        #region Transforms
 
         /// <summary>
-        /// Consolidated TFCs being built.
+        /// Reduces the RefShaderCache to the material shader maps (and their shaders) used by materials in the game.
         /// </summary>
-        private readonly List<TFCOutput> tfcOutputs = new();
-
-        private void PlanTFCs()
-        {
-            // Work out which TFCs we can move data out of
-            var sources = new List<TFCUsage>();
-            foreach (var tfc in tfcs.Values.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
-            {
-                setStatus?.Invoke($"Planning {tfc.Name}.tfc");
-                if (tfc.LockReason != null)
-                {
-                    M3Log.Warning($"Slash: leaving {tfc.Name}.tfc as is: {tfc.LockReason}");
-                    continue;
-                }
-
-                if (tfc.Ranges.Count == 0)
-                {
-                    MarkForDeletion(tfc.Path, "not used by anything");
-                    continue;
-                }
-
-                if (!tfc.BuildIntervals(TFCHeaderSize, out var layoutError))
-                {
-                    tfc.Lock(layoutError);
-                    M3Log.Warning($"Slash: leaving {tfc.Name}.tfc as is: {layoutError}");
-                    continue;
-                }
-
-                sources.Add(tfc);
-            }
-
-            if (sources.Count == 0)
-                return;
-
-            // Pack the used data into as few TFCs as the size limit allows. Data that has to stay together (everything one
-            // export uses, and anything overlapping it) is placed as a unit, in source order.
-            foreach (var group in GetIntervalGroups(sources))
-            {
-                long groupSize = group.Sum(x => x.tfc.Intervals[x.interval].Length);
-                if (TFCHeaderSize + groupSize > MaxTFCSize)
-                    throw new Exception($"Texture data that must stay in one TFC is {groupSize} bytes, which is larger than a TFC can be");
-
-                if (tfcOutputs.Count == 0 || tfcOutputs[^1].Size + groupSize > MaxTFCSize)
-                    tfcOutputs.Add(CreateOutput(sources));
-
-                var output = tfcOutputs[^1];
-                foreach (var (tfc, interval) in group)
-                {
-                    output.Add(tfc, interval);
-                }
-            }
-
-            // Record the new TFCs
-            foreach (var output in tfcOutputs)
-            {
-                setStatus?.Invoke($"Planning {output.Name}.tfc");
-                if (output.IsUnchanged())
-                {
-                    M3Log.Information($"Slash: {output.Name}.tfc is already consolidated");
-                    continue;
-                }
-
-                var entry = new MilanSlashTFCEntry
-                {
-                    Filename = GetRelativePath(output.Path),
-                    Guid = output.Guid,
-                    Sources = output.Sources.Select(x => new MilanSlashSourceFile { Filename = GetRelativePath(x.Path), Size = x.Size }).ToList(),
-                    Segments = output.Segments,
-                    DestSize = output.Size,
-                };
-                entry.DestHash = HashTFC(output);
-                manifest.TFCs.Add(entry);
-                M3Log.Information($"Slash: {output.Name}.tfc will contain {FileSize.FormatSize(output.Size)} from {output.Sources.Count} TFC(s): {string.Join(", ", output.Sources.Select(x => x.Name))}");
-            }
-
-            // Everything referencing the sources is repointed to the new TFCs, leaving them orphaned
-            foreach (var tfc in sources)
-            {
-                if (tfcOutputs.Any(x => x.Name.Equals(tfc.Name, StringComparison.OrdinalIgnoreCase)))
-                    continue; // Rebuilt in place
-
-                var destinations = string.Join(", ", tfcOutputs.Where(x => x.Sources.Contains(tfc)).Select(x => x.Name + ".tfc"));
-                MarkForDeletion(tfc.Path, $"orphaned: used data moved to {destinations}");
-            }
-
-            M3Log.Information($"Slash: {sources.Count} TFC(s) totalling {FileSize.FormatSize(sources.Sum(x => x.Size))} consolidate into {tfcOutputs.Count} TFC(s) totalling {FileSize.FormatSize(tfcOutputs.Sum(x => x.Size))}");
-        }
-
-        /// <summary>
-        /// Groups every used interval of the source TFCs into sets that must be placed in the same output TFC, ordered by
-        /// where they start in the sources. Intervals are grouped if one export has data in both.
-        /// </summary>
-        private static List<List<(TFCUsage tfc, int interval)>> GetIntervalGroups(List<TFCUsage> sources)
-        {
-            // Union-find over every interval of every source
-            var ids = new List<(TFCUsage tfc, int interval)>();
-            var firstId = new Dictionary<TFCUsage, int>();
-            foreach (var tfc in sources)
-            {
-                firstId[tfc] = ids.Count;
-                for (int i = 0; i < tfc.Intervals.Count; i++)
-                    ids.Add((tfc, i));
-            }
-
-            var parent = Enumerable.Range(0, ids.Count).ToArray();
-            int find(int x)
-            {
-                while (parent[x] != x)
-                {
-                    parent[x] = parent[parent[x]];
-                    x = parent[x];
-                }
-                return x;
-            }
-
-            foreach (var tfc in sources)
-            {
-                foreach (var exportRanges in tfc.ExportRanges)
-                {
-                    int first = firstId[tfc] + tfc.FindInterval(tfc.Ranges[exportRanges[0]].Start);
-                    foreach (var rangeIndex in exportRanges.Skip(1))
-                    {
-                        int other = firstId[tfc] + tfc.FindInterval(tfc.Ranges[rangeIndex].Start);
-                        parent[find(other)] = find(first);
-                    }
-                }
-            }
-
-            return Enumerable.Range(0, ids.Count)
-                .GroupBy(find)
-                .OrderBy(g => g.Min())
-                .Select(g => g.OrderBy(x => x).Select(x => ids[x]).ToList())
-                .ToList();
-        }
-
-        private int nextTFCOutputNumber;
-
-        private TFCOutput CreateOutput(List<TFCUsage> sources)
-        {
-            while (true)
-            {
-                var name = $"{ConsolidatedTFCBaseName}{nextTFCOutputNumber++}";
-                if (!tfcs.TryGetValue(name, out var existing))
-                    return new TFCOutput(name, Path.Combine(gameRoot, "BioGame", "CookedPCConsole", name + ".tfc"), Guid.NewGuid());
-
-                // Regenerating against an already slashed game: rebuild it in place, keeping its GUID
-                if (sources.Contains(existing))
-                    return new TFCOutput(name, existing.Path, existing.ReadGuid());
-
-                // Taken by a TFC we're leaving alone (or deleting); use the next name
-            }
-        }
-
-        private static string HashTFC(TFCOutput output)
-        {
-            var streams = output.Sources.Select(x => new FileStream(x.Path, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024)).ToList();
-            try
-            {
-                using var hasher = System.Security.Cryptography.IncrementalHash.CreateHash(System.Security.Cryptography.HashAlgorithmName.SHA256);
-                hasher.AppendData(output.Guid.ToByteArray());
-                var buffer = new byte[1024 * 1024];
-                foreach (var segment in output.Segments)
-                {
-                    var fs = streams[segment.SourceIndex];
-                    fs.Position = segment.Offset;
-                    long remaining = segment.Length;
-                    while (remaining > 0)
-                    {
-                        int read = fs.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
-                        if (read <= 0)
-                            throw new Exception($"Unexpected end of {output.Sources[segment.SourceIndex].Path}");
-                        hasher.AppendData(buffer, 0, read);
-                        remaining -= read;
-                    }
-                }
-                return Convert.ToHexStringLower(hasher.GetHashAndReset());
-            }
-            finally
-            {
-                foreach (var fs in streams)
-                    fs.Dispose();
-            }
-        }
-
-        private void MarkForDeletion(string fullPath, string reason)
-        {
-            M3Log.Information($"Slash: {GetRelativePath(fullPath)} will be deleted ({reason})");
-            manifest.Deletions.Add(new MilanSlashDeletionEntry { Comment = reason, Filename = GetRelativePath(fullPath), Size = new FileInfo(fullPath).Length });
-        }
-
-        private void CreateTexturePackagePatches()
-        {
-            var packagesToPatch = textureRefsByPackage
-                .Where(x => x.Value.Any(r => tfcs[r.tfcName].IsRelocated))
-                .OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
-            for (int i = 0; i < packagesToPatch.Count; i++)
-            {
-                var (packagePath, refs) = (packagesToPatch[i].Key, packagesToPatch[i].Value);
-                setStatus?.Invoke($"Repointing textures ({i + 1}/{packagesToPatch.Count})");
-
-                var fileBytes = File.ReadAllBytes(packagePath);
-                using var package = MEPackageHandler.OpenMEPackageFromStream(new MemoryStream(fileBytes), packagePath);
-                foreach (var (uIndex, tfcName) in refs)
-                {
-                    var tfc = tfcs[tfcName];
-                    if (!tfc.IsRelocated)
-                        continue;
-
-                    var export = package.GetUExport(uIndex);
-                    var originalBinaryLength = export.GetBinaryData().Length;
-                    var binary = ObjectBinary.From(export);
-                    TFCOutput destination = null;
-                    int remap(int offset)
-                    {
-                        var (output, newOffset) = tfc.Remap(offset);
-                        if (destination != null && destination != output)
-                            throw new Exception($"{export.InstancedFullPath} in {packagePath} would be split across {destination.Name}.tfc and {output.Name}.tfc");
-                        destination = output;
-                        return checked((int)newOffset);
-                    }
-
-                    if (binary is UTexture2D texture)
-                    {
-                        foreach (var mip in texture.Mips)
-                        {
-                            if (HasExternalData(mip))
-                                mip.DataOffset = remap(mip.DataOffset);
-                        }
-                    }
-                    else if (binary is TextureMovie { IsExternal: true } movie)
-                    {
-                        movie.DataOffset = remap(movie.DataOffset);
-                    }
-                    else
-                    {
-                        throw new Exception($"Unexpected binary type {binary?.GetType().Name} for {export.InstancedFullPath} in {packagePath}");
-                    }
-
-                    export.WriteBinary(binary);
-
-                    // Only offsets changed, so a faithful round trip keeps the binary the same size
-                    if (export.GetBinaryData().Length != originalBinaryLength)
-                        throw new Exception($"Re-serializing {export.InstancedFullPath} in {packagePath} changed its size; texture binary does not round trip. Cannot safely slash this package.");
-
-                    // Point it at the new TFC
-                    var properties = export.GetProperties();
-                    properties.AddOrReplaceProp(new NameProperty(destination.Name, "TextureFileCacheName"));
-                    if (binary is UTexture2D || properties.GetProp<StructProperty>("TFCFileGuid") != null)
-                    {
-                        properties.AddOrReplaceProp(new FGuid(destination.Guid).ToStructProperty("TFCFileGuid"));
-                    }
-                    export.WriteProperties(properties);
-                }
-
-                AddPackagePatch(packagePath, fileBytes, package, "Textures repointed to consolidated TFCs");
-            }
-        }
-
-        #endregion
-
-        #region Shader cache
-
         private void SlashRefShaderCache(string refShaderCachePath)
         {
             if (!File.Exists(refShaderCachePath))
@@ -589,80 +345,228 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             }
 
             setStatus?.Invoke("Slashing RefShaderCache");
-            using var package = MEPackageHandler.OpenMEPackage(refShaderCachePath, forceLoadFromDisk: true);
-            var cacheExport = package.Exports.FirstOrDefault(x => x.ClassName == "ShaderCache");
-            if (cacheExport == null)
+            byte[] slashed;
+            using (var package = MEPackageHandler.OpenMEPackage(refShaderCachePath, forceLoadFromDisk: true))
             {
-                M3Log.Error("Slash: RefShaderCache has no ShaderCache export; skipping shader slashing");
+                var cacheExport = package.Exports.FirstOrDefault(x => x.ClassName == "ShaderCache");
+                if (cacheExport == null)
+                {
+                    M3Log.Error("Slash: RefShaderCache has no ShaderCache export; skipping shader slashing");
+                    return;
+                }
+
+                var cache = ObjectBinary.From<ShaderCache>(cacheExport);
+                int originalMaps = cache.MaterialShaderMaps.Count;
+                int originalShaders = cache.Shaders.Count;
+
+                var keptMaps = new UMultiMap<StaticParameterSet, MaterialShaderMap>();
+                foreach (var (staticParameterSet, shaderMap) in cache.MaterialShaderMaps)
+                {
+                    if (usedStaticParameterSets.Contains(staticParameterSet))
+                    {
+                        keptMaps.Add(staticParameterSet, shaderMap);
+                    }
+                }
+
+                cache.MaterialShaderMaps = keptMaps;
+                cache.Compact(); // Removes shaders no remaining shader map references
+                M3Log.Information($"Slash: RefShaderCache keeps {keptMaps.Count}/{originalMaps} material shader maps and {cache.Shaders.Count}/{originalShaders} shaders");
+                if (keptMaps.Count == originalMaps && cache.Shaders.Count == originalShaders)
+                    return; // Nothing to remove
+
+                cacheExport.WriteBinary(cache);
+                using var saved = package.SaveToStream(package.IsCompressed);
+                slashed = saved.ToArray();
+            }
+
+            // Replace rather than overwrite, so the snapshot's hard link keeps the original
+            var temp = refShaderCachePath + ".slashnew";
+            File.WriteAllBytes(temp, slashed);
+            File.Move(temp, refShaderCachePath, overwrite: true);
+        }
+
+        /// <summary>
+        /// Runs LEC's TFC compactor over the whole game, which builds new TFCs out of the texture data the game uses and
+        /// repoints every package at them.
+        /// </summary>
+        private void CompactTFCs()
+        {
+            var tfcNames = Directory.EnumerateFiles(bioGame, "*.tfc", SearchOption.AllDirectories)
+                .Select(Path.GetFileNameWithoutExtension)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (tfcNames.Count == 0)
+                return;
+
+            if (TFCCompactionOverride != null)
+            {
+                TFCCompactionOverride(gameRoot, tfcNames);
                 return;
             }
 
-            var cache = ObjectBinary.From<ShaderCache>(cacheExport);
-            int originalMaps = cache.MaterialShaderMaps.Count;
-            int originalShaders = cache.Shaders.Count;
-
-            var keptMaps = new UMultiMap<StaticParameterSet, MaterialShaderMap>();
-            foreach (var (staticParameterSet, shaderMap) in cache.MaterialShaderMaps)
+            // The compactor refuses to scan a folder with packages from more than one game, and LE3 packages that were
+            // copied without being converted to LMP (such as the RefShaderCache) are in the game. Set them aside.
+            var setAside = new List<(string original, string aside)>();
+            foreach (var relativePath in snapshot.EnumerateGameFiles().Where(IsPackage))
             {
-                if (usedStaticParameterSets.Contains(staticParameterSet))
+                var path = snapshot.GetGamePath(relativePath);
+                MEGame game;
+                using (var package = MEPackageHandler.QuickOpenMEPackage(path))
                 {
-                    keptMaps.Add(staticParameterSet, shaderMap);
+                    game = package.Game;
+                }
+
+                if (game != MEGame.LMP)
+                {
+                    var aside = Path.Combine(workRoot, "OtherGamePackages", relativePath.Replace('\\', Path.DirectorySeparatorChar));
+                    Directory.CreateDirectory(Path.GetDirectoryName(aside));
+                    File.Move(path, aside);
+                    setAside.Add((path, aside));
+                    M3Log.Information($"Slash: {relativePath} is a {game} package; it is not included in TFC compaction");
                 }
             }
 
-            cache.MaterialShaderMaps = keptMaps;
-            cache.Compact(); // Removes shaders no remaining shader map references
-            M3Log.Information($"Slash: RefShaderCache keeps {keptMaps.Count}/{originalMaps} material shader maps and {cache.Shaders.Count}/{originalShaders} shaders");
-            if (keptMaps.Count == originalMaps && cache.Shaders.Count == originalShaders)
-                return; // Nothing to remove
+            // The compactor puts the TFCs it builds in a folder named after the TFC name, deleting any TFCs already in that
+            // folder. Giving it an empty folder of its own means it never deletes a source TFC another pass (or another
+            // texture) still needs; TFCs that end up unused are deleted by the manifest instead.
+            var outputRoot = Path.Combine(bioGame, CompactedTFCName);
+            var outputCooked = Path.Combine(outputRoot, "CookedPCConsole");
+            if (Directory.Exists(outputRoot))
+                throw new Exception($"Cannot compact TFCs: {outputRoot} already exists");
+            Directory.CreateDirectory(outputCooked);
+            var staging = Directory.CreateDirectory(Path.Combine(workRoot, "CompactorStaging")).FullName;
 
-            cacheExport.WriteBinary(cache);
-            cache = null;
+            try
+            {
+                foreach (var (tfcType, rootTexturesOnly) in CompactionPasses)
+                {
+                    setStatus?.Invoke($"Compacting {tfcType} TFCs");
+                    var errors = new List<string>();
+                    var info = new TFCCompactorInfoPackage
+                    {
+                        Game = MEGame.LMP,
+                        BaseCompactionPath = bioGame,
+                        GamePath = gameRoot,
+                        DLCName = CompactedTFCName,
+                        StagingPath = staging,
+                        TFCType = tfcType,
+                        RootTexturesOnly = rootTexturesOnly,
+                        UseIndexing = true,
+                        TFCsToCompact = tfcNames,
+                    };
 
-            AddPackagePatch(refShaderCachePath, null, package, "RefShaderCache reduced to shader maps used by materials in the game");
+                    TFCCompactor.CompactTFC(info, errors.Add, (text, done, total) =>
+                    {
+                        if (text != null)
+                            setStatus?.Invoke(total > 0 ? $"Compacting {tfcType} TFCs: {text} ({done}/{total})" : $"Compacting {tfcType} TFCs: {text}");
+                    });
+
+                    if (errors.Count > 0)
+                        throw new Exception($"TFC compaction ({tfcType}) failed: {string.Join(" ", errors)}");
+                }
+
+                // Put the new TFCs with the basegame's
+                foreach (var tfc in Directory.GetFiles(outputCooked, "*.tfc"))
+                {
+                    var destination = Path.Combine(bioGame, "CookedPCConsole", Path.GetFileName(tfc));
+                    File.Move(tfc, destination, overwrite: true);
+                    M3Log.Information($"Slash: TFC compactor built {Path.GetFileName(tfc)} ({FileSize.FormatSize(new FileInfo(destination).Length)})");
+                }
+            }
+            finally
+            {
+                if (Directory.Exists(outputRoot))
+                    Directory.Delete(outputRoot, true);
+                foreach (var (original, aside) in setAside)
+                    File.Move(aside, original);
+            }
         }
 
         #endregion
 
-        #region Patch creation
+        #region Diffing
 
         /// <summary>
-        /// Diffs a modified package against the file on disk and records the delta. Compressed packages use package mode
-        /// (the same decompress/patch/recompress convention as MilanDelta); uncompressed ones are patched as raw files.
+        /// Records everything that differs between the snapshot and the transformed game in the manifest.
         /// </summary>
-        /// <param name="fileBytes">Original file bytes, if already read.</param>
-        private void AddPackagePatch(string packagePath, byte[] fileBytes, IMEPackage modifiedPackage, string comment)
+        private void RecordChanges(GameScan before, GameScan after)
         {
-            fileBytes ??= File.ReadAllBytes(packagePath);
-            bool compressed = modifiedPackage.IsCompressed;
-            string mode = compressed ? MilanSlashPatchModes.Package : MilanSlashPatchModes.Raw;
+            var current = snapshot.EnumerateGameFiles();
+            var currentSet = current.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            byte[] sourceData;
-            if (compressed)
+            for (int i = 0; i < current.Count; i++)
             {
-                using var decompressed = MEPackage.GetDecompressedPackageStream(new MemoryStream(fileBytes));
-                sourceData = decompressed.ToArray();
-            }
-            else
-            {
-                sourceData = fileBytes;
+                var relativePath = current[i];
+                setStatus?.Invoke($"Recording changes ({i + 1}/{current.Count})");
+                bool existed = snapshot.Files.ContainsKey(relativePath);
+                if (existed && IsPackage(relativePath))
+                {
+                    var original = File.ReadAllBytes(snapshot.GetSnapshotPath(relativePath));
+                    var modified = File.ReadAllBytes(snapshot.GetGamePath(relativePath));
+                    if (!original.AsSpan().SequenceEqual(modified))
+                        AddPackagePatch(relativePath, original, modified);
+                }
+                else if (!existed || !snapshot.IsUnchanged(relativePath))
+                {
+                    AddBuild(relativePath, before, after);
+                }
             }
 
-            byte[] destData;
-            using (var saved = modifiedPackage.SaveToStream(false))
+            foreach (var (relativePath, (size, _)) in snapshot.Files)
             {
-                destData = saved.ToArray();
+                if (!currentSet.Contains(relativePath))
+                    AddDeletion(relativePath, size, "removed while slashing");
             }
 
-            var relPath = GetRelativePath(packagePath);
+            // TFCs whose data has all been moved out, or that nothing used to begin with
+            foreach (var relativePath in current.Where(x => IsTFC(x) && snapshot.Files.ContainsKey(x) && snapshot.IsUnchanged(x)))
+            {
+                var name = Path.GetFileNameWithoutExtension(GetFileName(relativePath));
+                if (after.ReferencedTFCs.Contains(name))
+                    continue;
+
+                if (before.ReferencedTFCs.Contains(name))
+                {
+                    var destinations = manifest.Builds
+                        .Where(b => b.Sources.Any(s => !s.Payload && s.Filename.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
+                        .Select(b => GetFileName(b.Filename))
+                        .ToList();
+                    AddDeletion(relativePath, snapshot.Files[relativePath].Size, destinations.Count > 0 ? $"orphaned: used data moved to {string.Join(", ", destinations)}" : "orphaned: no longer referenced");
+                }
+                else
+                {
+                    AddDeletion(relativePath, snapshot.Files[relativePath].Size, "not used by anything");
+                }
+            }
+        }
+
+        private void AddDeletion(string relativePath, long size, string reason)
+        {
+            M3Log.Information($"Slash: {relativePath} will be deleted ({reason})");
+            manifest.Deletions.Add(new MilanSlashDeletionEntry { Comment = reason, Filename = relativePath, Size = size });
+        }
+
+        /// <summary>
+        /// Records a JPatch delta that turns the original package into the modified one. If either is compressed, the delta
+        /// uses package mode (the same decompress/patch/recompress convention as MilanDelta); otherwise raw file bytes are
+        /// patched.
+        /// </summary>
+        private void AddPackagePatch(string relativePath, byte[] original, byte[] modified)
+        {
+            bool originalCompressed = IsCompressedPackage(original, relativePath);
+            bool modifiedCompressed = IsCompressedPackage(modified, relativePath);
+            bool packageMode = originalCompressed || modifiedCompressed;
+
+            byte[] sourceData = packageMode ? Decompress(original) : original;
+            byte[] destData = packageMode ? Decompress(modified) : modified;
             if (sourceData.AsSpan().SequenceEqual(destData))
             {
-                M3Log.Information($"Slash: {relPath} is unchanged; no delta needed");
+                M3Log.Information($"Slash: {relativePath} only differs in compression; no delta needed");
                 return;
             }
 
-            setStatus?.Invoke($"Creating delta for {Path.GetFileName(packagePath)}");
-            var deltaRelPath = Path.Combine(MilanSlashApplier.SlashFolderName, relPath + ".jsf");
+            setStatus?.Invoke($"Creating delta for {GetFileName(relativePath)}");
+            var deltaRelPath = MilanSlashApplier.SlashFolderName + "\\" + relativePath + ".jsf";
             var deltaPath = MilanSlashApplier.Resolve(milanDeltaFolder, deltaRelPath);
             Directory.CreateDirectory(Path.GetDirectoryName(deltaPath));
             using (var deltaStream = new FileStream(deltaPath, FileMode.Create, FileAccess.Write))
@@ -670,211 +574,199 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 JsfDeltaBuilder.Build(sourceData, destData, deltaStream);
             }
 
+            var mode = packageMode ? MilanSlashPatchModes.Package : MilanSlashPatchModes.Raw;
             manifest.Patches.Add(new MilanSlashPatchEntry
             {
-                Comment = comment,
-                Filename = relPath,
-                Delta = deltaRelPath.Replace(Path.DirectorySeparatorChar, '\\'),
+                Comment = IsRefShaderCache(relativePath) ? "RefShaderCache reduced to shader maps used by materials in the game" : "Package modified while slashing (e.g. textures repointed to compacted TFCs)",
+                Filename = relativePath,
+                Delta = deltaRelPath,
                 Mode = mode,
-                Compressed = compressed,
-                SourceFileSize = fileBytes.LongLength,
-                SourceFileHash = MilanSlashHashing.HashBytes(fileBytes),
+                Compressed = modifiedCompressed,
+                SourceFileSize = original.LongLength,
+                SourceFileHash = MilanSlashHashing.HashBytes(original),
                 SourceSize = sourceData.LongLength,
                 SourceHash = MilanSlashHashing.HashBytes(sourceData),
                 DestSize = destData.LongLength,
                 DestHash = MilanSlashHashing.HashBytes(destData),
             });
 
-            M3Log.Information($"Slash: {relPath} delta is {FileSize.FormatSize(new FileInfo(deltaPath).Length)} ({mode}, {FileSize.FormatSize(sourceData.LongLength)} -> {FileSize.FormatSize(destData.LongLength)})");
+            M3Log.Information($"Slash: {relativePath} delta is {FileSize.FormatSize(new FileInfo(deltaPath).Length)} ({mode}, {FileSize.FormatSize(sourceData.LongLength)} -> {FileSize.FormatSize(destData.LongLength)})");
+        }
+
+        private static bool IsCompressedPackage(byte[] data, string relativePath)
+        {
+            using var package = MEPackageHandler.OpenMEPackageFromStream(new MemoryStream(data), relativePath, quickLoad: true);
+            return package.IsCompressed;
+        }
+
+        private static byte[] Decompress(byte[] packageData)
+        {
+            using var decompressed = MEPackage.GetDecompressedPackageStream(new MemoryStream(packageData));
+            return decompressed.ToArray();
         }
 
         /// <summary>
-        /// Path relative to the game root, in the Windows form stored in manifests.
+        /// Describes a new or changed file as ranges of the original files. For a TFC, the TFC compactor copied each
+        /// texture's data from its old location, so every range the textures now reference is sourced from the offsets they
+        /// used to reference. Anything that can't be sourced (headers, recompressed data, non-TFC files) goes in a payload
+        /// file shipped with the manifest.
         /// </summary>
-        private string GetRelativePath(string fullPath) => Path.GetRelativePath(gameRoot, fullPath).Replace(Path.DirectorySeparatorChar, '\\');
+        private void AddBuild(string relativePath, GameScan before, GameScan after)
+        {
+            setStatus?.Invoke($"Describing {GetFileName(relativePath)}");
+            var path = snapshot.GetGamePath(relativePath);
+            long length = new FileInfo(path).Length;
+
+            // Where this file's data came from: (new offset, length, original TFC, original offset)
+            var claims = new List<(long newOffset, long length, string sourceTFC, long sourceOffset)>();
+            if (IsTFC(relativePath))
+            {
+                var name = Path.GetFileNameWithoutExtension(GetFileName(relativePath));
+                foreach (var (key, now) in after.Textures)
+                {
+                    if (!now.TFCName.Equals(name, StringComparison.OrdinalIgnoreCase) || !before.Textures.TryGetValue(key, out var was) || was.Ranges.Count != now.Ranges.Count)
+                        continue;
+
+                    for (int i = 0; i < now.Ranges.Count; i++)
+                    {
+                        if (now.Ranges[i].Length == was.Ranges[i].Length)
+                            claims.Add((now.Ranges[i].Offset, now.Ranges[i].Length, was.TFCName, was.Ranges[i].Offset));
+                    }
+                }
+            }
+
+            var build = new MilanSlashBuildEntry { Filename = relativePath };
+            var payloadRelPath = MilanSlashApplier.SlashFolderName + "\\" + relativePath + ".payload";
+            var payloadPath = MilanSlashApplier.Resolve(milanDeltaFolder, payloadRelPath);
+            MilanSlashSourceFile payloadSource = null;
+            FileStream payload = null;
+            long sourcedBytes = 0;
+
+            void addSegment(int sourceIndex, long offset, long segmentLength)
+            {
+                var segments = build.Segments;
+                if (segments.Count > 0 && segments[^1].SourceIndex == sourceIndex && segments[^1].Offset + segments[^1].Length == offset)
+                    segments[^1] = segments[^1] with { Length = segments[^1].Length + segmentLength };
+                else
+                    segments.Add(new MilanSlashSegment(sourceIndex, offset, segmentLength));
+            }
+
+            using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+            void addPayload(long offset, long payloadLength)
+            {
+                if (payloadLength <= 0)
+                    return;
+                if (payload == null)
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(payloadPath));
+                    payload = new FileStream(payloadPath, FileMode.Create, FileAccess.Write);
+                    payloadSource = new MilanSlashSourceFile { Filename = payloadRelPath, Payload = true };
+                    build.Sources.Add(payloadSource);
+                }
+
+                long payloadOffset = payload.Position;
+                file.Position = offset;
+                CopyExactly(file, payload, payloadLength);
+                addSegment(build.Sources.IndexOf(payloadSource), payloadOffset, payloadLength);
+            }
+
+            try
+            {
+                long position = 0;
+                foreach (var claim in claims.OrderBy(x => x.newOffset).ThenByDescending(x => x.length))
+                {
+                    if (claim.newOffset < position)
+                        continue; // Already covered (textures sharing data)
+
+                    addPayload(position, claim.newOffset - position);
+
+                    var sourceRelPath = FindOriginalTFC(claim.sourceTFC);
+                    if (sourceRelPath != null && RangesMatch(file, claim.newOffset, snapshot.GetSnapshotPath(sourceRelPath), claim.sourceOffset, claim.length))
+                    {
+                        int sourceIndex = build.Sources.FindIndex(x => !x.Payload && x.Filename.Equals(sourceRelPath, StringComparison.OrdinalIgnoreCase));
+                        if (sourceIndex < 0)
+                        {
+                            sourceIndex = build.Sources.Count;
+                            build.Sources.Add(new MilanSlashSourceFile { Filename = sourceRelPath, Size = snapshot.Files[sourceRelPath].Size });
+                        }
+                        addSegment(sourceIndex, claim.sourceOffset, claim.length);
+                        sourcedBytes += claim.length;
+                    }
+                    else
+                    {
+                        addPayload(claim.newOffset, claim.length); // e.g. the compactor recompressed it
+                    }
+
+                    position = claim.newOffset + claim.length;
+                }
+
+                addPayload(position, length - position);
+            }
+            finally
+            {
+                payload?.Dispose();
+            }
+
+            if (payloadSource != null)
+                payloadSource.Size = new FileInfo(payloadPath).Length;
+
+            build.DestSize = length;
+            build.DestHash = MilanSlashHashing.HashFile(path);
+
+            // Prove the description reproduces the file from the original game files
+            var (builtSize, builtHash) = MilanSlashApplier.AssembleBuild(build, source => source.Payload ? payloadPath : snapshot.GetSnapshotPath(source.Filename), null);
+            if (builtSize != build.DestSize || builtHash != build.DestHash)
+                throw new Exception($"Slash: the description of {relativePath} does not reproduce it");
+
+            manifest.Builds.Add(build);
+            M3Log.Information($"Slash: {relativePath} ({FileSize.FormatSize(length)}) is built from {FileSize.FormatSize(sourcedBytes)} of existing data in {build.Sources.Count(x => !x.Payload)} file(s) and {FileSize.FormatSize(payloadSource?.Size ?? 0)} of payload");
+        }
+
+        /// <summary>
+        /// Game-relative path of an original TFC by name, or null if there isn't exactly one.
+        /// </summary>
+        private string FindOriginalTFC(string name)
+        {
+            var matches = snapshot.Files.Keys.Where(x => IsTFC(x) && Path.GetFileNameWithoutExtension(GetFileName(x)).Equals(name, StringComparison.OrdinalIgnoreCase)).Take(2).ToList();
+            return matches.Count == 1 ? matches[0] : null;
+        }
+
+        private static bool RangesMatch(FileStream file, long offset, string otherPath, long otherOffset, long length)
+        {
+            using var other = new FileStream(otherPath, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+            if (otherOffset + length > other.Length || offset + length > file.Length)
+                return false;
+
+            var a = new byte[Math.Min(length, 1024 * 1024)];
+            var b = new byte[a.Length];
+            file.Position = offset;
+            other.Position = otherOffset;
+            long remaining = length;
+            while (remaining > 0)
+            {
+                int chunk = (int)Math.Min(a.Length, remaining);
+                file.ReadExactly(a, 0, chunk);
+                other.ReadExactly(b, 0, chunk);
+                if (!a.AsSpan(0, chunk).SequenceEqual(b.AsSpan(0, chunk)))
+                    return false;
+                remaining -= chunk;
+            }
+            return true;
+        }
+
+        private static void CopyExactly(Stream input, Stream output, long length)
+        {
+            var buffer = new byte[Math.Min(length, 1024 * 1024)];
+            while (length > 0)
+            {
+                int read = input.Read(buffer, 0, (int)Math.Min(buffer.Length, length));
+                if (read <= 0)
+                    throw new EndOfStreamException();
+                output.Write(buffer, 0, read);
+                length -= read;
+            }
+        }
 
         #endregion
-
-        /// <summary>
-        /// Tracks which byte ranges of an installed TFC are used, and where they end up once consolidated.
-        /// </summary>
-        private class TFCUsage
-        {
-            public string Name { get; }
-            public string Path { get; }
-            public long Size { get; }
-
-            /// <summary>
-            /// If set, this TFC must not be modified.
-            /// </summary>
-            public string LockReason { get; private set; }
-
-            /// <summary>
-            /// Every used range, as found in the scan.
-            /// </summary>
-            public List<(long Start, long Length)> Ranges { get; } = new();
-
-            /// <summary>
-            /// Indexes into <see cref="Ranges"/> of the ranges each export uses; these must stay in the same TFC.
-            /// </summary>
-            public List<int[]> ExportRanges { get; } = new();
-
-            /// <summary>
-            /// Merged used ranges in source order, and where each one ends up.
-            /// </summary>
-            public List<(long Start, long Length, TFCOutput Output, long NewStart)> Intervals { get; } = new();
-
-            /// <summary>
-            /// If this TFC's data is being moved into consolidated TFCs.
-            /// </summary>
-            public bool IsRelocated => Intervals.Count > 0 && Intervals.All(x => x.Output != null);
-
-            public TFCUsage(string name, string path, long size)
-            {
-                Name = name;
-                Path = path;
-                Size = size;
-            }
-
-            public void Lock(string reason) => LockReason ??= reason;
-
-            public void AddExportRanges(List<(long start, long length)> ranges)
-            {
-                var indexes = new int[ranges.Count];
-                for (int i = 0; i < ranges.Count; i++)
-                {
-                    indexes[i] = Ranges.Count;
-                    Ranges.Add(ranges[i]);
-                }
-                ExportRanges.Add(indexes);
-            }
-
-            public Guid ReadGuid()
-            {
-                using var fs = File.OpenRead(Path);
-                var header = new byte[TFCHeaderSize];
-                fs.ReadExactly(header);
-                return new Guid(header);
-            }
-
-            /// <summary>
-            /// Merges overlapping and adjacent ranges. Overlaps are merged rather than deduplicated so that any offset inside
-            /// a used range still maps correctly.
-            /// </summary>
-            public bool BuildIntervals(int headerSize, out string error)
-            {
-                error = null;
-                foreach (var (start, length) in Ranges)
-                {
-                    if (length <= 0 || start < headerSize || start + length > Size)
-                    {
-                        error = $"texture data at 0x{start:X} (0x{length:X} bytes) lies outside the file ({Size} bytes)";
-                        return false;
-                    }
-                }
-
-                foreach (var (start, length) in Ranges.OrderBy(x => x.Start))
-                {
-                    if (Intervals.Count > 0)
-                    {
-                        var last = Intervals[^1];
-                        if (start <= last.Start + last.Length)
-                        {
-                            long end = Math.Max(last.Start + last.Length, start + length);
-                            Intervals[^1] = (last.Start, end - last.Start, null, 0);
-                            continue;
-                        }
-                    }
-
-                    Intervals.Add((start, length, null, 0));
-                }
-
-                return true;
-            }
-
-            /// <summary>
-            /// Index of the interval containing the offset.
-            /// </summary>
-            public int FindInterval(long offset)
-            {
-                int lo = 0, hi = Intervals.Count - 1;
-                while (lo <= hi)
-                {
-                    int mid = (lo + hi) / 2;
-                    var interval = Intervals[mid];
-                    if (offset < interval.Start)
-                        hi = mid - 1;
-                    else if (offset >= interval.Start + interval.Length)
-                        lo = mid + 1;
-                    else
-                        return mid;
-                }
-
-                throw new Exception($"Offset 0x{offset:X} is not in a used range of {Name}.tfc");
-            }
-
-            /// <summary>
-            /// Maps an offset inside a used range to the consolidated TFC it moved to, and its offset there.
-            /// </summary>
-            public (TFCOutput output, long offset) Remap(long offset)
-            {
-                var interval = Intervals[FindInterval(offset)];
-                return (interval.Output, interval.NewStart + (offset - interval.Start));
-            }
-        }
-
-        /// <summary>
-        /// A consolidated TFC being assembled from ranges of source TFCs.
-        /// </summary>
-        private class TFCOutput
-        {
-            public string Name { get; }
-            public string Path { get; }
-            public Guid Guid { get; }
-            public List<TFCUsage> Sources { get; } = new();
-            public List<MilanSlashTFCSegment> Segments { get; } = new();
-            public long Size { get; private set; } = TFCHeaderSize;
-
-            public TFCOutput(string name, string path, Guid guid)
-            {
-                Name = name;
-                Path = path;
-                Guid = guid;
-            }
-
-            /// <summary>
-            /// Appends a source interval, recording where it ends up.
-            /// </summary>
-            public void Add(TFCUsage source, int intervalIndex)
-            {
-                int sourceIndex = Sources.IndexOf(source);
-                if (sourceIndex < 0)
-                {
-                    sourceIndex = Sources.Count;
-                    Sources.Add(source);
-                }
-
-                var interval = source.Intervals[intervalIndex];
-                source.Intervals[intervalIndex] = (interval.Start, interval.Length, this, Size);
-
-                // Keep the manifest small by joining ranges that are also contiguous in the source
-                if (Segments.Count > 0 && Segments[^1].SourceIndex == sourceIndex && Segments[^1].Offset + Segments[^1].Length == interval.Start)
-                    Segments[^1] = Segments[^1] with { Length = Segments[^1].Length + interval.Length };
-                else
-                    Segments.Add(new MilanSlashTFCSegment(sourceIndex, interval.Start, interval.Length));
-
-                Size += interval.Length;
-            }
-
-            /// <summary>
-            /// If this output would be byte-for-byte the TFC already installed under its name.
-            /// </summary>
-            public bool IsUnchanged()
-            {
-                return Sources.Count == 1 && Sources[0].Name.Equals(Name, StringComparison.OrdinalIgnoreCase)
-                       && Size == Sources[0].Size && Segments.Count == 1 && Segments[0].Offset == TFCHeaderSize
-                       && Guid == Sources[0].ReadGuid();
-            }
-        }
     }
 }

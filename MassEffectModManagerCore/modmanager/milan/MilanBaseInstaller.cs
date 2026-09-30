@@ -598,14 +598,15 @@ namespace ME3TweaksModManager.modmanager.milan
 #if DEBUG
         /// <summary>
         /// Generates a new slash manifest for this installation and writes it into the Project Milan mod's MilanDelta folder,
-        /// replacing any existing one. It is then applied here, which both proves it works and leaves this installation
-        /// identical to what users will get.
+        /// replacing any existing one. Generation slashes the game (TFC compaction, RefShaderCache reduction), records the
+        /// differences, and restores the game; the manifest is then applied here the same way it is on users' machines, which
+        /// both proves it works and leaves this installation identical to what users will get.
         /// </summary>
         private void GenerateAndApplyMilanSlash(string gamePath)
         {
             interop.SetStatus?.Invoke(@"Generating slash manifest...");
             var manifest = MilanSlashGenerator.Generate(gamePath, milanDeltaFolder, s => interop.SetStatus?.Invoke(s));
-            GC.Collect(); // Generation can hold several GB (the RefShaderCache); release it before applying
+            GC.Collect(); // Generation can hold several GB (the RefShaderCache, package diffs); release it before applying
 
             interop.SetStatus?.Invoke(@"Applying generated slash manifest...");
             MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));

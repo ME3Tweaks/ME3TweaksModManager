@@ -17,10 +17,10 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         public double Version { get; set; }
 
         /// <summary>
-        /// TFCs to rebuild from ranges of existing TFCs.
+        /// Files to assemble from ranges of other files, such as TFCs built from the data of existing TFCs.
         /// </summary>
-        [JsonPropertyName("tfcs")]
-        public List<MilanSlashTFCEntry> TFCs { get; set; } = new();
+        [JsonPropertyName("builds")]
+        public List<MilanSlashBuildEntry> Builds { get; set; } = new();
 
         /// <summary>
         /// Files to transform with a JPatch delta.
@@ -74,38 +74,30 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     }
 
     /// <summary>
-    /// Describes a TFC that is assembled from byte ranges of one or more existing TFCs. The patch file only carries these
-    /// offsets and lengths (plus the new TFC's GUID); all texture data comes from the TFCs already on disk.
+    /// Describes a file that is assembled from byte ranges of other files - typically a TFC built by the TFC compactor out
+    /// of the data of existing TFCs. Only offsets and lengths are shipped for data that exists in the user's game; anything
+    /// that doesn't (such as a new TFC's GUID header) comes from a small payload file shipped in the MilanDelta folder.
     /// </summary>
-    internal class MilanSlashTFCEntry
+    internal class MilanSlashBuildEntry
     {
         /// <summary>
-        /// Output TFC, relative to the game root. May be a new file, or the same file as one of the sources.
+        /// File to create, relative to the game root. May be a new file, or the same file as one of the sources.
         /// </summary>
         [JsonPropertyName("filename")]
         public string Filename { get; set; }
 
         /// <summary>
-        /// GUID written as the TFC's 16 byte header. Textures that use this TFC reference it in their TFCFileGuid property.
-        /// </summary>
-        [JsonPropertyName("guid")]
-        public Guid Guid { get; set; }
-
-        /// <summary>
-        /// TFCs that data is pulled from, relative to the game root.
+        /// Files that data is pulled from.
         /// </summary>
         [JsonPropertyName("sources")]
         public List<MilanSlashSourceFile> Sources { get; set; } = new();
 
         /// <summary>
-        /// Ranges to copy, in output order, after the GUID header.
+        /// Ranges to copy, in output order.
         /// </summary>
         [JsonPropertyName("segments")]
-        public List<MilanSlashTFCSegment> Segments { get; set; } = new();
+        public List<MilanSlashSegment> Segments { get; set; } = new();
 
-        /// <summary>
-        /// Size of the output, including the 16 byte GUID header.
-        /// </summary>
         [JsonPropertyName("destsize")]
         public long DestSize { get; set; }
 
@@ -115,11 +107,21 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
     internal class MilanSlashSourceFile
     {
+        /// <summary>
+        /// Path of the file, relative to the game root, or to the MilanDelta folder if <see cref="Payload"/> is set.
+        /// </summary>
         [JsonPropertyName("filename")]
         public string Filename { get; set; }
 
         /// <summary>
-        /// Expected size of the file on disk. TFCs are too large to hash up front; the output hash catches bad data.
+        /// If this is a payload file shipped in the MilanDelta folder rather than a file in the game.
+        /// </summary>
+        [JsonPropertyName("payload")]
+        public bool Payload { get; set; }
+
+        /// <summary>
+        /// Expected size of the file on disk. Game files such as TFCs are too large to hash up front; the output hash
+        /// catches bad data.
         /// </summary>
         [JsonPropertyName("size")]
         public long Size { get; set; }
@@ -127,33 +129,33 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
     /// <summary>
     /// A copy of <see cref="Length"/> bytes from <see cref="Offset"/> in source <see cref="SourceIndex"/>. Serialized as a
-    /// compact [source, offset, length] array, as TFCs can have thousands of these.
+    /// compact [source, offset, length] array, as builds can have thousands of these.
     /// </summary>
-    [JsonConverter(typeof(MilanSlashTFCSegmentConverter))]
-    internal readonly record struct MilanSlashTFCSegment(int SourceIndex, long Offset, long Length);
+    [JsonConverter(typeof(MilanSlashSegmentConverter))]
+    internal readonly record struct MilanSlashSegment(int SourceIndex, long Offset, long Length);
 
-    internal class MilanSlashTFCSegmentConverter : JsonConverter<MilanSlashTFCSegment>
+    internal class MilanSlashSegmentConverter : JsonConverter<MilanSlashSegment>
     {
-        public override MilanSlashTFCSegment Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override MilanSlashSegment Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException(@"Expected [source, offset, length] array for TFC segment");
+                throw new JsonException(@"Expected [source, offset, length] array for a build segment");
 
             var values = new long[3];
             for (int i = 0; i < 3; i++)
             {
                 if (!reader.Read() || reader.TokenType != JsonTokenType.Number)
-                    throw new JsonException(@"TFC segment must contain exactly 3 numbers");
+                    throw new JsonException(@"Build segment must contain exactly 3 numbers");
                 values[i] = reader.GetInt64();
             }
 
             if (!reader.Read() || reader.TokenType != JsonTokenType.EndArray)
-                throw new JsonException(@"TFC segment must contain exactly 3 numbers");
+                throw new JsonException(@"Build segment must contain exactly 3 numbers");
 
-            return new MilanSlashTFCSegment(checked((int)values[0]), values[1], values[2]);
+            return new MilanSlashSegment(checked((int)values[0]), values[1], values[2]);
         }
 
-        public override void Write(Utf8JsonWriter writer, MilanSlashTFCSegment value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, MilanSlashSegment value, JsonSerializerOptions options)
         {
             // Raw so indented output keeps each segment on a single line
             writer.WriteRawValue($@"[{value.SourceIndex},{value.Offset},{value.Length}]", skipInputValidation: true);

@@ -42,14 +42,10 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     {
         public const string SlashManifestFileName = @"slash.json";
         public const string SlashFolderName = @"Slash";
-        public const double SupportedSlashVersion = 0.2;
+        public const double SupportedSlashVersion = 0.3;
 
         private const string StagingExtension = @".slashtmp";
 
-        /// <summary>
-        /// TFCs start with their 16 byte GUID.
-        /// </summary>
-        internal const int TFCHeaderSize = 16;
 
         /// <summary>
         /// Loads and verifies the slash manifest in the given MilanDelta folder.
@@ -99,24 +95,23 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     problems.Add($"{relPath} is written by more than one slash operation");
             }
 
-            foreach (var tfc in manifest.TFCs)
+            foreach (var build in manifest.Builds)
             {
-                if (!TryResolve(gameRoot, tfc.Filename, problems, out _))
+                if (!TryResolve(gameRoot, build.Filename, problems, out _))
                     continue;
-                checkOutput(tfc.Filename);
+                checkOutput(build.Filename);
 
-                if (tfc.Sources.Count == 0)
-                    problems.Add($"{tfc.Filename} has no sources");
+                if (build.Sources.Count == 0)
+                    problems.Add($"{build.Filename} has no sources");
 
-                for (int i = 0; i < tfc.Sources.Count; i++)
+                foreach (var source in build.Sources)
                 {
-                    var source = tfc.Sources[i];
-                    if (!TryResolve(gameRoot, source.Filename, problems, out var sourcePath))
+                    if (!TryResolve(source.Payload ? milanDeltaFolder : gameRoot, source.Filename, problems, out var sourcePath))
                         continue;
 
                     if (!File.Exists(sourcePath))
                     {
-                        problems.Add($"{source.Filename} is missing");
+                        problems.Add(source.Payload ? $"Slash payload file is missing: {source.Filename}" : $"{source.Filename} is missing");
                         continue;
                     }
 
@@ -125,20 +120,20 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                         problems.Add($"{source.Filename} is {size} bytes, expected {source.Size}");
                 }
 
-                long totalSize = TFCHeaderSize;
-                foreach (var segment in tfc.Segments)
+                long totalSize = 0;
+                foreach (var segment in build.Segments)
                 {
-                    if (segment.SourceIndex < 0 || segment.SourceIndex >= tfc.Sources.Count || segment.Offset < 0 || segment.Length <= 0
-                        || segment.Offset + segment.Length > tfc.Sources[segment.SourceIndex].Size)
+                    if (segment.SourceIndex < 0 || segment.SourceIndex >= build.Sources.Count || segment.Offset < 0 || segment.Length <= 0
+                        || segment.Offset + segment.Length > build.Sources[segment.SourceIndex].Size)
                     {
-                        problems.Add($"{tfc.Filename} has an invalid segment {segment}");
+                        problems.Add($"{build.Filename} has an invalid segment {segment}");
                         break;
                     }
                     totalSize += segment.Length;
                 }
 
-                if (totalSize != tfc.DestSize)
-                    problems.Add($"{tfc.Filename} segments total {totalSize} bytes, but the manifest expects {tfc.DestSize}");
+                if (totalSize != build.DestSize)
+                    problems.Add($"{build.Filename} segments total {totalSize} bytes, but the manifest expects {build.DestSize}");
             }
 
             foreach (var patch in manifest.Patches)
@@ -224,13 +219,16 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             var staged = new List<(string stagingPath, string finalPath)>();
             try
             {
-                foreach (var tfc in manifest.TFCs)
+                foreach (var build in manifest.Builds)
                 {
-                    setStatus?.Invoke($"Building {Path.GetFileName(tfc.Filename)}");
-                    var finalPath = Resolve(gameRoot, tfc.Filename);
+                    setStatus?.Invoke($"Building {Path.GetFileName(build.Filename)}");
+                    var finalPath = Resolve(gameRoot, build.Filename);
                     var stagingPath = finalPath + StagingExtension;
                     lock (staged) staged.Add((stagingPath, finalPath));
-                    BuildTFC(tfc, gameRoot, stagingPath);
+                    using var output = new FileStream(stagingPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024);
+                    var (size, hash) = AssembleBuild(build, source => Resolve(source.Payload ? milanDeltaFolder : gameRoot, source.Filename), output);
+                    VerifySize(size, build.DestSize, build.Filename, @"output");
+                    VerifyHash(hash, build.DestHash, build.Filename, @"output");
                 }
 
                 int patchesDone = 0;
@@ -277,50 +275,45 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 }
             }
 
-            M3Log.Information($@"Slash applied: {manifest.TFCs.Count} TFC(s) rebuilt, {patches.Count} file(s) patched, {manifest.Deletions.Count} file(s) deleted");
+            M3Log.Information($@"Slash applied: {manifest.Builds.Count} file(s) built, {patches.Count} file(s) patched, {manifest.Deletions.Count} file(s) deleted");
         }
 
         /// <summary>
-        /// Assembles a TFC from ranges of its source TFCs, verifying the result as it is written.
+        /// Assembles a build from ranges of its sources, writing it to <paramref name="output"/> (if not null) and returning
+        /// the size and SHA-256 of the result.
         /// </summary>
-        private static void BuildTFC(MilanSlashTFCEntry tfc, string gameRoot, string stagingPath)
+        /// <param name="resolveSource">Returns the path to read a source from.</param>
+        internal static (long size, string hash) AssembleBuild(MilanSlashBuildEntry build, Func<MilanSlashSourceFile, string> resolveSource, Stream output)
         {
-            var sources = new FileStream[tfc.Sources.Count];
+            var sources = new FileStream[build.Sources.Count];
             try
             {
                 for (int i = 0; i < sources.Length; i++)
                 {
-                    sources[i] = new FileStream(Resolve(gameRoot, tfc.Sources[i].Filename), FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+                    sources[i] = new FileStream(resolveSource(build.Sources[i]), FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
                 }
 
                 using var hasher = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
                 var buffer = new byte[1024 * 1024];
-                using (var output = new FileStream(stagingPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024))
+                long size = 0;
+                foreach (var segment in build.Segments)
                 {
-                    var header = tfc.Guid.ToByteArray();
-                    output.Write(header);
-                    hasher.AppendData(header);
-
-                    foreach (var segment in tfc.Segments)
+                    var source = sources[segment.SourceIndex];
+                    source.Position = segment.Offset;
+                    long remaining = segment.Length;
+                    while (remaining > 0)
                     {
-                        var source = sources[segment.SourceIndex];
-                        source.Position = segment.Offset;
-                        long remaining = segment.Length;
-                        while (remaining > 0)
-                        {
-                            int read = source.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
-                            if (read <= 0)
-                                throw new Exception($"Unexpected end of {tfc.Sources[segment.SourceIndex].Filename} while building {tfc.Filename}");
-                            output.Write(buffer, 0, read);
-                            hasher.AppendData(buffer, 0, read);
-                            remaining -= read;
-                        }
+                        int read = source.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
+                        if (read <= 0)
+                            throw new Exception($"Unexpected end of {build.Sources[segment.SourceIndex].Filename} while building {build.Filename}");
+                        output?.Write(buffer, 0, read);
+                        hasher.AppendData(buffer, 0, read);
+                        remaining -= read;
+                        size += read;
                     }
-
-                    VerifySize(output.Length, tfc.DestSize, tfc.Filename, @"output");
                 }
 
-                VerifyHash(Convert.ToHexStringLower(hasher.GetHashAndReset()), tfc.DestHash, tfc.Filename, @"output");
+                return (size, Convert.ToHexStringLower(hasher.GetHashAndReset()));
             }
             finally
             {
