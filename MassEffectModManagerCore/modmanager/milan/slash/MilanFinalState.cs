@@ -76,12 +76,36 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// <summary>
         /// Compares the game against the expected final state. Returns a list of differences; empty means the installation
         /// matches exactly (excluding <see cref="ExcludedPaths"/>).
+        /// <para>
+        /// Non-INT localization files may be missing, as they depend on which localizations the user's LE3 installation has
+        /// (see <see cref="MilanLocalizationFiles"/>). The TOC that lists a missing localization file can't match then, so that
+        /// TOC only has to exist; it's generated from the files, which are all verified.
+        /// </para>
         /// </summary>
         public static List<string> Verify(IReadOnlyList<MilanSlashFinalFileEntry> expected, string gameRoot, Action<string> setStatus = null)
         {
             var problems = new ConcurrentBag<string>();
             var actual = GetGameFiles(gameRoot).ToDictionary(x => x.relativePath, x => x.fullPath, StringComparer.OrdinalIgnoreCase);
-            var expectedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            // Work out which differences we tolerate before comparing anything
+            var missingLocalizations = expected
+                .Where(x => !actual.ContainsKey(x.Filename) && MilanLocalizationFiles.IsOptionalLocalization(x.Filename))
+                .Select(x => x.Filename)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var tocsWithMissingFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (missingLocalizations.Count > 0)
+            {
+                var tocs = expected.Select(x => x.Filename).Where(IsTOC).ToList();
+                foreach (var missing in missingLocalizations)
+                {
+                    M3Log.Information($@"Installation verification: {missing} is not installed (localization not present in the source game)");
+                    var owningTOC = tocs
+                        .Where(toc => missing.StartsWith(GetFolder(toc), StringComparison.OrdinalIgnoreCase))
+                        .MaxBy(toc => toc.Length);
+                    if (owningTOC != null && tocsWithMissingFiles.Add(owningTOC))
+                        M3Log.Information($@"Installation verification: {owningTOC} is not compared as it lists missing localization files");
+                }
+            }
 
             int done = 0;
             Parallel.ForEach(expected, new ParallelOptions { MaxDegreeOfParallelism = 4 }, entry =>
@@ -89,9 +113,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 setStatus?.Invoke($"Verifying installation ({Interlocked.Increment(ref done)}/{expected.Count})");
                 if (!actual.TryGetValue(entry.Filename, out var fullPath))
                 {
-                    problems.Add($"Missing file: {entry.Filename}");
+                    if (!missingLocalizations.Contains(entry.Filename))
+                        problems.Add($"Missing file: {entry.Filename}");
                     return;
                 }
+
+                if (tocsWithMissingFiles.Contains(entry.Filename))
+                    return;
 
                 var size = new FileInfo(fullPath).Length;
                 if (size != entry.Size)
@@ -107,11 +135,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 }
             });
 
-            foreach (var entry in expected)
-            {
-                expectedNames.Add(entry.Filename);
-            }
-
+            var expectedNames = expected.Select(x => x.Filename).ToHashSet(StringComparer.OrdinalIgnoreCase);
             foreach (var relativePath in actual.Keys)
             {
                 if (!expectedNames.Contains(relativePath))
@@ -119,6 +143,17 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             }
 
             return problems.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static bool IsTOC(string relativePath) => Path.GetFileName(relativePath.Replace('\\', Path.DirectorySeparatorChar)).Equals(@"PCConsoleTOC.bin", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Folder part of a game-relative path, including the trailing separator (empty for the game root).
+        /// </summary>
+        private static string GetFolder(string relativePath)
+        {
+            var separator = relativePath.LastIndexOf('\\');
+            return separator < 0 ? string.Empty : relativePath[..(separator + 1)];
         }
 
         private static List<(string relativePath, string fullPath)> GetGameFiles(string gameRoot)

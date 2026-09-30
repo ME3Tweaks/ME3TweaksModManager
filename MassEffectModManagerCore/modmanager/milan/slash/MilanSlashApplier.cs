@@ -152,7 +152,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
                 if (!File.Exists(sourcePath))
                 {
-                    problems.Add($"{patch.Filename} is missing");
+                    // Users' LE3 installations may not have every localization; those files are simply skipped
+                    if (!MilanLocalizationFiles.IsOptionalLocalization(patch.Filename))
+                        problems.Add($"{patch.Filename} is missing");
                     continue;
                 }
 
@@ -201,6 +203,18 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 throw new Exception($"The installed game does not match the slash manifest ({problems.Count} problem(s)). First problem: {problems[0]}");
             }
 
+            // Localizations the user doesn't have are skipped (validation has already allowed this)
+            var patches = new List<MilanSlashPatchEntry>();
+            foreach (var patch in manifest.Patches)
+            {
+                if (!File.Exists(Resolve(gameRoot, patch.Filename)) && MilanLocalizationFiles.IsOptionalLocalization(patch.Filename))
+                {
+                    M3Log.Information($@"Slash: skipping {patch.Filename}, a localization this installation does not have");
+                    continue;
+                }
+                patches.Add(patch);
+            }
+
             // Build everything into staging files next to their final locations.
             var staged = new List<(string stagingPath, string finalPath)>();
             try
@@ -216,14 +230,14 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
                 int patchesDone = 0;
                 var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount / 2, 1, 4) };
-                Parallel.ForEach(manifest.Patches, parallelOptions, patch =>
+                Parallel.ForEach(patches, parallelOptions, patch =>
                 {
                     var finalPath = Resolve(gameRoot, patch.Filename);
                     var stagingPath = finalPath + StagingExtension;
                     lock (staged) staged.Add((stagingPath, finalPath));
                     ApplyPatch(patch, Resolve(milanDeltaFolder, patch.Delta), finalPath, stagingPath);
                     var done = Interlocked.Increment(ref patchesDone);
-                    setStatus?.Invoke($"Patching files ({done}/{manifest.Patches.Count})");
+                    setStatus?.Invoke($"Patching files ({done}/{patches.Count})");
                 });
             }
             catch (Exception e)
@@ -258,7 +272,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 }
             }
 
-            M3Log.Information($@"Slash applied: {manifest.TFCs.Count} TFC(s) rebuilt, {manifest.Patches.Count} file(s) patched, {manifest.Deletions.Count} file(s) deleted");
+            M3Log.Information($@"Slash applied: {manifest.TFCs.Count} TFC(s) rebuilt, {patches.Count} file(s) patched, {manifest.Deletions.Count} file(s) deleted");
         }
 
         /// <summary>
