@@ -5,6 +5,7 @@ using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.Unreal.Collections;
 using LegendaryExplorerCore.Unreal.ObjectInfo;
+using ME3TweaksCore.Helpers;
 
 namespace ME3TweaksModManager.modmanager.milan.slash
 {
@@ -21,7 +22,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     /// uses and repoints every package at them.</item>
     /// <item>The before and after states are diffed. Changed packages get a JPatch delta. New files (the compacted TFCs) are
     /// described as ranges of the original files - for a TFC, the offsets its textures moved from - so almost no data is
-    /// shipped. Removed files, and TFCs nothing references any more, are marked for deletion.</item>
+    /// shipped. Removed files, and basegame TFCs nothing references any more, are marked for deletion.</item>
     /// <item>The game is restored from the snapshot, so the caller can apply the manifest exactly as it will be applied on
     /// users' machines.</item>
     /// </list>
@@ -175,6 +176,12 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         private static bool IsPackage(string relativePath) => PackageExtensions.Contains(Path.GetExtension(relativePath.Replace('\\', Path.DirectorySeparatorChar)), StringComparer.OrdinalIgnoreCase);
         private static bool IsTFC(string relativePath) => relativePath.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// TFCs copied from LE3's basegame. These are the only TFCs that are compacted or deleted: DLC TFCs (Project Milan's)
+        /// are already compacted, and basegame packages never reference them.
+        /// </summary>
+        private static bool IsBasegameTFC(string relativePath) => IsTFC(relativePath) && relativePath.StartsWith(@"BioGame\CookedPCConsole\", StringComparison.OrdinalIgnoreCase);
         private static bool IsRefShaderCache(string relativePath) => relativePath.EndsWith("\\" + RefShaderCacheName, StringComparison.OrdinalIgnoreCase);
         private static bool IsWorkPath(string relativePath) => relativePath.StartsWith(WorkFolderName + "\\", StringComparison.OrdinalIgnoreCase);
         private static string GetFileName(string relativePath) => relativePath[(relativePath.LastIndexOf('\\') + 1)..];
@@ -239,7 +246,6 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             if (string.IsNullOrEmpty(tfcName))
                 return; // No external data
 
-            scan.ReferencedTFCs.Add(tfcName);
             try
             {
                 var ranges = new List<(long, long)>();
@@ -257,13 +263,24 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     if (movie.IsExternal)
                         ranges.Add((movie.DataOffset, movie.DataSize));
                 }
+                else
+                {
+                    // We can't read where this class keeps its data, so assume it uses the TFC
+                    scan.ReferencedTFCs.Add(tfcName);
+                    return;
+                }
 
-                // Other classes still count as references to the TFC above; their data just can't be located
+                // Textures whose mips are all package stored can still have a TextureFileCacheName (LE3's GUI textures
+                // often do); they don't actually use the TFC
                 if (ranges.Count > 0)
+                {
+                    scan.ReferencedTFCs.Add(tfcName);
                     scan.Textures[(packagePath, export.UIndex)] = new TextureData(tfcName, ranges);
+                }
             }
             catch (Exception e)
             {
+                scan.ReferencedTFCs.Add(tfcName); // Can't tell, so assume it's used
                 M3Log.Warning($"Slash scan: could not read {export.InstancedFullPath} in {packagePath}: {e.Message}");
             }
         }
@@ -375,7 +392,10 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     return; // Nothing to remove
 
                 cacheExport.WriteBinary(cache);
-                using var saved = package.SaveToStream(package.IsCompressed);
+
+                // The game's RefShaderCache is uncompressed. Keep it that way so the delta is a raw file-to-file patch that
+                // the applier never has to load the 1.3GB package to apply.
+                using var saved = package.SaveToStream(compress: false);
                 slashed = saved.ToArray();
             }
 
@@ -391,8 +411,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// </summary>
         private void CompactTFCs()
         {
-            var tfcNames = Directory.EnumerateFiles(bioGame, "*.tfc", SearchOption.AllDirectories)
-                .Select(Path.GetFileNameWithoutExtension)
+            var tfcNames = snapshot.EnumerateGameFiles()
+                .Where(IsBasegameTFC)
+                .Select(x => Path.GetFileNameWithoutExtension(GetFileName(x)))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
             if (tfcNames.Count == 0)
@@ -518,8 +539,8 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     AddDeletion(relativePath, size, "removed while slashing");
             }
 
-            // TFCs whose data has all been moved out, or that nothing used to begin with
-            foreach (var relativePath in current.Where(x => IsTFC(x) && snapshot.Files.ContainsKey(x) && snapshot.IsUnchanged(x)))
+            // Basegame TFCs whose data has all been moved out, or that nothing used to begin with
+            foreach (var relativePath in current.Where(x => IsBasegameTFC(x) && snapshot.Files.ContainsKey(x) && snapshot.IsUnchanged(x)))
             {
                 var name = Path.GetFileNameWithoutExtension(GetFileName(relativePath));
                 if (after.ReferencedTFCs.Contains(name))
@@ -583,11 +604,11 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 Mode = mode,
                 Compressed = modifiedCompressed,
                 SourceFileSize = original.LongLength,
-                SourceFileHash = MilanSlashHashing.HashBytes(original),
+                SourceFileHash = MUtilities.CalculateHash(original, "sha256"),
                 SourceSize = sourceData.LongLength,
-                SourceHash = MilanSlashHashing.HashBytes(sourceData),
+                SourceHash = MUtilities.CalculateHash(sourceData, "sha256"),
                 DestSize = destData.LongLength,
-                DestHash = MilanSlashHashing.HashBytes(destData),
+                DestHash = MUtilities.CalculateHash(destData, "sha256"),
             });
 
             M3Log.Information($"Slash: {relativePath} delta is {FileSize.FormatSize(new FileInfo(deltaPath).Length)} ({mode}, {FileSize.FormatSize(sourceData.LongLength)} -> {FileSize.FormatSize(destData.LongLength)})");
@@ -711,11 +732,17 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 payloadSource.Size = new FileInfo(payloadPath).Length;
 
             build.DestSize = length;
-            build.DestHash = MilanSlashHashing.HashFile(path);
+            build.DestHash = MUtilities.CalculateHash(path, "sha256");
 
             // Prove the description reproduces the file from the original game files
-            var (builtSize, builtHash) = MilanSlashApplier.AssembleBuild(build, source => source.Payload ? payloadPath : snapshot.GetSnapshotPath(source.Filename), null);
-            if (builtSize != build.DestSize || builtHash != build.DestHash)
+            var verifyPath = Path.Combine(workRoot, "BuildVerification.tmp");
+            using (var verifyStream = new FileStream(verifyPath, FileMode.Create, FileAccess.Write))
+            {
+                MilanSlashApplier.AssembleBuild(build, source => source.Payload ? payloadPath : snapshot.GetSnapshotPath(source.Filename), verifyStream);
+            }
+            var reproduced = new FileInfo(verifyPath).Length == build.DestSize && MUtilities.CalculateHash(verifyPath, "sha256") == build.DestHash;
+            File.Delete(verifyPath);
+            if (!reproduced)
                 throw new Exception($"Slash: the description of {relativePath} does not reproduce it");
 
             manifest.Builds.Add(build);
