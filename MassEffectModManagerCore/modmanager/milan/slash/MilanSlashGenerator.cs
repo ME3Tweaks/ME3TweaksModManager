@@ -1,8 +1,10 @@
+using System.Buffers.Binary;
 using System.ComponentModel;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
+using LegendaryExplorerCore.Unreal.BinaryConverters.Shaders;
 using LegendaryExplorerCore.Unreal.Collections;
 using LegendaryExplorerCore.Unreal.ObjectInfo;
 using ME3TweaksCore.Helpers;
@@ -17,12 +19,12 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     /// development installation, then records the difference as a manifest:
     /// <list type="number">
     /// <item>The game is snapshotted, so there are original files to diff against and restore from.</item>
-    /// <item>The game is transformed: the RefShaderCache is reduced to the shader maps materials in the game use, and the
+    /// <item>The game is transformed: the RefShaderCache is reduced to the shader maps materials in the game use, the
     /// TFCs are compacted with LEC's <see cref="TFCCompactor"/>, which builds new TFCs from the texture data the game
-    /// uses and repoints every package at them.</item>
-    /// <item>The before and after states are diffed. Changed packages get a JPatch delta. New files (the compacted TFCs) are
-    /// described as ranges of the original files - for a TFC, the offsets its textures moved from - so almost no data is
-    /// shipped. Removed files, and basegame TFCs nothing references any more, are marked for deletion.</item>
+    /// uses and repoints every package at them, and the LE3 DLC AFCs copied into the basegame are compacted the same way.</item>
+    /// <item>The before and after states are diffed. Changed packages get a JPatch delta. New files (the compacted TFCs and
+    /// AFCs) are described as ranges of the original files - the offsets their textures and audio moved from - so almost
+    /// no data is shipped. Removed files, and compacted caches nothing references any more, are marked for deletion.</item>
     /// <item>The game is restored from the snapshot, so the caller can apply the manifest exactly as it will be applied on
     /// users' machines.</item>
     /// </list>
@@ -53,6 +55,12 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             ("Textures", false),
         ];
 
+        /// <summary>
+        /// Base name of the AFCs audio is compacted into: Audio1_LMP, Audio2_LMP... A new one is started whenever one would
+        /// go past what a WwiseStream's 32-bit offset can address.
+        /// </summary>
+        private const string CompactedAFCName = "Audio{0}_LMP";
+
         private static readonly string[] PackageExtensions = [".pcc", ".upk", ".u", ".sfm"];
 
         /// <summary>
@@ -82,9 +90,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         private readonly HashSet<StaticParameterSet> usedStaticParameterSets = new();
 
         /// <summary>
-        /// Set if a material could not be read. The shader cache is left alone if we can't be sure what's used.
+        /// Materials that could not be read. Their shader maps can't be identified, so they are reported.
         /// </summary>
-        private bool materialScanFailed;
+        private readonly List<string> unreadableMaterials = new();
 
         private readonly MilanSlashManifest manifest = new() { MilanSlash = true, Version = MilanSlashApplier.SupportedSlashVersion };
 
@@ -144,6 +152,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 var originalScan = ScanGame(scanMaterials: true);
                 SlashRefShaderCache(Path.Combine(bioGame, "CookedPCConsole", RefShaderCacheName));
                 CompactTFCs();
+                CompactAFCs(originalScan);
                 var slashedScan = ScanGame(scanMaterials: false);
                 RecordChanges(originalScan, slashedScan);
                 manifest.Save(milanDeltaFolder); // Final file state is recorded later, once the installer has finished
@@ -176,12 +185,31 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         private static bool IsPackage(string relativePath) => PackageExtensions.Contains(Path.GetExtension(relativePath.Replace('\\', Path.DirectorySeparatorChar)), StringComparer.OrdinalIgnoreCase);
         private static bool IsTFC(string relativePath) => relativePath.EndsWith(".tfc", StringComparison.OrdinalIgnoreCase);
+        private static bool IsAFC(string relativePath) => relativePath.EndsWith(".afc", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// If this is a file that textures or audio keep their data in.
+        /// </summary>
+        private static bool IsCacheFile(string relativePath) => IsTFC(relativePath) || IsAFC(relativePath);
+
+        private static bool IsInBasegameCooked(string relativePath) => relativePath.StartsWith(@"BioGame\CookedPCConsole\", StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// TFCs copied from LE3's basegame. These are the only TFCs that are compacted or deleted: DLC TFCs (Project Milan's)
         /// are already compacted, and basegame packages never reference them.
         /// </summary>
-        private static bool IsBasegameTFC(string relativePath) => IsTFC(relativePath) && relativePath.StartsWith(@"BioGame\CookedPCConsole\", StringComparison.OrdinalIgnoreCase);
+        private static bool IsBasegameTFC(string relativePath) => IsTFC(relativePath) && IsInBasegameCooked(relativePath);
+
+        /// <summary>
+        /// AFCs of LE3's DLC, which the base installer copies into the basegame. These are the only AFCs that are compacted
+        /// or deleted.
+        /// </summary>
+        private static bool IsCompactableAFC(string relativePath) => IsAFC(relativePath) && IsInBasegameCooked(relativePath) && GetFileName(relativePath).StartsWith("DLC_", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Caches whose used data is compacted into new files, and which are deleted once nothing references them.
+        /// </summary>
+        private static bool IsCompactableCache(string relativePath) => IsBasegameTFC(relativePath) || IsCompactableAFC(relativePath);
         private static bool IsRefShaderCache(string relativePath) => relativePath.EndsWith("\\" + RefShaderCacheName, StringComparison.OrdinalIgnoreCase);
         private static bool IsWorkPath(string relativePath) => relativePath.StartsWith(WorkFolderName + "\\", StringComparison.OrdinalIgnoreCase);
         private static string GetFileName(string relativePath) => relativePath[(relativePath.LastIndexOf('\\') + 1)..];
@@ -189,21 +217,24 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         #region Scanning
 
         /// <summary>
-        /// Where one export's TFC data is.
+        /// Where one export's external data is: the cache file (with extension, e.g. Textures0.tfc or DLC_EXP_Pack001_INT.afc)
+        /// and the ranges in it.
         /// </summary>
-        private record TextureData(string TFCName, List<(long Offset, long Length)> Ranges);
+        private record ExternalData(string FileName, List<(long Offset, long Length)> Ranges);
 
         private class GameScan
         {
             /// <summary>
-            /// TFC data of every texture/movie export we can read, keyed by (game-relative package path, export UIndex).
+            /// External data of every texture, movie and audio export we can read, keyed by (game-relative package path,
+            /// export UIndex).
             /// </summary>
-            public Dictionary<(string package, int uIndex), TextureData> Textures { get; } = new();
+            public Dictionary<(string package, int uIndex), ExternalData> Data { get; } = new();
 
             /// <summary>
-            /// Names of every TFC referenced by any export, including classes we can't read the data of.
+            /// File names (with extension) of every cache file referenced by any export, including classes we can't read the
+            /// data of.
             /// </summary>
-            public HashSet<string> ReferencedTFCs { get; } = new(StringComparer.OrdinalIgnoreCase);
+            public HashSet<string> ReferencedFiles { get; } = new(StringComparer.OrdinalIgnoreCase);
         }
 
         private static bool ShouldLoadExport(ExportEntry export)
@@ -211,6 +242,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             var className = export.ClassName;
             return className.Contains("Texture", StringComparison.OrdinalIgnoreCase)
                    || className.Contains("Movie", StringComparison.OrdinalIgnoreCase)
+                   || className == "WwiseStream"
                    || (className.Contains("Material", StringComparison.OrdinalIgnoreCase) && !className.Contains("Expression", StringComparison.OrdinalIgnoreCase));
         }
 
@@ -225,14 +257,20 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 using var package = MEPackageHandler.UnsafePartialLoad(snapshot.GetGamePath(relativePath), ShouldLoadExport);
                 foreach (var export in package.Exports.Where(ShouldLoadExport))
                 {
+                    if (export.ClassName == "WwiseStream")
+                    {
+                        ScanAudioExport(scan, relativePath, export);
+                        continue;
+                    }
+
                     ScanTextureExport(scan, relativePath, export);
                     if (scanMaterials)
                         ScanMaterialExport(relativePath, export);
                 }
             }
 
-            M3Log.Information($"Slash scan: {packages.Count} packages, {scan.Textures.Count} exports with TFC data, {scan.ReferencedTFCs.Count} referenced TFCs" +
-                              (scanMaterials ? $", {usedStaticParameterSets.Count} used material static parameter sets" : ""));
+            M3Log.Information($"Slash scan: {packages.Count} packages, {scan.Data.Count} exports with external data, {scan.ReferencedFiles.Count} referenced TFCs/AFCs" +
+                              (scanMaterials ? $", {usedStaticParameterSets.Count} used material static parameter sets, {unreadableMaterials.Count} unreadable materials" : ""));
             return scan;
         }
 
@@ -245,6 +283,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             var tfcName = export.GetProperty<NameProperty>("TextureFileCacheName")?.Value.Instanced;
             if (string.IsNullOrEmpty(tfcName))
                 return; // No external data
+            var tfcFileName = tfcName + ".tfc";
 
             try
             {
@@ -266,7 +305,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 else
                 {
                     // We can't read where this class keeps its data, so assume it uses the TFC
-                    scan.ReferencedTFCs.Add(tfcName);
+                    scan.ReferencedFiles.Add(tfcFileName);
                     return;
                 }
 
@@ -274,13 +313,33 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 // often do); they don't actually use the TFC
                 if (ranges.Count > 0)
                 {
-                    scan.ReferencedTFCs.Add(tfcName);
-                    scan.Textures[(packagePath, export.UIndex)] = new TextureData(tfcName, ranges);
+                    scan.ReferencedFiles.Add(tfcFileName);
+                    scan.Data[(packagePath, export.UIndex)] = new ExternalData(tfcFileName, ranges);
                 }
             }
             catch (Exception e)
             {
-                scan.ReferencedTFCs.Add(tfcName); // Can't tell, so assume it's used
+                scan.ReferencedFiles.Add(tfcFileName); // Can't tell, so assume it's used
+                M3Log.Warning($"Slash scan: could not read {export.InstancedFullPath} in {packagePath}: {e.Message}");
+            }
+        }
+
+        private static void ScanAudioExport(GameScan scan, string packagePath, ExportEntry export)
+        {
+            var afcName = export.GetProperty<NameProperty>("Filename")?.Value.Instanced;
+            if (string.IsNullOrEmpty(afcName))
+                return; // Package stored
+            var afcFileName = afcName + ".afc";
+
+            scan.ReferencedFiles.Add(afcFileName);
+            try
+            {
+                var stream = ObjectBinary.From<WwiseStream>(export);
+                if (stream.DataSize > 0)
+                    scan.Data[(packagePath, export.UIndex)] = new ExternalData(afcFileName, [(stream.DataOffset, stream.DataSize)]);
+            }
+            catch (Exception e)
+            {
                 M3Log.Warning($"Slash scan: could not read {export.InstancedFullPath} in {packagePath}: {e.Message}");
             }
         }
@@ -295,44 +354,49 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             return flags.HasFlag(StorageFlags.externalFile) && !flags.HasFlag(StorageFlags.unused);
         }
 
+        /// <summary>
+        /// Records the static parameter sets a material's shader maps are keyed by in the shader cache.
+        /// </summary>
         private void ScanMaterialExport(string packagePath, ExportEntry export)
         {
+            // Class default objects (Default__Material...) carry no material resource
+            if (export.IsDefaultObject)
+                return;
+
             var className = export.ClassName;
             try
             {
-                if (className is "Material" or "DecalMaterial")
+                if (className.Contains("MaterialInstance", StringComparison.OrdinalIgnoreCase) || IsA(export, "MaterialInstance"))
                 {
-                    usedStaticParameterSets.Add((StaticParameterSet)ObjectBinary.From<Material>(export).SM3MaterialResource.ID);
-                }
-                else if (className.Contains("MaterialInstance", StringComparison.OrdinalIgnoreCase))
-                {
+                    // Without a static permutation, an instance renders with its parent material's shader maps
                     if (export.GetProperty<BoolProperty>("bHasStaticPermutationResource")?.Value == true)
                     {
-                        usedStaticParameterSets.Add(ObjectBinary.From<MaterialInstance>(export).SM3StaticParameterSet);
+                        var instance = ObjectBinary.From<MaterialInstance>(export);
+                        usedStaticParameterSets.Add(instance.SM3StaticParameterSet);
+                        usedStaticParameterSets.Add((StaticParameterSet)instance.SM3StaticPermutationResource.ID);
                     }
                 }
-                else if (className.Contains("Material", StringComparison.OrdinalIgnoreCase) && IsMaterialSubclass(export))
+                else if (className is "Material" or "DecalMaterial" || IsA(export, "Material"))
                 {
-                    // Subclass of Material we don't have a name for
                     usedStaticParameterSets.Add((StaticParameterSet)ObjectBinary.From<Material>(export).SM3MaterialResource.ID);
                 }
             }
             catch (Exception e)
             {
-                materialScanFailed = true;
+                unreadableMaterials.Add($"{packagePath}: {export.InstancedFullPath}");
                 M3Log.Error($"Slash scan: could not read material {export.InstancedFullPath} in {packagePath}: {e.Message}");
             }
         }
 
         /// <summary>
-        /// Catches subclasses of Material we don't know by name. Class lookups can fail for classes the object database
-        /// doesn't know about; those aren't materials we can read anyway.
+        /// Catches subclasses we don't know by name. Class lookups can fail for classes the object database doesn't know
+        /// about; those aren't classes we can read anyway.
         /// </summary>
-        private static bool IsMaterialSubclass(ExportEntry export)
+        private static bool IsA(ExportEntry export, string className)
         {
             try
             {
-                return export.IsA("Material");
+                return export.IsA(className);
             }
             catch
             {
@@ -355,10 +419,16 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 return;
             }
 
-            if (materialScanFailed || usedStaticParameterSets.Count == 0)
+            if (usedStaticParameterSets.Count == 0)
             {
-                M3Log.Error("Slash: material scan was incomplete; the RefShaderCache will not be slashed as we cannot be sure which shaders are used");
+                M3Log.Error("Slash: no materials were found in the game; the RefShaderCache will not be slashed");
                 return;
+            }
+
+            if (unreadableMaterials.Count > 0)
+            {
+                // Their shader maps are removed. Listed together so they can be checked before the manifest ships.
+                M3Log.Error($"Slash: {unreadableMaterials.Count} material(s) could not be read, so their shader maps can't be identified and will not be kept:\n  " + string.Join("\n  ", unreadableMaterials));
             }
 
             setStatus?.Invoke("Slashing RefShaderCache");
@@ -385,9 +455,24 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     }
                 }
 
+                // Remove shaders no remaining shader map references. Done here rather than with ShaderCache.Compact(),
+                // which searches a list for every shader and takes far too long on a cache this size.
+                var keptShaderIds = new HashSet<Guid>();
+                foreach (var (_, shaderMap) in keptMaps)
+                {
+                    foreach (var (_, shaderReference) in shaderMap.Shaders)
+                        keptShaderIds.Add(shaderReference.Id);
+                    foreach (var meshShaderMap in shaderMap.MeshShaderMaps)
+                    {
+                        foreach (var (_, shaderReference) in meshShaderMap.Shaders)
+                            keptShaderIds.Add(shaderReference.Id);
+                    }
+                }
+
                 cache.MaterialShaderMaps = keptMaps;
-                cache.Compact(); // Removes shaders no remaining shader map references
-                M3Log.Information($"Slash: RefShaderCache keeps {keptMaps.Count}/{originalMaps} material shader maps and {cache.Shaders.Count}/{originalShaders} shaders");
+                cache.Shaders = new UMultiMap<Guid, Shader>(cache.Shaders.Where(x => keptShaderIds.Contains(x.Key)));
+                M3Log.Information($"Slash: RefShaderCache keeps {keptMaps.Count}/{originalMaps} material shader maps and {cache.Shaders.Count}/{originalShaders} shaders " +
+                                  $"({usedStaticParameterSets.Count} static parameter sets are used by materials in the game; the rest have shader maps elsewhere or none at all)");
                 if (keptMaps.Count == originalMaps && cache.Shaders.Count == originalShaders)
                     return; // Nothing to remove
 
@@ -503,6 +588,121 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             }
         }
 
+        /// <summary>
+        /// Compacts the LE3 DLC AFCs the base installer copies into the basegame: the audio packages anywhere in the game use
+        /// from them is copied into new AFCs, and those WwiseStreams are repointed at it. As with the TFC compactor, packages
+        /// that don't reference these AFCs are never saved.
+        /// </summary>
+        private void CompactAFCs(GameScan scan)
+        {
+            var afcs = snapshot.EnumerateGameFiles().Where(IsCompactableAFC).ToDictionary(GetFileName, x => x, StringComparer.OrdinalIgnoreCase);
+            var references = scan.Data.Where(x => afcs.ContainsKey(x.Value.FileName)).ToList();
+            if (references.Count == 0)
+                return;
+
+            static (string file, long offset, long length) AudioKey(ExternalData data) => (data.FileName.ToLowerInvariant(), data.Ranges[0].Offset, data.Ranges[0].Length);
+
+            // Build the new AFCs. Audio is copied in source order, once no matter how many exports use it.
+            var cooked = Path.Combine(bioGame, "CookedPCConsole");
+            var newLocations = new Dictionary<(string file, long offset, long length), (string afcName, int offset)>();
+            var built = new List<(string building, string final)>();
+            var audio = references.Select(x => AudioKey(x.Value)).Distinct().OrderBy(x => x.file, StringComparer.Ordinal).ThenBy(x => x.offset).ToList();
+            FileStream source = null;
+            FileStream output = null;
+            try
+            {
+                string sourceName = null;
+                string outputName = null;
+                var header = new byte[4];
+                for (int i = 0; i < audio.Count; i++)
+                {
+                    var item = audio[i];
+                    setStatus?.Invoke($"Compacting AFCs ({i + 1}/{audio.Count})");
+                    if (sourceName != item.file)
+                    {
+                        source?.Dispose();
+                        source = new FileStream(snapshot.GetGamePath(afcs[item.file]), FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+                        sourceName = item.file;
+                    }
+
+                    // Same checks as LEC's AFC compactor. Anything that fails them is left pointing at the original AFC, which
+                    // then stays in the game.
+                    if (item.offset < 0 || item.length < header.Length || item.offset + item.length > source.Length)
+                    {
+                        M3Log.Warning($"Slash: audio at 0x{item.offset:X8} (0x{item.length:X} bytes) is outside of {item.file}; it is not compacted");
+                        continue;
+                    }
+                    source.Position = item.offset;
+                    source.ReadExactly(header);
+                    if (!header.AsSpan().SequenceEqual("RIFF"u8))
+                    {
+                        M3Log.Warning($"Slash: audio at 0x{item.offset:X8} in {item.file} does not start with RIFF; it is not compacted");
+                        continue;
+                    }
+
+                    if (output == null || output.Position + item.length > int.MaxValue)
+                    {
+                        output?.Dispose();
+                        outputName = string.Format(CompactedAFCName, built.Count + 1);
+                        var final = Path.Combine(cooked, outputName + ".afc");
+                        if (File.Exists(final))
+                            throw new Exception($"Cannot compact AFCs: {final} already exists");
+                        built.Add((final + ".building", final));
+                        output = new FileStream(final + ".building", FileMode.CreateNew, FileAccess.Write);
+                    }
+
+                    newLocations[item] = (outputName, (int)output.Position);
+                    source.Position = item.offset;
+                    CopyExactly(source, output, item.length);
+                }
+            }
+            finally
+            {
+                source?.Dispose();
+                output?.Dispose();
+            }
+
+            // Repoint the audio. If anything goes wrong, the snapshot restore removes the partially built AFCs.
+            var packages = references.Where(x => newLocations.ContainsKey(AudioKey(x.Value))).GroupBy(x => x.Key.package).ToList();
+            int repointed = 0;
+            for (int i = 0; i < packages.Count; i++)
+            {
+                var relativePath = packages[i].Key;
+                setStatus?.Invoke($"Repointing audio ({i + 1}/{packages.Count})");
+                using var package = MEPackageHandler.OpenMEPackage(snapshot.GetGamePath(relativePath), forceLoadFromDisk: true);
+                bool compressed = package.IsCompressed;
+                foreach (var ((_, uIndex), data) in packages[i])
+                {
+                    var export = package.GetUExport(uIndex);
+                    var filename = export.GetProperty<NameProperty>("Filename");
+                    var stream = export.ClassName == "WwiseStream" ? ObjectBinary.From<WwiseStream>(export) : null;
+                    if (stream == null || filename == null || !(filename.Value.Instanced + ".afc").Equals(data.FileName, StringComparison.OrdinalIgnoreCase)
+                        || stream.DataOffset != data.Ranges[0].Offset || stream.DataSize != data.Ranges[0].Length)
+                    {
+                        throw new Exception($"Slash: {export.InstancedFullPath} in {relativePath} changed while slashing");
+                    }
+
+                    var (afcName, offset) = newLocations[AudioKey(data)];
+                    filename.Value = afcName;
+                    export.WriteProperty(filename);
+
+                    // The offset is the last thing in an external WwiseStream's binary (as LEC's AFC compactor writes it)
+                    var exportData = export.Data;
+                    BinaryPrimitives.WriteInt32LittleEndian(exportData.AsSpan(exportData.Length - 4), offset);
+                    export.Data = exportData;
+                    repointed++;
+                }
+                package.Save(compress: compressed);
+            }
+
+            foreach (var (building, final) in built)
+            {
+                File.Move(building, final);
+                M3Log.Information($"Slash: AFC compaction built {Path.GetFileName(final)} ({FileSize.FormatSize(new FileInfo(final).Length)})");
+            }
+            M3Log.Information($"Slash: compacted {newLocations.Count} audio streams from {afcs.Count} DLC AFC(s); {repointed} WwiseStreams in {packages.Count} package(s) repointed");
+        }
+
         #endregion
 
         #region Diffing
@@ -539,14 +739,14 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     AddDeletion(relativePath, size, "removed while slashing");
             }
 
-            // Basegame TFCs whose data has all been moved out, or that nothing used to begin with
-            foreach (var relativePath in current.Where(x => IsBasegameTFC(x) && snapshot.Files.ContainsKey(x) && snapshot.IsUnchanged(x)))
+            // Compacted caches whose data has all been moved out, or that nothing used to begin with
+            foreach (var relativePath in current.Where(x => IsCompactableCache(x) && snapshot.Files.ContainsKey(x) && snapshot.IsUnchanged(x)))
             {
-                var name = Path.GetFileNameWithoutExtension(GetFileName(relativePath));
-                if (after.ReferencedTFCs.Contains(name))
+                var name = GetFileName(relativePath);
+                if (after.ReferencedFiles.Contains(name))
                     continue;
 
-                if (before.ReferencedTFCs.Contains(name))
+                if (before.ReferencedFiles.Contains(name))
                 {
                     var destinations = manifest.Builds
                         .Where(b => b.Sources.Any(s => !s.Payload && s.Filename.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
@@ -586,7 +786,6 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 return;
             }
 
-            setStatus?.Invoke($"Creating delta for {GetFileName(relativePath)}");
             var deltaRelPath = MilanSlashApplier.SlashFolderName + "\\" + relativePath + ".jsf";
             var deltaPath = MilanSlashApplier.Resolve(milanDeltaFolder, deltaRelPath);
             Directory.CreateDirectory(Path.GetDirectoryName(deltaPath));
@@ -598,7 +797,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             var mode = packageMode ? MilanSlashPatchModes.Package : MilanSlashPatchModes.Raw;
             manifest.Patches.Add(new MilanSlashPatchEntry
             {
-                Comment = IsRefShaderCache(relativePath) ? "RefShaderCache reduced to shader maps used by materials in the game" : "Package modified while slashing (e.g. textures repointed to compacted TFCs)",
+                Comment = IsRefShaderCache(relativePath) ? "RefShaderCache reduced to shader maps used by materials in the game" : "Package modified while slashing (textures or audio repointed to compacted TFCs/AFCs)",
                 Filename = relativePath,
                 Delta = deltaRelPath,
                 Mode = mode,
@@ -627,31 +826,30 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         }
 
         /// <summary>
-        /// Describes a new or changed file as ranges of the original files. For a TFC, the TFC compactor copied each
-        /// texture's data from its old location, so every range the textures now reference is sourced from the offsets they
-        /// used to reference. Anything that can't be sourced (headers, recompressed data, non-TFC files) goes in a payload
+        /// Describes a new or changed file as ranges of the original files. For a TFC or AFC, the compactor copied each
+        /// texture's or audio stream's data from its old location, so every range the exports now reference is sourced from
+        /// the offsets they used to reference. Anything that can't be sourced (headers, recompressed data, non-TFC files) goes in a payload
         /// file shipped with the manifest.
         /// </summary>
         private void AddBuild(string relativePath, GameScan before, GameScan after)
         {
-            setStatus?.Invoke($"Describing {GetFileName(relativePath)}");
             var path = snapshot.GetGamePath(relativePath);
             long length = new FileInfo(path).Length;
 
-            // Where this file's data came from: (new offset, length, original TFC, original offset)
-            var claims = new List<(long newOffset, long length, string sourceTFC, long sourceOffset)>();
-            if (IsTFC(relativePath))
+            // Where this file's data came from: (new offset, length, original cache file, original offset)
+            var claims = new List<(long newOffset, long length, string sourceFile, long sourceOffset)>();
+            if (IsCacheFile(relativePath))
             {
-                var name = Path.GetFileNameWithoutExtension(GetFileName(relativePath));
-                foreach (var (key, now) in after.Textures)
+                var name = GetFileName(relativePath);
+                foreach (var (key, now) in after.Data)
                 {
-                    if (!now.TFCName.Equals(name, StringComparison.OrdinalIgnoreCase) || !before.Textures.TryGetValue(key, out var was) || was.Ranges.Count != now.Ranges.Count)
+                    if (!now.FileName.Equals(name, StringComparison.OrdinalIgnoreCase) || !before.Data.TryGetValue(key, out var was) || was.Ranges.Count != now.Ranges.Count)
                         continue;
 
                     for (int i = 0; i < now.Ranges.Count; i++)
                     {
                         if (now.Ranges[i].Length == was.Ranges[i].Length)
-                            claims.Add((now.Ranges[i].Offset, now.Ranges[i].Length, was.TFCName, was.Ranges[i].Offset));
+                            claims.Add((now.Ranges[i].Offset, now.Ranges[i].Length, was.FileName, was.Ranges[i].Offset));
                     }
                 }
             }
@@ -701,7 +899,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
                     addPayload(position, claim.newOffset - position);
 
-                    var sourceRelPath = FindOriginalTFC(claim.sourceTFC);
+                    var sourceRelPath = FindOriginalCacheFile(claim.sourceFile);
                     if (sourceRelPath != null && RangesMatch(file, claim.newOffset, snapshot.GetSnapshotPath(sourceRelPath), claim.sourceOffset, claim.length))
                     {
                         int sourceIndex = build.Sources.FindIndex(x => !x.Payload && x.Filename.Equals(sourceRelPath, StringComparison.OrdinalIgnoreCase));
@@ -750,11 +948,11 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         }
 
         /// <summary>
-        /// Game-relative path of an original TFC by name, or null if there isn't exactly one.
+        /// Game-relative path of an original TFC or AFC by file name, or null if there isn't exactly one.
         /// </summary>
-        private string FindOriginalTFC(string name)
+        private string FindOriginalCacheFile(string fileName)
         {
-            var matches = snapshot.Files.Keys.Where(x => IsTFC(x) && Path.GetFileNameWithoutExtension(GetFileName(x)).Equals(name, StringComparison.OrdinalIgnoreCase)).Take(2).ToList();
+            var matches = snapshot.Files.Keys.Where(x => IsCacheFile(x) && GetFileName(x).Equals(fileName, StringComparison.OrdinalIgnoreCase)).Take(2).ToList();
             return matches.Count == 1 ? matches[0] : null;
         }
 
