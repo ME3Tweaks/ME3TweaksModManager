@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using ME3TweaksCore.Helpers;
 
 namespace ME3TweaksModManager.modmanager.milan.slash
 {
@@ -67,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 {
                     Filename = file.relativePath,
                     Size = new FileInfo(file.fullPath).Length,
-                    Hash = MilanSlashHashing.HashFile(file.fullPath)
+                    Hash = MUtilities.CalculateHash(file.fullPath, @"sha256")
                 });
                 setStatus?.Invoke($"Recording final file hashes ({Interlocked.Increment(ref done)}/{files.Count})");
             });
@@ -105,7 +106,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     return;
                 }
 
-                var hash = MilanSlashHashing.HashFile(fullPath);
+                var hash = MUtilities.CalculateHash(fullPath, @"sha256");
                 if (!string.Equals(hash, entry.Hash, StringComparison.OrdinalIgnoreCase))
                 {
                     problems.Add($"Hash mismatch: {entry.Filename} is {hash}, expected {entry.Hash}");

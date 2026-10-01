@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ME3TweaksCore.Helpers;
 
 namespace ME3TweaksModManager.modmanager.milan.slash
 {
@@ -59,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         public string ComputeSignature()
         {
             var bodyJson = JsonSerializer.Serialize<MilanSlashSignableBody>(this);
-            return MilanSlashHashing.HashBytes(System.Text.Encoding.UTF8.GetBytes(bodyJson));
+            return MUtilities.CalculateHash(System.Text.Encoding.UTF8.GetBytes(bodyJson), @"sha256");
         }
 
         /// <summary>

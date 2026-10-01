@@ -1,5 +1,4 @@
 using System.Runtime.ExceptionServices;
-using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,28 +6,6 @@ using ME3TweaksCore.Helpers;
 
 namespace ME3TweaksModManager.modmanager.milan.slash
 {
-    /// <summary>
-    /// SHA-256 helpers shared by the slash generator and applier. Hashes are lowercase hex, matching MilanDelta.
-    /// </summary>
-    internal static class MilanSlashHashing
-    {
-        public static string HashBytes(ReadOnlySpan<byte> data) => Convert.ToHexStringLower(SHA256.HashData(data));
-
-        public static string HashStream(Stream stream)
-        {
-            stream.Position = 0;
-            var hash = Convert.ToHexStringLower(SHA256.HashData(stream));
-            stream.Position = 0;
-            return hash;
-        }
-
-        public static string HashFile(string path)
-        {
-            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024, FileOptions.SequentialScan);
-            return Convert.ToHexStringLower(SHA256.HashData(fs));
-        }
-    }
-
     /// <summary>
     /// Applies a <see cref="MilanSlashManifest"/> to an installed Project Milan game, shrinking it down to the data that is
     /// actually used.
@@ -166,7 +143,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 }
 
                 setStatus?.Invoke($"Verifying {Path.GetFileName(patch.Filename)}");
-                var hash = MilanSlashHashing.HashFile(sourcePath);
+                var hash = MUtilities.CalculateHash(sourcePath, @"sha256");
                 if (!string.Equals(hash, patch.SourceFileHash, StringComparison.OrdinalIgnoreCase))
                     problems.Add($"{patch.Filename} does not match the file the slash manifest was generated against (hash {hash}, expected {patch.SourceFileHash})");
             }
@@ -225,10 +202,12 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     var finalPath = Resolve(gameRoot, build.Filename);
                     var stagingPath = finalPath + StagingExtension;
                     lock (staged) staged.Add((stagingPath, finalPath));
-                    using var output = new FileStream(stagingPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024);
-                    var (size, hash) = AssembleBuild(build, source => Resolve(source.Payload ? milanDeltaFolder : gameRoot, source.Filename), output);
-                    VerifySize(size, build.DestSize, build.Filename, @"output");
-                    VerifyHash(hash, build.DestHash, build.Filename, @"output");
+                    using (var output = new FileStream(stagingPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024))
+                    {
+                        AssembleBuild(build, source => Resolve(source.Payload ? milanDeltaFolder : gameRoot, source.Filename), output);
+                        VerifySize(output.Length, build.DestSize, build.Filename, @"output");
+                    }
+                    VerifyHash(MUtilities.CalculateHash(stagingPath, @"sha256"), build.DestHash, build.Filename, @"output");
                 }
 
                 int patchesDone = 0;
@@ -279,11 +258,10 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         }
 
         /// <summary>
-        /// Assembles a build from ranges of its sources, writing it to <paramref name="output"/> (if not null) and returning
-        /// the size and SHA-256 of the result.
+        /// Assembles a build from ranges of its sources, writing it to <paramref name="output"/>.
         /// </summary>
         /// <param name="resolveSource">Returns the path to read a source from.</param>
-        internal static (long size, string hash) AssembleBuild(MilanSlashBuildEntry build, Func<MilanSlashSourceFile, string> resolveSource, Stream output)
+        internal static void AssembleBuild(MilanSlashBuildEntry build, Func<MilanSlashSourceFile, string> resolveSource, Stream output)
         {
             var sources = new FileStream[build.Sources.Count];
             try
@@ -293,9 +271,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     sources[i] = new FileStream(resolveSource(build.Sources[i]), FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
                 }
 
-                using var hasher = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
                 var buffer = new byte[1024 * 1024];
-                long size = 0;
                 foreach (var segment in build.Segments)
                 {
                     var source = sources[segment.SourceIndex];
@@ -306,14 +282,10 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                         int read = source.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
                         if (read <= 0)
                             throw new Exception($"Unexpected end of {build.Sources[segment.SourceIndex].Filename} while building {build.Filename}");
-                        output?.Write(buffer, 0, read);
-                        hasher.AppendData(buffer, 0, read);
+                        output.Write(buffer, 0, read);
                         remaining -= read;
-                        size += read;
                     }
                 }
-
-                return (size, Convert.ToHexStringLower(hasher.GetHashAndReset()));
             }
             finally
             {
@@ -344,7 +316,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                         throw new Exception($"Slash delta for {patch.Filename} could not be applied");
 
                     VerifySize(outStream.Length, patch.DestSize, patch.Filename, @"output");
-                    VerifyHash(MilanSlashHashing.HashStream(outStream), patch.DestHash, patch.Filename, @"output");
+                    VerifyHash(MUtilities.CalculateHash(outStream, @"sha256"), patch.DestHash, patch.Filename, @"output");
                 }
                 return;
             }
@@ -353,14 +325,14 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             using var fileStream = new MemoryStream(File.ReadAllBytes(sourcePath));
             using var decompressed = MEPackage.GetDecompressedPackageStream(fileStream);
             VerifySize(decompressed.Length, patch.SourceSize, patch.Filename, @"source");
-            VerifyHash(MilanSlashHashing.HashStream(decompressed), patch.SourceHash, patch.Filename, @"source");
+            VerifyHash(MUtilities.CalculateHash(decompressed, @"sha256"), patch.SourceHash, patch.Filename, @"source");
 
             using var patched = new MemoryStream();
             if (!JPatch.ApplyJPatch(decompressed, deltaStream, patched))
                 throw new Exception($"Slash delta for {patch.Filename} could not be applied");
 
             VerifySize(patched.Length, patch.DestSize, patch.Filename, @"output");
-            VerifyHash(MilanSlashHashing.HashStream(patched), patch.DestHash, patch.Filename, @"output");
+            VerifyHash(MUtilities.CalculateHash(patched, @"sha256"), patch.DestHash, patch.Filename, @"output");
 
             // Save via stream so the package keeps its real file path; some serializers depend on the extension.
             patched.Position = 0;
