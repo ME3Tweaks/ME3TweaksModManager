@@ -25,6 +25,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool MigrateMe3Profile { get; set; }
 
         /// <summary>
+        /// Development builds only: generate a new slash manifest for the Project Milan mod instead of applying the existing one.
+        /// </summary>
+        public bool GenerateSlashManifest { get; set; }
+
+        /// <summary>
         /// The install controller for the running install.
         /// </summary>
         private MilanBaseInstaller InstallController { get; set; }
@@ -86,7 +91,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 InstallController = controller;
                 SourceTargetSelector.IsEnabled = false;
                 MigrateMe3ProfileCheckBox.IsEnabled = false;
-                Task.Run(() => controller.CreateInstallation(sourceTarget, destination, interop));
+                var generateSlashManifest = App.IsDebug && GenerateSlashManifest;
+                Task.Run(() =>
+                {
+                    InstallController.CreateInstallation(SelectedTarget, InstallLocation, interop, generateSlashManifest);
+                });
             }
         }
 
