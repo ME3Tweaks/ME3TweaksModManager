@@ -1,5 +1,5 @@
-using System.Buffers.Binary;
 using System.ComponentModel;
+using LegendaryExplorerCore.Audio;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal;
@@ -56,10 +56,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         ];
 
         /// <summary>
-        /// Base name of the AFCs audio is compacted into: Audio1_LMP, Audio2_LMP... A new one is started whenever one would
-        /// go past what a WwiseStream's 32-bit offset can address.
+        /// Name of the AFC the AFC compactor builds out of the audio the game uses from LE3's DLC AFCs.
         /// </summary>
-        private const string CompactedAFCName = "Audio{0}_LMP";
+        private const string CompactedAFCName = "Wwise_MilanBase";
 
         private static readonly string[] PackageExtensions = [".pcc", ".upk", ".u", ".sfm"];
 
@@ -589,118 +588,43 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         }
 
         /// <summary>
-        /// Compacts the LE3 DLC AFCs the base installer copies into the basegame: the audio packages anywhere in the game use
-        /// from them is copied into new AFCs, and those WwiseStreams are repointed at it. As with the TFC compactor, packages
-        /// that don't reference these AFCs are never saved.
+        /// Compacts the LE3 DLC AFCs the base installer copies into the basegame with LEC's <see cref="AFCCompactor"/>: the
+        /// audio packages anywhere in the game use from them is copied into a new AFC, and those WwiseStreams are repointed at
+        /// it.
         /// </summary>
         private void CompactAFCs(GameScan scan)
         {
-            var afcs = snapshot.EnumerateGameFiles().Where(IsCompactableAFC).ToDictionary(GetFileName, x => x, StringComparer.OrdinalIgnoreCase);
-            var references = scan.Data.Where(x => afcs.ContainsKey(x.Value.FileName)).ToList();
+            var afcs = snapshot.EnumerateGameFiles().Where(IsCompactableAFC).Select(GetFileName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var references = scan.Data.Values
+                .Where(x => afcs.Contains(x.FileName))
+                .Select(x => new AFCCompactor.ReferencedAudio { AFCName = Path.GetFileNameWithoutExtension(x.FileName), AudioOffset = x.Ranges[0].Offset, AudioSize = x.Ranges[0].Length })
+                .ToList();
             if (references.Count == 0)
                 return;
 
-            static (string file, long offset, long length) AudioKey(ExternalData data) => (data.FileName.ToLowerInvariant(), data.Ranges[0].Offset, data.Ranges[0].Length);
-
-            // Build the new AFCs. Audio is copied in source order, once no matter how many exports use it.
-            var cooked = Path.Combine(bioGame, "CookedPCConsole");
-            var newLocations = new Dictionary<(string file, long offset, long length), (string afcName, int offset)>();
-            var built = new List<(string building, string final)>();
-            var audio = references.Select(x => AudioKey(x.Value)).Distinct().OrderBy(x => x.file, StringComparer.Ordinal).ThenBy(x => x.offset).ToList();
-            FileStream source = null;
-            FileStream output = null;
-            try
+            var newAFC = Path.Combine(bioGame, "CookedPCConsole", CompactedAFCName + ".afc");
+            if (File.Exists(newAFC))
             {
-                string sourceName = null;
-                string outputName = null;
-                var header = new byte[4];
-                for (int i = 0; i < audio.Count; i++)
+                // The compactor would replace it, breaking the audio that already points to it
+                M3Log.Warning($"Slash: {Path.GetFileName(newAFC)} already exists, so this installation has already been slashed; DLC AFCs will not be compacted");
+                return;
+            }
+
+            setStatus?.Invoke("Compacting AFCs");
+            AFCCompactor.CompactAFC(MEGame.LMP, bioGame, CompactedAFCName, references,
+                brokenAudio =>
                 {
-                    var item = audio[i];
-                    setStatus?.Invoke($"Compacting AFCs ({i + 1}/{audio.Count})");
-                    if (sourceName != item.file)
-                    {
-                        source?.Dispose();
-                        source = new FileStream(snapshot.GetGamePath(afcs[item.file]), FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
-                        sourceName = item.file;
-                    }
+                    // Left pointing at the original AFC, which then stays in the game
+                    foreach (var (audio, reason) in brokenAudio)
+                        M3Log.Warning($"Slash: audio at 0x{audio.AudioOffset:X8} in {audio.AFCName} is not compacted: {reason}");
+                    return true;
+                },
+                notifyProgress: null,
+                notifyStatusUpdate: text => setStatus?.Invoke($"Compacting AFCs: {text}"),
+                searchGameForAFCs: false); // Only this installation's AFCs
 
-                    // Same checks as LEC's AFC compactor. Anything that fails them is left pointing at the original AFC, which
-                    // then stays in the game.
-                    if (item.offset < 0 || item.length < header.Length || item.offset + item.length > source.Length)
-                    {
-                        M3Log.Warning($"Slash: audio at 0x{item.offset:X8} (0x{item.length:X} bytes) is outside of {item.file}; it is not compacted");
-                        continue;
-                    }
-                    source.Position = item.offset;
-                    source.ReadExactly(header);
-                    if (!header.AsSpan().SequenceEqual("RIFF"u8))
-                    {
-                        M3Log.Warning($"Slash: audio at 0x{item.offset:X8} in {item.file} does not start with RIFF; it is not compacted");
-                        continue;
-                    }
-
-                    if (output == null || output.Position + item.length > int.MaxValue)
-                    {
-                        output?.Dispose();
-                        outputName = string.Format(CompactedAFCName, built.Count + 1);
-                        var final = Path.Combine(cooked, outputName + ".afc");
-                        if (File.Exists(final))
-                            throw new Exception($"Cannot compact AFCs: {final} already exists");
-                        built.Add((final + ".building", final));
-                        output = new FileStream(final + ".building", FileMode.CreateNew, FileAccess.Write);
-                    }
-
-                    newLocations[item] = (outputName, (int)output.Position);
-                    source.Position = item.offset;
-                    CopyExactly(source, output, item.length);
-                }
-            }
-            finally
-            {
-                source?.Dispose();
-                output?.Dispose();
-            }
-
-            // Repoint the audio. If anything goes wrong, the snapshot restore removes the partially built AFCs.
-            var packages = references.Where(x => newLocations.ContainsKey(AudioKey(x.Value))).GroupBy(x => x.Key.package).ToList();
-            int repointed = 0;
-            for (int i = 0; i < packages.Count; i++)
-            {
-                var relativePath = packages[i].Key;
-                setStatus?.Invoke($"Repointing audio ({i + 1}/{packages.Count})");
-                using var package = MEPackageHandler.OpenMEPackage(snapshot.GetGamePath(relativePath), forceLoadFromDisk: true);
-                bool compressed = package.IsCompressed;
-                foreach (var ((_, uIndex), data) in packages[i])
-                {
-                    var export = package.GetUExport(uIndex);
-                    var filename = export.GetProperty<NameProperty>("Filename");
-                    var stream = export.ClassName == "WwiseStream" ? ObjectBinary.From<WwiseStream>(export) : null;
-                    if (stream == null || filename == null || !(filename.Value.Instanced + ".afc").Equals(data.FileName, StringComparison.OrdinalIgnoreCase)
-                        || stream.DataOffset != data.Ranges[0].Offset || stream.DataSize != data.Ranges[0].Length)
-                    {
-                        throw new Exception($"Slash: {export.InstancedFullPath} in {relativePath} changed while slashing");
-                    }
-
-                    var (afcName, offset) = newLocations[AudioKey(data)];
-                    filename.Value = afcName;
-                    export.WriteProperty(filename);
-
-                    // The offset is the last thing in an external WwiseStream's binary (as LEC's AFC compactor writes it)
-                    var exportData = export.Data;
-                    BinaryPrimitives.WriteInt32LittleEndian(exportData.AsSpan(exportData.Length - 4), offset);
-                    export.Data = exportData;
-                    repointed++;
-                }
-                package.Save(compress: compressed);
-            }
-
-            foreach (var (building, final) in built)
-            {
-                File.Move(building, final);
-                M3Log.Information($"Slash: AFC compaction built {Path.GetFileName(final)} ({FileSize.FormatSize(new FileInfo(final).Length)})");
-            }
-            M3Log.Information($"Slash: compacted {newLocations.Count} audio streams from {afcs.Count} DLC AFC(s); {repointed} WwiseStreams in {packages.Count} package(s) repointed");
+            if (File.Exists(newAFC))
+                M3Log.Information($"Slash: AFC compactor built {Path.GetFileName(newAFC)} ({FileSize.FormatSize(new FileInfo(newAFC).Length)}) from the audio of {afcs.Count} DLC AFC(s)");
         }
 
         #endregion
