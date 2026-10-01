@@ -2447,5 +2447,23 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_noDowngradeAvailable = "string_interp_noDowngradeAvailable";
 		public const string string_title_downgradeCheck = "string_title_downgradeCheck";
 		public const string string_interp_nameOrNewer = "string_interp_nameOrNewer";
+		public const string string_downloadMissingMods = "string_downloadMissingMods";
+		public const string string_tooltip_downloadMissingMods = "string_tooltip_downloadMissingMods";
+		public const string string_dialog_nexusLoginRequiredForInstallGroupDownload = "string_dialog_nexusLoginRequiredForInstallGroupDownload";
+		public const string string_interp_installGroupDownloadPremium = "string_interp_installGroupDownloadPremium";
+		public const string string_interp_installGroupDownloadNonPremium = "string_interp_installGroupDownloadNonPremium";
+		public const string string_interp_installGroupFilesAlreadyDownloading = "string_interp_installGroupFilesAlreadyDownloading";
+		public const string string_interp_installGroupModsWithoutDownloadSource = "string_interp_installGroupModsWithoutDownloadSource";
+		public const string string_interp_installGroupTextureModsMustBeDownloadedManually = "string_interp_installGroupTextureModsMustBeDownloadedManually";
+		public const string string_interp_andXMore = "string_interp_andXMore";
+		public const string string_waitingForYouToStartDownload = "string_waitingForYouToStartDownload";
+		public const string string_tooltip_startDownloadOnNexusMods = "string_tooltip_startDownloadOnNexusMods";
+		public const string string_tooltip_cancelDownload = "string_tooltip_cancelDownload";
+		public const string string_canceling = "string_canceling";
+		public const string string_cancelAllDownloads = "string_cancelAllDownloads";
+		public const string string_tooltip_cancelAllDownloads = "string_tooltip_cancelAllDownloads";
+		public const string string_dialog_cancelAllDownloads = "string_dialog_cancelAllDownloads";
+		public const string string_openModPage = "string_openModPage";
+		public const string string_tooltip_openModPageForFailedDownload = "string_tooltip_openModPageForFailedDownload";
 	}
 }

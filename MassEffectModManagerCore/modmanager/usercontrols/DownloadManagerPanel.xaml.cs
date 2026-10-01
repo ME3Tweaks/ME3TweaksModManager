@@ -19,6 +19,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public RelayCommand BeginImportCommand { get; set; }
 
+        public RelayCommand CancelDownloadCommand { get; set; }
+
+        public GenericCommand CancelAllCommand { get; set; }
+
+        public RelayCommand StartDownloadOnWebsiteCommand { get; set; }
+
+        public RelayCommand OpenModPageCommand { get; set; }
+
         public string DownloadLocationText { get; set; }
 
         /// <summary>
@@ -65,7 +73,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void ReloadDownloads()
         {
-            Downloads.ReplaceAll(DownloadManager.GetDownloads().Values);
+            Downloads.ReplaceAll(DownloadManager.GetDownloads().Values.OrderBy(x => x.QueueOrder));
             TriggerResizeNextFrame();
         }
 
@@ -79,6 +87,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             CloseCommand = new GenericCommand(CloseWrapper);
             BeginImportCommand = new RelayCommand(StartModImport,
                 x => x is ModDownload md && md.CanImport);
+            // Visibility of the cancel button is bound to CanCancel, which Cancel() also checks; that property is not tied to command requerying
+            CancelDownloadCommand = new RelayCommand(x => (x as ModDownload)?.Cancel(), x => x is ModDownload);
+            CancelAllCommand = new GenericCommand(CancelAllDownloads, DownloadManager.CanCancelAnyDownload);
+            StartDownloadOnWebsiteCommand = new RelayCommand(x => (x as NexusModDownload)?.OpenFilePage(true), x => x is NexusModDownload { DownloadState: EModDownloadState.WAITINGFORUSER });
+            OpenModPageCommand = new RelayCommand(x => (x as NexusModDownload)?.OpenFilePage(false), x => x is NexusModDownload { ProtocolLink: not null });
+        }
+
+        private void CancelAllDownloads()
+        {
+            var result = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_cancelAllDownloads), M3L.GetString(M3L.string_cancelAllDownloads), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                DownloadManager.CancelAllDownloads();
+            }
         }
 
         private void StartModImport(object obj)

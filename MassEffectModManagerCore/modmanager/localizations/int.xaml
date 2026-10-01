@@ -3313,5 +3313,31 @@
     <system:String x:Key="string_interp_nameOrNewer">{0} or newer</system:String>
     <!-- 0={[OS version like Windows 11 24H2] or newer} -->
 
+    <!-- Download missing install group mods -->
+    <system:String x:Key="string_downloadMissingMods">Download missing mods</system:String>
+    <system:String x:Key="string_tooltip_downloadMissingMods">Downloads mods in this install group that are not in your mod library from NexusMods, and imports them into the library</system:String>
+    <system:String x:Key="string_dialog_nexusLoginRequiredForInstallGroupDownload">ME3Tweaks Mod Manager must be linked with your NexusMods account to download mods. Sign in to NexusMods from Mod Manager, then try again.</system:String>
+    <system:String x:Key="string_interp_installGroupDownloadPremium">{0} file(s) will be downloaded from NexusMods and imported into your mod library automatically.</system:String>
+    <!-- 0={number of files} -->
+    <system:String x:Key="string_interp_installGroupDownloadNonPremium">{0} file(s) will be added to the download manager. Downloading directly from Mod Manager requires NexusMods Premium, so for each file click Download, then click 'Mod Manager Download' on the NexusMods page. Each file will then download and import automatically.</system:String>
+    <!-- 0={number of files} -->
+    <system:String x:Key="string_interp_installGroupFilesAlreadyDownloading">{0} file(s) are already in the download manager.</system:String>
+    <!-- 0={number of files} -->
+    <system:String x:Key="string_interp_installGroupModsWithoutDownloadSource">The following mods cannot be downloaded automatically as their download location is not known. You will need to download and import them yourself:&#10;{0}</system:String>
+    <!-- 0={list of mod names, one per line} -->
+    <system:String x:Key="string_interp_installGroupTextureModsMustBeDownloadedManually">{0} texture mod(s) in this install group must be downloaded and imported manually.</system:String>
+    <!-- 0={number of texture mods} -->
+    <system:String x:Key="string_interp_andXMore">...and {0} more</system:String>
+    <!-- 0={number of items not shown} -->
+    <system:String x:Key="string_waitingForYouToStartDownload">Click Download to start downloading this file from NexusMods</system:String>
+    <system:String x:Key="string_tooltip_startDownloadOnNexusMods">Opens the NexusMods page for this file. Click 'Mod Manager Download' on the page to download it with Mod Manager.</system:String>
+    <system:String x:Key="string_tooltip_cancelDownload">Cancel this download</system:String>
+    <system:String x:Key="string_canceling">Canceling...</system:String>
+    <system:String x:Key="string_cancelAllDownloads">Cancel all</system:String>
+    <system:String x:Key="string_tooltip_cancelAllDownloads">Cancels all downloads, and imports that have not started extracting mods yet</system:String>
+    <system:String x:Key="string_dialog_cancelAllDownloads">Cancel all downloads? Mods that are already being extracted into your mod library will finish importing.</system:String>
+    <system:String x:Key="string_openModPage">Open mod page</system:String>
+    <system:String x:Key="string_tooltip_openModPageForFailedDownload">Opens the NexusMods page for this file so you can download it yourself</system:String>
+
 
 </ResourceDictionary>

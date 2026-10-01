@@ -196,7 +196,10 @@ namespace ME3TweaksModManager
             return false;
         }
 
-        private void ShowDownloadManager()
+        /// <summary>
+        /// Shows the download manager panel, if it is not already showing. If the batch library or mod update panel is open, the download manager is shown in front of it.
+        /// </summary>
+        internal void ShowDownloadManager()
         {
             // Todo: Figure this out. 03/28/2025
             // npl = protocol link for when this was to queue a download
@@ -609,7 +612,18 @@ namespace ME3TweaksModManager
         /// <param name="e"></param>
         private void DM_OnImportProcessComplete(object sender, EventArgs e)
         {
-            if (sender is ModDownload md && GetCurrentPanel() is UILockoutPanel lockout)
+            if (sender is ModDownload)
+            {
+                UnlockUIIfNothingImporting();
+            }
+        }
+
+        /// <summary>
+        /// Removes the UI lockout panel if it is showing and no downloads are importing.
+        /// </summary>
+        private void UnlockUIIfNothingImporting()
+        {
+            if (GetCurrentPanel() is UILockoutPanel lockout)
             {
                 // Unlock the UI if there is nothing currently ongoing.
                 var somethingImporting = DownloadManager.GetDownloads().Any(x => x.Value.DownloadState is EModDownloadState.IMPORTING);
@@ -667,6 +681,9 @@ namespace ME3TweaksModManager
 
         private void DM_OnDownloadRemoved(object sender, EventArgs e)
         {
+            // A download that was importing may have been canceled or failed
+            UnlockUIIfNothingImporting();
+
             if (DownloadingTask != null)
             {
                 var downloads = DownloadManager.GetDownloads();

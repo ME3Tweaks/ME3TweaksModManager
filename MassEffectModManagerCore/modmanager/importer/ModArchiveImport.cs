@@ -46,7 +46,11 @@ namespace ME3TweaksModManager.modmanager.importer
         /// <summary>
         /// Mods have been imported from the archive into the library
         /// </summary>
-        COMPLETE
+        COMPLETE,
+        /// <summary>
+        /// Import was canceled before mods were imported (automated mode only)
+        /// </summary>
+        CANCELED
     }
 
     /// <summary>
@@ -164,6 +168,26 @@ namespace ME3TweaksModManager.modmanager.importer
         /// If this scan and import is automated with no user interaction
         /// </summary>
         public bool AutomatedMode { get; set; }
+
+        /// <summary>
+        /// If cancellation of an automated import has been requested. The import will stop once scanning has finished; mods that are already being extracted are not canceled.
+        /// </summary>
+        public bool IsCancelRequested { get; private set; }
+
+        /// <summary>
+        /// Requests that an automated import stop after scanning, without importing any mods.
+        /// </summary>
+        public void RequestCancel()
+        {
+            M3Log.Information($@"Cancel requested for import of {ScanningFile ?? ArchiveFilePath}");
+            IsCancelRequested = true;
+        }
+
+        /// <summary>
+        /// The reason an automated import failed, if it failed while importing
+        /// </summary>
+        public string AutomatedFailureReason { get; private set; }
+
         /// <summary>
         /// Base filename of archive, from stream or from disk.
         /// </summary>
@@ -351,7 +375,17 @@ namespace ME3TweaksModManager.modmanager.importer
             CurrentState = EModArchiveImportState.SCANCOMPLETED;
 
             if (AutomatedMode)
-                BeginImporting();
+            {
+                if (IsCancelRequested)
+                {
+                    M3Log.Information(@"Import was canceled, not importing mods from archive");
+                    CurrentState = EModArchiveImportState.CANCELED;
+                }
+                else
+                {
+                    BeginImporting();
+                }
+            }
         }
 
         /// <summary>
@@ -492,6 +526,24 @@ namespace ME3TweaksModManager.modmanager.importer
         }
 
         /// <summary>
+        /// Sets the state after importing did not complete. Interactive imports go back to letting the user choose mods to import;
+        /// automated imports have nobody to make a choice, so they fail.
+        /// </summary>
+        private void SetImportErrorState()
+        {
+            if (AutomatedMode)
+            {
+                AutomatedFailureReason = ActionText;
+                M3Log.Error($@"Automated import failed: {ActionText}");
+                CurrentState = EModArchiveImportState.FAILED;
+            }
+            else
+            {
+                CurrentState = EModArchiveImportState.SCANCOMPLETED;
+            }
+        }
+
+        /// <summary>
         /// Initiates the mod import process by starting a background thread to extract selected mods
         /// from the archive to the mod library.
         /// </summary>
@@ -547,7 +599,7 @@ namespace ME3TweaksModManager.modmanager.importer
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_selectModsToImportOrInstall);
-                            CurrentState = EModArchiveImportState.SCANCOMPLETED;
+                            SetImportErrorState();
                             return; //Don't do anything.
                         }
                     case EModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR:
@@ -556,7 +608,7 @@ namespace ME3TweaksModManager.modmanager.importer
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_errorUnableToDeleteExistingModDirectory);
-                            CurrentState = EModArchiveImportState.SCANCOMPLETED;
+                            SetImportErrorState();
                             // Should this throw a dialog here...?
                             return; //Don't do anything.
                         }
@@ -570,7 +622,7 @@ namespace ME3TweaksModManager.modmanager.importer
                             ErrorCallback?.Invoke(
                                 M3L.GetString(M3L.string_insufficientDiskSpace),
                                 M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)));
-                            CurrentState = EModArchiveImportState.SCANCOMPLETED;
+                            SetImportErrorState();
                             return; //Don't do anything.
                         }
                     case EModImportResult.ERROR_COULD_NOT_CREATE_MOD_FOLDER:
@@ -582,7 +634,7 @@ namespace ME3TweaksModManager.modmanager.importer
                             ErrorCallback?.Invoke(
                                 M3L.GetString(M3L.string_errorExtractingArchive),
                                 M3L.GetString(M3L.string_interp_errorCreatingModFolderX, e?.Message));
-                            CurrentState = EModArchiveImportState.SCANCOMPLETED;
+                            SetImportErrorState();
                             return; //Don't do anything.
                         }
                 }

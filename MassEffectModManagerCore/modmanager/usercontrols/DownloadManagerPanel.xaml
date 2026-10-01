@@ -21,12 +21,39 @@
             FontWeight="Bold"
             TextAlignment="Center"
             DockPanel.Dock="Top" />
-        <Button
-            Content="{DynamicResource string_close}"
+        <DockPanel
             DockPanel.Dock="Bottom"
-            HorizontalAlignment="Right"
-            Command="{Binding CloseCommand}"
-            Margin="0,5,0,0" />
+            Margin="0,5,0,0">
+            <Button
+                Content="{DynamicResource string_close}"
+                DockPanel.Dock="Right"
+                Command="{Binding CloseCommand}" />
+            <Button
+                Content="{DynamicResource string_cancelAllDownloads}"
+                ToolTip="{DynamicResource string_tooltip_cancelAllDownloads}"
+                DockPanel.Dock="Left"
+                HorizontalAlignment="Left"
+                Command="{Binding CancelAllCommand}">
+                <Button.Style>
+                    <Style
+                        TargetType="Button"
+                        BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter
+                            Property="Visibility"
+                            Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Downloads.Count, Converter={StaticResource IntGreaterThanConverter}, ConverterParameter=0, Mode=OneWay}"
+                                Value="True">
+                                <Setter
+                                    Property="Visibility"
+                                    Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </DockPanel>
         <TextBlock
             Text="{Binding DownloadLocationText}"
             TextWrapping="Wrap"
@@ -114,23 +141,36 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <Button
+                                <StackPanel
                                     Grid.Row="0"
                                     Grid.RowSpan="2"
                                     Grid.Column="1"
-                                    Content="✕"
-                                    Width="26"
-                                    Height="26"
-                                    Margin="5,0,0,0"
-                                    FontWeight="Bold"
-                                    VerticalAlignment="Center"
-                                    Click="RemoveFailedDownload_Click"
-                                    Tag="{Binding}"
-                                    ToolTip="{DynamicResource string_tooltip_removeFailedDownload}" />
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                                    <Button
+                                        Content="{DynamicResource string_openModPage}"
+                                        ToolTip="{DynamicResource string_tooltip_openModPageForFailedDownload}"
+                                        FontSize="10"
+                                        Height="20"
+                                        Margin="5,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Command="{Binding OpenModPageCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:DownloadManagerPanel}}}"
+                                        CommandParameter="{Binding}" />
+                                    <Button
+                                        Content="✕"
+                                        Width="26"
+                                        Height="26"
+                                        Margin="5,0,0,0"
+                                        FontWeight="Bold"
+                                        VerticalAlignment="Center"
+                                        Click="RemoveFailedDownload_Click"
+                                        Tag="{Binding}"
+                                        ToolTip="{DynamicResource string_tooltip_removeFailedDownload}" />
+                                </StackPanel>
                                     <TextBlock
                                         Grid.Row="0"
                                         Grid.Column="0"
-                                        Text="{Binding ModFile.Name}"
+                                        Text="{Binding DisplayName}"
                                         FontWeight="Bold" />
                                     <TextBlock
                                         HorizontalAlignment="Left"
@@ -159,7 +199,7 @@
                                 Visibility="{Binding DownloadState, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter='MIN_QUEUED', Mode=OneWay}"
                                 DockPanel.Dock="Left">
                                 <TextBlock
-                                    Text="{Binding ModFile.Name}"
+                                    Text="{Binding DisplayName}"
                                     FontWeight="Bold" />
                                 <TextBlock
                                     Text="{Binding Status}" />
@@ -173,6 +213,32 @@
                                 <TextBlock
                                     Text="{DynamicResource string_pleaseWait}" />
                             </StackPanel>
+                            <Button
+                                Content="✕"
+                                DockPanel.Dock="Right"
+                                Width="20"
+                                Height="20"
+                                Padding="0"
+                                FontSize="10"
+                                FontWeight="Bold"
+                                VerticalAlignment="Bottom"
+                                Margin="5,0,0,2"
+                                ToolTip="{DynamicResource string_tooltip_cancelDownload}"
+                                Visibility="{Binding CanCancel, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Command="{Binding CancelDownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:DownloadManagerPanel}}}"
+                                CommandParameter="{Binding}" />
+                            <Button
+                                Content="{DynamicResource string_download}"
+                                ToolTip="{DynamicResource string_tooltip_startDownloadOnNexusMods}"
+                                DockPanel.Dock="Right"
+                                FontSize="10"
+                                Height="20"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="5,0,0,2"
+                                Visibility="{Binding DownloadState, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter='WAITINGFORUSER', Mode=OneWay}"
+                                Command="{Binding StartDownloadOnWebsiteCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:DownloadManagerPanel}}}"
+                                CommandParameter="{Binding}" />
                             <Button
                                 Content="{DynamicResource string_import}"
                                 DockPanel.Dock="Right"

@@ -58,6 +58,10 @@ namespace ME3TweaksModManager.modmanager.objects
         /// Everything has completed
         /// </summary>
         FINISHED,
+        /// <summary>
+        /// The download is waiting for the user to start it from the website, as it cannot be started from within Mod Manager
+        /// </summary>
+        WAITINGFORUSER,
     }
 
     /// <summary>
@@ -93,6 +97,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 case EModDownloadState.DOWNLOADCOMPLETE:
                 case EModDownloadState.FINISHED:
                 case EModDownloadState.QUEUED:
+                case EModDownloadState.WAITINGFORUSER:
                     IsDownloadActive = false;
                     break;
 
@@ -110,6 +115,8 @@ namespace ME3TweaksModManager.modmanager.objects
                     break;
             }
 
+            UpdateCanCancel();
+
             // Fire state changed after we update the active variable
             DownloadStateChanged?.Invoke(this, null);
         }
@@ -118,6 +125,49 @@ namespace ME3TweaksModManager.modmanager.objects
         /// If download is in state where user could press 'Import' button.
         /// </summary>
         public bool CanImport { get; set; }
+
+        /// <summary>
+        /// If this download is in a state where it can be canceled by the user.
+        /// </summary>
+        public bool CanCancel { get; private set; }
+
+        /// <summary>
+        /// Recalculates <see cref="CanCancel"/>. Importing can only be canceled before mods start extracting.
+        /// </summary>
+        internal void UpdateCanCancel()
+        {
+            if (CancellationController.IsCancellationRequested)
+            {
+                CanCancel = false;
+                return;
+            }
+
+            CanCancel = DownloadState switch
+            {
+                EModDownloadState.INITIALIZING => true,
+                EModDownloadState.QUEUED => true,
+                EModDownloadState.WAITINGFORUSER => true,
+                EModDownloadState.DOWNLOADING => true,
+                EModDownloadState.DOWNLOADCOMPLETE => true,
+                EModDownloadState.IMPORTING => ImportFlow is { IsCancelRequested: false, CurrentState: EModArchiveImportState.SCANNING or EModArchiveImportState.SCANCOMPLETED },
+                _ => false
+            };
+        }
+
+        /// <summary>
+        /// Name to show in the UI for this download
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        /// Counter used to generate <see cref="QueueOrder"/>
+        /// </summary>
+        private static long _queueOrderCounter;
+
+        /// <summary>
+        /// Order this download was created in, for displaying downloads in the order they were added
+        /// </summary>
+        public long QueueOrder { get; } = Interlocked.Increment(ref _queueOrderCounter);
 
         public event EventHandler<EventArgs> DownloadStateChanged;
 
@@ -152,6 +202,11 @@ namespace ME3TweaksModManager.modmanager.objects
         /// When the source is canceled, the download will be interrupted, if any.
         /// </summary>
         protected CancellationTokenSource CancellationController { get; }
+
+        /// <summary>
+        /// If this download has been canceled
+        /// </summary>
+        public bool IsCancelRequested => CancellationController.IsCancellationRequested;
 
         #region AutoImport
         /// <summary>
@@ -209,8 +264,9 @@ namespace ME3TweaksModManager.modmanager.objects
         /// </summary>
         protected ModDownload()
         {
-            DownloadState = EModDownloadState.INITIALIZING;
+            // Must be created before state is set as state changes check it
             CancellationController = new CancellationTokenSource();
+            DownloadState = EModDownloadState.INITIALIZING;
             RemoveDownloadCommand = new GenericCommand(()=>DownloadManager.FailedDownloads.Remove(this), () => true);
         }
 
@@ -241,9 +297,105 @@ namespace ME3TweaksModManager.modmanager.objects
 
         public abstract string CreateDownloadKey();
 
+        /// <summary>
+        /// Signals the download to stop without changing its state. Used when the application is closing.
+        /// </summary>
         public void CancelDownload()
         {
             CancellationController.Cancel();
+        }
+
+        /// <summary>
+        /// Synchronization object so a download can only be canceled once
+        /// </summary>
+        private readonly object _cancelSyncObj = new object();
+
+        /// <summary>
+        /// Cancels this download, if it is in a state that can be canceled. Downloads that are in progress, or imports that are scanning, will
+        /// move to the canceled state once they stop.
+        /// </summary>
+        public void Cancel()
+        {
+            lock (_cancelSyncObj)
+            {
+                if (!CanCancel)
+                    return;
+
+                M3Log.Information($@"Canceling download {DisplayName ?? FileName ?? CreateDownloadKey()} in state {DownloadState}");
+                var state = DownloadState;
+                CancellationController.Cancel();
+                switch (state)
+                {
+                    case EModDownloadState.INITIALIZING:
+                    case EModDownloadState.QUEUED:
+                    case EModDownloadState.WAITINGFORUSER:
+                        // Nothing has been downloaded yet
+                        MarkCanceled();
+                        break;
+                    case EModDownloadState.DOWNLOADING:
+                        // The download thread will see the cancellation and clean up
+                        Status = M3L.GetString(M3L.string_canceling);
+                        UpdateCanCancel();
+                        break;
+                    case EModDownloadState.DOWNLOADCOMPLETE when ImportFlow == null:
+                        // Downloaded but not imported
+                        CleanupDownloadedData(Settings.ModDownloadCacheFolder == null);
+                        MarkCanceled();
+                        break;
+                    case EModDownloadState.DOWNLOADCOMPLETE:
+                    case EModDownloadState.IMPORTING:
+                        // The importer will see the cancellation once it has finished scanning
+                        ImportFlow?.RequestCancel();
+                        Status = M3L.GetString(M3L.string_canceling);
+                        UpdateCanCancel();
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Moves this download to the canceled state.
+        /// </summary>
+        internal void MarkCanceled()
+        {
+            ProgressIndeterminate = false;
+            ProgressValue = 0;
+            Status = M3L.GetString(M3L.string_canceled);
+            DownloadState = EModDownloadState.DOWNLOADCANCELED;
+        }
+
+        /// <summary>
+        /// Closes the downloaded data stream and optionally deletes the file it was downloaded to, if it was downloaded to disk.
+        /// </summary>
+        /// <param name="deleteFile">If the file on disk should be deleted</param>
+        internal void CleanupDownloadedData(bool deleteFile)
+        {
+            var stream = DownloadedStream;
+            if (stream == null)
+                return;
+
+            string filePath = (stream as FileStream)?.Name;
+            try
+            {
+                stream.Dispose();
+            }
+            catch (Exception e)
+            {
+                M3Log.Warning($@"Error closing download stream: {e.Message}");
+            }
+
+            if (deleteFile && filePath != null && File.Exists(filePath))
+            {
+                try
+                {
+                    M3Log.Information($@"Deleting download file {filePath}");
+                    File.Delete(filePath);
+                }
+                catch (Exception e)
+                {
+                    M3Log.Warning($@"Could not delete download file {filePath}: {e.Message}");
+                }
+            }
         }
     }
 
@@ -301,10 +453,161 @@ namespace ME3TweaksModManager.modmanager.objects
         /// </summary>
         public List<ModFileDownloadLink> DownloadLinks { get; } = new List<ModFileDownloadLink>();
 
+        /// <summary>
+        /// When <see cref="DownloadLinks"/> were generated. Links expire, so downloads that were queued for a long time need new ones.
+        /// </summary>
+        private DateTime DownloadLinksGeneratedAt;
+
+        /// <summary>
+        /// How long generated download links are used for before new ones are requested
+        /// </summary>
+        private static readonly TimeSpan DownloadLinkMaxAge = TimeSpan.FromMinutes(30);
+
         public NexusModDownload(string nxmLink) : base()
         {
             NXMLink = nxmLink;
             ProtocolLink = NexusProtocolLink.Parse(NXMLink);
+        }
+
+        /// <summary>
+        /// Creates a download for a specific NexusMods file that will be imported automatically once it is downloaded, such as for mods in an install group.
+        /// </summary>
+        /// <param name="fileInfo">The file to download</param>
+        /// <param name="displayName">Name to show until the file information has been fetched from NexusMods</param>
+        /// <param name="requiresUserToStart">If the user must start the download from the website (non-premium users). The download will be put into the <see cref="EModDownloadState.WAITINGFORUSER"/> state.</param>
+        /// <returns></returns>
+        public static NexusModDownload CreateAutoImportDownload(NexusFileInfo fileInfo, string displayName, bool requiresUserToStart)
+        {
+            var dl = new NexusModDownload($@"nxm://{fileInfo.Domain}/mods/{fileInfo.ModId}/files/{fileInfo.FileId}")
+            {
+                DisplayName = displayName,
+                AutoImport = true
+            };
+
+            if (requiresUserToStart)
+            {
+                dl.Status = M3L.GetString(M3L.string_waitingForYouToStartDownload);
+                dl.ProgressIndeterminate = false;
+                dl.DownloadState = EModDownloadState.WAITINGFORUSER;
+            }
+
+            return dl;
+        }
+
+        /// <summary>
+        /// Opens the NexusMods page for this file.
+        /// </summary>
+        /// <param name="modManagerDownload">If the page should offer the 'Mod Manager Download' button, which sends the download to Mod Manager</param>
+        public void OpenFilePage(bool modManagerDownload)
+        {
+            if (ProtocolLink == null)
+                return;
+
+            var link = ProtocolLink.ToNexusDownloadPageLink();
+            if (modManagerDownload)
+            {
+                link += @"&nmm=1";
+            }
+
+            M3Utilities.OpenWebpage(link);
+        }
+
+        /// <summary>
+        /// Checks the domain and blacklist for this file. Sets the download to failed if it cannot be downloaded.
+        /// </summary>
+        /// <returns>True if the file is allowed to be downloaded</returns>
+        private bool ValidateDownloadAllowed()
+        {
+            if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(ProtocolLink?.Domain))
+            {
+                M3Log.Error($@"Cannot download file from unsupported domain: {ProtocolLink?.Domain}. Open your preferred mod manager from that game first");
+                SetFailed(M3L.GetString(M3L.string_interp_dialog_modNotForThisModManager, ProtocolLink?.Domain));
+                return false;
+            }
+
+            // Mod Manager 8: Blacklisting files
+            if (BlacklistingService.IsNXMBlacklisted(ProtocolLink))
+            {
+                M3Log.Error($@"File is blacklisted by ME3Tweaks: {ProtocolLink?.Domain} file {ProtocolLink.FileId}");
+                SetFailed(M3L.GetString(M3L.string_description_blacklistedMod));
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Sets this download to the failed state, unless it has been canceled.
+        /// </summary>
+        /// <param name="error">Error message</param>
+        private void SetFailed(string error)
+        {
+            if (CancellationController.IsCancellationRequested)
+                return; // Canceled; this is no longer relevant
+
+            ProgressIndeterminate = false;
+            Status = error;
+            DownloadState = EModDownloadState.FAILED;
+            InternalOnModDownloadError(error);
+        }
+
+        /// <summary>
+        /// Fetches information about the file from NexusMods for a download that is waiting on the user to start it. This does not generate download links.
+        /// If the file cannot be downloaded, such as it being deleted, the download is set to failed.
+        /// </summary>
+        public void LoadPendingMetadata()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (ProtocolLink == null || !ValidateDownloadAllowed())
+                        return;
+
+                    var modFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(ProtocolLink.Domain, ProtocolLink.ModId, ProtocolLink.FileId).Result;
+                    if (modFile == null || CancellationController.IsCancellationRequested || DownloadState != EModDownloadState.WAITINGFORUSER)
+                        return;
+
+                    ModFile = modFile;
+                    DisplayName = modFile.Name;
+                    FileName = modFile.FileName;
+                    if (modFile.Category == FileCategory.Deleted)
+                    {
+                        M3Log.Error($@"Cannot download {modFile.FileName}: File deleted from NexusMods");
+                        SetFailed(M3L.GetString(M3L.string_dialog_cannotDownloadDeletedFile));
+                    }
+                }
+                catch (Exception e)
+                {
+                    // Not fatal - the user can still try the download
+                    M3Log.Warning($@"Could not fetch file information for {NXMLink}: {e.Message}");
+                }
+            });
+        }
+
+        /// <summary>
+        /// Uses the given nxm link, which was generated by the website, for a download that is waiting on the user to start it.
+        /// The download is moved back to initializing. Call <see cref="Initialize"/> after this.
+        /// </summary>
+        /// <param name="nxmLink">Link from the website</param>
+        public void AdoptNXMLink(string nxmLink)
+        {
+            M3Log.Information($@"Using nxm link from website for download that was waiting on the user: {nxmLink}");
+            NXMLink = nxmLink;
+            ProtocolLink = NexusProtocolLink.Parse(nxmLink);
+            Status = null;
+            ProgressIndeterminate = true;
+            DownloadState = EModDownloadState.INITIALIZING;
+        }
+
+        /// <summary>
+        /// Requests download links for this file from NexusMods.
+        /// </summary>
+        private void GenerateDownloadLinks()
+        {
+            DownloadLinks.Clear();
+            DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(ProtocolLink).Result);
+            DownloadLinksGeneratedAt = DateTime.Now;
         }
 
 
@@ -337,28 +640,13 @@ namespace ME3TweaksModManager.modmanager.objects
                     DownloadLinks.Clear();
                     if (ProtocolLink == null) return; // Parse failed.
 
-                    if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(ProtocolLink?.Domain))
-                    {
-                        M3Log.Error($@"Cannot download file from unsupported domain: {ProtocolLink?.Domain}. Open your preferred mod manager from that game first");
-                        DownloadState = EModDownloadState.FAILED;
-                        ProgressIndeterminate = false;
-                        InternalOnModDownloadError(M3L.GetString(M3L.string_interp_dialog_modNotForThisModManager, ProtocolLink.Domain));
+                    if (!ValidateDownloadAllowed())
                         return;
-                    }
-
-                    // Mod Manager 8: Blacklisting files
-                    if (BlacklistingService.IsNXMBlacklisted(ProtocolLink))
-                    {
-                        M3Log.Error($@"File is blacklisted by ME3Tweaks: {ProtocolLink?.Domain} file {ProtocolLink.FileId}");
-                        DownloadState = EModDownloadState.FAILED;
-                        ProgressIndeterminate = false;
-                        InternalOnModDownloadError(M3L.GetString(M3L.string_description_blacklistedMod));
-                        return;
-                    }
 
                     ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(ProtocolLink.Domain, ProtocolLink.ModId, ProtocolLink.FileId).Result;
                     if (ModFile != null)
                     {
+                        DisplayName = ModFile.Name;
                         if (ModFile.SizeInBytes != null && ModFile.SizeInBytes.Value > DOWNLOAD_TO_MEMORY_SIZE_CAP && MUtilities.GetDiskFreeSpaceEx(M3Filesystem.GetModDownloadCacheDirectory(), out var free, out var total, out var totalFree))
                         {
                             // Check free disk space.
@@ -367,9 +655,7 @@ namespace ME3TweaksModManager.modmanager.objects
                             //if (totalFree < ModFile.SizeInBytes * 100000.0) // Debug code
                             {
                                 M3Log.Error($@"There is not enough free space on {Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory())} to download {ModFile.FileName}. We need {FileSize.FormatSize((long)spaceRequiredWithBuffer)} but only {FileSize.FormatSize(totalFree)} is available.");
-                                DownloadState = EModDownloadState.FAILED;
-                                ProgressIndeterminate = false;
-                                InternalOnModDownloadError(M3L.GetString(M3L.string_interp_notEnoughFreeSpaceForDownload, Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory()), ModFile.FileName, FileSize.FormatSize((long)spaceRequiredWithBuffer), FileSize.FormatSize(totalFree)));
+                                SetFailed(M3L.GetString(M3L.string_interp_notEnoughFreeSpaceForDownload, Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory()), ModFile.FileName, FileSize.FormatSize((long)spaceRequiredWithBuffer), FileSize.FormatSize(totalFree)));
                                 return;
                             }
                         }
@@ -389,9 +675,7 @@ namespace ME3TweaksModManager.modmanager.objects
                                     if (fileListing == null || !HasModdescIni(fileListing) && ModFile.SizeInBytes != null && TPIService.GetImportingInfosBySize(ModFile.SizeInBytes.Value).Count == 0)
                                     {
                                         M3Log.Error($@"This file is not whitelisted for download and does not contain a moddesc.ini file, this is not a mod manager mod: {ModFile.FileName}");
-                                        ProgressIndeterminate = false;
-                                        DownloadState = EModDownloadState.FAILED;
-                                        InternalOnModDownloadError(M3L.GetString(M3L.string_interp_nexusModNotCompatible, ModFile.Name));
+                                        SetFailed(M3L.GetString(M3L.string_interp_nexusModNotCompatible, ModFile.Name));
                                         return;
                                     }
                                 }
@@ -400,7 +684,7 @@ namespace ME3TweaksModManager.modmanager.objects
                                 // download with manager was clicked.
 
                                 // Check if parameters are correct!
-                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(ProtocolLink).Result);
+                                GenerateDownloadLinks();
                             }
                             else
                             {
@@ -408,33 +692,35 @@ namespace ME3TweaksModManager.modmanager.objects
                                 if (!NexusModsUtilities.UserInfo.IsPremium)
                                 {
                                     M3Log.Error($@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
-                                    DownloadState = EModDownloadState.FAILED;
-                                    ProgressIndeterminate = false;
-                                    InternalOnModDownloadError(M3L.GetString(M3L.string_dialog_mustBePremiumUserToDownload));
+                                    SetFailed(M3L.GetString(M3L.string_dialog_mustBePremiumUserToDownload));
                                     return;
                                 }
 
-                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(ProtocolLink)?.Result);
+                                GenerateDownloadLinks();
                             }
 
                             FileName = ModFile.FileName;
                             ProgressMaximum = ModFile.SizeInBytes ?? ModFile.SizeInKilobytes * 1024L; // SizeKb is the original version. They added SizeInBytes at my request
                             M3Log.Information($@"ModDownload '{ModFile.FileName}' metadata is now available");
+
+                            if (CancellationController.IsCancellationRequested)
+                                return; // Canceled while initializing
+
                             InternalOnInitialized();
                             DownloadState = EModDownloadState.QUEUED;
                         }
                         else
                         {
                             M3Log.Error($@"Cannot download {ModFile.FileName}: File deleted from NexusMods");
-                            DownloadState = EModDownloadState.FAILED;
-                            ProgressIndeterminate = false;
-                            InternalOnModDownloadError(M3L.GetString(M3L.string_dialog_cannotDownloadDeletedFile));
+                            SetFailed(M3L.GetString(M3L.string_dialog_cannotDownloadDeletedFile));
                         }
                     }
                 }
                 catch (Exception e)
                 {
                     M3Log.Exception(e, $@"Error downloading {ModFile?.FileName}:");
+                    if (CancellationController.IsCancellationRequested)
+                        return; // Canceled while initializing
                     DownloadState = EModDownloadState.FAILED;
                     if (Status == null)
                     {
@@ -456,6 +742,28 @@ namespace ME3TweaksModManager.modmanager.objects
             var stack = Environment.StackTrace;
             Task.Run(() =>
             {
+                if (CancellationController.Token.IsCancellationRequested)
+                {
+                    // Canceled before the download started
+                    MarkCanceled();
+                    return;
+                }
+
+                // Links generated without a website key may have been generated a long time ago if this download
+                // was queued behind many others; they expire, so get new ones.
+                if (ProtocolLink?.Key == null && DateTime.Now - DownloadLinksGeneratedAt > DownloadLinkMaxAge)
+                {
+                    try
+                    {
+                        M3Log.Information($@"Download links for {ModFile?.FileName} are old, requesting new ones");
+                        GenerateDownloadLinks();
+                    }
+                    catch (Exception e)
+                    {
+                        M3Log.Warning($@"Could not refresh download links, using existing ones: {e.Message}");
+                    }
+                }
+
                 if (!forceDownloadToDisk && ProgressMaximum < DOWNLOAD_TO_MEMORY_SIZE_CAP && Settings.ModDownloadCacheFolder == null) // Mod Manager 8.0.1: If cache is set, always download to disk    
                 {
                     DownloadedStream = new MemoryStream();
@@ -487,6 +795,15 @@ namespace ME3TweaksModManager.modmanager.objects
                         null, true, DownloadedStream, CancellationController.Token);
                     if (downloadResult.errorMessage != null)
                     {
+                        if (CancellationController.Token.IsCancellationRequested)
+                        {
+                            // Aborted download. Do not try any other links; remove the partial download.
+                            M3Log.Information($@"Download of {ModFile?.FileName} was canceled");
+                            CleanupDownloadedData(true);
+                            MarkCanceled();
+                            return;
+                        }
+
                         // Reset the stream
                         if (DownloadedStream.CanWrite)
                         {
@@ -606,8 +923,9 @@ namespace ME3TweaksModManager.modmanager.objects
 
                 if (CancellationController.Token.IsCancellationRequested)
                 {
-                    Status = M3L.GetString(M3L.string_canceled);
-                    DownloadState = EModDownloadState.DOWNLOADCANCELED;
+                    // Canceled during verification. The download itself is complete, so keep it if it is in the user's download cache.
+                    CleanupDownloadedData(Settings.ModDownloadCacheFolder == null);
+                    MarkCanceled();
                 }
                 else
                 {

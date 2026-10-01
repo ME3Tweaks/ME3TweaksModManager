@@ -37,6 +37,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             M3MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", this);
             LoadCommands();
+            DownloadManager.OnDownloadImported += OnDownloadImported;
         }
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand DeleteGroupCommand { get; private set; }
         public ICommand TriggerDataReloadCommand { get; private set; }
         public ICommand DeployQueueCommand { get; private set; }
+        public ICommand DownloadMissingModsCommand { get; private set; }
 
         public bool CanCompressPackages => SelectedBatchQueue != null && SelectedBatchQueue.Game is MEGame.ME2 or MEGame.ME3;
 
@@ -64,6 +66,159 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             DuplicateGroupCommand = new GenericCommand(DuplicateGroup, CanOperateOnBatchQueue);
             TriggerDataReloadCommand = new GenericCommand(ReloadModData, CanTriggerReload);
             DeployQueueCommand = new GenericCommand(DeployQueue, CanDeployQueue);
+            DownloadMissingModsCommand = new GenericCommand(DownloadMissingMods, CanDownloadMissingMods);
+        }
+
+        private bool CanDownloadMissingMods() => SelectedBatchQueue != null && !IsLoading && IsEnabled && SelectedBatchQueue.ModsToInstall.Any(x => x.ModMissing);
+
+        /// <summary>
+        /// The maximum number of mod names to list in the download summary dialog
+        /// </summary>
+        private const int MaxListedUndownloadableMods = 15;
+
+        /// <summary>
+        /// Queues downloads for all mods in the selected install group that are not in the library, and shows the download manager.
+        /// </summary>
+        private void DownloadMissingMods()
+        {
+            if (NexusModsUtilities.UserInfo == null)
+            {
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_nexusLoginRequiredForInstallGroupDownload), M3L.GetString(M3L.string_notSignedIn), MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var queue = SelectedBatchQueue;
+            var existingDownloads = DownloadManager.GetDownloads();
+            var filesToDownload = new List<(NexusFileInfo fileInfo, string displayName)>();
+            var fileKeys = new HashSet<string>();
+            var alreadyDownloadingCount = 0;
+            var undownloadableMods = new List<string>();
+
+            foreach (var batchMod in queue.ModsToInstall.Where(x => x.ModMissing))
+            {
+                var name = string.IsNullOrWhiteSpace(batchMod.ModName) ? batchMod.ModDescPath : batchMod.ModName;
+                var fileInfo = batchMod.GetNexusFileInfo();
+                if (fileInfo == null || !NexusModsUtilities.AllSupportedNexusDomains.Contains(fileInfo.Domain))
+                {
+                    M3Log.Information($@"Install group mod {name} does not have a known download source");
+                    undownloadableMods.Add(name);
+                    continue;
+                }
+
+                // Multiple mods in a group may come from the same file. This key must match NexusModDownload.CreateDownloadKey().
+                var key = $@"{fileInfo.Domain}-{fileInfo.FileId}";
+                if (!fileKeys.Add(key))
+                    continue;
+
+                if (existingDownloads.ContainsKey(key))
+                {
+                    alreadyDownloadingCount++;
+                    continue;
+                }
+
+                filesToDownload.Add((fileInfo, name));
+            }
+
+            var missingTextureModCount = queue.TextureModsToInstall.Count(x => x != null && !x.IsAvailableForInstall());
+
+            // Build summary
+            var isPremium = NexusModsUtilities.UserInfo.IsPremium;
+            var messageParts = new List<string>();
+            if (filesToDownload.Count > 0)
+            {
+                messageParts.Add(M3L.GetString(isPremium ? M3L.string_interp_installGroupDownloadPremium : M3L.string_interp_installGroupDownloadNonPremium, filesToDownload.Count));
+            }
+
+            if (alreadyDownloadingCount > 0)
+            {
+                messageParts.Add(M3L.GetString(M3L.string_interp_installGroupFilesAlreadyDownloading, alreadyDownloadingCount));
+            }
+
+            if (undownloadableMods.Count > 0)
+            {
+                var listedMods = string.Join('\n', undownloadableMods.Take(MaxListedUndownloadableMods).Select(x => $@" - {x}"));
+                if (undownloadableMods.Count > MaxListedUndownloadableMods)
+                {
+                    listedMods += '\n' + M3L.GetString(M3L.string_interp_andXMore, undownloadableMods.Count - MaxListedUndownloadableMods);
+                }
+
+                messageParts.Add(M3L.GetString(M3L.string_interp_installGroupModsWithoutDownloadSource, listedMods));
+            }
+
+            if (missingTextureModCount > 0)
+            {
+                messageParts.Add(M3L.GetString(M3L.string_interp_installGroupTextureModsMustBeDownloadedManually, missingTextureModCount));
+            }
+
+            M3Log.Information($@"Download missing mods for install group '{queue.ModName}': {filesToDownload.Count} to download, {alreadyDownloadingCount} already in download manager, {undownloadableMods.Count} without a download source, {missingTextureModCount} texture mods. Premium: {isPremium}");
+            var message = string.Join("\n\n", messageParts); // do not localize
+            var title = M3L.GetString(M3L.string_downloadMissingMods);
+
+            if (filesToDownload.Count == 0)
+            {
+                // Nothing new to download
+                M3L.ShowDialog(window, message, title, MessageBoxButton.OK, alreadyDownloadingCount > 0 ? MessageBoxImage.Information : MessageBoxImage.Warning);
+                if (alreadyDownloadingCount > 0)
+                {
+                    mainwindow.ShowDownloadManager();
+                }
+                return;
+            }
+
+            var result = M3L.ShowDialog(window, message, title, MessageBoxButton.OKCancel, MessageBoxImage.Information);
+            if (result != MessageBoxResult.OK)
+                return;
+
+            M3OpenTelemetry.TrackEvent(@"Downloading missing install group mods", new Dictionary<string, string>()
+            {
+                {@"Group name", queue.ModName},
+                {@"Download count", filesToDownload.Count.ToString()},
+                {@"Without source count", undownloadableMods.Count.ToString()},
+                {@"Premium", isPremium.ToString()},
+            });
+
+            DownloadManager.AddAutoImportDownloads(filesToDownload);
+
+            // The download manager is shown in front of this panel. This panel will refresh when it is shown again.
+            mainwindow.ShowDownloadManager();
+        }
+
+        /// <summary>
+        /// If a mod library reload was requested while one was already running
+        /// </summary>
+        private bool ReloadModDataPending;
+
+        /// <summary>
+        /// Invoked when a download has been imported into the library, so the install groups can be refreshed.
+        /// </summary>
+        private void OnDownloadImported(object sender, EventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (mainwindow == null)
+                    return; // Panel has closed
+
+                if (mainwindow.GetCurrentPanel() != this)
+                {
+                    // Not showing; refresh when it is
+                    RefreshContentsOnDisplay();
+                }
+                else if (!IsEnabled)
+                {
+                    // Already reloading
+                    ReloadModDataPending = true;
+                }
+                else
+                {
+                    ReloadModData();
+                }
+            });
+        }
+
+        protected override void OnClosing(DataEventArgs e)
+        {
+            DownloadManager.OnDownloadImported -= OnDownloadImported;
+            base.OnClosing(e);
         }
 
         private bool CanDeployQueue()
@@ -360,6 +515,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             OnSelectedModInGroupChanged(); // Refresh UI
             IsEnabled = true;
+
+            if (ReloadModDataPending)
+            {
+                // More mods were imported while we were reloading
+                ReloadModDataPending = false;
+                ReloadModData();
+            }
         }
 
         private void parseBatchFiles(string pathToHighlight = null)
@@ -482,6 +644,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     open = true;
                     SelectedUnavailableModLink = link;
+                }
+                else if (bm is BatchMod batchMod && batchMod.GetNexusFileInfo() is { } nexusFileInfo)
+                {
+                    // Source is not known locally, such as for install groups from other users, but was saved in the install group
+                    open = true;
+                    SelectedUnavailableModLink = nexusFileInfo.ToNexusDownloadPageLink();
                 }
             }
 

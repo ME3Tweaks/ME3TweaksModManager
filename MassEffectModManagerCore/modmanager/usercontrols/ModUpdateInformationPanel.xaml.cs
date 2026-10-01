@@ -114,7 +114,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // This panel sets this to false for performance.
                     md.ProgressIndeterminate = false;
                 }
-                else if (md.DownloadState is EModDownloadState.FINISHED or EModDownloadState.FAILED)
+                else if (md.DownloadState is EModDownloadState.FINISHED or EModDownloadState.FAILED or EModDownloadState.DOWNLOADCANCELED)
                 {
                     TriggerPropertyChangedFor(nameof(ShowClearCompletedButton));
                     md.DownloadStateChanged -= OnDownloadStateChanged;
