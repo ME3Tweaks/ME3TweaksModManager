@@ -1,0 +1,3424 @@
+{
+  "format": 1,
+  "version": "0.0.1-draft",
+  "_comment": "The shipped text-and-curation layer. Curation, groups and prose are authored here; classes, properties and defaults are generated on the user's machine from their install. The enemyStats block was imported once from the legacy ModMaker PHP by ModMakerCatalogSpike/extract-enemy-ui.py and is edited here from now on - the legacy source is never read again.",
+  "groups": [
+    {
+      "id": "powers",
+      "title": "Powers",
+      "order": 10
+    },
+    {
+      "id": "weapons",
+      "title": "Weapons",
+      "order": 20
+    },
+    {
+      "id": "projectiles",
+      "title": "Projectiles",
+      "order": 30,
+      "description": "Global projectile behaviour. Mostly unnamed in the game; pages are titled from the class name."
+    },
+    {
+      "id": "match",
+      "title": "Match Settings",
+      "order": 40
+    },
+    {
+      "id": "unrecognised",
+      "title": "Not Recognised",
+      "order": 900,
+      "description": "Discovered in your install but unknown to this version of ModMaker - usually content from another mod. Editable, but with no descriptions."
+    }
+  ],
+  "familyDefaults": {
+    "SFXWeapon": {
+      "group": "weapons"
+    },
+    "SFXPowerCustomAction": {
+      "group": "powers"
+    },
+    "SFXPowerCustomActionMP": {
+      "group": "powers"
+    },
+    "SFXProjectile": {
+      "group": "projectiles",
+      "decision": "include",
+      "reason": "Abstract base plus 92 subclasses, no TLK names anywhere. In for global projectile changes; pages fall back to the class name."
+    },
+    "SFXCustomAction": {
+      "decision": "exclude",
+      "reason": "607 classes averaging 2.4 properties, none named - animation stubs, not tunable content. Individual exceptions are listed in `curation`."
+    }
+  },
+  "curation": {
+    "sfxgamecontent.sfxpowercustomaction_pull": {
+      "decision": "include",
+      "group": "powers",
+      "reason": "the old app had a page for this (powers, matched on display name)"
+    },
+    "sfxgamempcontent.sfxwave_horde_cerberus": {
+      "decision": "editor",
+      "editor": "wavelist",
+      "reason": "eleven wave instances, not a form page"
+    },
+    "sfxgamempcontent.sfxdifficultyhandlermp": {
+      "decision": "editor",
+      "editor": "enemy",
+      "reason": "2,455 stat values behind four array properties"
+    },
+    "sfxgame.bioworldinfo": {
+      "decision": "partial",
+      "group": "match",
+      "reason": "the multiplayer bot settings; the other eleven own properties are conversation, camera, PS3 and single-player leftovers",
+      "propertyAllowlist": [
+        "m_nAutoBotLevel",
+        "m_nAutoBotMPKit",
+        "m_nAutoBotEnemyDifficulty",
+        "m_fAutoBotAttackPowerPercent",
+        "m_fAutoBotDefensePowerPercent",
+        "m_bAutoBotUseMin1Health"
+      ]
+    },
+    "sfxgame.bioglobalvariabletable": {
+      "decision": "exclude",
+      "reason": "82 own properties, all of them the ME1/ME2 plot import table - single-player, and nothing a multiplayer mod can use"
+    },
+    "sfxgamecontentdlc_con_mp5.sfxcustomaction_gethdestroyermelee": {
+      "decision": "include",
+      "group": "powers",
+      "reason": "the SFXCustomAction family is excluded wholesale, but the old app really did have a page for this one"
+    }
+  },
+  "descriptions": {
+    "cooldowntime": {
+      "label": "Recharge Time",
+      "unit": "sec",
+      "text": "How long before this power can be used again after it is cast."
+    },
+    "impactradius": {
+      "label": "Radius",
+      "unit": "m",
+      "text": "How far from the point of impact the effect reaches."
+    }
+  },
+  "propertyText": {
+    "*/cooldowntime": {
+      "describedBy": "cooldowntime"
+    },
+    "*/impactradius": {
+      "describedBy": "impactradius"
+    },
+    "sfxgamecontent.sfxpowercustomaction_pull/cooldowntime": {
+      "describedBy": "cooldowntime",
+      "descriptionAppend": "Pull's cooldown starts when the target is released, not when the power is cast."
+    },
+    "sfxgame.bioworldinfo/m_nAutoBotMPKit": {
+      "label": "Bot Kit",
+      "description": "Which multiplayer kit the auto-bot plays as when it fills an empty slot."
+    }
+  },
+  "_factionsComment": "Keyed by the wavelist's config SECTION. 'title' is what the faction is called. Milan names the Retaliation lists by their class suffix - Cerberus2, Geth2 - so the titles say that rather than prettifying it into something nobody uses; the base lists are Cerberus, Geth, Reapers. 'enemyPrefix' is the tag its enemy types carry, WAVE_CER_Centurion, which is not derivable from the name: CER is Cerberus, RPR is Reapers, GTH is Geth. A mod that adds a faction ships this for itself in DLC_MOD_Whatever/ModMaker/textlayer.json rather than waiting for ModMaker to learn about it.",
+  "factions": {
+    "sfxgamempcontent.sfxwave_horde_cerberus": { "title": "Cerberus", "enemyPrefix": "CER" },
+    "sfxgamempcontent.sfxwave_horde_geth": { "title": "Geth", "enemyPrefix": "GTH" },
+    "sfxgamempcontent.sfxwave_horde_reaper": { "title": "Reapers", "enemyPrefix": "RPR" },
+    "sfxgamecontentdlc_con_mp4_horde.sfxwave_horde_cerberus2": { "title": "Cerberus2" },
+    "sfxgamecontentdlc_con_mp4_horde.sfxwave_horde_geth2": { "title": "Geth2" },
+    "sfxgamecontentdlc_con_mp4_horde.sfxwave_horde_reaper2": { "title": "Reapers2" },
+    "sfxgamecontentdlc_con_mp4_horde.sfxwave_horde_collector": { "title": "Collectors", "enemyPrefix": "COL" },
+    "sfxgamecontent_milan.sfxwave_horde_rejects": { "title": "Rejects", "enemyPrefix": "REJ" }
+  },
+  "_classTextComment": "Keyed by config SECTION, lower case, e.g. sfxgamecontent.sfxweapon_ai_cannibalrifle. 'description' is shown on that thing's editor page in place of whatever the game says. Weapons the game never described - turrets, enemy-only guns - inherit a shared placeholder from SFXWeapon, and their pages say so and name the key to add here. Anything written here is ModMaker's own text: it is labelled as such in the editor and is NOT compiled into the mod, so it needs no TLK entry and no string ref.",
+  "classText": {
+    "sfxgamecontent.sfxpowercustomaction_pull": {
+      "title": "Pull",
+      "description": "Lifts an unprotected target off the ground and holds it in place."
+    },
+    "sfxgamecontent.sfxweapon_ai_cannibalrifle": {
+      "description": "Placeholder. The Cannibal's rifle - a slow, heavy-hitting automatic the game never described, because a player never picks it up."
+    },
+    "sfxgamecontent.sfxweapon_assaultrifle_sentryturret": {
+      "description": "Placeholder. The gun mounted on the deployable Sentry Turret. Its stats are the turret's damage output, not a weapon anyone carries."
+    }
+  },
+  "enemyStats": {
+    "categories": {
+      "Abomination": {
+        "title": "Abomination",
+        "intro": "These settings affect the Abomination, a very dangerous unit with low health that explodes when killed. The possessed version is extremely dangerous.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Possession Bonuses",
+            "description": "Sets the bonuses the Abomination gets when becoming possessed.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/possession.jpg",
+            "stats": [
+              "PossessedBarrierBonus",
+              "PossessionBonusHealthPercent"
+            ]
+          },
+          {
+            "title": "Possessed Barrier Regeneration",
+            "description": "Defines how the Possessed Abomination barrier regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Death Explosion",
+            "description": "The Abomination explodes on death and when it wins a sync melee fight. Headshots will prevent explosions.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/explosion.jpg",
+            "stats": [
+              "ExplosionDamage",
+              "ExplosionRadius",
+              "ExplosionDelay",
+              "DoTDuration",
+              "DoTDamagePerSecond"
+            ]
+          },
+          {
+            "title": "Possessed Death Explosion",
+            "description": "The Possessed Abomination has a very large detonation on death and when it wins a sync melee fight. Headshots will prevent explosions. The explosion delay is shared with the standard Death Explosion.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/superexplosion.jpg",
+            "stats": [
+              "SuperExplosionDamage",
+              "SuperExplosionRadius",
+              "SuperDoTDuration",
+              "SuperDoTDamagePerSecond"
+            ]
+          },
+          {
+            "title": "Explosion Friendly Fire",
+            "description": "The Abomination explosion hurts allies in a damage multiplier.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/friendlyfire.jpg",
+            "stats": [
+              "FriendlyDamageScalar"
+            ]
+          },
+          {
+            "title": "Flare Mode",
+            "description": "When an Abomination is close to an enemy it enters Flare Mode, where speed and damage are increased.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/damageflare.jpg",
+            "stats": [
+              "ChargedSpeedMod",
+              "DamageFlareDuration"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Defines the cooldown on the arm swipe attack.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Sync Melee Attack Interval",
+            "description": "Defines the cooldown on the synced melee attack where you must fight them off. The sync attack follows a melee attack. If the abomination is not fought off within a few seconds, it explodes.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/syncmelee.jpg",
+            "stats": [
+              "SyncMeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/abomination/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxEnemyShieldRecharge": {
+            "label": "Max barrier recharge"
+          },
+          "MeleeAttackInterval": {
+            "label": "Melee Attack Interval"
+          },
+          "SyncMeleeAttackInterval": {
+            "label": "Sync Attack Interval"
+          }
+        }
+      },
+      "AssaultTrooper": {
+        "title": "Assault Trooper",
+        "intro": "These settings affect the Cerberus Assault Trooper, a basic unit with a hornet, frag grenades, and electric nightsticks.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/assaulttrooper/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Frag Grenade Interval",
+            "description": "Sets the cooldown between frag grenade tosses.",
+            "_legacyImage": "/images/modmaker/enemies/assaulttrooper/fraggrenade.jpg",
+            "stats": [
+              "GrenadeInterval"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the electric baton attack.",
+            "_legacyImage": "/images/modmaker/enemies/assaulttrooper/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/assaulttrooper/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/assaulttrooper/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeFrequency",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/assaulttrooper/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ]
+      },
+      "Atlas": {
+        "title": "Original Atlas",
+        "intro": "These settings affect the Atlas, a devasting Cerberus unit with rockets, smoke grenades, and tons of armor. This page affects the original Atlas, which is used in SP and in MP if you select it or fight on the original, unmodified wavelists.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Atlas shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Smoke Grenade Frequency",
+            "description": "Sets the cooldown between smoke grenade shots in terms of seconds. Only 2 smoke grenades can be active at any given time.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/smoke.jpg",
+            "stats": [
+              "SmokeInterval"
+            ]
+          },
+          {
+            "title": "Rocket Attack",
+            "description": "Sets the cooldown rocket launches. Due to the way the Atlas gun works, the rocket will not fire much faster than standard gameplay.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/rocket.jpg",
+            "stats": [
+              "RocketInterval"
+            ]
+          },
+          {
+            "title": "Cockpit Block",
+            "description": "When the Atlas is taking significant amounts of damage in a short period of time it can raise its arm to protect the cockpit. In multiplayer this effectively does nothing as there is no driver by default.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/cockblocked.jpg",
+            "stats": [
+              "CockpitBlockThreshold",
+              "CockpitDamageResetDuration",
+              "BlockInterval"
+            ]
+          },
+          {
+            "title": "Armor Pieces",
+            "description": "Armor pieces on the Atlas can be destroyed, allowing you to do more damage in exposed areas.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/armorpiece.jpg",
+            "stats": [
+              "ArmourPieceHealth"
+            ]
+          },
+          {
+            "title": "Glass Cockpit",
+            "description": "Sets the health for the glass cockpit on the Atlas. When it is destroyed the Atlas is staggered. Without more complex modding, this effectively does nothing.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/glasscockpit.jpg",
+            "stats": [
+              "GlassCockpitHealth"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the arm swing and ground pound attack.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Sync Kill Chance",
+            "description": "Sets the chance the Atlas will perform a sync kill (instant kill) if you are in range following a melee attack. The sync kill action has its own cooldown.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/synckill.jpg",
+            "stats": [
+              "SyncMeleeAttackInterval",
+              "SyncKillChance"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          },
+          "AIShieldRegenDelay": {
+            "label": "Recharge Delay"
+          }
+        }
+      },
+      "Atlas2": {
+        "title": "Atlas",
+        "intro": "These settings affect the Atlas, a devasting Cerberus unit with rockets, smoke grenades, and tons of armor. This page affects Atlas2, which is only usable if Retaliation DLC is installed and only appears in MP. It adds a damage over time rocket and takes extra damage when an armor piece is destroyed.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Atlas shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Smoke Grenade Frequency",
+            "description": "Sets the cooldown between smoke grenade shots in terms of seconds. Only 2 smoke grenades can be active at any given time.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/smoke.jpg",
+            "stats": [
+              "SmokeInterval"
+            ]
+          },
+          {
+            "title": "Rocket Attack",
+            "description": "Sets the cooldown rocket launches. Due to the way the Atlas gun works, the rocket will not fire much faster than standard gameplay.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/rocket.jpg",
+            "stats": [
+              "RocketInterval"
+            ]
+          },
+          {
+            "title": "Cockpit Block",
+            "description": "When the Atlas is taking significant amounts of damage in a short period of time it can raise its arm to protect the cockpit. In multiplayer this effectively does nothing as there is no driver by default.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/cockblocked.jpg",
+            "stats": [
+              "CockpitBlockThreshold",
+              "CockpitDamageResetDuration",
+              "BlockInterval"
+            ]
+          },
+          {
+            "title": "Armor Pieces",
+            "description": "Armor pieces on the Atlas can be destroyed, allowing you to do more damage in exposed areas. For Atlas2, destroying the pieces makes the unit take a significant amount of damage and can stagger it.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/armorpiece.jpg",
+            "stats": [
+              "ArmourPieceHealth",
+              "ArmourPieceDamage",
+              "ArmourDestroyedStaggerChance"
+            ]
+          },
+          {
+            "title": "Glass Cockpit",
+            "description": "Sets the health for the glass cockpit on the Atlas. When it is destroyed the Atlas is staggered. Without more complex modding, this effectively does nothing.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/glasscockpit.jpg",
+            "stats": [
+              "GlassCockpitHealth"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the arm swing and ground pound attack.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Sync Kill Chance",
+            "description": "Sets the chance the Atlas will perform a sync kill (instant kill) if you are in range following a melee attack. The sync kill action has its own cooldown.",
+            "_legacyImage": "/images/modmaker/enemies/atlas/synckill.jpg",
+            "stats": [
+              "SyncMeleeAttackInterval",
+              "SyncKillChance"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          },
+          "AIShieldRegenDelay": {
+            "label": "Recharge Delay"
+          }
+        }
+      },
+      "Banshee": {
+        "title": "Banshee",
+        "intro": "These settings affect the Banshee, a Reaper unit that casts biotic pulses and is extremely deadly at close range.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Barriers",
+            "description": "Sets how much damage this unit's barrier's will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/barriers.jpg",
+            "stats": [
+              "MaxBarriers"
+            ]
+          },
+          {
+            "title": "Barrier Regeneration",
+            "description": "Defines how the Banshee barrier regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Teleportation",
+            "description": "Defines how the banshee teleports.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/teleport.jpg",
+            "stats": [
+              "TeleportInterval",
+              "MaxTeleports"
+            ]
+          },
+          {
+            "title": "Charged Mode",
+            "description": "Defines how the Banshee behaves when it is in Charged Mode. While in Charged Mode the banshee can teleport.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/charge.jpg",
+            "stats": [
+              "ChargedIntervalLow",
+              "ChargedIntervalHigh",
+              "MaxChargedBanshees",
+              "AggressiveDuration"
+            ]
+          },
+          {
+            "title": "Power Shielding",
+            "description": "The banshee can put up a temporary shield to block incoming powers. This activates a similar graphical effect to charged mode, but it has a wider radius.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/shield.jpg",
+            "stats": [
+              "ShieldDuration",
+              "ShieldFrequency"
+            ]
+          },
+          {
+            "title": "Sync Kill Chance",
+            "description": "Sets the chance the Banshee will perform a sync kill (instant kill) if you are in range following a melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/synckill.jpg",
+            "stats": [
+              "SyncKillChance"
+            ]
+          },
+          {
+            "title": "Breach Threshold",
+            "description": "Defines how breaching a Banshee works. Dealing more damage than the threshold will stop a teleporting banshee. The damage required is multiplied by the number of players in the game and is capped by the specified maximum value.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/breach.jpg",
+            "stats": [
+              "BreachDamageThreshold",
+              "MaxBreachDamageThreshold",
+              "BreachDamageResetDuration"
+            ]
+          },
+          {
+            "title": "Banshee Nova Blast",
+            "description": "Sets the cooldown for the banshee nova blast, where she charges up and blasts the entire area around her.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/aoeblast.jpg",
+            "stats": [
+              "AOEBlastInterval"
+            ]
+          },
+          {
+            "title": "Banshee Warp Blast",
+            "description": "The banshee can use a power similar to warp, which is much slower but has greater tracking. The Original Banshee has a different variant of this power that has different tracking stats. There are cooldowns for when the Banshee is at long range and when the banshee is not in long range.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/warpblast.jpg",
+            "stats": [
+              "BlastInterval",
+              "LongRangeBlastInterval"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the claw slash attack.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Sync Melee Attack Interval",
+            "description": "Sets the cooldown for the sync kill attack, which is treated as a synced melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/syncmelee.jpg",
+            "stats": [
+              "SyncMeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/banshee/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          },
+          "MaxEnemyShieldRecharge": {
+            "label": "Max Barrier Recharge"
+          },
+          "AIShieldRegenDelay": {
+            "label": "Recharge Delay"
+          },
+          "BreachDamageThreshold": {
+            "label": "Damage Threshold (Per Player)"
+          },
+          "MaxBreachDamageThreshold": {
+            "label": "Max Damage Threshold"
+          },
+          "BreachDamageResetDuration": {
+            "label": "Breach Reset Timer"
+          }
+        }
+      },
+      "BansheeAlt": {
+        "title": "Original Banshee",
+        "inheritsFrom": "Banshee",
+        "_note": "Ships no legacy page of its own; the Banshee page describes both."
+      },
+      "Brute": {
+        "title": "Brute",
+        "intro": "These settings affect the Brute, a high health reaper unit that is deadly when in close range.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/brute/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Guard Mode",
+            "description": "Sets how the Brute acts when it's guarding, with its claw covering its face.",
+            "_legacyImage": "/images/modmaker/enemies/brute/guard.jpg",
+            "stats": [
+              "GuardHealthPctThreshold",
+              "GuardDamageResetDuration",
+              "GuardDuration",
+              "GuardSpeedMod"
+            ]
+          },
+          {
+            "title": "Rage Mode",
+            "description": "Defines the stat changes the Brute gets when it enters rage mode following a roar.",
+            "_legacyImage": "/images/modmaker/enemies/brute/rage.jpg",
+            "stats": [
+              "RoarChance",
+              "AngryDuration",
+              "AngrySpeedMod"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the multiple Brute melee attacks.",
+            "_legacyImage": "/images/modmaker/enemies/brute/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Sync Kill Chance",
+            "description": "Sets the chance a Brute will perform a sync kill (instant kill) if you are in range following a melee attack. The brute seems to be very selective about what 'in range' means.",
+            "_legacyImage": "/images/modmaker/enemies/brute/synckill.jpg",
+            "stats": [
+              "SyncKillChance"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/brute/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          }
+        }
+      },
+      "Cannibal": {
+        "title": "Cannibal",
+        "intro": "These settings affect the Cannibal, a basic Reaper unit created from batarians, with an arm cannon and grenades.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/cannibal/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Cannibalism",
+            "description": "When the cannibal eats another cannibal, it will automatically regenerate health until it dies.",
+            "_legacyImage": "/images/modmaker/enemies/cannibal/eating.jpg",
+            "stats": [
+              "ConsumeHealPct",
+              "PoweredHealPct"
+            ]
+          },
+          {
+            "title": "Frag Grenade Interval",
+            "description": "Sets the cooldown between frag grenade tosses. The Global Grenade Cooldown will supercede this if it is longer.",
+            "_legacyImage": "/images/modmaker/enemies/cannibal/fraggrenade.jpg",
+            "stats": [
+              "GrenadeInterval"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the Cannibal's arm swing attack.",
+            "_legacyImage": "/images/modmaker/enemies/cannibal/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "When the Cannibal is under fire in cover, it will continue to hide behind cover. Once the cover fire timer expires, it will be forced to fire if still under attack.",
+            "_legacyImage": "/images/modmaker/enemies/cannibal/weapon.jpg",
+            "stats": [
+              "MaxFireWaitTime",
+              "FlankReactionTime",
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/cannibal/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ]
+      },
+      "Centurion": {
+        "title": "Centurion",
+        "intro": "These settings affect the Cerberus Centurion, a squad leader unit with smoke grenades, frag grenades, and a hard hitting mattock.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Centurion shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Smoke Grenade Frequency",
+            "description": "Sets the cooldown between smoke grenade shots. Only 2 smoke grenades can be active at any given time due to performance concerns. Using the 5 Max Smoke Grenades MixIn, you can raise this cap to 5.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/smokegrenade.jpg",
+            "stats": [
+              "SmokeFrequency",
+              "FlankedSmokeChance",
+              "CoverMoveSmokeChance"
+            ]
+          },
+          {
+            "title": "Frag Grenade Interval",
+            "description": "Sets the cooldown between frag grenade tosses.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/fraggrenade.jpg",
+            "stats": [
+              "GrenadeInterval"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the electric baton attack.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeFrequency",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/centurion/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxEnemyShieldRecharge": {
+            "label": "Max shield recharge"
+          }
+        }
+      },
+      "CollectorCaptain": {
+        "title": "Collector Captain",
+        "intro": "These settings affect the Collector Captain, a squad leader unit that spawns Seeker Swarms. When possessed, the seeker swarms are deadly.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Barriers",
+            "description": "Sets how much damage this unit's barriers will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/barriers.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Barrier Regeneration",
+            "description": "Defines how the Collector Captain barrier regenerates. This applies to both standard and possessed.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Possession Bonuses",
+            "description": "Sets the bonuses the Collector Captain gets when becoming possessed. The possession barrier replaces the normal one.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/possession.jpg",
+            "stats": [
+              "PossessedBarrierBonus",
+              "PossessionBonusHealthPercent"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the Captains's Slice attack.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Seeker Swarm",
+            "description": "Seeker Swarms move independent of the Collector Captain and force a long power cooldown as well as impair accuracy if they explode on a player.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/seekerswarm.jpg",
+            "stats": [
+              "Seeker_MaxHealth",
+              "Seeker_CooldownPenalty",
+              "Seeker_AccuracyPenalty",
+              "Seeker_ExplosionDamage",
+              "Seeker_ExplosionRadius"
+            ]
+          },
+          {
+            "title": "Shared Seeker Swarm Stats",
+            "description": "Both the normal Seeker Swarm and the Possessed Seeker Swarm share many stats.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/seekershared.jpg",
+            "stats": [
+              "Seeker_ExplosionDelay",
+              "SeekerLocalMax",
+              "SeekerGlobalMax",
+              "SeekerSpawnInterval"
+            ]
+          },
+          {
+            "title": "Possessed Seeker Swarm",
+            "description": "Possessed Seeker Swarms are spawned when the Collector Captain is possessed. The explosion from the swarm can be deadly.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/superswarm2.jpg",
+            "stats": [
+              "SuperSeeker_MaxHealth",
+              "SuperSeeker_MaxBarriers",
+              "SuperSeeker_CooldownPenalty",
+              "SuperSeeker_AccuracyPenalty",
+              "SuperSeeker_ExplosionDamage",
+              "SuperSeeker_ExplosionRadius"
+            ]
+          },
+          {
+            "title": "Possessed Seeker Swarm Barrier Regeneration",
+            "description": "Defines how the Possessed Seeker Swarm barrier regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/seekerregen.jpg",
+            "stats": [
+              "SuperSeeker_MaxEnemyShieldRecharge",
+              "SuperSeeker_AIShieldRegenDelay",
+              "SuperSeeker_AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "EvadeFrequency",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/collectorcaptain/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxShields": {
+            "label": "Barriers"
+          },
+          "MaxEnemyShieldRecharge": {
+            "label": "Max barrier recharge"
+          }
+        }
+      },
+      "CollectorTrooper": {
+        "title": "Collector Trooper",
+        "intro": "These settings affect the Collector Trooper, a basic unit with frag grenades. When possessed, it can spawn webs that impede mobility.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Possession Bonuses",
+            "description": "Sets the bonuses the Collector Trooper gets when becoming possessed.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/possession.jpg",
+            "stats": [
+              "PossessedBarrierBonus",
+              "PossessionBonusHealthPercent"
+            ]
+          },
+          {
+            "title": "Possessed Barrier Regeneration",
+            "description": "Defines how the Possessed Collector Trooper barrier regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the Trooper's Slice attack.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Collector Web",
+            "description": "The Collector web greatly impairs anyone that is unfortunate enough to become trapped in it.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/web.jpg",
+            "stats": [
+              "WebMaxHealth",
+              "WebDuration",
+              "WebRadius",
+              "VictimSlowedAmount"
+            ]
+          },
+          {
+            "title": "Collector Web Spawning",
+            "description": "Defines stats about how the Collector Web slows characters down. The radius is in centimeters.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/webcreate.jpg",
+            "stats": [
+              "WebInterval",
+              "MaxWebCount",
+              "GlobalMaxWebCount"
+            ]
+          },
+          {
+            "title": "Frag Grenade Interval",
+            "description": "Sets the cooldown between frag grenade tosses in terms of seconds.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/fraggrenade.jpg",
+            "stats": [
+              "GrenadeInterval"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "EvadeFrequency",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/collectortrooper/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxEnemyShieldRecharge": {
+            "label": "Max barrier recharge"
+          }
+        }
+      },
+      "GethBomber": {
+        "title": "Geth Bomber",
+        "intro": "These settings affect the Cerberus Gethbomber, a squad leader unit with smoke grenades, frag grenades, and a hard hitting mattock.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Gethbomber shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Bombing Run Attack",
+            "description": "Defines the stats for the bombing run attack where multiple grenades are dropped in a line near a player.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/grenades.jpg",
+            "stats": [
+              "NumGrenadesToDrop",
+              "ExplosionDamage",
+              "ExplosionRadius",
+              "ExplosionDelay"
+            ]
+          },
+          {
+            "title": "Bombing Run Cooldown",
+            "description": "Sets the cooldown between bombing runs for both a single unit and all units. The cooldown doesn't seem to trigger until a bombing run has finished.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/bombing.jpg",
+            "stats": [
+              "BombingRunInterval",
+              "GlobalBombingRunInterval"
+            ]
+          },
+          {
+            "title": "Zap Attack Interval",
+            "description": "Sets the cooldown for the zap attack. This is the Geth Bomber's melee.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeFrequency",
+              "EvadeResetDuration",
+              "PowerEvadeChance"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/gethbomber/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxEnemyShieldRecharge": {
+            "label": "Max shield recharge"
+          },
+          "AIShieldRegenPct": {
+            "unit": "of 1/sec"
+          },
+          "MeleeAttackInterval": {
+            "label": "Zap Interval"
+          }
+        }
+      },
+      "GethHunter": {
+        "title": "Geth Hunter",
+        "intro": "These settings affect the Geth Hunter, an enemy that can cloak when its shields are up, and can stunlock you with its Geth Plasma Shotgun.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Gethhunter shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Cloaking",
+            "description": "Defines the behavior of the Geth Hunter cloaking ability.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/cloak.jpg",
+            "stats": [
+              "CloakSpeedMod",
+              "HunterRecloakDelay"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "The Geth Hunter has an aim delay before it can fire.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/weapon.jpg",
+            "stats": [
+              "HunterAimDelay"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the arm swing melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeResetDuration",
+              "EvadeFrequency",
+              "PowerEvadeChance"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/gethhunter/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxEnemyShieldRecharge": {
+            "label": "Max shield recharge"
+          }
+        }
+      },
+      "GethPrime": {
+        "title": "Geth Prime",
+        "intro": "These settings affect the Geth Prime, a commanding unit with drones, turrets, lots of armor and shields, and a stagger cannon.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Gethprime shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Weapon Behavior",
+            "description": "When the AI uses a weapon it can have a forced period of time where the weapon cannot be fired again. This time changes if the weapon is fired while moving.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/weapon.jpg",
+            "stats": [
+              "FireDelayTimeLow",
+              "FireDelayTimeHigh",
+              "MoveFireDelayTimeLow",
+              "MoveFireDelayTimeHigh"
+            ]
+          },
+          {
+            "title": "Geth Turret",
+            "description": "The Geth Prime Turret is a very dangerous pet as it can spawn through walls. The laser gun is the exact same as the one the Geth Trooper uses. Turrets are instantly killed by powers that ragdoll.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/gethturret.jpg",
+            "stats": [
+              "TurretSpawnInterval",
+              "Turret_MaxHealth"
+            ]
+          },
+          {
+            "title": "Shield Drone",
+            "description": "The incorrectly named Geth Prime Shield Drone shoots incinerate blasts at hostiles that staggers them.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/shielddrone.jpg",
+            "stats": [
+              "DroneSpawnInterval",
+              "ShieldDrone_MaxHealth"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the arm swing melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/gethprime/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          },
+          "MaxEnemyShieldRecharge": {
+            "label": "Max shield recharge"
+          },
+          "DroneSpawnInterval": {
+            "label": "Spawn Interval"
+          }
+        }
+      },
+      "GethPyro": {
+        "title": "Geth Pyro",
+        "intro": "These settings affect the Geth Pyro, an infantry unit with a fairly long range flamethrower that can kill players in seconds when in range.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/gethpyro/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/gethpyro/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Gethpyro shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/gethpyro/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Flamer Tank",
+            "description": "The flamer tank on the Geth Pyro's back can be detonated if it is damaged beyond a certain limit.",
+            "_legacyImage": "/images/modmaker/enemies/gethpyro/tank.jpg",
+            "stats": [
+              "TankHealth"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/gethpyro/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "EvadeFrequency"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/gethpyro/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          },
+          "AIShieldRegenDelay": {
+            "label": "Recharge Delay"
+          }
+        }
+      },
+      "GethRocketTrooper": {
+        "title": "Geth Rocket Trooper",
+        "intro": "These settings affect the Geth Rocket Trooper, a basic infantry unit with a homing rocket launcher.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/gethrockettrooper/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/gethrockettrooper/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Gethrockettrooper shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/gethrockettrooper/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/gethrockettrooper/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the arm swing melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/gethrockettrooper/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/gethrockettrooper/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "MaxFireWaitTime",
+              "FlankReactionTime",
+              "EvadeFrequency"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/gethrockettrooper/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxEnemyShieldRecharge": {
+            "label": "Max shield recharge"
+          }
+        }
+      },
+      "GethTrooper": {
+        "title": "Geth Trooper",
+        "intro": "These settings affect the Geth Trooper, a basic infantry unit with a pulse rifle.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/gethtrooper/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/gethtrooper/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the arm swing elbow attack.",
+            "_legacyImage": "/images/modmaker/enemies/gethtrooper/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/gethtrooper/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeFrequency",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/gethtrooper/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ]
+      },
+      "Global": {
+        "title": "Global Difficulty Settings",
+        "groups": [
+          {
+            "title": "Global Grenade Cooldown",
+            "description": "All enemies that can throw grenades check the global grenade cooldown before throwing a grenade. If this check passes, the local grenade cooldown for that enemy is checked.",
+            "_legacyImage": "/images/modmaker/enemies/global/fraggrenade.jpg",
+            "stats": [
+              "GlobalEnemyGrenadeCooldown"
+            ]
+          },
+          {
+            "title": "Player Revival",
+            "description": "Defines the protection a just-revived player gets after being downed.",
+            "_legacyImage": "/images/modmaker/enemies/global/revive.jpg",
+            "stats": [
+              "ReviveHealthReturn",
+              "ReviveDamageReductionAmount",
+              "ReviveDamageReductionLength"
+            ]
+          },
+          {
+            "title": "Squadmate Revival",
+            "description": "Defines the protection a just-revived squadmate gets after being downed.",
+            "_legacyImage": "/images/modmaker/enemies/global/squadmaterevival.jpg",
+            "stats": [
+              "ReviveHealthReturn",
+              "ReviveDamageReductionAmount",
+              "ReviveDamageReductionLength"
+            ]
+          },
+          {
+            "title": "Enemy Shield Gate",
+            "description": "Enemy shield gating scales damage down when an attack breaks the enemy shield or barriers. Setting this to 1 makes enemies dangerously difficult to kill if combined with fast shield recharge.",
+            "_legacyImage": "/images/modmaker/enemies/global/enemyshieldgate.jpg",
+            "stats": [
+              "AIEnergyShieldGatePct"
+            ]
+          },
+          {
+            "title": "Damage Scaling",
+            "description": "Damage across difficulties is scaled up and down in various ways.",
+            "_legacyImage": "/images/modmaker/enemies/global/scaling.jpg",
+            "stats": [
+              "OutAIDamageScale",
+              "NoCoverDamageBonus",
+              "CoverDamageReduction",
+              "AIArmorDamageReduction",
+              "StoppingPowerScalar"
+            ]
+          },
+          {
+            "title": "Player Shield Gate",
+            "description": "Defines the duration for the player shield gate, a state when a player's shield breaks and they receive an extremely short period of invulnerability.",
+            "_legacyImage": "/images/modmaker/enemies/global/playershieldgate.jpg",
+            "stats": [
+              "PlayerShieldGateDuration"
+            ]
+          },
+          {
+            "title": "Player Health Gate",
+            "description": "Defines stats for the player health gate, when the player reaches critically low health and receives a very short survivability bonus.",
+            "_legacyImage": "/images/modmaker/enemies/global/healthgate.jpg",
+            "stats": [
+              "PlayerHealthGateDuration"
+            ]
+          },
+          {
+            "title": "Player Shield Regeneration",
+            "description": "Defines how a player shield regenerates. The time to recharge is different depending on if the shield has been fully destroyed or not.",
+            "_legacyImage": "/images/modmaker/enemies/global/playerregen.jpg",
+            "stats": [
+              "PlayerShieldRegenPct",
+              "PlayerShieldRegenDelayFromDestroyed",
+              "PlayerShieldRegenDelayFromPartial"
+            ]
+          },
+          {
+            "title": "Ammo & Resupply Crates",
+            "description": "On wave completion health and ammo are restored as well as when ammo and grenades are picked up from crates. These variables define how much of each are restored.",
+            "_legacyImage": "/images/modmaker/enemies/global/supplycrate.jpg",
+            "stats": [
+              "AmmoDropPct",
+              "AmmoPct",
+              "GrenadesPerDrop"
+            ]
+          }
+        ]
+      },
+      "Guardian": {
+        "title": "Guardian",
+        "intro": "These settings affect the Cerberus Guardian, a slow moving infantry unit with a riot shield wielding a Talon.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/guardian/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Riot Shield Attack",
+            "description": "The Guardian's riot shield is separate from its baton attack and has its own cooldown. Due to how long the animation is, it is almost always available for use once the attack is used.",
+            "_legacyImage": "/images/modmaker/enemies/guardian/shieldbash.jpg",
+            "stats": [
+              "ShieldBashInterval"
+            ]
+          },
+          {
+            "title": "Riot Shield Breach",
+            "description": "The Guardian's riot shield is breached when it hits a damage threshold, causing the Guardian to be knocked back a few steps.",
+            "_legacyImage": "/images/modmaker/enemies/guardian/breach.jpg",
+            "stats": [
+              "ShieldDamageBreachThreshold",
+              "ShieldResetDuration",
+              "BreachFrequency"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the baton melee attack. This attack is only usable once the guardian loses their shield.",
+            "_legacyImage": "/images/modmaker/enemies/guardian/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/guardian/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/guardian/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeFrequency",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/guardian/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ]
+      },
+      "Harvester": {
+        "title": "Harvester",
+        "intro": "These settings affect the Reaper Harvester, a huge flying enemy that shoots ravager cannon shots and has a massive explosion when it dies. It's only found in scripted areas in SP.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/harvester/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/harvester/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ]
+      },
+      "Husk": {
+        "title": "Husk",
+        "intro": "These settings affect the Reaper Husk, a zombie like unit which specializes in swarming players and distracting.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/husk/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Defines the cooldown on the arm swipe attack.",
+            "_legacyImage": "/images/modmaker/enemies/husk/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Sync Melee Attack Interval",
+            "description": "Defines the cooldown on the synced melee attack where you must fight them off. The sync attack follows a melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/husk/syncmelee.jpg",
+            "stats": [
+              "SyncMeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/husk/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MeleeAttackInterval": {
+            "label": "Melee Attack Interval"
+          },
+          "SyncMeleeAttackInterval": {
+            "label": "Sync Attack Interval"
+          }
+        }
+      },
+      "KaiLeng": {
+        "title": "Kai Leng",
+        "groups": [
+          {
+            "title": "Health & Shields",
+            "description": "Kai Leng's shield recharges automatically at 40% and 10%. It does not recharge on its own like all other shields do.",
+            "_legacyImage": "/images/modmaker/enemies/kaileng/health.jpg",
+            "stats": [
+              "MaxHealth",
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Power Slash",
+            "description": "Kai Leng has a biotic slash attack that is very similar to the one in multiplayer.",
+            "_legacyImage": "/images/modmaker/enemies/kaileng/slash.jpg",
+            "stats": [
+              "PowerSlashInterval"
+            ]
+          },
+          {
+            "title": "Melee Attacks",
+            "description": "Kai Leng does sword slashes and synced melee attacks like the Phantom. The Sync attack is a quick time event, which results in death if you lose.",
+            "_legacyImage": "/images/modmaker/enemies/kaileng/syncmelee.jpg",
+            "stats": [
+              "MeleeAttackInterval",
+              "SyncMeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Aggressive Mode",
+            "description": "Sets the cooldown for the \"aggressive\" state of the Kai Leng, where he tries to close distance to his target and attack with his melee.",
+            "_legacyImage": "/images/modmaker/enemies/kaileng/aggressive.jpg",
+            "stats": [
+              "AggressiveFrequency"
+            ]
+          },
+          {
+            "title": "Reaction Triggers",
+            "description": "Kai Leng will automatically perform a reaction when a certain amount of damage is dealt. When close to the damage source he will be knocked back, if he is farther away he will roll.",
+            "_legacyImage": "/images/modmaker/enemies/kaileng/evasion.jpg",
+            "stats": [
+              "DamageThreshold",
+              "KnockbackFrequency",
+              "RollFrequency"
+            ]
+          }
+        ],
+        "stats": {
+          "MeleeAttackInterval": {
+            "label": "Melee Attack Cooldown"
+          },
+          "SyncMeleeAttackInterval": {
+            "label": "Sync Attack Cooldown"
+          }
+        }
+      },
+      "Marauder": {
+        "title": "Marauder",
+        "intro": "These settings affect the Marauder, a squad leader Reaper unit with a phaeston, buffing abilities, and elbows of adamantium.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Marauder shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the Marauder's elbow of death attack.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Ally Buffing",
+            "description": "The Marauder can buff cannibals and husks to give them armor plating that can deflect some of their incoming damage.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/buff.jpg",
+            "stats": [
+              "BuffInterval",
+              "BreakBuffDamageThreshold"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "EvadeFrequency",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/marauder/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "AIShieldRegenPct": {
+            "label": "Recharge % per sec"
+          }
+        }
+      },
+      "Nemesis": {
+        "title": "Nemesis",
+        "intro": "These settings affect the Cerberus Nemesis, a mobile sniper with a powerful Raptor.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/nemesis/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shields",
+            "description": "Sets how much damage this unit's shields will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/nemesis/shields.jpg",
+            "stats": [
+              "MaxShields"
+            ]
+          },
+          {
+            "title": "Shield Regeneration",
+            "description": "Defines how the Nemesis shield regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/nemesis/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Sniping",
+            "description": "Defines how the Nemesis uses it's raptor. Aim delay is the length of time the laser tracks you before firing, while tracking duration seems to be how long the Nemesis looks at you.",
+            "_legacyImage": "/images/modmaker/enemies/nemesis/laser.jpg",
+            "stats": [
+              "NemesisAimDelay",
+              "AimTrackingDuration"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/nemesis/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. Once a damage threshold is reached in a certain amount of time, the pawn will perform a dodge.",
+            "_legacyImage": "/images/modmaker/enemies/nemesis/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeFrequency",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/nemesis/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "AIShieldRegenDelay": {
+            "label": "Recharge Delay"
+          }
+        }
+      },
+      "Phantom": {
+        "title": "Phantom",
+        "intro": "These settings affect the Cerberus Phantom, an agile enemy with a deadly hand cannon, instant-kill sword and a cloak.",
+        "groups": [
+          {
+            "title": "Health",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Barriers",
+            "description": "Sets how much damage this unit's barriers will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/barrier.jpg",
+            "stats": [
+              "MaxBarriers"
+            ]
+          },
+          {
+            "title": "Barrier Regeneration",
+            "description": "Defines how the phantom barrier regenerates.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Cloaking Health Percent",
+            "description": "Sets the amount of health a phantom must be under before it can use cloak. 0 is 0% (can't use it) and 1 is 100% (can always use it, even with barriers).",
+            "_legacyImage": "/images/modmaker/enemies/phantom/cloak.jpg",
+            "stats": [
+              "CloakHealthPct"
+            ]
+          },
+          {
+            "title": "Sync Kill Chance",
+            "description": "Sets the chance the Phantom will perform a sync kill (instant kill) if you are in range following a melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/synckill.jpg",
+            "stats": [
+              "SyncKillChance",
+              "SyncMeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Aggressive Mode",
+            "description": "Sets the cooldown for the \"aggressive\" state of the Phantom, where it tries to close the distance so it can attack with its sword.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/aggressive.jpg",
+            "stats": [
+              "AggressiveFrequency"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the standard sword slash attack.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Weapon Handling",
+            "description": "When in cover there are variables that can suppress actions when their cooldown expires, keeping them in cover for extended periods of time.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/weapon.jpg",
+            "stats": [
+              "PartialLeanPct",
+              "CancelFirePct"
+            ]
+          },
+          {
+            "title": "Damage Evasion",
+            "description": "Pawns will perform evasive maneuvers when taking incoming damage. The phantom uses two dodges, a standard evasion for damage and a shield for powers. Both significantly reduce incoming damage while the animation is active.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/evasion.jpg",
+            "stats": [
+              "EvadeDamagePctLow",
+              "EvadeDamagePctHigh",
+              "EvadeFrequency",
+              "EvadeResetDuration",
+              "PowerEvadeChance",
+              "ShieldDamageScalePct",
+              "EvadeDamageScalePct",
+              "MaxFireWaitTime",
+              "FlankReactionTime"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/phantom/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxEnemyShieldRecharge": {
+            "label": "Max Barrier Recharge"
+          },
+          "AIShieldRegenDelay": {
+            "label": "Recharge Delay"
+          }
+        }
+      },
+      "Praetorian": {
+        "title": "Praetorian",
+        "intro": "These settings affect the Praetorian, a boss tier unit that can launch a barrage of long and short range attacks. It is incredibly lethal in melee range.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Barriers",
+            "description": "Sets how much damage this unit's barriers will deflect before health can be damaged.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/barriers.jpg",
+            "stats": [
+              "MaxBarriers"
+            ]
+          },
+          {
+            "title": "Barrier Regeneration",
+            "description": "Defines how the Praetorian barrier regenerates. This applies to both standard and possessed.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Possession Bonuses",
+            "description": "Sets the bonuses the Praetorian gets when becoming possessed. The possession barrier is a bonus to the normal one. By default the Praetorian does not get additional barriers.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/possession.jpg",
+            "stats": [
+              "PossessedBarrierBonus",
+              "PossessionBonusHealthPercent"
+            ]
+          },
+          {
+            "title": "Laser Attack",
+            "description": "Sets stats for the laser attack.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/laser.jpg",
+            "stats": [
+              "MaxBlastsToFire",
+              "BeamDamage",
+              "BeamDuration",
+              "BeamStartOffset",
+              "BeamEndOffset",
+              "BeamInterpExp",
+              "BlastIntervalRangeLow",
+              "BlastIntervalRangeHigh"
+            ]
+          },
+          {
+            "title": "Shield Cooldown",
+            "description": "The bubble shield defends the Praetorian against all powers and grenades for a short duration and negates some damage.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/bubbleshield.jpg",
+            "stats": [
+              "ShieldFrequency",
+              "ShieldDuration"
+            ]
+          },
+          {
+            "title": "Possessed Missile Attack",
+            "description": "The Possessess Praetorian missiles are homing missiles that quickly drain your health. If cover is not taken, death soon follows this attack.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/missiles.jpg",
+            "stats": [
+              "NumMissilesToFire",
+              "MissileDamage",
+              "MissileRadius"
+            ]
+          },
+          {
+            "title": "Leap Attack",
+            "description": "The leap attack quickly closes distance and staggers all in its path.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/leap.jpg",
+            "stats": [
+              "LeapInterval"
+            ]
+          },
+          {
+            "title": "Armor Pieces",
+            "description": "Armor pieces on the Praetorian can be destroyed, leaving more exposed areas vulnerable.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/mustache.jpg",
+            "stats": [
+              "ShoulderArmourHealth",
+              "HelmetArmourHealth",
+              "ChestArmourHealth"
+            ]
+          },
+          {
+            "title": "Melee Attack Interval",
+            "description": "Sets the cooldown for the stab attack.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Sync Kill Chance",
+            "description": "Sets the chance the Praetorian will perform a sync kill (instant kill) if you are in range following a melee attack. Since the praetorian melee staggers, it often gets multiple chances, making sync kills very easy to obtain.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/synckill.jpg",
+            "stats": [
+              "SyncKillChance"
+            ]
+          },
+          {
+            "title": "Praetorian Breach",
+            "description": "If the Praetorian receives enough damage in a small amount of time, it will be knocked spinning. This releases pawns from the Praetorian sync kill.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/breach.jpg",
+            "stats": [
+              "MaxBreachDamageThreshold",
+              "BreachDamageThreshold",
+              "BreachDamageResetDuration"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/praetorian/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          },
+          "MaxEnemyShieldRecharge": {
+            "label": "Max Barrier Recharge"
+          },
+          "AIShieldRegenDelay": {
+            "label": "Recharge Delay"
+          },
+          "PossessionBonusHealthPercent": {
+            "label": "Armor Multiplier",
+            "unit": "x Armor"
+          }
+        }
+      },
+      "Ravager": {
+        "title": "Ravager",
+        "intro": "These settings affect the Ravager, a long range reaper support unit with swarmers and powerful rockets.",
+        "groups": [
+          {
+            "title": "Armor & Sack Health",
+            "description": "Sets how much damage this unit can take before death, as well as the strength of the Ravager sack.",
+            "_legacyImage": "/images/modmaker/enemies/ravager/health.jpg",
+            "stats": [
+              "MaxHealth",
+              "SackHealth"
+            ]
+          },
+          {
+            "title": "Sack Burst",
+            "description": "Sets what sacks bursting on the Ravager does.",
+            "_legacyImage": "/images/modmaker/enemies/ravager/sackburst.jpg",
+            "stats": [
+              "SackDamageHealthPct",
+              "SackBurstDamage",
+              "SackBurstRadius"
+            ]
+          },
+          {
+            "title": "Sack Swarmers",
+            "description": "Sets how many swarmers are in a sack that appear when the sack is burst.",
+            "_legacyImage": "/images/modmaker/enemies/ravager/swarmersack.jpg",
+            "stats": [
+              "NumSwarmersInSack"
+            ]
+          },
+          {
+            "title": "Weapon Behavior",
+            "description": "When the AI uses a weapon it can have a forced period of time where the weapon cannot be fired again. This time changes if the weapon is fired while moving.",
+            "_legacyImage": "/images/modmaker/enemies/ravager/weapon.jpg",
+            "stats": [
+              "FireDelayTimeLow",
+              "FireDelayTimeHigh",
+              "AimDelay"
+            ]
+          },
+          {
+            "title": "Swarmers",
+            "description": "Attributes for the Swarmer units.",
+            "_legacyImage": "/images/modmaker/enemies/ravager/swarmer.jpg",
+            "stats": [
+              "MaxSwarmers",
+              "Swarmer_MaxHealth"
+            ]
+          },
+          {
+            "title": "Swarmer Spawn Interval",
+            "description": "Defines how swarmers spawn outside of a Sack burst.",
+            "_legacyImage": "/images/modmaker/enemies/ravager/swarmerspawn.jpg",
+            "stats": [
+              "NumSwarmersToSpawn",
+              "SwarmerSpawnIntervalRangeLow",
+              "SwarmerSpawnIntervalRangeHigh"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/ravager/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          }
+        }
+      },
+      "Scion": {
+        "title": "Scion",
+        "intro": "These settings affect the Scion, a slow moving Collector unit with a deadly arm cannon and suppressing grenades when possessed.",
+        "groups": [
+          {
+            "title": "Armor",
+            "description": "Sets how much damage this unit can take before death.",
+            "_legacyImage": "/images/modmaker/enemies/scion/health.jpg",
+            "stats": [
+              "MaxHealth"
+            ]
+          },
+          {
+            "title": "Shoulder Sack",
+            "description": "Stats for when the shoulder sack is broken on the Scion.",
+            "_legacyImage": "/images/modmaker/enemies/scion/sackburst.jpg",
+            "stats": [
+              "SackHealth",
+              "SackDamagePct"
+            ]
+          },
+          {
+            "title": "Scion Cannon DoT",
+            "description": "Defines the damage over time (DoT) length for Scion cannon. During this time shields will not automatically restore.",
+            "_legacyImage": "/images/modmaker/enemies/scion/blast.jpg",
+            "stats": [
+              "DoTDuration"
+            ]
+          },
+          {
+            "title": "Possession Bonuses",
+            "description": "Sets the bonuses the Scion gets when becoming possessed",
+            "_legacyImage": "/images/modmaker/enemies/scion/possession.jpg",
+            "stats": [
+              "PossessedBarrierBonus",
+              "PossessionBonusHealthPercent"
+            ]
+          },
+          {
+            "title": "Possession Barrier Regeneration",
+            "description": "Defines the regeneration of the Possessed Scion's barrier. It does not seem to regenerate in game however. This stat might be removed in the future.",
+            "_legacyImage": "/images/modmaker/enemies/scion/regen.jpg",
+            "stats": [
+              "MaxEnemyShieldRecharge",
+              "AIShieldRegenDelay",
+              "AIShieldRegenPct"
+            ]
+          },
+          {
+            "title": "Weapon Behavior",
+            "description": "When the AI uses a weapon it can have a forced period of time where the weapon cannot be fired again.",
+            "_legacyImage": "/images/modmaker/enemies/scion/weapon.jpg",
+            "stats": [
+              "FireDelayTimeLow",
+              "FireDelayTimeHigh",
+              "MaxFireWaitTime"
+            ]
+          },
+          {
+            "title": "Possession Grenades",
+            "description": "Sets stats about the Possessed Scion grenades.",
+            "_legacyImage": "/images/modmaker/enemies/scion/grenadeslaunch.jpg",
+            "stats": [
+              "BlastInterval",
+              "NumShardsToSpawn",
+              "ShardExplosionDelayLow",
+              "ShardExplosionDelayHigh",
+              "ShardExplosionRadius",
+              "ShardExplosionDamage"
+            ]
+          },
+          {
+            "title": "Melee Interval",
+            "description": "Sets the cooldown for the arm swing melee attack. Since this attack is very slow this stat does not have much effect.",
+            "_legacyImage": "/images/modmaker/enemies/scion/melee.jpg",
+            "stats": [
+              "MeleeAttackInterval"
+            ]
+          },
+          {
+            "title": "Scion Breach",
+            "description": "If the Scion receives enough damage in a small amount of time, it will be knocked back. This releases pawns from the Scion sync kill.",
+            "_legacyImage": "/images/modmaker/enemies/scion/breach.jpg",
+            "stats": [
+              "MaxBreachDamageThreshold",
+              "BreachDamageThreshold",
+              "BreachDamageResetDuration"
+            ]
+          },
+          {
+            "title": "Sync Kill Chance",
+            "description": "Sets the chance the Scion will perform a sync kill (instant kill) if you are in range following a melee attack.",
+            "_legacyImage": "/images/modmaker/enemies/scion/synckill.jpg",
+            "stats": [
+              "SyncKillChance"
+            ]
+          },
+          {
+            "title": "Stagger Resistance",
+            "description": "Pawns have a built-in resistance to force effects such as incoming weapon fire and projectiles. The amount of incoming force determines the severity of the impact effect, from a simple movement change to a few seconds of knockback.",
+            "_legacyImage": "/images/modmaker/enemies/scion/stagger.jpg",
+            "stats": [
+              "PowerThreshold_Standard",
+              "PowerThreshold_Stagger",
+              "PowerThreshold_Knockback",
+              "HitReactionChanceMultiplier"
+            ]
+          }
+        ],
+        "stats": {
+          "MaxHealth": {
+            "label": "Armor"
+          },
+          "PossessionBonusHealthPercent": {
+            "label": "Armor Multiplier",
+            "unit": "x Armor"
+          },
+          "MaxEnemyShieldRecharge": {
+            "label": "Max Recharge"
+          },
+          "MaxFireWaitTime": {
+            "label": "Min Time Between Suppression Actions"
+          },
+          "BlastInterval": {
+            "label": "Grenade Interval"
+          },
+          "ShardExplosionDelayLow": {
+            "label": "Min Explosion Time"
+          },
+          "ShardExplosionDelayHigh": {
+            "label": "Max Explosion Time"
+          },
+          "ShardExplosionRadius": {
+            "label": "Explosion Radius"
+          },
+          "ShardExplosionDamage": {
+            "label": "Explosion Damage"
+          }
+        }
+      }
+    },
+    "_levelsNote": "The lobby's own names for DO_Level1..4. Authored rather than read because the game holds them only as TLK strings behind the challenge banners. A level with no entry is shown as \"Level n\", which is what a fifth difficulty would get until somebody named it.",
+    "levels": {
+      "1": {
+        "label": "Bronze"
+      },
+      "2": {
+        "label": "Silver"
+      },
+      "3": {
+        "label": "Gold"
+      },
+      "4": {
+        "label": "Platinum"
+      }
+    },
+    "stats": {
+      "AggressiveDuration": {
+        "label": "Aggressive Mode Duration",
+        "unit": "seconds"
+      },
+      "AggressiveFrequency": {
+        "label": "Aggressive Cooldown",
+        "unit": "seconds"
+      },
+      "AIArmorDamageReduction": {
+        "label": "AI Armor Damage Reduction",
+        "unit": "dmg"
+      },
+      "AIEnergyShieldGatePct": {
+        "label": "Damage Negation %",
+        "unit": "of 1"
+      },
+      "AimDelay": {
+        "label": "Aim Delay",
+        "unit": "seconds"
+      },
+      "AimTrackingDuration": {
+        "label": "Tracking Duration",
+        "unit": "seconds"
+      },
+      "AIShieldRegenDelay": {
+        "label": "Recharge delay",
+        "unit": "seconds"
+      },
+      "AIShieldRegenPct": {
+        "label": "Recharge % per seconds",
+        "unit": "of 1"
+      },
+      "AllowExecutionTime": {
+        "label": "Post-Downed Execution Prevention Time",
+        "unit": "seconds"
+      },
+      "AmmoDropPct": {
+        "label": "Enemy Ammo Drop Chance",
+        "unit": "out of 1"
+      },
+      "AmmoPct": {
+        "label": "Ammo Per Pickup",
+        "unit": "out of 1"
+      },
+      "AmmoRefillOnWaveEnd": {
+        "label": "Ammo Restore %",
+        "unit": "out of 1"
+      },
+      "AngryDuration": {
+        "label": "Rage Duration",
+        "unit": "seconds"
+      },
+      "AngrySpeedMod": {
+        "label": "Rage Speed Modifier",
+        "unit": "x speed"
+      },
+      "AOEBlastInterval": {
+        "label": "AOE Blast Cooldown",
+        "unit": "seconds"
+      },
+      "ArmourDestroyedStaggerChance": {
+        "label": "Stagger Chance",
+        "unit": "out of 1"
+      },
+      "ArmourPieceDamage": {
+        "label": "Piece Break Damage"
+      },
+      "ArmourPieceHealth": {
+        "label": "Armor Piece Health"
+      },
+      "BeamDamage": {
+        "label": "Beam Damage"
+      },
+      "BeamDuration": {
+        "label": "Beam Duration",
+        "unit": "seconds"
+      },
+      "BeamEndOffset": {
+        "label": "Beam End Offset",
+        "unit": "cm"
+      },
+      "BeamInterpExp": {
+        "label": "Beam Interpexp?"
+      },
+      "BeamStartOffset": {
+        "label": "Beam Start Offset",
+        "unit": "cm"
+      },
+      "BlastEvadeDist": {
+        "label": "Warp Evasion Distance",
+        "unit": "cm"
+      },
+      "BlastInterval": {
+        "label": "Warp Cooldown",
+        "unit": "seconds"
+      },
+      "BlastIntervalRangeHigh": {
+        "label": "Beam Cooldown Max",
+        "unit": "seconds"
+      },
+      "BlastIntervalRangeLow": {
+        "label": "Beam Cooldown Min",
+        "unit": "seconds"
+      },
+      "BlockInterval": {
+        "label": "Block Cooldown",
+        "unit": "seconds"
+      },
+      "BombingRunInterval": {
+        "label": "Unit Cooldown",
+        "unit": "seconds"
+      },
+      "BreachDamageResetDuration": {
+        "label": "Breach Threshold Reset Timer",
+        "unit": "seconds"
+      },
+      "BreachDamageThreshold": {
+        "label": "Per-Player Breach Damage"
+      },
+      "BreachFrequency": {
+        "label": "Breach Cooldown",
+        "unit": "seconds"
+      },
+      "BreakBuffDamageThreshold": {
+        "label": "Breach Threshold"
+      },
+      "BuffInterval": {
+        "label": "Buff Interval",
+        "unit": "seconds"
+      },
+      "CancelFirePct": {
+        "label": "CancelFirePct"
+      },
+      "Cerberus_Generator_BlastDamage": {
+        "label": "Shield Generator Explosion Damage"
+      },
+      "Cerberus_KineticBarrier_Health": {
+        "label": "Kinetic Barriers Health"
+      },
+      "Cerberus_Pylon_PlaceableRegenStrength": {
+        "label": "Tech Regen Strength"
+      },
+      "Cerberus_Pylon_RegenStrength": {
+        "label": "Pawn Regen Strength"
+      },
+      "Cerberus_Pylon_ShieldStrength": {
+        "label": "Temporary Shield Strength"
+      },
+      "ChargedIntervalHigh": {
+        "label": "Charge Interval High",
+        "unit": "seconds"
+      },
+      "ChargedIntervalLow": {
+        "label": "Charge Interval Low",
+        "unit": "seconds"
+      },
+      "ChargedSpeedMod": {
+        "label": "Speed Multiplier",
+        "unit": "x Speed"
+      },
+      "ChestArmourHealth": {
+        "label": "Chest Piece Health"
+      },
+      "CloakHealthPct": {
+        "label": "Cloak Health Percent",
+        "unit": "of 1"
+      },
+      "CloakSpeedMod": {
+        "label": "Speed Multiplier",
+        "unit": "x Speed"
+      },
+      "CockpitBlockThreshold": {
+        "label": "Block Damage Threshold"
+      },
+      "CockpitDamageResetDuration": {
+        "label": "Damage Window",
+        "unit": "seconds"
+      },
+      "ConsumeHealPct": {
+        "label": "Healing Percent",
+        "unit": "of 1"
+      },
+      "CoverDamageReduction": {
+        "label": "In-Cover Damage Reduction",
+        "unit": "x I. dmg"
+      },
+      "CoverMoveSmokeChance": {
+        "label": "Cover to Cover Smoke Chance",
+        "unit": "out of 1"
+      },
+      "DamageFlareDuration": {
+        "label": "Flare Duration",
+        "unit": "seconds"
+      },
+      "DamageThreshold": {
+        "label": "Reaction Damage Threshold",
+        "unit": "dmg"
+      },
+      "DelayBeforeExecution": {
+        "label": "Delay before execution (upon reaching target)",
+        "unit": "seconds"
+      },
+      "DeployBreachThreshold": {
+        "label": "Breach Threshold"
+      },
+      "DistanceFromDownedPlayer": {
+        "label": "Search Distance For Executioner",
+        "unit": "cm"
+      },
+      "DoTDamage": {
+        "label": "Warp Damage per Second",
+        "unit": "dmg/s"
+      },
+      "DoTDamagePerSecond": {
+        "label": "DoT Damage/Second",
+        "unit": "seconds"
+      },
+      "DoTDuration": {
+        "label": "DoT Duration",
+        "unit": "seconds"
+      },
+      "DoTLength": {
+        "label": "Warp DoT Duration",
+        "unit": "seconds"
+      },
+      "DownedPlayersCheckFrequency": {
+        "label": "Downed Players Check Frequency",
+        "unit": "seconds"
+      },
+      "DroneSpawnInterval": {
+        "label": "Drone Spawn Cooldown",
+        "unit": "seconds"
+      },
+      "EndWaveHealthReturn": {
+        "label": "Health Restore %",
+        "unit": "out of 1"
+      },
+      "EvadeDamagePctHigh": {
+        "label": "Evasion Damage Threshold Max",
+        "unit": "x H&S"
+      },
+      "EvadeDamagePctLow": {
+        "label": "Evasion Damage Threshold Min",
+        "unit": "x H&S"
+      },
+      "EvadeDamageScalePct": {
+        "label": "Shield Damage Multiplier",
+        "unit": "x I. dmg"
+      },
+      "EvadeFrequency": {
+        "label": "Evasion Cooldown",
+        "unit": "seconds"
+      },
+      "EvadeResetDuration": {
+        "label": "Evasion Threshold Reset Timer",
+        "unit": "seconds"
+      },
+      "ExplosionDamage": {
+        "label": "Explosion Damage"
+      },
+      "ExplosionDelay": {
+        "label": "Explosion Delay",
+        "unit": "seconds"
+      },
+      "ExplosionRadius": {
+        "label": "Explosion Radius",
+        "unit": "cm"
+      },
+      "ExtractionCredits": {
+        "label": "Extraction Bonus",
+        "unit": "credits"
+      },
+      "FireDelayTimeHigh": {
+        "label": "Max Refire Time",
+        "unit": "seconds"
+      },
+      "FireDelayTimeLow": {
+        "label": "Min Refire Time",
+        "unit": "seconds"
+      },
+      "FlankedSmokeChance": {
+        "label": "Flanked Smoke Chance",
+        "unit": "out of 1"
+      },
+      "FlankReactionTime": {
+        "label": "Flank Reaction Time",
+        "unit": "seconds"
+      },
+      "FriendlyDamageScalar": {
+        "label": "FF Damage Multiplier",
+        "unit": "x damage"
+      },
+      "GlassCockpitHealth": {
+        "label": "Glass Cockpit Health"
+      },
+      "GlobalBombingRunInterval": {
+        "label": "Global Cooldown",
+        "unit": "seconds"
+      },
+      "GlobalChargeInterval": {
+        "label": "Global Charge Cooldown",
+        "unit": "seconds"
+      },
+      "GlobalEnemyGrenadeCooldown": {
+        "label": "Grenade Cooldown",
+        "unit": "seconds"
+      },
+      "GlobalGameSpeed": {
+        "label": "Game Speed",
+        "unit": "x Bronze"
+      },
+      "GlobalMaxWebCount": {
+        "label": "Max Global Webs",
+        "unit": "webs"
+      },
+      "GrenadeInterval": {
+        "label": "Frag Interval",
+        "unit": "seconds"
+      },
+      "GrenadesPerDrop": {
+        "label": "Grenades Per Pickup",
+        "unit": "per pickup"
+      },
+      "GuardDamageResetDuration": {
+        "label": "Guard Cooldown",
+        "unit": "seconds"
+      },
+      "GuardDuration": {
+        "label": "Guard Duration",
+        "unit": "seconds"
+      },
+      "GuardHealthPctThreshold": {
+        "label": "Health Threshold",
+        "unit": "of 1"
+      },
+      "GuardSpeedMod": {
+        "label": "Guard Speed Modifier",
+        "unit": "x speed"
+      },
+      "HelmetArmourHealth": {
+        "label": "Helmet Piece Health"
+      },
+      "HitReactionChanceMultiplier": {
+        "label": "Reaction Chance Multiplier",
+        "unit": "x R. chance"
+      },
+      "HunterAimDelay": {
+        "label": "Aim Delay",
+        "unit": "seconds"
+      },
+      "HunterRecloakDelay": {
+        "label": "Recloak Delay",
+        "unit": "seconds"
+      },
+      "KnockbackFrequency": {
+        "label": "Knockback Cooldown",
+        "unit": "seconds"
+      },
+      "LeapInterval": {
+        "label": "Leap Cooldown",
+        "unit": "seconds"
+      },
+      "LongRangeBlastInterval": {
+        "label": "Warp Cooldown (Long Range)",
+        "unit": "seconds"
+      },
+      "MaxBarriers": {
+        "label": "Barriers"
+      },
+      "MaxBlastsToFire": {
+        "label": "Number of Beams",
+        "unit": "blasts"
+      },
+      "MaxBreachDamageThreshold": {
+        "label": "Max Breach Damage Threshold"
+      },
+      "MaxChargedBanshees": {
+        "label": "Max Charged",
+        "unit": "banshees"
+      },
+      "MaxEnemyShieldRecharge": {
+        "label": "Max Shield Recharge",
+        "unit": "of 1"
+      },
+      "MaxFireWaitTime": {
+        "label": "Max Time Between Cover Fire",
+        "unit": "seconds"
+      },
+      "MaxHealth": {
+        "label": "Health"
+      },
+      "MaxPossessed": {
+        "label": "Max Possessed"
+      },
+      "MaxShields": {
+        "label": "Shields"
+      },
+      "MaxSwarmers": {
+        "label": "Max Swarmers"
+      },
+      "MaxTeleports": {
+        "label": "Max Teleports"
+      },
+      "MaxWebCount": {
+        "label": "Max Unit Webs",
+        "unit": "webs"
+      },
+      "MeleeAttackInterval": {
+        "label": "Melee Interval",
+        "unit": "seconds"
+      },
+      "MissileDamage": {
+        "label": "Missile Damage"
+      },
+      "MissileRadius": {
+        "label": "Explosion Radius",
+        "unit": "cm"
+      },
+      "MoveFireDelayTimeHigh": {
+        "label": "Max Refire Time While Moving",
+        "unit": "seconds"
+      },
+      "MoveFireDelayTimeLow": {
+        "label": "Min Refire Time While Moving",
+        "unit": "seconds"
+      },
+      "NemesisAimDelay": {
+        "label": "Aim Delay",
+        "unit": "seconds"
+      },
+      "NoCoverDamageBonus": {
+        "label": "Out-of-Cover Damage Bonus",
+        "unit": "x I. dmg"
+      },
+      "NumGrenadesToDrop": {
+        "label": "Grenades Dropped"
+      },
+      "NumMissilesToFire": {
+        "label": "Number of Missiles",
+        "unit": "missiles"
+      },
+      "NumShardsToSpawn": {
+        "label": "Grenade Count",
+        "unit": "grenades"
+      },
+      "NumSwarmersInSack": {
+        "label": "Swarmers in Sack",
+        "unit": "swarmers"
+      },
+      "NumSwarmersToSpawn": {
+        "label": "Swarmers to Spawn",
+        "unit": "swarmers"
+      },
+      "ObjectiveCreditsReward": {
+        "label": "Standard Payout",
+        "unit": "credits"
+      },
+      "OutAIDamageScale": {
+        "label": "AI Damage Multiplier",
+        "unit": "x dmg"
+      },
+      "PartialLeanPct": {
+        "label": "Lean Firing Chance",
+        "unit": "out of 1"
+      },
+      "PlayerHealthGateDuration": {
+        "label": "Gate Duration",
+        "unit": "seconds"
+      },
+      "PlayerShieldGateDuration": {
+        "label": "Gate Duration",
+        "unit": "seconds"
+      },
+      "PlayerShieldRegenDelayFromDestroyed": {
+        "label": "Destroyed Delay",
+        "unit": "seconds"
+      },
+      "PlayerShieldRegenDelayFromPartial": {
+        "label": "Partial Delay",
+        "unit": "seconds"
+      },
+      "PlayerShieldRegenPct": {
+        "label": "Recharge % per seconds",
+        "unit": "of 1"
+      },
+      "PossessedBarrierBonus": {
+        "label": "Possession Barriers"
+      },
+      "PossessionBonusHealthPercent": {
+        "label": "Health Multiplier",
+        "unit": "x Health"
+      },
+      "PossessionInterval": {
+        "label": "Possession Interval",
+        "unit": "seconds"
+      },
+      "PoweredHealPct": {
+        "label": "Health Regen Per Sec",
+        "unit": "of 1/sec"
+      },
+      "PowerEvadeChance": {
+        "label": "Power Evasion Chance",
+        "unit": "out of 1"
+      },
+      "PowerSlashInterval": {
+        "label": "Power Slash Cooldown",
+        "unit": "seconds"
+      },
+      "PowerThreshold_Knockback": {
+        "label": "Knockback Force Resistance",
+        "unit": "newtons"
+      },
+      "PowerThreshold_Stagger": {
+        "label": "Stagger Force Resistance",
+        "unit": "newtons"
+      },
+      "PowerThreshold_Standard": {
+        "label": "Standard Force Resistance",
+        "unit": "newtons"
+      },
+      "Reaper_GethTripMine_ZapDamage": {
+        "label": "Geth Trip Mine Zap Damage"
+      },
+      "Reaper_IndoctrinationDevice_BeamCooldown": {
+        "label": "Barrier Engine Cooldown",
+        "unit": "seconds"
+      },
+      "Reaper_IndoctrinationDevice_ShieldStrength": {
+        "label": "Barrier Strength"
+      },
+      "Reaper_RachniiEgg_RottenBlastDamage": {
+        "label": "Rachni Egg Explosion Damage"
+      },
+      "RepairPct": {
+        "label": "Max Repair %",
+        "unit": "of 1"
+      },
+      "ReviveDamageReductionAmount": {
+        "label": "Damage Protection %",
+        "unit": "of 1"
+      },
+      "ReviveDamageReductionLength": {
+        "label": "Protection Duration",
+        "unit": "seconds"
+      },
+      "ReviveHealthReturn": {
+        "label": "Health Restoration",
+        "unit": "x Health"
+      },
+      "RoarChance": {
+        "label": "Roar Chance",
+        "unit": "out of 1"
+      },
+      "RocketInterval": {
+        "label": "Rocket Interval",
+        "unit": "seconds"
+      },
+      "RollFrequency": {
+        "label": "Roll Cooldown",
+        "unit": "seconds"
+      },
+      "SackBurstDamage": {
+        "label": "Burst Damage"
+      },
+      "SackBurstRadius": {
+        "label": "Burst Radius",
+        "unit": "cm"
+      },
+      "SackDamageHealthPct": {
+        "label": "Self Damage Percent",
+        "unit": "of 1"
+      },
+      "SackDamagePct": {
+        "label": "Sack Burst Damage",
+        "unit": "of 1"
+      },
+      "SackHealth": {
+        "label": "Sack Health"
+      },
+      "Seeker_AccuracyPenalty": {
+        "label": "Accuracy Penalty",
+        "unit": "degree"
+      },
+      "Seeker_CooldownPenalty": {
+        "label": "Cooldown Penalty",
+        "unit": "seconds"
+      },
+      "Seeker_ExplosionDamage": {
+        "label": "Explosion Damage"
+      },
+      "Seeker_ExplosionDelay": {
+        "label": "Explosion Delay",
+        "unit": "seconds"
+      },
+      "Seeker_ExplosionRadius": {
+        "label": "Explosion Radius",
+        "unit": "cm"
+      },
+      "Seeker_MaxHealth": {
+        "label": "Swarm Health"
+      },
+      "SeekerGlobalMax": {
+        "label": "Max Global Swarms",
+        "unit": "swarms"
+      },
+      "SeekerLocalMax": {
+        "label": "Max Unit Swarms",
+        "unit": "swarms"
+      },
+      "SeekerSpawnInterval": {
+        "label": "Spawn Interval",
+        "unit": "seconds"
+      },
+      "ShardExplosionDamage": {
+        "label": "Shard Explosion Damage"
+      },
+      "ShardExplosionDelayHigh": {
+        "label": "Shard Explosion Delay Max",
+        "unit": "seconds"
+      },
+      "ShardExplosionDelayLow": {
+        "label": "Shard Explosion Delay Min",
+        "unit": "seconds"
+      },
+      "ShardExplosionRadius": {
+        "label": "Shard Explosion Radius",
+        "unit": "cm"
+      },
+      "ShieldBashInterval": {
+        "label": "Shield Bash Interval",
+        "unit": "seconds"
+      },
+      "ShieldDamageBreachThreshold": {
+        "label": "Breach Threshold"
+      },
+      "ShieldDamageScalePct": {
+        "label": "Evasion Damage Multiplier",
+        "unit": "x I. dmg"
+      },
+      "ShieldDrone_MaxHealth": {
+        "label": "Drone Health"
+      },
+      "ShieldDuration": {
+        "label": "Shield Duration",
+        "unit": "seconds"
+      },
+      "ShieldFrequency": {
+        "label": "Shield Cooldown",
+        "unit": "seconds"
+      },
+      "ShieldResetDuration": {
+        "label": "Breach Time Limit",
+        "unit": "seconds"
+      },
+      "ShoulderArmourHealth": {
+        "label": "Shoulder Piece Health"
+      },
+      "SmokeFrequency": {
+        "label": "Smoke Interval",
+        "unit": "seconds"
+      },
+      "SmokeInterval": {
+        "label": "Smoke Interval",
+        "unit": "seconds"
+      },
+      "StoppingPowerScalar": {
+        "label": "Player Momentum Multiplier",
+        "unit": "x momentum"
+      },
+      "SuperDoTDamagePerSecond": {
+        "label": "DoT Damage/Second",
+        "unit": "seconds"
+      },
+      "SuperDoTDuration": {
+        "label": "DoT Duration",
+        "unit": "seconds"
+      },
+      "SuperExplosionDamage": {
+        "label": "Explosion Damage"
+      },
+      "SuperExplosionRadius": {
+        "label": "Explosion Radius",
+        "unit": "cm"
+      },
+      "SuperSeeker_AccuracyPenalty": {
+        "label": "Accuracy Penalty",
+        "unit": "degree"
+      },
+      "SuperSeeker_AIShieldRegenDelay": {
+        "label": "Recharge delay",
+        "unit": "seconds"
+      },
+      "SuperSeeker_AIShieldRegenPct": {
+        "label": "Recharge % per seconds",
+        "unit": "of 1"
+      },
+      "SuperSeeker_CooldownPenalty": {
+        "label": "Cooldown Penalty",
+        "unit": "seconds"
+      },
+      "SuperSeeker_ExplosionDamage": {
+        "label": "Explosion Damage"
+      },
+      "SuperSeeker_ExplosionRadius": {
+        "label": "Explosion Radius",
+        "unit": "cm"
+      },
+      "SuperSeeker_MaxBarriers": {
+        "label": "Swarm Barriers"
+      },
+      "SuperSeeker_MaxEnemyShieldRecharge": {
+        "label": "Max barrier recharge",
+        "unit": "of 1"
+      },
+      "SuperSeeker_MaxHealth": {
+        "label": "Swarm Health"
+      },
+      "Swarmer_MaxHealth": {
+        "label": "Swarmer Health"
+      },
+      "SwarmerSpawnIntervalRangeHigh": {
+        "label": "Spawn Interval High",
+        "unit": "seconds"
+      },
+      "SwarmerSpawnIntervalRangeLow": {
+        "label": "Spawn Interval Low",
+        "unit": "seconds"
+      },
+      "SyncKillChance": {
+        "label": "Sync Kill Chance",
+        "unit": "out of 1"
+      },
+      "SyncMeleeAttackInterval": {
+        "label": "Sync Kill Cooldown",
+        "unit": "seconds"
+      },
+      "TankHealth": {
+        "label": "Tank Health"
+      },
+      "TeleportInterval": {
+        "label": "Teleport Interval",
+        "unit": "seconds"
+      },
+      "Turret_MaxHealth": {
+        "label": "Turret Health"
+      },
+      "TurretSpawnInterval": {
+        "label": "Spawn Interval",
+        "unit": "seconds"
+      },
+      "VictimSlowedAmount": {
+        "label": "Slowing Percent",
+        "unit": "of 1"
+      },
+      "WebDuration": {
+        "label": "Web Duration",
+        "unit": "seconds"
+      },
+      "WebInterval": {
+        "label": "Web Spawn Interval",
+        "unit": "seconds"
+      },
+      "WebMaxHealth": {
+        "label": "Web Health"
+      },
+      "WebRadius": {
+        "label": "Web Radius",
+        "unit": "cm"
+      }
+    }
+  },
+  "legacyPages": {
+    "kishock": "sfxgamecontentdlc_con_mp1.sfxweapon_sniperrifle_batarian",
+    "executioner": "sfxgamecontentdlc_con_mp5.sfxweapon_pistol_bloodpack_mp",
+    "adas": "sfxgamecontentdlc_con_mp5.sfxweapon_assaultrifle_adas_mp",
+    "blackstar": null,
+    "adjutant": null
+  },
+  "anchors": {
+    "waveBaseClass": {
+      "value": "SFXWave_Horde",
+      "kind": "class",
+      "usedBy": "wavelist editor",
+      "note": "Factions are its descendants, found by walking SuperClass. Never list them."
+    },
+    "waveEnemyList": {
+      "value": "EnemyList",
+      "kind": "property",
+      "usedBy": "wavelist editor"
+    },
+    "wavePetList": {
+      "value": "PetList",
+      "kind": "property",
+      "usedBy": "wavelist editor"
+    },
+    "waveRoster": {
+      "value": "WaveTypes",
+      "kind": "property",
+      "usedBy": "wavelist editor (faction roster)"
+    },
+    "waveEnemies": {
+      "value": "Enemies",
+      "kind": "property",
+      "usedBy": "wavelist editor"
+    },
+    "waveIndex": {
+      "value": "WaveIndex",
+      "kind": "property",
+      "usedBy": "wavelist editor",
+      "note": "The wave number comes from here, never from the instance name."
+    },
+    "matchSettings": {
+      "value": "sfxonlinefoundation.sfxonlinegamesettings",
+      "kind": "section",
+      "usedBy": "maplist editor, faction picker, difficulty picker"
+    },
+    "mapList": {
+      "value": "MasterMapList",
+      "kind": "property",
+      "usedBy": "maplist editor"
+    },
+    "availableMaps": {
+      "value": "AvailableMaps",
+      "kind": "property",
+      "usedBy": "maplist editor"
+    },
+    "enemyTypes": {
+      "value": "EnemyTypes",
+      "kind": "property",
+      "usedBy": "faction picker",
+      "note": "Second gate on faction reachability, alongside WaveTypes."
+    },
+    "challengeTypes": {
+      "value": "ChallengeTypes",
+      "kind": "property",
+      "usedBy": "difficulty banners",
+      "note": "ID + 1 = DO_Level<n>. Positional, declared nowhere in the game - a convention, not a lookup."
+    },
+    "mpMapNames": {
+      "value": "MPMapNames",
+      "kind": "property",
+      "usedBy": "maplist editor",
+      "note": "Recognised only so it is left alone: stale relative to AvailableMaps, and written with indexed assignment."
+    },
+    "difficultyData": {
+      "value": "^level(?<n>\\d+)difficultydata$",
+      "kind": "propertyPattern",
+      "usedBy": "enemy editor",
+      "note": "Matched across every section - no handler class is named, which is why it found single-player's fifth level for free. Never count to four."
+    },
+    "storeCards": {
+      "value": "CardData",
+      "kind": "property",
+      "usedBy": "display names"
+    }
+  }
+}
