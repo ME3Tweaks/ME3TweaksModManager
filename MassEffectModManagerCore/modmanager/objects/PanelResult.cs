@@ -93,7 +93,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <summary>
         /// If this result needs any merges performed
         /// </summary>
-        public bool NeedsMergeDLC => SelectedTarget?.Game != MEGame.LMP && (TargetsToEmailMergeSync.Any() || TargetsToSquadmateMergeSync.Any());
+        public bool NeedsMergeDLC => GetMergeTargets().Any();
 
         /// <summary>
         /// What moddesc files have been modified by this panel
@@ -139,7 +139,10 @@ namespace ME3TweaksModManager.modmanager.objects
         public IEnumerable<GameTarget> GetMergeTargets()
         {
             // Only email merge and squadmate merge put into merge dlc right now
-            return TargetsToEmailMergeSync.Concat(TargetsToSquadmateMergeSync).Distinct();
+            // Filter per target as some games (e.g. LMP) do not support these merges
+            return TargetsToEmailMergeSync.Where(x => x.Game.SupportsEmailMerge())
+                .Concat(TargetsToSquadmateMergeSync.Where(x => x.Game.SupportsSquadmateMerge()))
+                .Distinct();
         }
 
 

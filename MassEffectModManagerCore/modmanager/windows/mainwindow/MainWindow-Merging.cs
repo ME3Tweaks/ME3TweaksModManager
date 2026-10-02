@@ -120,23 +120,47 @@ namespace ME3TweaksModManager
 
                 foreach (var v in result.TargetsToSquadmateMergeSync)
                 {
+                    if (!v.Game.SupportsSquadmateMerge() || !targetMergeMapping.TryGetValue(v, out var mergeDLC))
+                    {
+                        M3Log.Warning($@"Skipping squadmate merge for target that does not support it or has no merge DLC: {v.TargetPath}");
+                        continue;
+                    }
+
                     ShowRunAndDone(
                         (config) =>
-                            SQMOutfitMerge.RunSquadmateOutfitMerge(targetMergeMapping[v], config.UpdateTitle),
+                            SQMOutfitMerge.RunSquadmateOutfitMerge(mergeDLC, config.UpdateTitle),
                         LC.GetString(LC.string_synchronizingSquadmateOutfits),
                         M3L.GetString(M3L.string_synchronizedSquadmateOutfits),
-                        null);
+                        null,
+                        ShowMergeDLCError);
                 }
 
                 foreach (var v in result.TargetsToEmailMergeSync)
                 {
+                    if (!v.Game.SupportsEmailMerge() || !targetMergeMapping.TryGetValue(v, out var mergeDLC))
+                    {
+                        M3Log.Warning($@"Skipping email merge for target that does not support it or has no merge DLC: {v.TargetPath}");
+                        continue;
+                    }
+
                     ShowRunAndDone(
-                        (config) => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v], config.UpdateTitle),
+                        (config) => ME2EmailMerge.RunGame2EmailMerge(mergeDLC, config.UpdateTitle),
                         M3L.GetString(M3L.string_synchronizingEmails),
                         M3L.GetString(M3L.string_synchronizedEmails),
-                        null);
+                        null,
+                        ShowMergeDLCError);
                 }
             }
+        }
+
+        /// <summary>
+        /// Shows an error dialog if a merge that writes into the M3MergeDLC failed
+        /// </summary>
+        /// <param name="ex">Exception that occurred, may be null</param>
+        private void ShowMergeDLCError(Exception ex)
+        {
+            if (ex != null)
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_errorGeneratingMergeDLC, ex.Message), M3L.GetString(M3L.string_errorGeneratingMergeDLC), MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
 

@@ -58,6 +58,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    M3Log.Exception(b.Error, @"Error running LE1 coalesced merge:");
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingCoalsecedFileX, b.Error.Message), M3L.GetString(M3L.string_errorCompilingCoalesced), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 OnClosing(DataEventArgs.Empty);
             };
             nbw.RunWorkerAsync();

@@ -6,6 +6,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
@@ -332,9 +333,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 }
 
-                void notifyDLCModDeleted(InstalledDLCMod deletedMod)
+                // Queues the merges that need re-run when a DLC mod is deleted or toggled
+                void queueTargetMerges()
                 {
-                    if (selectedTarget.Game.IsGame1() || selectedTarget.Game.IsGame2())
+                    if (selectedTarget.Game.SupportsPlotManagerSync())
                     {
                         Result.TargetsToPlotManagerSync.Add(selectedTarget);
                     }
@@ -344,12 +346,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         Result.TargetsToLE1Merge.Add(selectedTarget); // Rebuild coalesced merge
                     }
 
-                    if (selectedTarget.Game.IsGame2())
+                    if (selectedTarget.Game.SupportsEmailMerge())
                     {
                         Result.TargetsToEmailMergeSync.Add(selectedTarget);
                     }
 
-                    if ((selectedTarget.Game.IsGame3() && selectedTarget.Game != MEGame.LMP) || selectedTarget.Game == MEGame.LE2) // ME2 is not supported for merge due to having to edit the SWF
+                    if (selectedTarget.Game.SupportsSquadmateMerge()) // ME2 and LMP are not supported
                     {
                         Result.TargetsToSquadmateMergeSync.Add(selectedTarget);
                     }
@@ -358,6 +360,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         Result.TargetsToGlobalShaderMerge.Add(selectedTarget);
                     }
+                }
+
+                void notifyDLCModDeleted(InstalledDLCMod deletedMod)
+                {
+                    queueTargetMerges();
 
                     // 11/30/2025 - Don't repopulate DLC mods on delete, just remove it.
                     selectedTarget.UIInstalledDLCMods.Remove(deletedMod);
@@ -373,30 +380,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 void notifyToggled(InstalledDLCMod toggledMod)
                 {
-                    if (selectedTarget.Game.IsGame1() || selectedTarget.Game.IsGame2())
-                    {
-                        Result.TargetsToPlotManagerSync.Add(selectedTarget);
-                    }
-
-                    if (selectedTarget.Game == MEGame.LE1)
-                    {
-                        Result.TargetsToLE1Merge.Add(selectedTarget); // Rebuild coalesced merge
-                    }
-
-                    if (selectedTarget.Game.IsGame2())
-                    {
-                        Result.TargetsToEmailMergeSync.Add(selectedTarget);
-                    }
-
-                    if (selectedTarget.Game.IsGame3() || selectedTarget.Game == MEGame.LE2) // ME2 is not supported for merge due to having to edit the SWF
-                    {
-                        Result.TargetsToSquadmateMergeSync.Add(selectedTarget);
-                    }
-
-                    if (selectedTarget.Game.IsLEGame())
-                    {
-                        Result.TargetsToGlobalShaderMerge.Add(selectedTarget);
-                    }
+                    queueTargetMerges();
 
                     // 11/30/2025 - Update installation state of toggled mod
                     // Run on background thread as this can stall pretty hard
