@@ -13,13 +13,15 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     {
         /// <summary>
         /// Files that are expected to differ between otherwise identical installations. These are neither recorded nor
-        /// verified. Paths are relative to the game root. An entry starting with a separator matches that file name in any
+        /// verified, and a slash manifest may never change them. Paths are relative to the game root. An entry starting with a separator matches that file name in any
         /// folder; an entry ending with a separator matches everything in that folder.
         /// </summary>
         private static readonly string[] ExcludedPaths =
         [
             // Records the install time, the Mod Manager build, and the mod's library path
             @"\_metacmm.txt",
+            // The game executable, copied from the user's LE3. There are several released versions of it; never tracked or patched
+            @"Binaries\Win64\MassEffectMultiplayer.exe",
             // Bink bypass - supplied by Mod Manager, not the game or the mod; changes with Mod Manager versions
             @"Binaries\Win64\bink2w64.dll",
             @"Binaries\Win64\bink2w64_original.dll",

@@ -4,6 +4,8 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.milan.slash;
@@ -674,7 +676,8 @@ namespace ME3TweaksModManager.modmanager.milan
                             {
                                 var fn = Path.GetFileName(f);
                                 return Path.GetFileNameWithoutExtension(fn).StartsWith(baseName + "_", StringComparison.OrdinalIgnoreCase)
-                                       && Path.GetExtension(fn).Equals(ext, StringComparison.OrdinalIgnoreCase);
+                                       && Path.GetExtension(fn).Equals(ext, StringComparison.OrdinalIgnoreCase)
+                                       && IsInVanillaDatabase(f); // Not files mods left in the game
                             });
 
                         foreach (var match in localizedMatches)
@@ -684,14 +687,22 @@ namespace ME3TweaksModManager.modmanager.milan
                     }
                 }
 
-                // 2. Resolve additional wildcards (e.g., *.tfc)
+                // 2. Resolve additional wildcards (e.g., *.tfc). Only files that are part of vanilla LE3 are copied; mods can
+                // leave their own files in the basegame folders (such as Textures_DLC_MOD_*.tfc)
                 if (manifest.ExtraPatterns != null)
                 {
                     foreach (var pattern in manifest.ExtraPatterns)
                     {
                         foreach (var file in Directory.EnumerateFiles(sourceBasePath, pattern, SearchOption.AllDirectories))
                         {
-                            filesToCopy.Add(file);
+                            if (IsInVanillaDatabase(file))
+                            {
+                                filesToCopy.Add(file);
+                            }
+                            else
+                            {
+                                M3Log.Information($"Not copying {file}: it is not a vanilla LE3 file");
+                            }
                         }
                     }
                 }
@@ -734,6 +745,7 @@ namespace ME3TweaksModManager.modmanager.milan
 
         private void CopyFile(string file, string destFile)
         {
+            file = GetVanillaSourceFile(file);
             M3Log.Information($"Copying {file} to {destFile}");
 
             var extension = Path.GetExtension(file);
@@ -761,6 +773,79 @@ namespace ME3TweaksModManager.modmanager.milan
                 destStream.WriteByte((byte)MEPackage.LMPLicenseeVersion);
             }
         }
+
+        #region Vanilla sources
+
+        /// <summary>
+        /// Files copied from LE3 that don't have to be vanilla: the executable (there are several released versions of it, and
+        /// it is never tracked or patched), and the bink dll (the bink bypass install replaces it). Relative to the LE3 root.
+        /// </summary>
+        private static readonly string[] UncheckedSourceFiles =
+        [
+            @"Binaries\Win64\MassEffect3.exe",
+            @"Binaries\Win64\bink2w64.dll",
+        ];
+
+        /// <summary>
+        /// Root of the LE3 installation files are copied from.
+        /// </summary>
+        private string le3SourceRoot;
+
+        /// <summary>
+        /// Root of the LE3 vanilla backup, if there is one (and it isn't the source). Used for files the source has modified.
+        /// </summary>
+        private string le3BackupRoot;
+
+        private string GetSourceRelativePath(string sourceFile) => Path.GetRelativePath(le3SourceRoot, sourceFile);
+
+        private bool IsInVanillaDatabase(string sourceFile) => VanillaDatabaseService.LoadDatabaseFor(MEGame.LE3).ContainsKey(GetSourceRelativePath(sourceFile));
+
+        /// <summary>
+        /// Returns a vanilla copy of a file from the LE3 installation being copied from: the file itself if it is vanilla,
+        /// otherwise the LE3 backup's copy. Everything Project Milan builds on - the MilanDelta patches, the slash manifest and
+        /// the final state it records - expects vanilla LE3 files, so a modified file is caught here rather than failing the
+        /// installation at the end. Throws if there is no vanilla copy.
+        /// </summary>
+        private string GetVanillaSourceFile(string sourceFile)
+        {
+            var relativePath = GetSourceRelativePath(sourceFile);
+            if (UncheckedSourceFiles.Contains(relativePath, StringComparer.OrdinalIgnoreCase))
+                return sourceFile;
+
+            if (!IsInVanillaDatabase(sourceFile))
+            {
+                M3Log.Warning($"{relativePath} is not in the LE3 vanilla database; it cannot be checked for modifications");
+                return sourceFile;
+            }
+
+            if (IsVanillaLE3File(sourceFile, relativePath))
+                return sourceFile;
+
+            if (le3BackupRoot != null)
+            {
+                var backupFile = Path.Combine(le3BackupRoot, relativePath);
+                if (File.Exists(backupFile) && IsVanillaLE3File(backupFile, relativePath))
+                {
+                    M3Log.Warning($"{relativePath} is modified in {le3SourceRoot}; using the vanilla copy in the LE3 backup instead");
+                    return backupFile;
+                }
+            }
+
+            throw new Exception($"{relativePath} in your LE3 installation is modified, and there is no vanilla copy of it in an LE3 backup. Project Milan must be built from vanilla LE3 files: restore this file, or create an LE3 backup.");
+        }
+
+        /// <summary>
+        /// Checks a file against the LE3 vanilla database. TFCs and AFCs are only checked by size: they are many GB in total,
+        /// and mods that change them append to them.
+        /// </summary>
+        private static bool IsVanillaLE3File(string path, string relativePath)
+        {
+            var extension = Path.GetExtension(relativePath);
+            bool sizeOnly = extension.Equals(@".tfc", StringComparison.OrdinalIgnoreCase) || extension.Equals(@".afc", StringComparison.OrdinalIgnoreCase);
+            return VanillaDatabaseService.IsFileVanilla(MEGame.LE3, path, relativePath, false, md5check: !sizeOnly);
+        }
+
+        #endregion
 
         public static readonly MELocalization[] SupportedVOLanguages = new[]
         {
@@ -818,6 +903,8 @@ namespace ME3TweaksModManager.modmanager.milan
 
             bool successful = true;
             string errorMessage = null;
+            bool destinationPrepared = false;
+            bool destinationExisted = Directory.Exists(destinationFolderPath);
             // Copy the source files over.
             try
             {
@@ -838,6 +925,15 @@ namespace ME3TweaksModManager.modmanager.milan
                     MUtilities.DeleteFilesAndFoldersRecursively(destinationFolderPath, throwOnFailed: true, deleteDirectoryItself: false);
                 }
                 MUtilities.CreateDirectoryWithWritePermission(destinationFolderPath);
+                destinationPrepared = true;
+
+                le3SourceRoot = Path.GetFullPath(sourceGameTarget.TargetPath);
+                le3BackupRoot = BackupService.GetGameBackupPath(MEGame.LE3);
+                if (le3BackupRoot != null && Path.GetFullPath(le3BackupRoot).TrimEnd('\\').Equals(le3SourceRoot.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
+                {
+                    le3BackupRoot = null; // Building from the backup itself
+                }
+                M3Log.Information($"Building Project Milan from {le3SourceRoot}" + (le3BackupRoot != null ? $"; modified files will be taken from the LE3 backup at {le3BackupRoot}" : "; there is no LE3 backup to take modified files from"));
 
                 CopySourceFiles(sourceGameTarget.TargetPath, destinationFolderPath, installManifests);
 
@@ -921,6 +1017,12 @@ namespace ME3TweaksModManager.modmanager.milan
                 M3Log.Exception(e, $@"Error building base milan installation:");
                 successful = false;
                 errorMessage = e.Message;
+
+                // Don't leave a half built installation behind
+                if (destinationPrepared)
+                {
+                    DeleteFailedInstallation(destinationFolderPath, deleteDirectoryItself: !destinationExisted);
+                }
 #if DEBUG
                 throw;
 #endif
@@ -928,6 +1030,24 @@ namespace ME3TweaksModManager.modmanager.milan
             finally
             {
                 interop?.InstallationFinished(successful, errorMessage);
+            }
+        }
+
+        private void DeleteFailedInstallation(string destinationFolderPath, bool deleteDirectoryItself)
+        {
+            interop?.SetStatus?.Invoke("Removing incomplete installation...");
+            try
+            {
+                M3Log.Information($"Deleting incomplete installation at {destinationFolderPath}");
+                if (!MUtilities.DeleteFilesAndFoldersRecursively(destinationFolderPath, throwOnFailed: false, deleteDirectoryItself: deleteDirectoryItself))
+                {
+                    M3Log.Error($"Could not fully delete the incomplete installation at {destinationFolderPath}");
+                }
+            }
+            catch (Exception e)
+            {
+                // Never hide the original failure
+                M3Log.Exception(e, $"Could not delete the incomplete installation at {destinationFolderPath}:");
             }
         }
 
