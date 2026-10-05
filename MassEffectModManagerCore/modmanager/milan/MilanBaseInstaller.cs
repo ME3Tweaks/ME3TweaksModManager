@@ -245,18 +245,15 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXGUI_W_A_LMG_GUN02.pcc",
             "SFXGUI_W_A_Prothean.pcc",
             "SFXGUI_W_A_Quarian.pcc",
-            "SFXGUI_W_A_Spitfire.pcc",
             "SFXGUI_W_P_Asari_GUN02.pcc",
             "SFXGUI_W_P_Bloodpack.pcc",
             "SFXGUI_W_P_Silencer.pcc",
             "SFXGUI_W_S_Batarian_GUN02.pcc",
-            "SFXGUI_W_S_Collector.pcc",
             "SFXGUI_W_S_Turian_GUN01.pcc",
             "SFXGUI_W_SG_Assault_GUN02.pcc",
             "SFXGUI_W_SG_Quarian_GUN01.pcc",
             "SFXGUI_W_SG_Salarian.pcc",
             "SFXGUI_W_SMG_Bloodpack.pcc",
-            "SFXGUI_W_SMG_Collector.pcc",
             "SFXGUI_W_SMG_Geth_GUN01.pcc",
 
             // GUI assets for weapons and other stuff
