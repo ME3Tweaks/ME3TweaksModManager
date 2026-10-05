@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.ME3Tweaks.M3Merge;
 
 namespace ME3TweaksModManager.modmanager.converters
 {
@@ -31,6 +32,8 @@ namespace ME3TweaksModManager.modmanager.converters
                         return game == MEGame.ME3 ? Visibility.Visible : Visibility.Collapsed;
                     case "Basegame":
                         return game != MEGame.UDK ? Visibility.Visible : Visibility.Collapsed;
+                    case "LinkerPatches":
+                        return game.SupportsLinkerPatchMerge() ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
 

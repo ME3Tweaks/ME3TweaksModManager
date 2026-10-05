@@ -3339,5 +3339,42 @@
     <system:String x:Key="string_openModPage">Open mod page</system:String>
     <system:String x:Key="string_tooltip_openModPageForFailedDownload">Opens the NexusMods page for this file so you can download it yourself</system:String>
 
+    <!-- Installation Information: Linker Patches -->
+    <system:String x:Key="string_linkerPatches">Linker Patches</system:String>
+    <!-- Tab header. Linker patches replace objects in the game with patched versions provided by DLC mods -->
+    <system:String x:Key="string_tooltip_linkerPatchesTab">Game objects that installed DLC mods replace through linker patches</system:String>
+    <system:String x:Key="string_noLinkerPatchesAreInstalled">No linker patches are installed</system:String>
+    <system:String x:Key="string_linkerPatchesOutOfDate">Linker patches are out of date with installed DLC</system:String>
+    <system:String x:Key="string_rebuild">Rebuild</system:String>
+    <!-- Button text, rebuilds the linker patches -->
+    <system:String x:Key="string_tooltip_rebuildLinkerPatches">Closes this panel and rebuilds linker patches from the installed DLC mods</system:String>
+    <system:String x:Key="string_interp_linkerPatch_overrides">Overrides: {0}</system:String>
+    <!-- 0={mod name} - There may be more than one mod name, separated by commas -->
+    <system:String x:Key="string_interp_linkerPatch_patchPackage">Patch package: {0}</system:String>
+    <!-- 0={package filename} -->
+    <system:String x:Key="string_mergingLinkerPatches">Merging linker patches</system:String>
+    <system:String x:Key="string_mergedLinkerPatches">Merged linker patches</system:String>
+    <system:String x:Key="string_linkerPatchMergeFailed">Linker patch merge failed</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_linkerPatchMergeFailed">Linker patches could not be built, so all linker patches have been removed from the game. Mods that use linker patches will not work correctly until this is fixed.\n\n{0}</system:String>
+    <!-- 0={Error message} -->
+
+    <!-- Discord joins -->
+    <system:String x:Key="string_interp_preparingForDiscordJoin">Preparing {0} for a Discord join</system:String>
+    <!-- 0={Game name} - Shown while Mod Manager gets the game ready to join a friend's lobby from Discord -->
+    <system:String x:Key="string_interp_preparedForDiscordJoin">Prepared {0} for a Discord join</system:String>
+    <!-- 0={Game name} -->
+
+    <!-- Join links -->
+    <system:String x:Key="string_title_joinMultiplayerLobby">Join multiplayer lobby</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_joinMultiplayerLobby">Join the {0} lobby with invite code {1}?\n\nMatchmaking server: {2}\n\nIf you are already in a lobby or match, you will leave it. Only open join links from people you trust.</system:String>
+    <!-- 0={Game name}, 1={Invite code, e.g. ABCDE-FGHIJ}, 2={Matchmaking server URL} - Shown when a join link someone shared is opened -->
+    <system:String x:Key="string_interp_joiningMultiplayerLobby">Joining {0} lobby {1}</system:String>
+    <!-- 0={Game name}, 1={Invite code} - Shown while Mod Manager starts the game (if needed) and hands it the invite code -->
+    <system:String x:Key="string_interp_joinedMultiplayerLobby">Sent invite code {1} to {0}</system:String>
+    <!-- 0={Game name}, 1={Invite code} - The game finishes the join once its multiplayer menu is open -->
+    <system:String x:Key="string_interp_couldNotJoinMultiplayerLobby">Could not send invite code {1} to {0}</system:String>
+    <!-- 0={Game name}, 1={Invite code} -->
+    <system:String x:Key="string_dialog_invalidJoinLink">This join link is not valid. Ask for a new one, or enter the invite code in the game.</system:String>
+
 
 </ResourceDictionary>

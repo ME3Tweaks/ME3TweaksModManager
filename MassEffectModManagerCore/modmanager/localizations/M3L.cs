@@ -2237,6 +2237,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_subtitles = "string_subtitles";
 		public const string string_size = "string_size";
 		public const string string_customOptions = "string_customOptions";
+		public const string string_asiModOptions = "string_asiModOptions";
 		public const string string_automaticallyResumeLastSave = "string_automaticallyResumeLastSave";
 		public const string string_launchParametersSetName = "string_launchParametersSetName";
 		public const string string_customArguments = "string_customArguments";
@@ -2378,6 +2379,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_m3zaMissingTlkOptionKey = "string_interp_m3zaMissingTlkOptionKey";
 		public const string string_interp_errorRestoringFromBackupX = "string_interp_errorRestoringFromBackupX";
 		public const string string_title_logViewer = "string_title_logViewer";
+		public const string string_title_modMaker = "string_title_modMaker";
 		public const string string_showLess = "string_showLess";
 		public const string string_showMore = "string_showMore";
 		public const string string_dialog_couldNotfindFXC = "string_dialog_couldNotfindFXC";
@@ -2465,5 +2467,25 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_cancelAllDownloads = "string_dialog_cancelAllDownloads";
 		public const string string_openModPage = "string_openModPage";
 		public const string string_tooltip_openModPageForFailedDownload = "string_tooltip_openModPageForFailedDownload";
+		public const string string_linkerPatches = "string_linkerPatches";
+		public const string string_tooltip_linkerPatchesTab = "string_tooltip_linkerPatchesTab";
+		public const string string_noLinkerPatchesAreInstalled = "string_noLinkerPatchesAreInstalled";
+		public const string string_linkerPatchesOutOfDate = "string_linkerPatchesOutOfDate";
+		public const string string_rebuild = "string_rebuild";
+		public const string string_tooltip_rebuildLinkerPatches = "string_tooltip_rebuildLinkerPatches";
+		public const string string_interp_linkerPatch_overrides = "string_interp_linkerPatch_overrides";
+		public const string string_interp_linkerPatch_patchPackage = "string_interp_linkerPatch_patchPackage";
+		public const string string_mergingLinkerPatches = "string_mergingLinkerPatches";
+		public const string string_mergedLinkerPatches = "string_mergedLinkerPatches";
+		public const string string_linkerPatchMergeFailed = "string_linkerPatchMergeFailed";
+		public const string string_interp_dialog_linkerPatchMergeFailed = "string_interp_dialog_linkerPatchMergeFailed";
+		public const string string_interp_preparingForDiscordJoin = "string_interp_preparingForDiscordJoin";
+		public const string string_interp_preparedForDiscordJoin = "string_interp_preparedForDiscordJoin";
+		public const string string_title_joinMultiplayerLobby = "string_title_joinMultiplayerLobby";
+		public const string string_interp_dialog_joinMultiplayerLobby = "string_interp_dialog_joinMultiplayerLobby";
+		public const string string_interp_joiningMultiplayerLobby = "string_interp_joiningMultiplayerLobby";
+		public const string string_interp_joinedMultiplayerLobby = "string_interp_joinedMultiplayerLobby";
+		public const string string_interp_couldNotJoinMultiplayerLobby = "string_interp_couldNotJoinMultiplayerLobby";
+		public const string string_dialog_invalidJoinLink = "string_dialog_invalidJoinLink";
 	}
 }
