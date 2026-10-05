@@ -4,6 +4,7 @@ using ME3TweaksCore.ME3Tweaks.M3Merge;
 using ME3TweaksCore.ME3Tweaks.M3Merge.Bio2DATable;
 using ME3TweaksCore.ME3Tweaks.M3Merge.Game2Email;
 using ME3TweaksCore.ME3Tweaks.M3Merge.GlobalShader;
+using ME3TweaksCore.ME3Tweaks.M3Merge.LinkerPatches;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.localizations;
@@ -75,6 +76,11 @@ namespace ME3TweaksModManager
             foreach (var v in result.TargetsToGlobalShaderMerge)
             {
                 RunShaderMergeForTarget(v);
+            }
+
+            foreach (var v in result.TargetsToLinkerPatchMerge)
+            {
+                RunLinkerPatchMergeForTarget(v);
             }
         }
 
@@ -242,6 +248,33 @@ namespace ME3TweaksModManager
                 {
                     if (x != null)
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorMergingGlobalShadersXMessage, x.Message), M3L.GetString(M3L.string_error), System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                });
+        }
+
+        /// <summary>
+        /// Rebuilds the linker patches for the specified target. On failure the linker patches are removed from the game and the error is shown.
+        /// </summary>
+        /// <param name="target">The game target to merge linker patches for</param>
+        private void RunLinkerPatchMergeForTarget(GameTarget target)
+        {
+            if (!target.Game.SupportsLinkerPatchMerge() || !LinkerPatchMerge.NeedsMerged(target))
+            {
+                M3Log.Information($@"Linker patch merge is not needed for target {target.TargetPath}");
+                return;
+            }
+
+            ShowRunAndDone((config) =>
+                {
+                    LinkerPatchMerge.RunLinkerPatchMerge(target);
+                    return null;
+                },
+                M3L.GetString(M3L.string_mergingLinkerPatches),
+                M3L.GetString(M3L.string_mergedLinkerPatches),
+                null,
+                x =>
+                {
+                    if (x != null)
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_linkerPatchMergeFailed, x.Message), M3L.GetString(M3L.string_linkerPatchMergeFailed), System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 });
         }
     }

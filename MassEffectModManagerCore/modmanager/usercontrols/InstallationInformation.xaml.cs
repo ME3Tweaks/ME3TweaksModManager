@@ -360,6 +360,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         Result.TargetsToGlobalShaderMerge.Add(selectedTarget);
                     }
+
+                    if (selectedTarget.Game.SupportsLinkerPatchMerge())
+                    {
+                        Result.TargetsToLinkerPatchMerge.Add(selectedTarget);
+                    }
                 }
 
                 void notifyDLCModDeleted(InstalledDLCMod deletedMod)
@@ -393,6 +398,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 selectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDLCModDeleted, notifyToggled);
                 selectedTarget.PopulateExtras();
                 selectedTarget.PopulateTextureInstallHistory();
+                selectedTarget.PopulateLinkerPatches();
                 bool restoreBasegamefileConfirmationCallback(string filepath)
                 {
                     if (MRunningGameInfo.IsGameRunning(selectedTarget.Game))
@@ -703,6 +709,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void OpenMEMLE_Click(object sender, RoutedEventArgs e)
         {
             Result.ToolToLaunch = ExternalToolLauncher.MEM_LE;
+            ClosePanel();
+        }
+
+        /// <summary>
+        /// Queues a linker patch merge for the selected target and closes the panel so it runs
+        /// </summary>
+        private void RebuildLinkerPatches_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedTarget == null || !SelectedTarget.Game.SupportsLinkerPatchMerge() || !CanClose())
+                return;
+            Result.TargetsToLinkerPatchMerge.Add(SelectedTarget);
             ClosePanel();
         }
     }

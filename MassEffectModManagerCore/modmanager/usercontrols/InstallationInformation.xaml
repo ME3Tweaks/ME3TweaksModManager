@@ -11,6 +11,7 @@
     xmlns:targets1="clr-namespace:ME3TweaksCoreWPF.Targets;assembly=ME3TweaksCoreWPF"
     xmlns:gametarget="clr-namespace:ME3TweaksModManager.modmanager.objects.gametarget"
     xmlns:objects="clr-namespace:ME3TweaksCore.Objects;assembly=ME3TweaksCore"
+    xmlns:linkerPatches="clr-namespace:ME3TweaksCore.ME3Tweaks.M3Merge.LinkerPatches;assembly=ME3TweaksCore"
     xmlns:fa5="http://schemas.fontawesome.com/icons/"
     x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation"
     mc:Ignorable="d"
@@ -712,6 +713,116 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </DockPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+            <TabItem
+                Name="LinkerPatches_Tab"
+                Margin="0"
+                Padding="0"
+                Visibility="{Binding Game, Converter={StaticResource InstallationInformationTabVisibilityConverter}, ConverterParameter='LinkerPatches'}">
+                <TabItem.Header>
+                    <TextBlock
+                        Text="{DynamicResource string_linkerPatches}"
+                        ToolTip="{DynamicResource string_tooltip_linkerPatchesTab}" />
+                </TabItem.Header>
+                <DockPanel
+                    VerticalAlignment="Stretch"
+                    Margin="-8">
+                    <DockPanel.Resources>
+                        <CollectionViewSource
+                            x:Key="LinkerPatchesViewSource"
+                            Source="{Binding InstalledLinkerPatches}">
+                            <CollectionViewSource.GroupDescriptions>
+                                <PropertyGroupDescription
+                                    PropertyName="UIGroupHeader" />
+                            </CollectionViewSource.GroupDescriptions>
+                        </CollectionViewSource>
+                    </DockPanel.Resources>
+                    <DockPanel
+                        DockPanel.Dock="Top"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                        Visibility="{Binding LinkerPatchesStale, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Button
+                            DockPanel.Dock="Right"
+                            HorizontalAlignment="Right"
+                            Margin="4"
+                            Padding="7,3"
+                            Content="{DynamicResource string_rebuild}"
+                            ToolTip="{DynamicResource string_tooltip_rebuildLinkerPatches}"
+                            Click="RebuildLinkerPatches_Click" />
+                        <TextBlock
+                            Text="{DynamicResource string_linkerPatchesOutOfDate}"
+                            FontWeight="Bold"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Center"
+                            Margin="8,0" />
+                    </DockPanel>
+                    <ScrollViewer
+                        VerticalScrollBarVisibility="Auto">
+                        <Grid>
+                            <TextBlock
+                                Text="{DynamicResource string_noLinkerPatchesAreInstalled}"
+                                TextAlignment="Center"
+                                VerticalAlignment="Center"
+                                Visibility="{Binding InstalledLinkerPatches.BindableCount, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter=0}" />
+                            <ItemsControl
+                                ItemsSource="{Binding Source={StaticResource LinkerPatchesViewSource}}"
+                                Visibility="{Binding InstalledLinkerPatches.BindableCount, Converter={StaticResource NonEqualIntVisibilityConverter}, ConverterParameter=0}">
+                                <ItemsControl.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock
+                                                    Text="{Binding Name}"
+                                                    FontWeight="Bold"
+                                                    Margin="4,4,4,0" />
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ItemsControl.GroupStyle>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate
+                                        DataType="{x:Type linkerPatches:InstalledLinkerPatch}">
+                                        <DockPanel
+                                            Margin="5,0,5,2"
+                                            ToolTip="{Binding PatchPackageFile, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_linkerPatch_patchPackage'}">
+                                            <DockPanel.Resources>
+                                                <Style
+                                                    TargetType="{x:Type DockPanel}">
+                                                    <Style.Triggers>
+                                                        <Trigger
+                                                            Property="IsMouseOver"
+                                                            Value="True">
+                                                            <Setter
+                                                                Property="Background"
+                                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </DockPanel.Resources>
+                                            <TextBlock
+                                                DockPanel.Dock="Top"
+                                                Text="{Binding UIDisplayName}"
+                                                TextWrapping="Wrap" />
+                                            <TextBlock
+                                                DockPanel.Dock="Top"
+                                                Text="{Binding OriginalObject}"
+                                                FontFamily="Consolas"
+                                                FontSize="11"
+                                                TextWrapping="Wrap"
+                                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <TextBlock
+                                                DockPanel.Dock="Top"
+                                                Text="{Binding UIOverriddenText, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_linkerPatch_overrides'}"
+                                                Visibility="{Binding UIOverriddenText, Converter={StaticResource NullVisibilityConverter}}"
+                                                FontStyle="Italic"
+                                                TextWrapping="Wrap" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </Grid>
                     </ScrollViewer>
                 </DockPanel>
