@@ -70,6 +70,8 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             {
                 if (!outputs.Add(relPath))
                     problems.Add($"{relPath} is written by more than one slash operation");
+                if (MilanFinalState.IsExcluded(relPath))
+                    problems.Add($"{relPath} may not be changed by a slash manifest");
             }
 
             foreach (var build in manifest.Builds)
@@ -154,6 +156,8 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     continue;
                 if (outputs.Contains(deletion.Filename))
                     problems.Add($"{deletion.Filename} is both written and deleted by the slash manifest");
+                if (MilanFinalState.IsExcluded(deletion.Filename))
+                    problems.Add($"{deletion.Filename} may not be changed by a slash manifest");
 
                 // A file that is already gone is fine; one that is a different size means the game isn't what we expect
                 if (File.Exists(path) && new FileInfo(path).Length != deletion.Size)
