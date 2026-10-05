@@ -168,6 +168,12 @@ namespace ME3TweaksModManager.modmanager.installer
         /// </summary>
         public Action<bool> SetPercentVisibility { get; internal set; }
 
+        /// <summary>
+        /// Called with the full path of each unpacked file once it has been installed into the game, before anything else is
+        /// done with it. Throwing fails the installation.
+        /// </summary>
+        public Action<string> PostFileInstalled { get; set; }
+
         public ModInstaller(ModInstallOptionsPackage installOptionsPackage)
         {
             InstallOptionsPackage = installOptionsPackage;
@@ -714,6 +720,8 @@ namespace ME3TweaksModManager.modmanager.installer
                 M3Log.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 SetAction?.Invoke(M3L.GetString(M3L.string_installing));
+
+                PostFileInstalled?.Invoke(targetPath);
 
 
                 //BASEGAME FILE TRACKING

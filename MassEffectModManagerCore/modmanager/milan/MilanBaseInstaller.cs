@@ -9,12 +9,15 @@ using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.milan.slash;
+using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
-using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.milan
 {
@@ -56,7 +59,7 @@ namespace ME3TweaksModManager.modmanager.milan
             "RefShaderCache-PC-D3D-SM5.upk",
             "SFXOnlineFoundation.pcc",
             "WwiseAudio.pcc",
-            "GuidCache.pcc", // Installed by Milan
+            "GuidCache.pcc", // Replaced with Milan's version by a MilanDelta patch
 
             // Gestures (animations, especially in menus)
             "GesturesConfig.pcc",
@@ -532,40 +535,65 @@ namespace ME3TweaksModManager.modmanager.milan
         }
 
         /// <summary>
-        /// Applies a MilanDelta JPatch delta to <paramref name="sourceFile"/> and writes the resulting
-        /// package, recompressed, to <paramref name="destFile"/>. The delta is diffed against the
-        /// decompressed package data, so the source is decompressed before patching and the result is
-        /// recompressed afterwards; both the input and the patched output are verified against the
+        /// Applies a MilanDelta JPatch delta to the package <paramref name="sourceFile"/> and returns the resulting package,
+        /// recompressed. The delta is diffed against the decompressed package data, so the source is decompressed before
+        /// patching and the result is recompressed afterwards; both the input and the patched output are verified against the
         /// manifest's recorded size and SHA-256 hash before being trusted.
         /// </summary>
-        private void ApplyMilanDelta(string sourceFile, string destFile, MilanDeltaFileEntry entry)
+        /// <param name="packagePath">Path the package is associated with while it is re-saved.</param>
+        private byte[] ApplyMilanDelta(string sourceFile, string packagePath, MilanDeltaFileEntry entry)
         {
-            var sourceBytes = File.ReadAllBytes(sourceFile);
-            using var sourceStream = new MemoryStream(sourceBytes);
+            using var sourceStream = new MemoryStream(File.ReadAllBytes(sourceFile));
             using var decompressedStream = MEPackage.GetDecompressedPackageStream(sourceStream);
             decompressedStream.Position = 0;
 
             VerifySizeAndHash(decompressedStream.Length, () => MUtilities.CalculateHash(decompressedStream, "sha256"),
                 entry.SourceSize, entry.SourceHash, entry.Filename, "source");
 
+            using var patchedStream = ApplyMilanDeltaPatch(decompressedStream, entry);
+
+            // Re-compress the verified, patched data - this becomes the final data of the file.
+            patchedStream.Position = 0;
+            using var package = MEPackageHandler.OpenMEPackageFromStream(patchedStream, packagePath);
+            using var saved = package.SaveToStream(compress: true);
+            return saved.ToArray();
+        }
+
+        /// <summary>
+        /// Applies a MilanDelta JPatch delta to a file that is not a package (e.g. Coalesced.bin), which has no
+        /// compression to undo: the delta is applied to the file's bytes as they are, and the patched output is returned as is.
+        /// Both the input and the output are verified against the manifest's recorded size and SHA-256 hash.
+        /// </summary>
+        private byte[] ApplyMilanRawDelta(string sourceFile, MilanDeltaFileEntry entry)
+        {
+            using var sourceStream = new MemoryStream(File.ReadAllBytes(sourceFile));
+
+            VerifySizeAndHash(sourceStream.Length, () => MUtilities.CalculateHash(sourceStream, "sha256"),
+                entry.SourceSize, entry.SourceHash, entry.Filename, "source");
+
+            using var patchedStream = ApplyMilanDeltaPatch(sourceStream, entry);
+            return patchedStream.ToArray();
+        }
+
+        /// <summary>
+        /// Applies a MilanDelta patch to verified source data, and verifies the output.
+        /// </summary>
+        private MemoryStream ApplyMilanDeltaPatch(Stream source, MilanDeltaFileEntry entry)
+        {
             var patchPath = Path.Combine(milanDeltaFolder, entry.Delta);
             if (!File.Exists(patchPath))
             {
                 throw new Exception($"Milan delta patch file is missing: {patchPath}");
             }
 
-            decompressedStream.Position = 0;
+            source.Position = 0;
             using var patchStream = File.OpenRead(patchPath);
-            using var patchedStream = new MemoryStream();
-            JPatch.ApplyJPatch(decompressedStream, patchStream, patchedStream);
+            var patchedStream = new MemoryStream();
+            JPatch.ApplyJPatch(source, patchStream, patchedStream);
 
             VerifySizeAndHash(patchedStream.Length, () => MUtilities.CalculateHash(patchedStream, "sha256"),
                 entry.DestSize, entry.DestHash, entry.Filename, "output");
-
-            // Re-compress the verified, patched data - this becomes the final data written to destFile.
-            patchedStream.Position = 0;
-            var package = MEPackageHandler.OpenMEPackageFromStream(patchedStream);
-            package.Save(destFile, compress: true);
+            return patchedStream;
         }
 
         /// <summary>
@@ -600,36 +628,160 @@ namespace ME3TweaksModManager.modmanager.milan
         private MilanSlashManifest slashManifest;
 
         /// <summary>
-        /// Applies the Project Milan mod's slash manifest (MilanDelta/slash.json), if it has one, which compacts the TFCs and
-        /// RefShaderCache copied from LE3 down to what LMP uses. Must run after the mod is installed and before the game is TOC'd.
+        /// The installation plan, worked out before anything is written.
         /// </summary>
-        private void ApplyMilanSlash(string gamePath)
+        private MilanInstallPlan plan;
+
+        /// <summary>
+        /// Project Milan files whose slash patch has been applied as the mod was installed.
+        /// </summary>
+        private readonly HashSet<string> appliedModPatches = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// The first failure slashing a Project Milan file as it was installed. ModInstaller reports failures in its own terms,
+        /// so this is kept to report the real problem.
+        /// </summary>
+        private Exception modFileSlashFailure;
+
+        /// <summary>
+        /// Project Milan files larger than this are raw patched through a temporary file rather than in memory.
+        /// </summary>
+        private const long InMemoryModPatchLimit = 100 * 1024 * 1024;
+
+        /// <summary>
+        /// Assembles a slash build into the installation and verifies it against the manifest.
+        /// </summary>
+        /// <param name="resolveGameFile">Returns the path to read a game file source (relative to the installation root) from.</param>
+        private void AssembleSlashBuild(MilanSlashBuildEntry build, string gamePath, Func<string, string> resolveGameFile)
         {
-            var manifest = MilanSlashApplier.LoadManifest(milanDeltaFolder);
-            if (manifest == null)
-            {
-                M3Log.Warning(@"Project Milan mod has no slash manifest; the installation will not be optimized");
-                return;
-            }
+            interop.SetStatus?.Invoke($"Building {Path.GetFileName(build.Filename)}");
+            var destFile = MilanSlashApplier.Resolve(gamePath, build.Filename);
+            Directory.CreateDirectory(Path.GetDirectoryName(destFile));
 
-#if DEBUG
-            // In development the mod is rebuilt far more often than its slash manifest is regenerated. Don't fail the whole
-            // install over a stale manifest; just skip it. Release builds treat this as an invalid build (Apply throws).
-            var problems = MilanSlashApplier.Validate(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
-            if (problems.Count > 0)
+            // Built next to its final location, as the output can be one of its own sources
+            var stagingPath = destFile + @".slashtmp";
+            try
             {
-                foreach (var problem in problems)
+                using (var output = new FileStream(stagingPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024))
                 {
-                    M3Log.Warning($@"Slash validation: {problem}");
+                    MilanSlashApplier.AssembleBuild(build, source => source.Payload ? MilanSlashApplier.Resolve(milanDeltaFolder, source.Filename) : resolveGameFile(source.Filename), output);
+                    MilanSlashApplier.VerifySize(output.Length, build.DestSize, build.Filename, @"output");
                 }
-                M3Log.Warning(@"The slash manifest does not match this installation, most likely because the Project Milan mod was rebuilt since it was generated. Skipping slash; regenerate the slash manifest to fix this.");
-                return;
+                MilanSlashApplier.VerifyHash(MUtilities.CalculateHash(stagingPath, @"sha256"), build.DestHash, build.Filename, @"output");
+                File.Move(stagingPath, destFile, overwrite: true);
             }
-#endif
+            finally
+            {
+                if (File.Exists(stagingPath))
+                    File.Delete(stagingPath);
+            }
 
-            interop.SetStatus?.Invoke(@"Optimizing installation...");
-            MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
-            slashManifest = manifest;
+            M3Log.Information($@"Slash: built {build.Filename} ({FileSize.FormatSize(build.DestSize)})");
+        }
+
+        /// <summary>
+        /// ModInstaller hook: applies the slash patch of a Project Milan file, if it has one, as soon as it has been installed.
+        /// The file is patched in memory and written back once.
+        /// </summary>
+        private void SlashInstalledModFile(string gamePath, string installedFile)
+        {
+            if (plan?.Slash == null)
+                return;
+
+            var relativePath = Path.GetRelativePath(gamePath, installedFile);
+            if (!plan.ModPatches.TryGetValue(relativePath, out var patch))
+                return;
+
+            try
+            {
+                var deltaPath = MilanSlashApplier.Resolve(milanDeltaFolder, patch.Delta);
+                var size = new FileInfo(installedFile).Length;
+                if (size > InMemoryModPatchLimit)
+                {
+                    M3Log.Warning($@"Slash: {relativePath} is {FileSize.FormatSize(size)}; files this large are not expected to be patched while Project Milan is installed");
+                }
+
+                if (patch.Mode == MilanSlashPatchModes.Raw && size > InMemoryModPatchLimit)
+                {
+                    var stagingPath = installedFile + @".slashtmp";
+                    try
+                    {
+                        using (var source = new FileStream(installedFile, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024))
+                        using (var output = new FileStream(stagingPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 1024 * 1024))
+                        {
+                            MilanSlashApplier.PatchRaw(patch, deltaPath, source, output);
+                        }
+                        File.Move(stagingPath, installedFile, overwrite: true);
+                    }
+                    finally
+                    {
+                        if (File.Exists(stagingPath))
+                            File.Delete(stagingPath);
+                    }
+                }
+                else
+                {
+                    var data = File.ReadAllBytes(installedFile);
+                    File.WriteAllBytes(installedFile, ApplySlashPatchInMemory(patch, deltaPath, data, installedFile));
+                }
+
+                appliedModPatches.Add(relativePath);
+            }
+            catch (Exception e)
+            {
+                modFileSlashFailure ??= e;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Applies a slash patch to a file held in memory, returning the patched file.
+        /// </summary>
+        /// <param name="filePath">Where the file is installed.</param>
+        private static byte[] ApplySlashPatchInMemory(MilanSlashPatchEntry patch, string deltaPath, byte[] data, string filePath)
+        {
+            if (patch.Mode != MilanSlashPatchModes.Raw)
+                return MilanSlashApplier.PatchPackage(patch, deltaPath, data, filePath);
+
+            using var source = new MemoryStream(data);
+            using var output = new MemoryStream();
+            MilanSlashApplier.PatchRaw(patch, deltaPath, source, output);
+            return output.ToArray();
+        }
+
+        /// <summary>
+        /// Finishes slashing once Project Milan has been installed: checks every Project Milan file that should have been
+        /// patched was, then runs the slash operations that need its files.
+        /// </summary>
+        private void FinishModSlash(string gamePath)
+        {
+            if (plan.Slash == null)
+                return;
+
+            var missed = plan.ModPatches.Keys.Where(x => !appliedModPatches.Contains(x)).ToList();
+            if (missed.Count > 0)
+            {
+                throw new Exception($"{missed.Count} Project Milan file(s) were not optimized as they were installed. First file: {missed[0]}");
+            }
+
+            foreach (var build in plan.PostInstallBuilds)
+            {
+                AssembleSlashBuild(build, gamePath, relativePath => plan.ModOutputs.Contains(relativePath)
+                    ? MilanSlashApplier.Resolve(gamePath, relativePath)
+                    : le3Sources.GetVanillaSourceFile(plan.LE3Files[relativePath].SourcePath));
+            }
+
+            foreach (var deletion in plan.PostInstallDeletions)
+            {
+                var path = MilanSlashApplier.Resolve(gamePath, deletion.Filename);
+                if (File.Exists(path))
+                {
+                    M3Log.Information($@"Slash: deleting {deletion.Filename} ({deletion.Comment})");
+                    File.Delete(path);
+                }
+            }
+
+            M3Log.Information($@"Slash: {appliedModPatches.Count} Project Milan file(s) patched as installed, {plan.PostInstallBuilds.Count} post-install build(s), {plan.PostInstallDeletions.Count} post-install deletion(s)");
         }
 
         /// <summary>
@@ -699,224 +851,108 @@ namespace ME3TweaksModManager.modmanager.milan
             IReadOnlyList<string>? ExtraPatterns = null
         );
 
-        private void CopySourceFiles(string sourceDirectory, string destGamePath, IEnumerable<CopyManifest> manifests)
+        /// <summary>
+        /// The LE3 installation files are copied from.
+        /// </summary>
+        private LE3SourceResolver le3Sources;
+
+        /// <summary>
+        /// Copies every file in the plan into the installation, then assembles the slash builds that come from LE3's files.
+        /// </summary>
+        private void ExecutePlan(string destGamePath)
         {
-            // Pre-scan the entire source folder tree once into a case-insensitive lookup table by file name
-            //var filesInSourceFolder = Directory.EnumerateFiles(sourceBasePath, "*.*", SearchOption.AllDirectories)
-            //    .ToLookup(f => Path.GetFileName(f), StringComparer.OrdinalIgnoreCase);
-
-            // Pre-scan the entire source folder tree once into a case-insensitive lookup table by file name
-            var filesInSourceFolder = MELoadedFiles.GetAllFilesLoadedInGame(MEGame.LE3, forceReload: true, includeModDLC: false, gameRootOverride: sourceDirectory);
-
-            foreach (var manifest in manifests)
+            int done = 0;
+            var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount / 2, 1, 4) };
+            try
             {
-                var sourceBasePath = Path.Combine(sourceDirectory, manifest.SourceSubFolder);
-                var destFolder = Path.Combine(destGamePath, manifest.DestSubFolder);
-
-                if (!Directory.Exists(sourceBasePath))
+                Parallel.ForEach(plan.Copies, parallelOptions, copy =>
                 {
-                    M3Log.Warning($"Source directory does not exist: {sourceBasePath}");
-                    continue;
-                }
+                    CopyFile(copy, destGamePath);
+                    var count = Interlocked.Increment(ref done);
+                    interop.SetStatus?.Invoke($"Copying files ({count}/{plan.Copies.Count})");
+                });
+            }
+            catch (AggregateException ae) when (ae.InnerExceptions.Count > 0)
+            {
+                // Surface the actual failure rather than Parallel's "One or more errors occurred"
+                ExceptionDispatchInfo.Capture(ae.InnerExceptions[0]).Throw();
+            }
 
-                Directory.CreateDirectory(destFolder);
-
-
-
-                var filesToCopy = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                var baseFilesToProcessLocs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                // 1. Resolve explicitly requested files and localized variants
-                foreach (var fileName in manifest.Files)
-                {
-                    // Exact match lookup (O(1))
-                    if (filesInSourceFolder.TryGetValue(fileName, out var file))
-                    {
-                        filesToCopy.Add(file);
-                        baseFilesToProcessLocs.Add(file);
-                    }
-                    else
-                    {
-                        // Fallback: look for direct localized matches (e.g. File_INT.pcc)
-                        var baseName = Path.GetFileNameWithoutExtension(fileName);
-                        var ext = Path.GetExtension(fileName);
-
-                        var localizedMatches = filesInSourceFolder
-                            .Values.Where(f =>
-                            {
-                                var fn = Path.GetFileName(f);
-                                return Path.GetFileNameWithoutExtension(fn).StartsWith(baseName + "_", StringComparison.OrdinalIgnoreCase)
-                                       && Path.GetExtension(fn).Equals(ext, StringComparison.OrdinalIgnoreCase)
-                                       && IsInVanillaDatabase(f); // Not files mods left in the game
-                            });
-
-                        foreach (var match in localizedMatches)
-                        {
-                            filesToCopy.Add(match);
-                        }
-                    }
-                }
-
-                // 2. Resolve additional wildcards (e.g., *.tfc). Only files that are part of vanilla LE3 are copied; mods can
-                // leave their own files in the basegame folders (such as Textures_DLC_MOD_*.tfc)
-                if (manifest.ExtraPatterns != null)
-                {
-                    foreach (var pattern in manifest.ExtraPatterns)
-                    {
-                        foreach (var file in Directory.EnumerateFiles(sourceBasePath, pattern, SearchOption.AllDirectories))
-                        {
-                            if (IsInVanillaDatabase(file))
-                            {
-                                filesToCopy.Add(file);
-                            }
-                            else
-                            {
-                                M3Log.Information($"Not copying {file}: it is not a vanilla LE3 file");
-                            }
-                        }
-                    }
-                }
-
-                // 3. Perform file copying and header updating
-                foreach (var file in filesToCopy)
-                {
-                    var fileName = Path.GetFileName(file);
-                    if (file.Contains("Indra"))
-                    {
-                        Debug.WriteLine("h");
-                    }
-                    interop.SetStatus?.Invoke(fileName);
-
-                    // Maintain nested directory layout if the source file is inside subdirectories
-                    var relativePath = manifest.UseRelativePathing ? Path.GetRelativePath(sourceBasePath, file) : fileName;
-                    var destFile = Path.Combine(destFolder, relativePath);
-
-                    var parentDir = Path.GetDirectoryName(destFile);
-                    if (!string.IsNullOrEmpty(parentDir))
-                    {
-                        Directory.CreateDirectory(parentDir);
-                    }
-
-
-
-                    CopyFile(file, destFile);
-
-                    // Copy localization packages if this file was explicitly requested as a base file
-                    var extension = Path.GetExtension(file);
-                    if ((extension.Equals(".pcc", StringComparison.OrdinalIgnoreCase) ||
-                         extension.Equals(".afc", StringComparison.OrdinalIgnoreCase)) &&
-                        baseFilesToProcessLocs.Contains(file))
-                    {
-                        CopyLocalizationsOfFile(file, destFolder);
-                    }
-                }
+            foreach (var build in plan.InlineBuilds)
+            {
+                AssembleSlashBuild(build, destGamePath, relativePath => le3Sources.GetVanillaSourceFile(plan.LE3Files[relativePath].SourcePath));
             }
         }
 
-        private void CopyFile(string file, string destFile)
+        /// <summary>
+        /// Copies a file from LE3 into the installation, writing it once: it is MilanDelta patched (against the original LE3
+        /// data), converted to LMP, then slash patched (against the file as it is in a finished installation).
+        /// </summary>
+        private void CopyFile(MilanInstallPlan.CopyEntry copy, string destGamePath)
         {
-            file = GetVanillaSourceFile(file);
+            var file = le3Sources.GetVanillaSourceFile(copy.SourcePath);
+            var destFile = Path.Combine(destGamePath, copy.DestRelativePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(destFile));
             M3Log.Information($"Copying {file} to {destFile}");
 
-            var extension = Path.GetExtension(file);
-            var isPackage = extension.Equals(".pcc", StringComparison.OrdinalIgnoreCase);
+            bool convertToLMP = LMPLicensee.AppliesTo(destFile);
+            var slashPatch = copy.SlashPatch;
+            var slashDeltaPath = slashPatch != null ? MilanSlashApplier.Resolve(milanDeltaFolder, slashPatch.Delta) : null;
 
-            // If a MilanDelta patch targets this file, apply it (decompress -> patch -> verify -> recompress)
-            // instead of a plain byte copy. This must happen before the licensee version is changed below,
-            // since the delta was diffed against the original LE3 data.
-            // The source file has already been resolved to a vanilla copy (see GetVanillaSourceFile), so there is no retry on failure.
-            if (isPackage && milanDeltaLookup != null && milanDeltaLookup.TryGetValue(Path.GetFileName(destFile), out var deltaEntry))
+            if (slashPatch?.Mode == MilanSlashPatchModes.Raw && copy.Delta == null)
             {
-                ApplyMilanDelta(file, destFile, deltaEntry);
+                // Large uncompressed files (the 1.3GB RefShaderCache) are patched straight from LE3 into the installation,
+                // converted to LMP as they are read
+                using var sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+                using var input = convertToLMP ? LMPLicensee.WrapForReading(sourceStream) : sourceStream;
+                using var output = new FileStream(destFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 1024 * 1024);
+                MilanSlashApplier.PatchRaw(slashPatch, slashDeltaPath, input, output);
+                return;
+            }
+
+            if (copy.Delta == null && slashPatch == null)
+            {
+                using (var sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (var destStream = new FileStream(destFile, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    sourceStream.CopyTo(destStream);
+                }
+
+                if (convertToLMP)
+                {
+                    LMPLicensee.Set(destFile);
+                }
+                return;
+            }
+
+            // Everything else is built in memory and written once.
+            byte[] data;
+            if (copy.Delta != null)
+            {
+                // The delta was diffed against the original LE3 data, so it is applied before the file is converted to LMP.
+                // The source file has already been resolved to a vanilla copy, so there is no retry on failure.
+                data = Path.GetExtension(destFile).Equals(@".pcc", StringComparison.OrdinalIgnoreCase)
+                    ? ApplyMilanDelta(file, destFile, copy.Delta)
+                    : ApplyMilanRawDelta(file, copy.Delta);
             }
             else
             {
-                using var sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read);
-                using var destStream = new FileStream(destFile, FileMode.Create, FileAccess.ReadWrite);
-                sourceStream.CopyTo(destStream);
+                data = File.ReadAllBytes(file);
             }
 
-            // Update the licensee value for .pcc files
-            if (isPackage)
+            if (convertToLMP)
             {
-                using var destStream = new FileStream(destFile, FileMode.Open, FileAccess.ReadWrite);
-                destStream.Seek(0x6, SeekOrigin.Begin);
-                destStream.WriteByte((byte)MEPackage.LMPLicenseeVersion);
+                LMPLicensee.Set(data);
             }
-        }
 
-        #region Vanilla sources
-
-        /// <summary>
-        /// Files copied from LE3 that don't have to be vanilla: the executable (there are several released versions of it, and
-        /// it is never tracked or patched), and the bink dll (the bink bypass install replaces it). Relative to the LE3 root.
-        /// </summary>
-        private static readonly string[] UncheckedSourceFiles =
-        [
-            @"Binaries\Win64\MassEffect3.exe",
-            @"Binaries\Win64\bink2w64.dll",
-        ];
-
-        /// <summary>
-        /// Root of the LE3 installation files are copied from.
-        /// </summary>
-        private string le3SourceRoot;
-
-        /// <summary>
-        /// Root of the LE3 vanilla backup, if there is one (and it isn't the source). Used for files the source has modified.
-        /// </summary>
-        private string le3BackupRoot;
-
-        private string GetSourceRelativePath(string sourceFile) => Path.GetRelativePath(le3SourceRoot, sourceFile);
-
-        private bool IsInVanillaDatabase(string sourceFile) => VanillaDatabaseService.LoadDatabaseFor(MEGame.LE3).ContainsKey(GetSourceRelativePath(sourceFile));
-
-        /// <summary>
-        /// Returns a vanilla copy of a file from the LE3 installation being copied from: the file itself if it is vanilla,
-        /// otherwise the LE3 backup's copy. Everything Project Milan builds on - the MilanDelta patches, the slash manifest and
-        /// the final state it records - expects vanilla LE3 files, so a modified file is caught here rather than failing the
-        /// installation at the end. Throws if there is no vanilla copy.
-        /// </summary>
-        private string GetVanillaSourceFile(string sourceFile)
-        {
-            var relativePath = GetSourceRelativePath(sourceFile);
-            if (UncheckedSourceFiles.Contains(relativePath, StringComparer.OrdinalIgnoreCase))
-                return sourceFile;
-
-            if (!IsInVanillaDatabase(sourceFile))
+            if (slashPatch != null)
             {
-                M3Log.Warning($"{relativePath} is not in the LE3 vanilla database; it cannot be checked for modifications");
-                return sourceFile;
+                // Slash was generated against the finished installation, so it is applied once the file is converted to LMP
+                data = ApplySlashPatchInMemory(slashPatch, slashDeltaPath, data, destFile);
             }
 
-            if (IsVanillaLE3File(sourceFile, relativePath))
-                return sourceFile;
-
-            if (le3BackupRoot != null)
-            {
-                var backupFile = Path.Combine(le3BackupRoot, relativePath);
-                if (File.Exists(backupFile) && IsVanillaLE3File(backupFile, relativePath))
-                {
-                    M3Log.Warning($"{relativePath} is modified in {le3SourceRoot}; using the vanilla copy in the LE3 backup instead");
-                    return backupFile;
-                }
-            }
-
-            throw new Exception($"{relativePath} in your LE3 installation is modified, and there is no vanilla copy of it in an LE3 backup. Project Milan must be built from vanilla LE3 files: restore this file, or create an LE3 backup.");
+            File.WriteAllBytes(destFile, data);
         }
-
-        /// <summary>
-        /// Checks a file against the LE3 vanilla database. TFCs and AFCs are only checked by size: they are many GB in total,
-        /// and mods that change them append to them.
-        /// </summary>
-        private static bool IsVanillaLE3File(string path, string relativePath)
-        {
-            var extension = Path.GetExtension(relativePath);
-            bool sizeOnly = extension.Equals(@".tfc", StringComparison.OrdinalIgnoreCase) || extension.Equals(@".afc", StringComparison.OrdinalIgnoreCase);
-            return VanillaDatabaseService.IsFileVanilla(MEGame.LE3, path, relativePath, false, md5check: !sizeOnly);
-        }
-
-        #endregion
 
         public static readonly MELocalization[] SupportedVOLanguages = new[]
         {
@@ -927,40 +963,49 @@ namespace ME3TweaksModManager.modmanager.milan
             // Any other languages that had VO?
         };
 
-
-        private void CopyLocalizationsOfFile(string file, string destFolder)
-        {
-            var dir = Directory.GetParent(file).FullName;
-            foreach (var loc in SupportedVOLanguages)
-            {
-                // LOC_
-                var locName = Path.GetFileName(file.SetUnrealLocalization(MEGame.LMP, loc, true));
-                var testPath = Path.Combine(dir, locName);
-                if (File.Exists(testPath)) // Is there localized version in LE3?
-                {
-                    // Copy LOC version to Milan
-                    var outPath = Path.Combine(destFolder, locName);
-                    CopyFile(testPath, outPath);
-                }
-
-                // Straight loc
-                locName = Path.GetFileName(file.SetUnrealLocalization(MEGame.LMP, loc, false));
-                testPath = Path.Combine(dir, locName);
-                if (File.Exists(testPath)) // Is there a unreal localized version in LE3?
-                {
-                    // Copy _LANG version to Milan
-                    var outPath = Path.Combine(destFolder, locName);
-                    CopyFile(testPath, outPath);
-                }
-            }
-        }
-
         // UI STRING UPDATES FOR INSTALLER ========
 
 
 
         // END UI STRING UPDATES FOR INSTALLER=====
 
+        private static ModInstallOptionsPackage CreateMilanInstallOptions(Mod milanMod, GameTarget target)
+        {
+            var optionsPackage = new ModInstallOptionsPackage()
+            {
+                InstallTarget = target,
+                ModBeingInstalled = milanMod,
+                SkipPrerequesitesCheck = true
+            };
+
+            // We have no options, set it as having none chosen
+            optionsPackage.SetNoOptions();
+            return optionsPackage;
+        }
+
+        /// <summary>
+        /// Paths, relative to the installation root, of every file the Project Milan mod installs.
+        /// </summary>
+        private static List<string> GetModOutputs(Mod milanMod, string destinationFolderPath)
+        {
+            // Stand-in for the installation, which doesn't exist yet; only its paths are used
+            var target = new GameTargetWPF(MEGame.LMP, destinationFolderPath, false, isCustomOption: true, skipInit: true);
+            var queues = milanMod.GetInstallationQueues(CreateMilanInstallOptions(milanMod, target));
+            if (queues.SFARJobs.Count > 0)
+            {
+                throw new Exception("Project Milan cannot install files into SFARs.");
+            }
+
+            var dlcPath = MEDirectories.GetDLCPath(MEGame.LMP, target.TargetPath);
+            var outputs = new List<string>();
+            foreach (var (job, mapping) in queues.UnpackedJobMappings)
+            {
+                // Same destinations ModInstaller uses
+                var root = job.Header == ModJob.JobHeader.CUSTOMDLC ? dlcPath : target.TargetPath;
+                outputs.AddRange(mapping.FileMapping.Keys.Select(x => Path.GetRelativePath(target.TargetPath, Path.Combine(root, x))));
+            }
+            return outputs;
+        }
 
         /// <summary>
         /// Copies the require files from LE3 to the destination folder. The source folder should be a backup to help ensure mods are not installed, as base install should be "vanilla".
@@ -971,6 +1016,7 @@ namespace ME3TweaksModManager.modmanager.milan
         public void CreateInstallation(GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop, bool generateSlashManifest = false)
         {
             this.interop = interop;
+            destinationFolderPath = Path.GetFullPath(destinationFolderPath);
 
             bool successful = true;
             string errorMessage = null;
@@ -989,6 +1035,27 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
                 LoadMilanDeltaManifest(milanmod);
 
+                // Slash is applied as the installation is built. Generating a new slash manifest needs an unslashed installation.
+                MilanSlashManifest slash = null;
+#if DEBUG
+                if (!generateSlashManifest)
+#endif
+                {
+                    slash = MilanSlashApplier.LoadManifest(milanDeltaFolder);
+                    if (slash == null)
+                    {
+                        M3Log.Warning(@"Project Milan mod has no slash manifest; the installation will not be optimized");
+                    }
+                }
+
+                // Work out and check everything that can be checked up front, so an installation that can't succeed fails
+                // before anything is written.
+                interop.SetStatus?.Invoke("Checking LE3 installation...");
+                le3Sources = new LE3SourceResolver(sourceGameTarget.TargetPath, BackupService.GetGameBackupPath(MEGame.LE3));
+                M3Log.Information($"Building Project Milan from {le3Sources.SourceRoot}" + (le3Sources.BackupRoot != null ? $"; modified files will be taken from the LE3 backup at {le3Sources.BackupRoot}" : "; there is no LE3 backup to take modified files from"));
+                plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath));
+                slashManifest = plan.Slash;
+
                 // Wipe the destination directory so we start from a clean slate.
                 interop.SetStatus?.Invoke("Preparing installation directory...");
                 if (Directory.Exists(destinationFolderPath))
@@ -998,15 +1065,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 MUtilities.CreateDirectoryWithWritePermission(destinationFolderPath);
                 destinationPrepared = true;
 
-                le3SourceRoot = Path.GetFullPath(sourceGameTarget.TargetPath);
-                le3BackupRoot = BackupService.GetGameBackupPath(MEGame.LE3);
-                if (le3BackupRoot != null && Path.GetFullPath(le3BackupRoot).TrimEnd('\\').Equals(le3SourceRoot.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
-                {
-                    le3BackupRoot = null; // Building from the backup itself
-                }
-                M3Log.Information($"Building Project Milan from {le3SourceRoot}" + (le3BackupRoot != null ? $"; modified files will be taken from the LE3 backup at {le3BackupRoot}" : "; there is no LE3 backup to take modified files from"));
-
-                CopySourceFiles(sourceGameTarget.TargetPath, destinationFolderPath, installManifests);
+                ExecutePlan(destinationFolderPath);
 
                 // Rename game executable. This is used a lot by tooling to identify the target game
                 var existingExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffect3.exe");
@@ -1020,40 +1079,35 @@ namespace ME3TweaksModManager.modmanager.milan
 
                 // Install Project Milan
                 var lmpTarget = new GameTargetWPF(MEGame.LMP, destinationFolderPath, true);
-                var optionsPackage = new ModInstallOptionsPackage()
-                {
-                    InstallTarget = lmpTarget,
-                    ModBeingInstalled = milanmod,
-                    SkipPrerequesitesCheck = true
-                };
-
-                // We have no options, set it as having none chosen
-                optionsPackage.SetNoOptions();
+                var optionsPackage = CreateMilanInstallOptions(milanmod, lmpTarget);
 
                 interop.SetStatus?.Invoke("Installing Project Milan...");
                 ModInstaller mi = new ModInstaller(optionsPackage);
                 mi.SetPercent = setPercent;
                 mi.SetAction = setAction;
                 mi.SetPercentVisibility = setPercentVisibility;
-                // InstallMod is async (it awaits ASI installs), so it must complete before the installation is slashed and TOC'd.
+                mi.PostFileInstalled = installedFile => SlashInstalledModFile(destinationFolderPath, installedFile);
+                // InstallMod is async (it awaits ASI installs), so it must complete before the installation is TOC'd.
                 // We are on a background thread with no synchronization context, so blocking here is safe.
                 mi.InstallMod().GetAwaiter().GetResult();
+                if (modFileSlashFailure != null)
+                {
+                    ExceptionDispatchInfo.Capture(modFileSlashFailure).Throw();
+                }
                 if (mi.InstallationResult.Result != EModInstallerResult.INSTALL_SUCCESSFUL)
                 {
                     throw new Exception($"Installing Project Milan failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
                 }
 
-                // Shrink the installation down to the data LMP actually uses
+                FinishModSlash(destinationFolderPath);
+
 #if DEBUG
+                // Shrink the installation down to the data LMP actually uses
                 if (generateSlashManifest)
                 {
                     GenerateAndApplyMilanSlash(destinationFolderPath);
                 }
-                else
 #endif
-                {
-                    ApplyMilanSlash(destinationFolderPath);
-                }
 
                 // TODO: Build the LMP vanilla object database against the (slashed) installation here
 
@@ -1065,7 +1119,7 @@ namespace ME3TweaksModManager.modmanager.milan
 
                 lmpTarget.ValidateTarget(); // Triggers validation which unlocks UI options
 
-                // This makes it easier to debug 
+                // This makes it easier to debug
                 lmpTarget.InstallBinkBypass(false);
 
                 // Must be the last thing that writes to the game

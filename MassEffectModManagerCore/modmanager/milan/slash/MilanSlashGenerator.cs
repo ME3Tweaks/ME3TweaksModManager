@@ -510,25 +510,31 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 return;
             }
 
-            // The compactor refuses to scan a folder with packages from more than one game, and LE3 packages that were
-            // copied without being converted to LMP (such as the RefShaderCache) are in the game. Set them aside.
+            // The compactor refuses to scan a folder with packages from more than one game, so any package that isn't LMP is
+            // set aside. The RefShaderCache is set aside too: it has no textures, and is far too large to load just to find that out.
             var setAside = new List<(string original, string aside)>();
             foreach (var relativePath in snapshot.EnumerateGameFiles().Where(IsPackage))
             {
                 var path = snapshot.GetGamePath(relativePath);
-                MEGame game;
-                using (var package = MEPackageHandler.QuickOpenMEPackage(path))
+                string reason = null;
+                if (IsRefShaderCache(relativePath))
                 {
-                    game = package.Game;
+                    reason = "it has no textures";
+                }
+                else
+                {
+                    using var package = MEPackageHandler.QuickOpenMEPackage(path);
+                    if (package.Game != MEGame.LMP)
+                        reason = $"it is a {package.Game} package";
                 }
 
-                if (game != MEGame.LMP)
+                if (reason != null)
                 {
-                    var aside = Path.Combine(workRoot, "OtherGamePackages", relativePath.Replace('\\', Path.DirectorySeparatorChar));
+                    var aside = Path.Combine(workRoot, "SetAsidePackages", relativePath.Replace('\\', Path.DirectorySeparatorChar));
                     Directory.CreateDirectory(Path.GetDirectoryName(aside));
                     File.Move(path, aside);
                     setAside.Add((path, aside));
-                    M3Log.Information($"Slash: {relativePath} is a {game} package; it is not included in TFC compaction");
+                    M3Log.Information($"Slash: {relativePath} is not included in TFC compaction: {reason}");
                 }
             }
 

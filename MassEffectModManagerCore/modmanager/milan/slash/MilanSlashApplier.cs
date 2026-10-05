@@ -58,10 +58,11 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         }
 
         /// <summary>
-        /// Checks that the game is in the exact state the manifest was generated against, without modifying anything.
-        /// Returns a list of problems; an empty list means the manifest can be applied.
+        /// Checks everything about the manifest that doesn't depend on the game it is applied to: paths are valid, delta and
+        /// payload files are present, build segments are consistent, and no file is written twice or both written and deleted.
+        /// Returns a list of problems; an empty list means the manifest is well formed.
         /// </summary>
-        public static List<string> Validate(MilanSlashManifest manifest, string milanDeltaFolder, string gameRoot, Action<string> setStatus = null)
+        public static List<string> ValidateStructure(MilanSlashManifest manifest, string milanDeltaFolder)
         {
             var problems = new List<string>();
             var outputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -76,7 +77,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
             foreach (var build in manifest.Builds)
             {
-                if (!TryResolve(gameRoot, build.Filename, problems, out _))
+                if (!IsValidRelativePath(build.Filename, problems))
                     continue;
                 checkOutput(build.Filename);
 
@@ -85,16 +86,22 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
                 foreach (var source in build.Sources)
                 {
-                    if (!TryResolve(source.Payload ? milanDeltaFolder : gameRoot, source.Filename, problems, out var sourcePath))
+                    if (!source.Payload)
+                    {
+                        IsValidRelativePath(source.Filename, problems);
+                        continue; // Game files are checked against the game
+                    }
+
+                    if (!TryResolve(milanDeltaFolder, source.Filename, problems, out var payloadPath))
                         continue;
 
-                    if (!File.Exists(sourcePath))
+                    if (!File.Exists(payloadPath))
                     {
-                        problems.Add(source.Payload ? $"Slash payload file is missing: {source.Filename}" : $"{source.Filename} is missing");
+                        problems.Add($"Slash payload file is missing: {source.Filename}");
                         continue;
                     }
 
-                    var size = new FileInfo(sourcePath).Length;
+                    var size = new FileInfo(payloadPath).Length;
                     if (size != source.Size)
                         problems.Add($"{source.Filename} is {size} bytes, expected {source.Size}");
                 }
@@ -120,14 +127,58 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 if (patch.Mode != MilanSlashPatchModes.Package && patch.Mode != MilanSlashPatchModes.Raw)
                     problems.Add($"{patch.Filename} has unsupported patch mode '{patch.Mode}'");
 
-                if (!TryResolve(milanDeltaFolder, patch.Delta, problems, out var deltaPath))
-                    continue;
-                if (!File.Exists(deltaPath))
+                if (TryResolve(milanDeltaFolder, patch.Delta, problems, out var deltaPath) && !File.Exists(deltaPath))
                     problems.Add($"Slash delta file is missing: {patch.Delta}");
 
+                if (IsValidRelativePath(patch.Filename, problems))
+                    checkOutput(patch.Filename);
+            }
+
+            foreach (var deletion in manifest.Deletions)
+            {
+                if (!IsValidRelativePath(deletion.Filename, problems))
+                    continue;
+                if (outputs.Contains(deletion.Filename))
+                    problems.Add($"{deletion.Filename} is both written and deleted by the slash manifest");
+                if (MilanFinalState.IsExcluded(deletion.Filename))
+                    problems.Add($"{deletion.Filename} may not be changed by a slash manifest");
+            }
+
+            return problems;
+        }
+
+        /// <summary>
+        /// Checks that the manifest is well formed (<see cref="ValidateStructure"/>) and that the game is in the exact state the
+        /// manifest was generated against, without modifying anything. Returns a list of problems; an empty list means the
+        /// manifest can be applied.
+        /// </summary>
+        public static List<string> Validate(MilanSlashManifest manifest, string milanDeltaFolder, string gameRoot, Action<string> setStatus = null)
+        {
+            var problems = ValidateStructure(manifest, milanDeltaFolder);
+
+            foreach (var build in manifest.Builds)
+            {
+                foreach (var source in build.Sources.Where(x => !x.Payload))
+                {
+                    if (!TryResolve(gameRoot, source.Filename, problems, out var sourcePath))
+                        continue;
+
+                    if (!File.Exists(sourcePath))
+                    {
+                        problems.Add($"{source.Filename} is missing");
+                        continue;
+                    }
+
+                    var size = new FileInfo(sourcePath).Length;
+                    if (size != source.Size)
+                        problems.Add($"{source.Filename} is {size} bytes, expected {source.Size}");
+                }
+            }
+
+            foreach (var patch in manifest.Patches)
+            {
                 if (!TryResolve(gameRoot, patch.Filename, problems, out var sourcePath))
                     continue;
-                checkOutput(patch.Filename);
 
                 if (!File.Exists(sourcePath))
                 {
@@ -154,10 +205,6 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             {
                 if (!TryResolve(gameRoot, deletion.Filename, problems, out var path))
                     continue;
-                if (outputs.Contains(deletion.Filename))
-                    problems.Add($"{deletion.Filename} is both written and deleted by the slash manifest");
-                if (MilanFinalState.IsExcluded(deletion.Filename))
-                    problems.Add($"{deletion.Filename} may not be changed by a slash manifest");
 
                 // A file that is already gone is fine; one that is a different size means the game isn't what we expect
                 if (File.Exists(path) && new FileInfo(path).Length != deletion.Size)
@@ -305,28 +352,58 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// </summary>
         private static void ApplyPatch(MilanSlashPatchEntry patch, string deltaPath, string sourcePath, string stagingPath)
         {
-            M3Log.Information($@"Slash: patching {patch.Filename} ({patch.Mode})");
-            using var deltaStream = new MemoryStream(File.ReadAllBytes(deltaPath));
-
             if (patch.Mode == MilanSlashPatchModes.Raw)
             {
                 // File to file: the RefShaderCache is far too large to want in memory twice. The source file hash was
                 // already verified during validation.
-                using (var sourceStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024))
-                using (var outStream = new FileStream(stagingPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 1024 * 1024))
-                {
-                    VerifySize(sourceStream.Length, patch.SourceSize, patch.Filename, @"source");
-                    if (!JPatch.ApplyJPatch(sourceStream, deltaStream, outStream))
-                        throw new Exception($"Slash delta for {patch.Filename} could not be applied");
-
-                    VerifySize(outStream.Length, patch.DestSize, patch.Filename, @"output");
-                    VerifyHash(MUtilities.CalculateHash(outStream, @"sha256"), patch.DestHash, patch.Filename, @"output");
-                }
+                using var sourceStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+                using var outStream = new FileStream(stagingPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 1024 * 1024);
+                PatchRaw(patch, deltaPath, sourceStream, outStream);
                 return;
             }
 
-            // Package mode - same convention as MilanDelta: patch the LEC-decompressed package, then re-save it.
-            using var fileStream = new MemoryStream(File.ReadAllBytes(sourcePath));
+            File.WriteAllBytes(stagingPath, PatchPackage(patch, deltaPath, File.ReadAllBytes(sourcePath), sourcePath, verifySourceFile: false));
+        }
+
+        /// <summary>
+        /// Applies a raw mode patch: the delta is applied to <paramref name="source"/> as-is and the result written to
+        /// <paramref name="output"/>, which is verified against the manifest. The source's hash is not checked up front; a
+        /// wrong source cannot produce the expected output hash.
+        /// </summary>
+        /// <param name="source">Seekable stream of the file's data before patching.</param>
+        /// <param name="output">Seekable, readable stream to write the patched data to.</param>
+        internal static void PatchRaw(MilanSlashPatchEntry patch, string deltaPath, Stream source, Stream output)
+        {
+            M3Log.Information($@"Slash: patching {patch.Filename} ({patch.Mode})");
+            using var deltaStream = new MemoryStream(File.ReadAllBytes(deltaPath));
+
+            VerifySize(source.Length, patch.SourceSize, patch.Filename, @"source");
+            if (!JPatch.ApplyJPatch(source, deltaStream, output))
+                throw new Exception($"Slash delta for {patch.Filename} could not be applied");
+
+            VerifySize(output.Length, patch.DestSize, patch.Filename, @"output");
+            VerifyHash(MUtilities.CalculateHash(output, @"sha256"), patch.DestHash, patch.Filename, @"output");
+        }
+
+        /// <summary>
+        /// Applies a package mode patch to a package held in memory - the same convention as MilanDelta: the LEC-decompressed
+        /// package is patched, verified, and re-saved.
+        /// </summary>
+        /// <param name="fileBytes">The package file, exactly as it would be on disk before patching.</param>
+        /// <param name="packagePath">Path the package is associated with while it is re-saved; some serializers depend on the extension.</param>
+        /// <param name="verifySourceFile">If the file's size and hash (<see cref="MilanSlashPatchEntry.SourceFileHash"/>) should be checked. The decompressed data is always checked.</param>
+        /// <returns>The patched package file.</returns>
+        internal static byte[] PatchPackage(MilanSlashPatchEntry patch, string deltaPath, byte[] fileBytes, string packagePath, bool verifySourceFile = true)
+        {
+            M3Log.Information($@"Slash: patching {patch.Filename} ({patch.Mode})");
+            if (verifySourceFile)
+            {
+                VerifySize(fileBytes.LongLength, patch.SourceFileSize, patch.Filename, @"source file");
+                VerifyHash(MUtilities.CalculateHash(fileBytes, @"sha256"), patch.SourceFileHash, patch.Filename, @"source file");
+            }
+
+            using var deltaStream = new MemoryStream(File.ReadAllBytes(deltaPath));
+            using var fileStream = new MemoryStream(fileBytes);
             using var decompressed = MEPackage.GetDecompressedPackageStream(fileStream);
             VerifySize(decompressed.Length, patch.SourceSize, patch.Filename, @"source");
             VerifyHash(MUtilities.CalculateHash(decompressed, @"sha256"), patch.SourceHash, patch.Filename, @"source");
@@ -340,18 +417,18 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
             // Save via stream so the package keeps its real file path; some serializers depend on the extension.
             patched.Position = 0;
-            using var package = MEPackageHandler.OpenMEPackageFromStream(patched, sourcePath);
+            using var package = MEPackageHandler.OpenMEPackageFromStream(patched, packagePath);
             using var saved = package.SaveToStream(patch.Compressed);
-            File.WriteAllBytes(stagingPath, saved.ToArray());
+            return saved.ToArray();
         }
 
-        private static void VerifySize(long actual, long expected, string fileName, string stage)
+        internal static void VerifySize(long actual, long expected, string fileName, string stage)
         {
             if (actual != expected)
                 throw new Exception($"Slash {stage} size mismatch for {fileName}: expected {expected}, got {actual}.");
         }
 
-        private static void VerifyHash(string actual, string expected, string fileName, string stage)
+        internal static void VerifyHash(string actual, string expected, string fileName, string stage)
         {
             if (!string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase))
                 throw new Exception($"Slash {stage} hash mismatch for {fileName}: expected {expected}, got {actual}.");
@@ -372,6 +449,27 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 throw new Exception($"Slash manifest path escapes its root folder: '{relativePath}'");
 
             return fullPath;
+        }
+
+        /// <summary>
+        /// Checks a manifest-relative path without a root to resolve it against: it must be relative and must not climb out of
+        /// its root.
+        /// </summary>
+        private static bool IsValidRelativePath(string relativePath, List<string> problems)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath) || Path.IsPathRooted(relativePath))
+            {
+                problems.Add($"Invalid slash manifest path: '{relativePath}'");
+                return false;
+            }
+
+            if (relativePath.Split('\\', '/').Any(x => x == @".."))
+            {
+                problems.Add($"Slash manifest path escapes its root folder: '{relativePath}'");
+                return false;
+            }
+
+            return true;
         }
 
         private static bool TryResolve(string root, string relativePath, List<string> problems, out string fullPath)
