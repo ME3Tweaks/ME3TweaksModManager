@@ -445,8 +445,6 @@ namespace ME3TweaksModManager.modmanager.milan
 
         /** The interop used to communicate back to a UI about the install */
         private MBIInterop interop;
-        private string sourceRootPath;
-        private string sourceBackupPath;
 
         public MilanBaseInstaller()
         {
@@ -826,31 +824,10 @@ namespace ME3TweaksModManager.modmanager.milan
             // If a MilanDelta patch targets this file, apply it (decompress -> patch -> verify -> recompress)
             // instead of a plain byte copy. This must happen before the licensee version is changed below,
             // since the delta was diffed against the original LE3 data.
+            // The source file has already been resolved to a vanilla copy (see GetVanillaSourceFile), so there is no retry on failure.
             if (isPackage && milanDeltaLookup != null && milanDeltaLookup.TryGetValue(Path.GetFileName(destFile), out var deltaEntry))
             {
-                try
-                {
-                    ApplyMilanDelta(file, destFile, deltaEntry);
-                }
-                catch (MilanDeltaVerificationException deltaEx)
-                {
-                    var backupFile = TryGetFallbackBackupFile(file);
-                    if (backupFile == null)
-                    {
-                        throw;
-                    }
-
-                    M3Log.Warning($"Milan delta verification failed for {Path.GetFileName(destFile)} from source ({file}). Retrying with backup file ({backupFile}).");
-
-                    try
-                    {
-                        ApplyMilanDelta(backupFile, destFile, deltaEntry);
-                    }
-                    catch (Exception backupEx)
-                    {
-                        throw new Exception($"Milan delta verification failed for {Path.GetFileName(destFile)} from both source and backup files. Source: {file}. Backup: {backupFile}.", new AggregateException(deltaEx, backupEx));
-                    }
-                }
+                ApplyMilanDelta(file, destFile, deltaEntry);
             }
             else
             {
@@ -928,31 +905,18 @@ namespace ME3TweaksModManager.modmanager.milan
             throw new Exception($"{relativePath} in your LE3 installation is modified, and there is no vanilla copy of it in an LE3 backup. Project Milan must be built from vanilla LE3 files: restore this file, or create an LE3 backup.");
         }
 
-        private string TryGetFallbackBackupFile(string sourceFile)
+        /// <summary>
+        /// Checks a file against the LE3 vanilla database. TFCs and AFCs are only checked by size: they are many GB in total,
+        /// and mods that change them append to them.
+        /// </summary>
+        private static bool IsVanillaLE3File(string path, string relativePath)
         {
-            if (string.IsNullOrWhiteSpace(sourceBackupPath) || string.IsNullOrWhiteSpace(sourceRootPath))
-            {
-                return null;
-            }
-
-            var relativePath = Path.GetRelativePath(sourceRootPath, sourceFile);
-            if (relativePath.StartsWith(".." + Path.DirectorySeparatorChar) ||
-                relativePath.Equals("..", StringComparison.Ordinal) ||
-                Path.IsPathRooted(relativePath))
-            {
-                return null;
-            }
-
-            var backupFile = Path.Combine(sourceBackupPath, relativePath);
-            if (!File.Exists(backupFile))
-            {
-                return null;
-            }
-
-            return string.Equals(backupFile, sourceFile, StringComparison.OrdinalIgnoreCase)
-                ? null
-                : backupFile;
+            var extension = Path.GetExtension(relativePath);
+            bool sizeOnly = extension.Equals(@".tfc", StringComparison.OrdinalIgnoreCase) || extension.Equals(@".afc", StringComparison.OrdinalIgnoreCase);
+            return VanillaDatabaseService.IsFileVanilla(MEGame.LE3, path, relativePath, false, md5check: !sizeOnly);
         }
+
+        #endregion
 
         public static readonly MELocalization[] SupportedVOLanguages = new[]
         {
@@ -1007,8 +971,6 @@ namespace ME3TweaksModManager.modmanager.milan
         public void CreateInstallation(GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop, bool generateSlashManifest = false)
         {
             this.interop = interop;
-            sourceRootPath = sourceGameTarget.TargetPath;
-            sourceBackupPath = BackupService.GetGameBackupPath(sourceGameTarget.Game);
 
             bool successful = true;
             string errorMessage = null;
@@ -1194,6 +1156,6 @@ namespace ME3TweaksModManager.modmanager.milan
             // Set the message
             interop.SetStatus?.Invoke(message);
         }
-    }
         #endregion
+    }
 }

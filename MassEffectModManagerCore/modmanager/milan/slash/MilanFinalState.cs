@@ -20,9 +20,11 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         [
             // Records the install time, the Mod Manager build, and the mod's library path
             @"\_metacmm.txt",
-            // The game executable, copied from the user's LE3. There are several released versions of it; never tracked or patched
+            // The game executable, copied from the user's LE3. 
+            @"Binaries\Win64\MassEffect3.exe",
+            // Renamed executable. Also not tracked.
             @"Binaries\Win64\MassEffectMultiplayer.exe",
-            // Bink bypass - supplied by Mod Manager, not the game or the mod; changes with Mod Manager versions
+            // Bink bypass. This game requires our version, so don't bother with it
             @"Binaries\Win64\bink2w64.dll",
             @"Binaries\Win64\bink2w64_original.dll",
             // ASIs are managed separately from the game content

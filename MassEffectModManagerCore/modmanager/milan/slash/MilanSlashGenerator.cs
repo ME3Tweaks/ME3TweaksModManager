@@ -140,7 +140,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 Directory.Delete(workRoot, true);
 
             // Packages can be rewritten in place, so they are copied. The RefShaderCache is only ever replaced (see
-            // SlashRefShaderCache), so like the TFCs it can be hard linked instead of copying 1.3GB. Files excluded from the
+            // SlashRefShaderCache), so like the TFCs it can be slashed on copy instead of copying its full 1.3GB. Files excluded from the
             // final state (the executable, bink, ASIs...) are not part of what gets slashed, so they are ignored entirely.
             snapshot = MilanSlashSnapshot.Create(gameRoot, Path.Combine(workRoot, "Snapshot"),
                 copyFile: x => IsPackage(x) && !IsRefShaderCache(x),
