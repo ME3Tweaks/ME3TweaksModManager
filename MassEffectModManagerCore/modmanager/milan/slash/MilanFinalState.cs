@@ -85,7 +85,8 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// matches exactly (excluding <see cref="ExcludedPaths"/>). Non-INT localization files may be missing, as they depend
         /// on which localizations the user's LE3 installation has (see <see cref="MilanLocalizationFiles"/>).
         /// </summary>
-        public static List<string> Verify(IReadOnlyList<MilanSlashFinalFileEntry> expected, string gameRoot, Action<string> setStatus = null)
+        /// <param name="allowedExtraFiles">Game-relative paths (Windows separators) that are allowed to exist without being in the expected state, such as files installed only on some systems</param>
+        public static List<string> Verify(IReadOnlyList<MilanSlashFinalFileEntry> expected, string gameRoot, Action<string> setStatus = null, IEnumerable<string> allowedExtraFiles = null)
         {
             var problems = new ConcurrentBag<string>();
             var actual = GetGameFiles(gameRoot).ToDictionary(x => x.relativePath, x => x.fullPath, StringComparer.OrdinalIgnoreCase);
@@ -118,9 +119,15 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             });
 
             var expectedNames = expected.Select(x => x.Filename).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var allowedExtraNames = allowedExtraFiles?.ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
             foreach (var relativePath in actual.Keys)
             {
-                if (!expectedNames.Contains(relativePath))
+                if (expectedNames.Contains(relativePath))
+                    continue;
+
+                if (allowedExtraNames.Contains(relativePath))
+                    M3Log.Information($@"Installation verification: {relativePath} is not in the expected state but is allowed");
+                else
                     problems.Add($"Unexpected file: {relativePath}");
             }
 

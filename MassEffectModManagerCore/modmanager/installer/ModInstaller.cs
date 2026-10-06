@@ -174,6 +174,12 @@ namespace ME3TweaksModManager.modmanager.installer
         /// </summary>
         public Action<string> PostFileInstalled { get; set; }
 
+        /// <summary>
+        /// Full paths of files outside of the mod that are in the game to support the mod's ASIs once installation has
+        /// finished, such as the VC++ runtime dlls ASIs need under Wine. These may have already been in the game.
+        /// </summary>
+        public List<string> ASISupportFiles { get; } = new();
+
         public ModInstaller(ModInstallOptionsPackage installOptionsPackage)
         {
             InstallOptionsPackage = installOptionsPackage;
@@ -1269,6 +1275,8 @@ namespace ME3TweaksModManager.modmanager.installer
                     M3Log.Error($@"Unable to install ASI mod {asiMod.ToString()}: not found in ASI manifest.");
                 }
             }
+
+            ASISupportFiles.AddRange(ASIManager.GetASISupportFiles(InstallOptionsPackage.InstallTarget));
 
             if (sfarStagingDirectory != null)
             {

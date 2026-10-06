@@ -412,6 +412,32 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
             }
 
+            // The final state recorded in the manifest is every file a finished installation has. LE3 files that aren't in it
+            // are never used - TFCs and AFCs nothing references, the originals of compacted ones, files mods left in LE3 - so
+            // they aren't copied at all. Slash builds read their sources straight from LE3, so they don't need copies either.
+            var unused = new List<string>();
+            if (slash.FinalFiles.Count > 0)
+            {
+                var finalFiles = slash.FinalFiles.Select(x => x.Filename).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                unused.AddRange(Copies.Select(x => x.DestRelativePath)
+                    .Where(x => !notCopied.Contains(x) && !finalFiles.Contains(x) && !MilanFinalState.IsExcluded(x)));
+
+                // Everything in the final state has to come from somewhere; if it doesn't, the installation can't match it
+                var produced = new HashSet<string>(Copies.Select(x => x.DestRelativePath), StringComparer.OrdinalIgnoreCase);
+                produced.ExceptWith(notCopied);
+                produced.UnionWith(slash.Builds.Select(x => x.Filename));
+                produced.UnionWith(ModOutputs);
+                foreach (var file in finalFiles)
+                {
+                    if (!produced.Contains(file) && !MilanFinalState.IsExcluded(file) && !MilanLocalizationFiles.IsOptionalLocalization(file))
+                        problems.Add($"{file} is part of a finished installation, but nothing installs it");
+                }
+            }
+            else
+            {
+                M3Log.Warning(@"The slash manifest has no recorded final state, so every LE3 file it doesn't delete is copied");
+            }
+
             if (problems.Count > 0)
                 return problems;
 
@@ -433,6 +459,12 @@ namespace ME3TweaksModManager.modmanager.milan
             foreach (var path in notCopied)
             {
                 M3Log.Information($@"Not copying {path} from LE3: slash {(InlineBuilds.Any(x => x.Filename.Equals(path, StringComparison.OrdinalIgnoreCase)) ? @"rebuilds" : @"deletes")} it");
+            }
+
+            Copies.RemoveAll(x => unused.Contains(x.DestRelativePath, StringComparer.OrdinalIgnoreCase));
+            foreach (var path in unused)
+            {
+                M3Log.Information($@"Not copying {path} from LE3: it is not part of a finished installation");
             }
             return problems;
         }

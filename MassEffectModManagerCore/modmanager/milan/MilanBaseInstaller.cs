@@ -641,6 +641,12 @@ namespace ME3TweaksModManager.modmanager.milan
         private Exception modFileSlashFailure;
 
         /// <summary>
+        /// Game-relative paths of the files ModInstaller reported it has in the game to support ASIs, such as the VC++ runtime
+        /// under Wine. These depend on the user's system, so they are allowed to exist when verifying the installation.
+        /// </summary>
+        private readonly List<string> asiSupportFiles = new();
+
+        /// <summary>
         /// Project Milan files larger than this are raw patched through a temporary file rather than in memory.
         /// </summary>
         private const long InMemoryModPatchLimit = 100 * 1024 * 1024;
@@ -797,7 +803,7 @@ namespace ME3TweaksModManager.modmanager.milan
             }
 
             interop.SetStatus?.Invoke(@"Verifying installation...");
-            var problems = MilanFinalState.Verify(slashManifest.FinalFiles, gamePath, s => interop.SetStatus?.Invoke(s));
+            var problems = MilanFinalState.Verify(slashManifest.FinalFiles, gamePath, s => interop.SetStatus?.Invoke(s), asiSupportFiles);
             if (problems.Count == 0)
             {
                 M3Log.Information($@"Installation verified: all {slashManifest.FinalFiles.Count} files match the expected final state");
@@ -1095,6 +1101,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 {
                     throw new Exception($"Installing Project Milan failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
                 }
+                asiSupportFiles.AddRange(mi.ASISupportFiles.Select(x => Path.GetRelativePath(destinationFolderPath, x).Replace(Path.DirectorySeparatorChar, '\\')));
 
                 FinishModSlash(destinationFolderPath);
 
