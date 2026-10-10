@@ -1075,9 +1075,11 @@ namespace ME3TweaksModManager.modmanager.milan
                 var newNameExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffectMultiplayer.exe");
                 File.Move(existingExe, newNameExe);
 
+
                 // Create stub directories, some of our tooling requires them to exist, even if they're empty.
                 // Required by AutoTOC. I don't want to have to add a folder check to this, so we make it exist
                 Directory.CreateDirectory(Path.Combine(destinationFolderPath, @"Engine", @"Shaders"));
+                // TODO: We need to copy these files over from LE3! Maybe we should just make them a rule for .usf files.
 
 
                 // Install Project Milan
@@ -1102,6 +1104,16 @@ namespace ME3TweaksModManager.modmanager.milan
                     throw new Exception($"Installing Project Milan failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
                 }
                 asiSupportFiles.AddRange(mi.ASISupportFiles.Select(x => Path.GetRelativePath(destinationFolderPath, x).Replace(Path.DirectorySeparatorChar, '\\')));
+
+                // Install splash bitmap
+                var splashSource = Path.Combine(milanmod.ModPath, @"MilanSplash", @"splash.bmp");
+                if (File.Exists(splashSource))
+                {
+                    M3Log.Information($@"Installing Project Milan Splash image");
+                    var splashDest = Path.Combine(destinationFolderPath, @"BioGame", @"Splash", @"PC", @"splash.bmp");
+                    Directory.CreateDirectory(Path.GetDirectoryName(splashDest));
+                    File.Copy(splashSource, splashDest, overwrite: true);
+                }
 
                 FinishModSlash(destinationFolderPath);
 
