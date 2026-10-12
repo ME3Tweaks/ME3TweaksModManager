@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -37,7 +38,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool InstallInProgress { get; set; }
         public string InstallButtonText { get; set; }
         private GameTarget preselectedTarget;
-        public ObservableCollectionExtended<ASIGameWPF> Games { get; } = new();
+        public ObservableCollectionExtended<ASIGameAsyncWPF> Games { get; } = new();
+
+        /// <summary>
+        /// Games whose data has not started loading yet
+        /// </summary>
+        private readonly List<ASIGameAsyncWPF> pendingLoads = new();
+
+        // Do not delete - fody will link this
+        public void OnSelectedTabIndexChanged()
+        {
+            // The user switched to a game that hasn't started loading; load it now instead of waiting in line
+            if (SelectedTabIndex >= 0 && SelectedTabIndex < Games.Count && pendingLoads.Remove(Games[SelectedTabIndex]))
+            {
+                _ = Games[SelectedTabIndex].LoadAsync();
+            }
+        }
 
 
         private void OnInstallInProgressChanged()
@@ -102,7 +118,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         // Can only uninstall. Mod Manager does not support installing this from the app, only command line
                         kam.Uninstall();
-                        RefreshASIStates(instASI.Game);
+                        await RefreshASIStatesAsync(instASI.Game);
                     }
                     else
                     {
@@ -113,7 +129,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 else
                 {
                     instASI.Uninstall();
-                    RefreshASIStates(instASI.Game);
+                    await RefreshASIStatesAsync(instASI.Game);
                 }
 
             }
@@ -193,6 +209,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (gameToRefresh == MEGame.Unknown || gameToRefresh == game.Game)
                     game.RefreshASIStates();
             }
+        }
+
+        private async Task RefreshASIStatesAsync(MEGame gameToRefresh)
+        {
+            await Task.WhenAll(Games.Where(x => x.Game == gameToRefresh).Select(x => x.RefreshASIStatesAsync()));
         }
 
         private void ASIManagerLists_SelectedChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -331,26 +352,46 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (!Settings.GenerationSettingOT && game.IsOTGame()) continue;
                 if (!Settings.GenerationSettingLE && game.IsLEGame()) continue;
                 var targets = mainwindow.InstallationTargets.Where(x => x.Game == game).ToList();
-                ASIGameWPF asiGame = null;
                 if (targets.Count > 0)
                 {
-                    asiGame = new ASIGameWPF(game, targets);
+                    var asiGame = new ASIGameAsyncWPF(game, targets);
                     Games.Add(asiGame);
 
+                    // This only picks the target. The data is loaded in the background (see LoadGamesAsync)
                     if (preselectedTarget != null && preselectedTarget.Game == game)
                     {
-                        asiGame.CurrentGameTargetWPF = (GameTargetWPF)preselectedTarget;
+                        asiGame.SelectedGameTargetWPF = (GameTargetWPF)preselectedTarget;
                         SelectedTabIndex = index;
                     }
                     else
                     {
-                        asiGame.CurrentGameTargetWPF = asiGame.GameTargetsWPF.FirstOrDefault();
+                        asiGame.SelectedGameTargetWPF = asiGame.GameTargetsWPF.FirstOrDefault();
                     }
                     index++;
                 }
             }
 
             UpdateSelectionTexts(null);
+
+            pendingLoads.AddRange(Games);
+            _ = LoadGamesAsync();
+        }
+
+        /// <summary>
+        /// Loads the data for each game in the background, one at a time, starting with the tab the user is looking at.
+        /// </summary>
+        private async Task LoadGamesAsync()
+        {
+            while (IsPanelOpen)
+            {
+                var selectedGame = SelectedTabIndex >= 0 && SelectedTabIndex < Games.Count ? Games[SelectedTabIndex] : null;
+                var next = selectedGame != null && pendingLoads.Contains(selectedGame) ? selectedGame : pendingLoads.FirstOrDefault();
+                if (next == null)
+                    break;
+
+                pendingLoads.Remove(next);
+                await next.LoadAsync();
+            }
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -11,6 +11,8 @@
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
                        xmlns:nativeMods1="clr-namespace:ME3TweaksCoreWPF.NativeMods;assembly=ME3TweaksCoreWPF"
+                       xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
+                       xmlns:fa5="http://schemas.fontawesome.com/icons/"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        MinWidth="640"
                        MinHeight="480"
@@ -97,7 +99,7 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type nativeMods1:ASIGameWPF}">
+                <DataTemplate DataType="{x:Type objects:ASIGameAsyncWPF}">
                     <Grid Margin="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -111,21 +113,36 @@
                         <usercontrols:TargetSelector Grid.Row="1" 
                                         IsEnabled="{Binding InstallInProgress, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:ASIManagerPanel}}, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
                                         AvailableTargets="{Binding GameTargetsWPF}" 
-                                        SelectedGameTarget="{Binding CurrentGameTargetWPF}" 
+                                        SelectedGameTarget="{Binding SelectedGameTargetWPF}" 
                                         HorizontalContentAlignment="Stretch" 
                                         ShowTextureInfo="False"/>
                         <DockPanel Grid.Row="2" Margin="0,5">
-                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right"/>
+                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right" IsEnabled="{Binding IsLoading, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
                             <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" TextWrapping="Wrap" />
                         </DockPanel>
-                        <ListBox 
-                                 Grid.Row="3" BorderThickness="1" 
+                        <Grid Grid.Row="3">
+                            <ListBox 
+                                 BorderThickness="1" 
                                  ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" 
                                  ItemsSource="{Binding DisplayedASIMods}" 
                                  HorizontalContentAlignment="Stretch" 
                                  SelectedItem="{Binding SelectedASI, Mode=OneWay}"
                                  SelectionChanged="ASIManagerLists_SelectedChanged">
-                        </ListBox>
+                            </ListBox>
+                            <!-- Covers the (possibly stale) list while this game's data is loading in the background -->
+                            <Border Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+                                    BorderThickness="1">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <fa5:ImageAwesome Icon="Solid_Spinner"
+                                                      Height="24"
+                                                      Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                      Spin="True" />
+                                    <TextBlock Text="{DynamicResource string_loading}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="16" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
