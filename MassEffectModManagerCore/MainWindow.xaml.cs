@@ -2159,7 +2159,7 @@ namespace ME3TweaksModManager
                 ApplyModButtonText = M3L.GetString(M3L.string_notAContentMod);
                 return false;
             }
-
+            
             ApplyModButtonText = M3L.GetString(M3L.string_applyMod);
             return true;
         }
