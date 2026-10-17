@@ -7,6 +7,7 @@ using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF.Targets;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.milan.slash;
 using ME3TweaksModManager.modmanager.objects;
@@ -563,13 +564,18 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         private byte[] ApplyMilanRawDelta(string sourceFile, MilanDeltaFileEntry entry)
         {
-            using var sourceStream = new MemoryStream(File.ReadAllBytes(sourceFile));
+            var bytes = File.ReadAllBytes(sourceFile);
+            if (entry.Format == MilanDelta.TlkDeltaXml.Format)
+                bytes = MilanDelta.TlkDeltaXml.Decompress(bytes);
+            using var sourceStream = new MemoryStream(bytes);
 
             VerifySizeAndHash(sourceStream.Length, () => MUtilities.CalculateHash(sourceStream, "sha256"),
                 entry.SourceSize, entry.SourceHash, entry.Filename, "source");
 
             using var patchedStream = ApplyMilanDeltaPatch(sourceStream, entry);
-            return patchedStream.ToArray();
+            return entry.Format == MilanDelta.TlkDeltaXml.Format
+                ? MilanDelta.TlkDeltaXml.Compress(patchedStream.ToArray())
+                : patchedStream.ToArray();
         }
 
         /// <summary>
