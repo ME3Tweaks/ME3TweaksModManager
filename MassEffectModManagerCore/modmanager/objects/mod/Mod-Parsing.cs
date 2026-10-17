@@ -1,4 +1,5 @@
-﻿using IniParser.Parser;
+﻿using IniParser.Model;
+using IniParser.Parser;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
@@ -1037,7 +1038,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     if (TargetsLELauncher)
                     {
                         // Special load
-                        LoadLauncherMod(jobSubdirectory);
+                        LoadLauncherMod(iniData, jobSubdirectory);
                         return;
                     }
 
@@ -2100,20 +2101,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             // ModDesc 9: Allow requesting ASI installation based on key/var mappings.
             if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_9_0 && Game.IsLEGame())
             {
-                var asiModsList = iniData[MODDESC_HEADERKEY_ASIMODS][MODDESC_DESCRIPTOR_ASI_ASIMODSTOINSTALL];
-                if (asiModsList != null)
+                if (!ReadASIModsToInstall(iniData))
                 {
-                    var asiList = StringStructParser.GetParenthesisSplitValues(asiModsList);
-                    foreach (var asiStruct in asiList)
-                    {
-                        var asi = M3ASIVersion.Parse(this, asiStruct);
-                        if (LoadFailedReason != null)
-                        {
-                            // ASI struct failed to parse
-                            return;
-                        }
-                        ASIModsToInstall.Add(asi);
-                    }
+                    return;
                 }
             }
 
@@ -2283,10 +2273,34 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         /// <summary>
-        /// Prepares the LELAUNCHER mod job and finalizes loading of the mod.
+        /// Shared code to read ASI mods - used by main and LELauncher parsing paths. Returns if it succeeded (true) or failed (false) which will invalidate the mod
+        /// </summary>
+        /// <param name="iniData">Incoming moddesc.ini</param>
+        private bool ReadASIModsToInstall(IniData iniData)
+        {
+            var asiModsList = iniData[MODDESC_HEADERKEY_ASIMODS][MODDESC_DESCRIPTOR_ASI_ASIMODSTOINSTALL];
+            if (asiModsList != null)
+            {
+                var asiList = StringStructParser.GetParenthesisSplitValues(asiModsList);
+                foreach (var asiStruct in asiList)
+                {
+                    var asi = M3ASIVersion.Parse(this, asiStruct);
+                    if (LoadFailedReason != null)
+                    {
+                        // ASI struct failed to parse
+                        return false;
+                    }
+                    ASIModsToInstall.Add(asi);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Prepares the LELAUNCHER mod job and finalizes loading of the mod. This is the only parsing path for LELauncher.
         /// </summary>
         /// <param name="jobSubdirectory"></param>
-        private void LoadLauncherMod(string jobSubDir)
+        private void LoadLauncherMod(IniData iniData, string jobSubDir)
         {
             int jobDirLength = jobSubDir == @"." ? 0 : jobSubDir.Length;
             ModJob headerJob = new ModJob(ModJob.JobHeader.LELAUNCHER, this);
@@ -2319,6 +2333,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
 
             InstallationJobs.Add(headerJob);
+
+            // ModDesc 10: Support LELauncher ASIs in moddesc.ini
+            if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_10_0)
+            {
+                if (!ReadASIModsToInstall(iniData))
+                {
+                    return;
+                }
+            }
+
+
             ValidMod = true;
         }
 
