@@ -1,13 +1,8 @@
 ﻿using LegendaryExplorerCore.GameFilesystem;
-using LegendaryExplorerCore.Gammtek.Extensions.IO;
 using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
-using ME3TweaksCore.NativeMods;
-using ME3TweaksCore.Services;
-using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.ME3Tweaks.M3Merge.LinkerPatches;
 using ME3TweaksCoreWPF.Targets;
-using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.milan.slash;
 using ME3TweaksModManager.modmanager.objects;
@@ -72,7 +67,7 @@ namespace ME3TweaksModManager.modmanager.milan
             "entry.pcc",
 
             // Required for MP to not crash and die
-            "SFXGUI_WeaponUIDataSF.pcc",
+            //"SFXGUI_WeaponUIDataSF.pcc", // Removed; now merged for mipping in Project Milan
 
             // Basegame Weapons
             "SFXWeapon_AssaultRifle_Argus.pcc",
@@ -340,10 +335,15 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXGUI_Fonts.pcc",
             "SFXGUI_FontsJPN.pcc",
             "Textures.tfc",
-            // Required for weapon previews
+
+            // Required for weapon previews and other textures. Not copied in slash systems
             "Textures_DLC_CON_GUN01.tfc",
             "Textures_DLC_CON_GUN02.tfc",
+            "Textures_DLC_EXP_Pack001.tfc",
+            "Textures_DLC_EXP_Pack002.tfc",
             "Textures_DLC_EXP_Pack003.tfc", // Lancer, Silencer
+            "Textures_DLC_EXP_Pack003_Base.tfc", // Lancer, Silencer
+            "Textures_DLC_METR_Patch01.tfc",
             "Textures_DLC_HEN_PR.tfc", // PPR
 
             // Other audio
@@ -364,6 +364,9 @@ namespace ME3TweaksModManager.modmanager.milan
             "Wwise_Generic_Galaxy_Map.afc",
             "Wwise_Generic_Scripting.afc",
             "Wwise_Smls_CaptainsCabin.afc",
+
+            // Photo Mode
+            "BIOG_PhotoModeFilters.pcc",
         ];
 
         private static readonly string[] Patch02Files = [
@@ -417,29 +420,29 @@ namespace ME3TweaksModManager.modmanager.milan
                 DestSubFolder: @"BioGame\Movies",
                 UseRelativePathing: false,
                 Files: MovieFiles
+            ),
+
+            // Shaders - not required but will be useful for modding probably, maybe
+            new CopyManifest(
+                SourceSubFolder: @"Engine\Shaders",
+                DestSubFolder: @"Engine\Shaders",
+                UseRelativePathing: false,
+                Files: [],
+                ExtraPatterns: ["*.usf"]
+                
             )
         };
 
         #endregion
 
         /// <summary>
-        /// Names of mods that are considered 'Project Milan' and are used to install the MP component to LMP
-        /// </summary>
-        public static readonly string[] MilanModNames = [
-            // In shipping version there should be only one item
-            // In development there can be multiple
-            @"Project Milan",
-            // @"Multiplayer component" // Set to name of final mod as shown in M3
-        ];
-
-        /// <summary>
-        /// Returns if there is a Project Milan mod in the library. Returns the highest version number if multiple are found, if the highest have the same, then the first alphabetical will be used.
+        /// Returns if there is a Project Milan mod (moddesc 10 LMP mod with milan=true) in the library. Returns the highest version number if multiple are found, if the highest have the same, then the first alphabetical will be used.
         /// </summary>
         /// <returns></returns>
         public static Mod GetMilanMod()
         {
             var lmpMods = M3LoadedMods.GetModsForGame(MEGame.LMP);
-            var milanMods = lmpMods.Where(x => MilanBaseInstaller.MilanModNames.Contains(x.ModName)).OrderByDescending(x => x.ParsedModVersion).ToList();
+            var milanMods = lmpMods.Where(x => x.IsProjectMilan).OrderByDescending(x => x.ParsedModVersion).ToList();
             return milanMods.FirstOrDefault();
         }
 
@@ -456,7 +459,7 @@ namespace ME3TweaksModManager.modmanager.milan
 
         private const string MilanDeltaFolderName = "MilanDelta";
         private const string MilanDeltaManifestFileName = "manifest.json";
-        private const double SupportedMilanDeltaVersion = 0.1;
+        private const double SupportedMilanDeltaVersion = 0.2;
 
         private enum MilanDeltaVerificationFailureKind
         {
@@ -514,7 +517,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 throw new Exception($"{MilanDeltaManifestFileName} is not a valid Milan delta manifest.");
             }
 
-            if (manifest.Version != SupportedMilanDeltaVersion)
+            if (manifest.Version != 0.1 && manifest.Version != SupportedMilanDeltaVersion)
             {
                 throw new Exception($"{MilanDeltaManifestFileName} has unsupported version {manifest.Version} (expected {SupportedMilanDeltaVersion}).");
             }
@@ -526,6 +529,13 @@ namespace ME3TweaksModManager.modmanager.milan
             if (!string.Equals(computedSignature, manifest.Signature, StringComparison.OrdinalIgnoreCase))
             {
                 throw new Exception($"{MilanDeltaManifestFileName} signature does not match its contents. This build may be corrupted or tampered with.");
+            }
+
+            foreach (var entry in manifest.Deltas)
+            {
+                if (entry.Format != null && (entry.Format != MilanDelta.TlkDeltaXml.Format
+                    || !Path.GetExtension(entry.Filename).Equals(".tlk", StringComparison.OrdinalIgnoreCase)))
+                    throw new Exception($"Unsupported delta format '{entry.Format}' for {entry.Filename}.");
             }
 
             milanDeltaFolder = deltaFolder;
@@ -834,15 +844,35 @@ namespace ME3TweaksModManager.modmanager.milan
         /// replacing any existing one. Generation slashes the game (TFC compaction, RefShaderCache reduction), records the
         /// differences, and restores the game; the manifest is then applied here the same way it is on users' machines, which
         /// both proves it works and leaves this installation identical to what users will get.
+        /// <para>
+        /// The basegame TFCs were left in LE3 (<see cref="MilanInstallPlan.LeftInLE3"/>), so they are read from there, as they
+        /// are when users install. Any the slashed game still uses are copied in once the manifest has been applied.
+        /// </para>
         /// </summary>
         private void GenerateAndApplyMilanSlash(string gamePath)
         {
+            interop.SetStatus?.Invoke(@"Checking LE3 TFCs...");
+            var leftInLE3 = plan.LeftInLE3.ToDictionary(x => x.DestRelativePath.Replace(Path.DirectorySeparatorChar, '\\'), x => le3Sources.GetVanillaSourceFile(x.SourcePath), StringComparer.OrdinalIgnoreCase);
+            string resolveBuildSource(string relativePath) => leftInLE3.TryGetValue(relativePath, out var path) ? path : MilanSlashApplier.Resolve(gamePath, relativePath);
+
             interop.SetStatus?.Invoke(@"Generating slash manifest...");
-            var manifest = MilanSlashGenerator.Generate(gamePath, milanDeltaFolder, s => interop.SetStatus?.Invoke(s));
+            var manifest = MilanSlashGenerator.Generate(gamePath, milanDeltaFolder, plan.ModOutputs, leftInLE3, s => interop.SetStatus?.Invoke(s));
             GC.Collect(); // Generation can hold several GB (the RefShaderCache, package diffs); release it before applying
 
             interop.SetStatus?.Invoke(@"Applying generated slash manifest...");
-            MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s));
+            MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s), resolveBuildSource);
+
+            // TFCs the manifest doesn't delete are still used, so the game needs them
+            var deleted = manifest.Deletions.Select(x => x.Filename).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (var (relativePath, source) in leftInLE3.Where(x => !deleted.Contains(x.Key)))
+            {
+                interop.SetStatus?.Invoke($"Copying {Path.GetFileName(relativePath)}");
+                var dest = MilanSlashApplier.Resolve(gamePath, relativePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(dest));
+                File.Copy(source, dest);
+                M3Log.Information($@"Slash: copied {relativePath} from LE3; the slashed game still uses it");
+            }
+            M3Log.Information($@"Slash: {leftInLE3.Count} TFC(s) were read from LE3; {leftInLE3.Count(x => !deleted.Contains(x.Key))} still used by the slashed game were copied in");
             slashManifest = manifest;
         }
 #endif
@@ -984,7 +1014,8 @@ namespace ME3TweaksModManager.modmanager.milan
             {
                 InstallTarget = target,
                 ModBeingInstalled = milanMod,
-                SkipPrerequesitesCheck = true
+                SkipPrerequesitesCheck = true,
+                IsMilanInstall = true, // Used to skip basegame tracking
             };
 
             // We have no options, set it as having none chosen
@@ -1013,8 +1044,24 @@ namespace ME3TweaksModManager.modmanager.milan
                 var root = job.Header == ModJob.JobHeader.CUSTOMDLC ? dlcPath : target.TargetPath;
                 outputs.AddRange(mapping.FileMapping.Keys.Select(x => Path.GetRelativePath(target.TargetPath, Path.Combine(root, x))));
             }
+
+            // Installed by us rather than ModInstaller, but it is still a file from the mod
+            if (File.Exists(GetSplashSourcePath(milanMod)))
+            {
+                outputs.Add(SplashRelativePath);
+            }
             return outputs;
         }
+
+        /// <summary>
+        /// Path, relative to the installation root, of the splash image shown when the game boots.
+        /// </summary>
+        private static readonly string SplashRelativePath = Path.Combine(@"BioGame", @"Splash", @"PC", @"splash.bmp");
+
+        /// <summary>
+        /// Path of the splash image the Project Milan mod ships, which may not exist.
+        /// </summary>
+        private static string GetSplashSourcePath(Mod milanMod) => Path.Combine(milanMod.ModPath, @"MilanSplash", @"splash.bmp");
 
         /// <summary>
         /// Copies the require files from LE3 to the destination folder. The source folder should be a backup to help ensure mods are not installed, as base install should be "vanilla".
@@ -1062,7 +1109,11 @@ namespace ME3TweaksModManager.modmanager.milan
                 interop.SetStatus?.Invoke("Checking LE3 installation...");
                 le3Sources = new LE3SourceResolver(sourceGameTarget.TargetPath, BackupService.GetGameBackupPath(MEGame.LE3));
                 M3Log.Information($"Building Project Milan from {le3Sources.SourceRoot}" + (le3Sources.BackupRoot != null ? $"; modified files will be taken from the LE3 backup at {le3Sources.BackupRoot}" : "; there is no LE3 backup to take modified files from"));
-                plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath));
+                bool leaveTFCsInLE3 = false;
+#if DEBUG
+                leaveTFCsInLE3 = generateSlashManifest; // The generator reads them from LE3
+#endif
+                plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath), leaveTFCsInLE3);
                 slashManifest = plan.Slash;
 
                 // Wipe the destination directory so we start from a clean slate.
@@ -1081,12 +1132,8 @@ namespace ME3TweaksModManager.modmanager.milan
                 var newNameExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffectMultiplayer.exe");
                 File.Move(existingExe, newNameExe);
 
-
-                // Create stub directories, some of our tooling requires them to exist, even if they're empty.
-                // Required by AutoTOC. I don't want to have to add a folder check to this, so we make it exist
+                // Shaders copy over; we just make directory here first
                 Directory.CreateDirectory(Path.Combine(destinationFolderPath, @"Engine", @"Shaders"));
-                // TODO: We need to copy these files over from LE3! Maybe we should just make them a rule for .usf files.
-
 
                 // Install Project Milan
                 var lmpTarget = new GameTargetWPF(MEGame.LMP, destinationFolderPath, true);
@@ -1112,11 +1159,11 @@ namespace ME3TweaksModManager.modmanager.milan
                 asiSupportFiles.AddRange(mi.ASISupportFiles.Select(x => Path.GetRelativePath(destinationFolderPath, x).Replace(Path.DirectorySeparatorChar, '\\')));
 
                 // Install splash bitmap
-                var splashSource = Path.Combine(milanmod.ModPath, @"MilanSplash", @"splash.bmp");
+                var splashSource = GetSplashSourcePath(milanmod);
                 if (File.Exists(splashSource))
                 {
                     M3Log.Information($@"Installing Project Milan Splash image");
-                    var splashDest = Path.Combine(destinationFolderPath, @"BioGame", @"Splash", @"PC", @"splash.bmp");
+                    var splashDest = Path.Combine(destinationFolderPath, SplashRelativePath);
                     Directory.CreateDirectory(Path.GetDirectoryName(splashDest));
                     File.Copy(splashSource, splashDest, overwrite: true);
                 }
@@ -1131,17 +1178,20 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
 #endif
 
+                // Ensure linker patches are generated
+                if (LinkerPatchMerge.NeedsMerged(lmpTarget))
+                {
+                    LinkerPatchMerge.RunLinkerPatchMerge(lmpTarget);
+                }
+#if DEBUG
                 // TODO: Build the LMP vanilla object database against the (slashed) installation here
-
-                // Unapply bink. This will be a common problem, so we can just handle it here.
-                //lmpTarget.UninstallBinkBypass();
+#endif
 
                 // TOC game so game can find files.
                 AutoTOC.RunTOCOnGameTarget(lmpTarget);
 
                 lmpTarget.ValidateTarget(); // Triggers validation which unlocks UI options
 
-                // This makes it easier to debug
                 lmpTarget.InstallBinkBypass(false);
 
                 // Must be the last thing that writes to the game
@@ -1155,6 +1205,8 @@ namespace ME3TweaksModManager.modmanager.milan
                 {
                     VerifyFinalState(destinationFolderPath);
                 }
+
+                // Legacy: Don't write steam app id. When running from M3 it will write it automatically. Don't need to do it here
 
                 // Add target to Mod Manager
                 interop?.AddTarget(lmpTarget);
