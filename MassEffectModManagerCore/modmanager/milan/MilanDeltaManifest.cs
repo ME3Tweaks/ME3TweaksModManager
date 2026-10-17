@@ -71,5 +71,10 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         [JsonPropertyName("desthash")]
         public string DestHash { get; set; }
+
+        /// <summary>Optional preprocessing format. Null preserves legacy raw deltas.</summary>
+        [JsonPropertyName("format")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Format { get; set; }
     }
 }

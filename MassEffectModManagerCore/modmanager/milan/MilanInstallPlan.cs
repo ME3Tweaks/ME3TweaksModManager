@@ -1,6 +1,7 @@
 ﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.milan.slash;
 
@@ -67,6 +68,13 @@ namespace ME3TweaksModManager.modmanager.milan
         public CaseInsensitiveDictionary<CopyEntry> LE3Files { get; } = new();
 
         /// <summary>
+        /// Files that are part of the installation but are not copied into it, because the slash generator reads them from
+        /// LE3 where they are: the basegame TFCs, which are many GB, and which slash almost entirely deletes once their used
+        /// data has been compacted. Only used when generating a slash manifest. These are also in <see cref="LE3Files"/>.
+        /// </summary>
+        public List<CopyEntry> LeftInLE3 { get; } = new();
+
+        /// <summary>
         /// Paths, relative to the installation root, of every file the Project Milan mod installs.
         /// </summary>
         public HashSet<string> ModOutputs { get; } = new(StringComparer.OrdinalIgnoreCase);
@@ -108,10 +116,14 @@ namespace ME3TweaksModManager.modmanager.milan
         /// <param name="milanDeltaFolder">Folder of the MilanDelta manifest, its patches, and the slash manifest and its files.</param>
         /// <param name="slash">The slash manifest to apply inline, or null to not slash the installation.</param>
         /// <param name="modOutputs">Paths, relative to the installation root, of every file the Project Milan mod installs.</param>
+        /// <param name="leaveTFCsInLE3">If the basegame TFCs should be left in LE3 for the slash generator to read (<see cref="LeftInLE3"/>) rather than copied. Only for generating a slash manifest; <paramref name="slash"/> must be null.</param>
         /// <exception cref="Exception">The installation cannot succeed. Every problem found is logged; the message lists them.</exception>
         public static MilanInstallPlan Build(LE3SourceResolver sources, IEnumerable<MilanBaseInstaller.CopyManifest> manifests, IReadOnlyList<MELocalization> voLanguages,
-            IReadOnlyDictionary<string, MilanDeltaFileEntry> milanDeltas, string milanDeltaFolder, MilanSlashManifest slash, IEnumerable<string> modOutputs)
+            IReadOnlyDictionary<string, MilanDeltaFileEntry> milanDeltas, string milanDeltaFolder, MilanSlashManifest slash, IEnumerable<string> modOutputs, bool leaveTFCsInLE3 = false)
         {
+            if (leaveTFCsInLE3 && slash != null)
+                throw new ArgumentException(@"TFCs can only be left in LE3 when generating a slash manifest, not when applying one");
+
             var plan = new MilanInstallPlan();
             plan.ModOutputs.UnionWith(modOutputs);
 
@@ -126,6 +138,16 @@ namespace ME3TweaksModManager.modmanager.milan
                 M3Log.Information($@"Not copying {copy.DestRelativePath} from LE3: it is installed by Project Milan");
                 plan.Copies.Remove(copy);
                 plan.LE3Files.Remove(copy.DestRelativePath);
+            }
+
+            if (leaveTFCsInLE3)
+            {
+                foreach (var copy in plan.Copies.Where(x => IsBasegameTFC(x.DestRelativePath) && x.IsUnmodifiedCopy).ToList())
+                {
+                    plan.Copies.Remove(copy);
+                    plan.LeftInLE3.Add(copy);
+                }
+                M3Log.Information($@"Not copying {plan.LeftInLE3.Count} TFC(s) ({FileSize.FormatSize(plan.LeftInLE3.Sum(x => x.SourceSize))}) from LE3: the slash generator reads them from LE3, and only the ones the slashed game still uses are copied");
             }
 
             if (slash != null)
@@ -157,11 +179,14 @@ namespace ME3TweaksModManager.modmanager.milan
                 throw new Exception($"Project Milan cannot be installed from this LE3 installation ({problems.Count} problem(s); see the log for all of them). First problem: {problems[0]}");
             }
 
-            M3Log.Information($@"Installation plan: {plan.Copies.Count} file(s) copied from LE3 ({plan.Copies.Count(x => x.Delta != null)} MilanDelta patched, {plan.Copies.Count(x => x.SlashPatch != null)} slash patched), " +
+            M3Log.Information($@"Installation plan: {plan.Copies.Count} file(s) copied from LE3 ({plan.Copies.Count(x => x.Delta != null)} MilanDelta patched, {plan.Copies.Count(x => x.SlashPatch != null)} slash patched), {plan.LeftInLE3.Count} left in LE3 for the slash generator, " +
                               $@"{plan.InlineBuilds.Count} slash build(s) from LE3 files, {plan.ModPatches.Count} slash patch(es) of Project Milan files, " +
                               $@"{plan.PostInstallBuilds.Count} post-install slash build(s), {plan.PostInstallDeletions.Count} post-install slash deletion(s)");
             return plan;
         }
+
+        private static bool IsBasegameTFC(string relativePath) =>
+            relativePath.Replace('/', '\\').StartsWith(@"BioGame\CookedPCConsole\", StringComparison.OrdinalIgnoreCase) && relativePath.EndsWith(@".tfc", StringComparison.OrdinalIgnoreCase);
 
         private void AddCopy(string destRelativePath, string sourcePath)
         {
