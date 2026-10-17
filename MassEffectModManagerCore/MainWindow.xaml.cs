@@ -766,7 +766,6 @@ namespace ME3TweaksModManager
         public ICommand TrilogySaveEditorCommand { get; set; }
         public ICommand AddStarterKitContentCommand { get; set; }
         public ICommand ConvertMEMToTOCommand { get; set; }
-        public ICommand BuildBaseMilanCommand { get; set; }
         public ICommand OpenModMakerEditorCommand { get; set; }
 
 
@@ -835,7 +834,6 @@ namespace ME3TweaksModManager
             StartGameSpecificSaveCommand = new GenericCommand(SelectSpecificSaveForBoot, () => SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame());
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
             ConvertMEMToTOCommand = new GenericCommand(ConvertMEMToTextureOverride, () => M3LoadedMods.Instance.ModsLoaded);
-            BuildBaseMilanCommand = new GenericCommand(() => MilanBaseInstallerPanel.BuildBaseMilan(this), () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any(x => x.Game == MEGame.LE3));
             OpenModMakerEditorCommand = new GenericCommand(OpenModMakerEditor, () => ModMakerLauncher.PreferredTarget(InstallationTargets) != null);
             LoadNexusCommands();
             LoadHeadmorphCommands();

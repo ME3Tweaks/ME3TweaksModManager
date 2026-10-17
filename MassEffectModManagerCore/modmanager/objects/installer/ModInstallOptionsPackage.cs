@@ -52,6 +52,11 @@ namespace ME3TweaksModManager.modmanager.objects.installer
         public bool HasDoneBackupCheck { get; set; }
 
         /// <summary>
+        /// If this installation is doing Project Milan.
+        /// </summary>
+        public bool IsMilanInstall { get; internal set; }
+
+        /// <summary>
         /// Makes empty selection options items
         /// </summary>
         internal void SetNoOptions()
