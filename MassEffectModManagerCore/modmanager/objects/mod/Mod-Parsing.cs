@@ -461,6 +461,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public bool BatchInstallUseReverseMountSort { get; set; }
 
         /// <summary>
+        /// If this mod is Project Milan
+        /// </summary>
+        public bool IsProjectMilan { get; set; }
+
+        /// <summary>
         /// List of DLC requirements for this mod to be able to install
         /// </summary>
         public List<DLCRequirement> RequiredDLC { get; set; } = new List<DLCRequirement>();
@@ -2134,6 +2139,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     BatchInstallUseReverseMountSort = useReverseSort;
                     M3Log.Information(@"This mod will use the highest mount priority instead of the lowest in batch mod sorting", Settings.LogModStartup && useReverseSort);
+                }
+            }
+
+            if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_10_0 && Game == MEGame.LMP)
+            {
+                if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_MILAN], out var isMilan))
+                {
+                    IsProjectMilan = isMilan;
                 }
             }
 

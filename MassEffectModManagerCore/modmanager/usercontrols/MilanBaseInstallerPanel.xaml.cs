@@ -10,6 +10,7 @@ using ME3TweaksModManager.ui;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -45,12 +46,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Prechecks and then opens the milan installer panel
         /// </summary>
         /// <param name="mw"></param>
-        internal static void BuildBaseMilan(MainWindow mw)
+        internal static void BuildBaseMilan(MainWindow mw, Mod milanMod)
         {
-            var milanMod = MilanBaseInstaller.GetMilanMod();
             if (milanMod == null)
             {
-                M3L.ShowDialog(MainWindow.Instance, "You must download and import the Project Milan mod into your mod library in order to make a game target for Project Milan.", "Project Milan not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(MainWindow.Instance, "You must download and import Project Milan into your mod library in order to make a game target for LMP.", "Project Milan not found", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

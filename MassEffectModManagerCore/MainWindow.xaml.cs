@@ -2001,6 +2001,12 @@ namespace ME3TweaksModManager
 
         private void CallApplyMod()
         {
+            if (SelectedMod.IsProjectMilan)
+            {
+                MilanBaseInstallerPanel.BuildBaseMilan(this, SelectedMod);
+                return;
+            }
+
             ApplyMod(SelectedMod);
         }
         private bool CanToggleBinkw32(object obj)
@@ -2124,6 +2130,15 @@ namespace ME3TweaksModManager
             {
                 ApplyModButtonText = M3L.GetString(M3L.string_selectMod);
                 return false;
+            }
+
+            // This doesn't depend on the target selector - it generates the LMP target
+            if (SelectedMod.Game == MEGame.LMP && SelectedMod.IsProjectMilan)
+            {
+                // We should show the LMP icon... not sure how we would do that
+                // given the icon shows the target, not the mod image
+                ApplyModButtonText = "Install LMP";
+                return true;
             }
 
             if (SelectedGameTarget == null)

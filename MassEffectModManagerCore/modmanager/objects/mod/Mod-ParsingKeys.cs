@@ -44,6 +44,7 @@
         public static readonly string MODDESC_DESCRIPTOR_MODINFO_POSTINSTALLTOOL = @"postinstalltool";                    // The internal tool name to launch after mod install completes
         public static readonly string MODDESC_DESCRIPTOR_MODINFO_REQUIRESENHANCEDBINK = @"requiresenhancedbink";          // LE - If this mod MUST have the enhanced bink dll to work
         public static readonly string MODDESC_DESCRIPTOR_MODINFO_BATCHINSTALL_REVERSESORT = @"batchinstallreversesort";   // cmmver9 - If batch installer should sort this by highest mount priority instead of lowest (used by multi-dlc mods that ship patches to other mods)
+        public static readonly string MODDESC_DESCRIPTOR_MODINFO_MILAN = @"milan";                                        // cmmver10 - Specifies this is Project Milan
 
         // [BASEGAME] and Official DLC task headers (ME3)
         public static readonly string MODDESC_DESCRIPTOR_JOB_DIR = @"moddir";                                    // Directory in the mod manager folder that this job is operating on. A dot '.' is a valid value if you do not actually use files but a directory is required.
