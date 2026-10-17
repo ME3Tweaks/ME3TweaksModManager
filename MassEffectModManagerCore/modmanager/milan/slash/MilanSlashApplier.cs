@@ -152,16 +152,26 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// manifest was generated against, without modifying anything. Returns a list of problems; an empty list means the
         /// manifest can be applied.
         /// </summary>
-        public static List<string> Validate(MilanSlashManifest manifest, string milanDeltaFolder, string gameRoot, Action<string> setStatus = null)
+        /// <param name="resolveBuildSource">Returns the path to read a build's game file source (relative to the game root) from. By default, the game's own copy.</param>
+        public static List<string> Validate(MilanSlashManifest manifest, string milanDeltaFolder, string gameRoot, Action<string> setStatus = null, Func<string, string> resolveBuildSource = null)
         {
             var problems = ValidateStructure(manifest, milanDeltaFolder);
+            resolveBuildSource ??= relativePath => Resolve(gameRoot, relativePath);
 
             foreach (var build in manifest.Builds)
             {
                 foreach (var source in build.Sources.Where(x => !x.Payload))
                 {
-                    if (!TryResolve(gameRoot, source.Filename, problems, out var sourcePath))
+                    string sourcePath;
+                    try
+                    {
+                        sourcePath = resolveBuildSource(source.Filename);
+                    }
+                    catch (Exception e)
+                    {
+                        problems.Add(e.Message);
                         continue;
+                    }
 
                     if (!File.Exists(sourcePath))
                     {
@@ -217,11 +227,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// <summary>
         /// Validates, builds, verifies, and commits a slash manifest against the game at <paramref name="gameRoot"/>.
         /// </summary>
+        /// <param name="resolveBuildSource">Returns the path to read a build's game file source (relative to the game root) from. By default, the game's own copy.</param>
         /// <exception cref="Exception">Validation or building failed. The game is left unmodified in this case.</exception>
-        public static void Apply(MilanSlashManifest manifest, string milanDeltaFolder, string gameRoot, Action<string> setStatus = null)
+        public static void Apply(MilanSlashManifest manifest, string milanDeltaFolder, string gameRoot, Action<string> setStatus = null, Func<string, string> resolveBuildSource = null)
         {
+            resolveBuildSource ??= relativePath => Resolve(gameRoot, relativePath);
             setStatus?.Invoke(@"Validating slash manifest...");
-            var problems = Validate(manifest, milanDeltaFolder, gameRoot, setStatus);
+            var problems = Validate(manifest, milanDeltaFolder, gameRoot, setStatus, resolveBuildSource);
             if (problems.Count > 0)
             {
                 foreach (var problem in problems)
@@ -255,7 +267,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     lock (staged) staged.Add((stagingPath, finalPath));
                     using (var output = new FileStream(stagingPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024))
                     {
-                        AssembleBuild(build, source => Resolve(source.Payload ? milanDeltaFolder : gameRoot, source.Filename), output);
+                        AssembleBuild(build, source => source.Payload ? Resolve(milanDeltaFolder, source.Filename) : resolveBuildSource(source.Filename), output);
                         VerifySize(output.Length, build.DestSize, build.Filename, @"output");
                     }
                     VerifyHash(MUtilities.CalculateHash(stagingPath, @"sha256"), build.DestHash, build.Filename, @"output");

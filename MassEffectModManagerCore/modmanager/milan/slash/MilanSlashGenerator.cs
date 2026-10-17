@@ -1,6 +1,11 @@
+using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using LegendaryExplorerCore.Audio;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages.NetIndexing;
 using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
@@ -18,8 +23,10 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     /// though LMP only uses a fraction of them. To find out what the slashed game should look like, this actually slashes the
     /// development installation, then records the difference as a manifest:
     /// <list type="number">
-    /// <item>The game is snapshotted, so there are original files to diff against and restore from.</item>
-    /// <item>The game is transformed: the RefShaderCache is reduced to the shader maps materials in the game use, the
+    /// <item>The game is snapshotted, so there are original files to diff against and restore from. The basegame TFCs
+    /// don't have to be in the game: the installer can leave them in LE3, and they are then read from there throughout.</item>
+    /// <item>The game is transformed: empty mips are stripped from every texture in the packages copied from LE3, the
+    /// RefShaderCache is reduced to the shader maps materials in the game use, the
     /// TFCs are compacted with LEC's <see cref="TFCCompactor"/>, which builds new TFCs from the texture data the game
     /// uses and repoints every package at them, and the LE3 DLC AFCs copied into the basegame are compacted the same way.</item>
     /// <item>The before and after states are diffed. Changed packages get a JPatch delta. New files (the compacted TFCs and
@@ -60,7 +67,24 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// </summary>
         private const string CompactedAFCName = "Wwise_MilanBase";
 
+        /// <summary>
+        /// Name of the report written when net index checking finds problems. Excluded from the snapshot in case an older run
+        /// left one in the game root.
+        /// </summary>
+        private const string NetIndexFindingsFileName = "MilanNetIndexFindings.csv";
+
+        /// <summary>
+        /// Where the net index findings report is written: the temp folder, not the game root, because a failed install
+        /// deletes the whole game folder, report included.
+        /// </summary>
+        private static string NetIndexFindingsPath => Path.Combine(Path.GetTempPath(), NetIndexFindingsFileName);
+
         private static readonly string[] PackageExtensions = [".pcc", ".upk", ".u", ".sfm"];
+
+        /// <summary>
+        /// Packages that take part in net indexing, as the net indexing checker defines them.
+        /// </summary>
+        private static readonly string[] NetIndexedPackageExtensions = [".pcc", ".upk", ".u"];
 
         /// <summary>
         /// Test seam: replaces the TFC compactor step. Called with the game root and the names of the installed TFCs. LEC's
@@ -81,6 +105,15 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         private readonly string workRoot;
         private readonly string milanDeltaFolder;
         private readonly Action<string> setStatus;
+        private readonly HashSet<string> modOutputs;
+
+        /// <summary>
+        /// Files that are part of the unslashed game but were left in LE3 rather than copied into it (basegame TFCs), keyed by
+        /// game-relative path, with the path to read each from and its size. They are read in place wherever the game's copy
+        /// would be: compaction, diffing, and the builds that come out of it.
+        /// </summary>
+        private readonly Dictionary<string, (string Path, long Size)> filesLeftInLE3 = new(StringComparer.OrdinalIgnoreCase);
+
         private MilanSlashSnapshot snapshot;
 
         /// <summary>
@@ -95,13 +128,24 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         private readonly MilanSlashManifest manifest = new() { MilanSlash = true, Version = MilanSlashApplier.SupportedSlashVersion };
 
-        private MilanSlashGenerator(string gameRoot, string milanDeltaFolder, Action<string> setStatus)
+        private MilanSlashGenerator(string gameRoot, string milanDeltaFolder, IEnumerable<string> modOutputs, IReadOnlyDictionary<string, string> filesLeftInLE3, Action<string> setStatus)
         {
             this.gameRoot = Path.GetFullPath(gameRoot);
             bioGame = Path.Combine(this.gameRoot, "BioGame");
             workRoot = Path.Combine(this.gameRoot, WorkFolderName);
             this.milanDeltaFolder = milanDeltaFolder;
+            this.modOutputs = new HashSet<string>(modOutputs, StringComparer.OrdinalIgnoreCase);
             this.setStatus = setStatus;
+
+            foreach (var (relativePath, path) in filesLeftInLE3 ?? new Dictionary<string, string>())
+            {
+                // Only TFCs the TFC compactor takes data from: they are only ever read, and are deleted from the game once
+                // their data has moved, which for these just means they are never copied. (The AFC compactor can only read
+                // AFCs in the game.)
+                if (!IsBasegameTFC(relativePath))
+                    throw new ArgumentException($"{relativePath} cannot be left in LE3 while slashing; only basegame TFCs can");
+                this.filesLeftInLE3[relativePath] = (path, new FileInfo(path).Length);
+            }
         }
 
         /// <summary>
@@ -109,11 +153,29 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// <paramref name="milanDeltaFolder"/> (replacing any previous slash output). The game is slashed while the manifest
         /// is generated, then restored, so it is unchanged when this returns.
         /// </summary>
-        public static MilanSlashManifest Generate(string gameRoot, string milanDeltaFolder, Action<string> setStatus = null)
+        /// <param name="modOutputs">Paths, relative to the game root, of every file the Project Milan mod installs. Every other package came from LE3, and has Project Milan's net index table applied to it.</param>
+        /// <param name="filesLeftInLE3">Files that are part of the game but were not copied into it, keyed by game-relative path, with the path to read each one from. The manifest describes them exactly as if they were in the game; when it is applied, its build sources have to be resolved to the same paths.</param>
+        public static MilanSlashManifest Generate(string gameRoot, string milanDeltaFolder, IEnumerable<string> modOutputs, IReadOnlyDictionary<string, string> filesLeftInLE3 = null, Action<string> setStatus = null)
         {
-            var generator = new MilanSlashGenerator(gameRoot, milanDeltaFolder, setStatus);
+            var generator = new MilanSlashGenerator(gameRoot, milanDeltaFolder, modOutputs, filesLeftInLE3, setStatus);
             return generator.Run();
         }
+
+        /// <summary>
+        /// Every file of the unslashed game, by game-relative path, with its size: what was in the game when it was
+        /// snapshotted, and the files left in LE3.
+        /// </summary>
+        private IEnumerable<(string RelativePath, long Size)> OriginalFiles =>
+            snapshot.Files.Select(x => (x.Key, x.Value.Size)).Concat(filesLeftInLE3.Select(x => (x.Key, x.Value.Size)));
+
+        /// <summary>
+        /// Where the original (unslashed) copy of a game file is.
+        /// </summary>
+        private string GetOriginalPath(string relativePath) =>
+            filesLeftInLE3.TryGetValue(relativePath, out var file) ? file.Path : snapshot.GetSnapshotPath(relativePath);
+
+        private long GetOriginalSize(string relativePath) =>
+            filesLeftInLE3.TryGetValue(relativePath, out var file) ? file.Size : snapshot.Files[relativePath].Size;
 
         /// <summary>
         /// Records the size and hash of every file in the finished installation into the manifest and re-saves it. Call this
@@ -136,6 +198,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             if (File.Exists(manifestPath))
                 File.Delete(manifestPath);
 
+            var findingsPath = NetIndexFindingsPath;
+            if (File.Exists(findingsPath))
+                File.Delete(findingsPath);
+
+            // Fails generation before any work is done if Project Milan didn't produce it
+            var linkerTable = MilanLinkerTable.Load(milanDeltaFolder);
+
             if (Directory.Exists(workRoot))
                 Directory.Delete(workRoot, true);
 
@@ -144,16 +213,26 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             // final state (the executable, bink, ASIs...) are not part of what gets slashed, so they are ignored entirely.
             snapshot = MilanSlashSnapshot.Create(gameRoot, Path.Combine(workRoot, "Snapshot"),
                 copyFile: x => IsPackage(x) && !IsRefShaderCache(x),
-                excludeFromGame: x => IsWorkPath(x) || MilanFinalState.IsExcluded(x),
+                excludeFromGame: x => IsWorkPath(x) || MilanFinalState.IsExcluded(x) || x.Equals(NetIndexFindingsFileName, StringComparison.OrdinalIgnoreCase),
                 setStatus);
 
             try
             {
+                var leftInLE3ButInGame = filesLeftInLE3.Keys.Where(snapshot.Files.ContainsKey).ToList();
+                if (leftInLE3ButInGame.Count > 0)
+                    throw new Exception($"{leftInLE3ButInGame.Count} file(s) are meant to be read from LE3 while slashing, but are in the game too. First: {leftInLE3ButInGame[0]}");
+                if (filesLeftInLE3.Count > 0)
+                    M3Log.Information($"Slash: {filesLeftInLE3.Count} TFC(s) ({FileSize.FormatSize(filesLeftInLE3.Values.Sum(x => x.Size))}) are read from LE3 rather than the game");
+
                 var originalScan = ScanGame(scanMaterials: true);
                 SlashRefShaderCache(Path.Combine(bioGame, "CookedPCConsole", RefShaderCacheName));
+                StripEmptyMips(); // Before compaction, so the compactor never sees them
                 CompactTFCs();
                 CompactAFCs(originalScan);
+                ApplyLinkerTable(linkerTable);
+                CheckNoEmptyMips();
                 var slashedScan = ScanGame(scanMaterials: false);
+                CheckNetIndexing();
                 RecordChanges(originalScan, slashedScan);
                 manifest.Save(milanDeltaFolder); // Final file state is recorded later, once the installer has finished
             }
@@ -491,12 +570,165 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         }
 
         /// <summary>
+        /// Game-relative paths of the packages copied from LE3: every package the Project Milan mod doesn't install.
+        /// </summary>
+        private List<string> EnumerateLE3Packages() =>
+            snapshot.EnumerateGameFiles().Where(x => IsPackage(x) && !IsRefShaderCache(x) && !modOutputs.Contains(x)).ToList();
+
+        /// <summary>
+        /// Finds the textures in packages copied from LE3 that have empty mips (top mips LE3 ships without data), keyed by
+        /// game-relative package path.
+        /// </summary>
+        private Dictionary<string, List<(int UIndex, string Path)>> FindEmptyMips(string status)
+        {
+            var paths = EnumerateLE3Packages();
+            var found = new ConcurrentDictionary<string, List<(int UIndex, string Path)>>(StringComparer.OrdinalIgnoreCase);
+            var errors = new ConcurrentBag<string>();
+            int done = 0;
+            Parallel.ForEach(paths, new ParallelOptions { MaxDegreeOfParallelism = NetIndexParallelism }, relativePath =>
+            {
+                try
+                {
+                    using var package = MEPackageHandler.UnsafePartialLoad(snapshot.GetGamePath(relativePath), x => !x.IsDefaultObject && Texture2DClasses.Contains(x.ClassName));
+                    var textures = package.Exports
+                        .Where(x => x.IsDataLoaded() && !x.IsDefaultObject && Texture2DClasses.Contains(x.ClassName)
+                                    && ObjectBinary.From<UTexture2D>(x).Mips.Any(m => m.StorageType == StorageTypes.empty))
+                        .Select(x => (x.UIndex, x.InstancedFullPath))
+                        .ToList();
+                    if (textures.Count > 0)
+                        found[relativePath] = textures;
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"{relativePath}: {e.Message}");
+                }
+
+                int n = Interlocked.Increment(ref done);
+                if (n % 50 == 0 || n == paths.Count)
+                    setStatus?.Invoke($"{status} ({n}/{paths.Count})");
+            });
+
+            if (!errors.IsEmpty)
+                throw new Exception($"{errors.Count} package(s) could not be checked for empty mips. First: {errors.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).First()}");
+            return new Dictionary<string, List<(int UIndex, string Path)>>(found, StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Strips the empty mips (top mips LE3 ships without data) from every texture in the packages copied from LE3, so
+        /// none come over into LMP. The texture is then described from its first real mip (see
+        /// <see cref="LegendaryExplorerCore.Unreal.Classes.Texture2D.RemoveEmptyMips"/>). The TFC compactor strips the
+        /// empty mips of the textures it moves, but package stored textures (such as cubemap faces) and textures it doesn't
+        /// move would keep theirs.
+        /// </summary>
+        private void StripEmptyMips()
+        {
+            var packages = FindEmptyMips("Checking for empty mips");
+            if (packages.Count == 0)
+            {
+                M3Log.Information("Slash: no LE3 textures have empty mips");
+                return;
+            }
+
+            int strippedTextures = 0;
+            int strippedMips = 0;
+            var errors = new ConcurrentBag<string>();
+            int done = 0;
+            Parallel.ForEach(packages, new ParallelOptions { MaxDegreeOfParallelism = NetIndexParallelism }, pair =>
+            {
+                var (relativePath, textures) = pair;
+                try
+                {
+                    var path = snapshot.GetGamePath(relativePath);
+                    MemoryStream saved;
+                    using (var package = MEPackageHandler.OpenMEPackage(path, forceLoadFromDisk: true))
+                    {
+                        foreach (var (uIndex, texturePath) in textures)
+                        {
+                            var export = package.GetUExport(uIndex);
+                            if (export.InstancedFullPath != texturePath)
+                                throw new Exception($"export {uIndex} is {export.InstancedFullPath}, not {texturePath}");
+                            int removed = StripEmptyMips(export);
+                            Interlocked.Increment(ref strippedTextures);
+                            Interlocked.Add(ref strippedMips, removed);
+                        }
+
+                        // Keep the file's compression, as the slash diff and the applier assume
+                        saved = package.SaveToStream(package.IsCompressed);
+                    }
+
+                    // Replace rather than overwrite, so a failed write can't leave half a package behind
+                    using (saved)
+                    {
+                        var temp = path + ".slashnew";
+                        using (var output = new FileStream(temp, FileMode.Create, FileAccess.Write))
+                        {
+                            saved.Position = 0;
+                            saved.CopyTo(output);
+                        }
+                        File.Move(temp, path, overwrite: true);
+                    }
+                }
+                catch (Exception e)
+                {
+                    M3Log.Exception(e, $"Slash: could not strip empty mips from {relativePath}:");
+                    errors.Add($"{relativePath}: {e.Message}");
+                }
+
+                int n = Interlocked.Increment(ref done);
+                if (n % 10 == 0 || n == packages.Count)
+                    setStatus?.Invoke($"Stripping empty mips ({n}/{packages.Count})");
+            });
+
+            if (!errors.IsEmpty)
+                throw new Exception($"Empty mips could not be stripped from {errors.Count} package(s). First: {errors.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).First()}");
+            M3Log.Information($"Slash: stripped {strippedMips} empty mip(s) from {strippedTextures} texture(s) in {packages.Count} LE3 package(s)");
+        }
+
+        /// <summary>
+        /// Removes a texture's empty mips and describes it from its first real mip. Returns the number of mips removed.
+        /// </summary>
+        private static int StripEmptyMips(ExportEntry export)
+        {
+            // Not the typed From<T>, so the binary is written back as the export's actual class
+            var texture = (UTexture2D)ObjectBinary.From(export);
+            int removed = texture.Mips.TakeWhile(x => x.StorageType == StorageTypes.empty).Count();
+            if (removed == 0)
+                return 0;
+
+            // LE3 only leaves out top mips. An empty mip anywhere else isn't something we know how to handle.
+            if (texture.Mips.Skip(removed).Any(x => x.StorageType == StorageTypes.empty))
+                throw new Exception($"{export.InstancedFullPath} has empty mips below a real mip");
+            if (removed == texture.Mips.Count)
+                throw new Exception($"{export.InstancedFullPath} has no mips with data");
+
+            var props = export.GetProperties();
+            LegendaryExplorerCore.Unreal.Classes.Texture2D.RemoveEmptyMips(texture, props);
+            export.WriteBinary(texture);
+            export.WriteProperties(props);
+            return removed;
+        }
+
+        /// <summary>
+        /// Fails generation if anything left an empty mip in a package copied from LE3.
+        /// </summary>
+        private void CheckNoEmptyMips()
+        {
+            var remaining = FindEmptyMips("Checking for empty mips");
+            if (remaining.Count == 0)
+                return;
+
+            var examples = remaining.SelectMany(x => x.Value.Select(t => $"{t.Path} ({x.Key})")).Take(10);
+            throw new Exception($"{remaining.Sum(x => x.Value.Count)} texture(s) in {remaining.Count} LE3 package(s) still have empty mips after slashing: {string.Join(", ", examples)}");
+        }
+
+        /// <summary>
         /// Runs LEC's TFC compactor over the whole game, which builds new TFCs out of the texture data the game uses and
         /// repoints every package at them.
         /// </summary>
         private void CompactTFCs()
         {
             var tfcNames = snapshot.EnumerateGameFiles()
+                .Concat(filesLeftInLE3.Keys)
                 .Where(IsBasegameTFC)
                 .Select(x => Path.GetFileNameWithoutExtension(GetFileName(x)))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -565,6 +797,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                         RootTexturesOnly = rootTexturesOnly,
                         UseIndexing = true,
                         TFCsToCompact = tfcNames,
+                        AdditionalTFCs = filesLeftInLE3.Values.Select(x => x.Path).ToList(),
                     };
 
                     TFCCompactor.CompactTFC(info, errors.Add, (text, done, total) =>
@@ -574,7 +807,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     });
 
                     if (errors.Count > 0)
+                    {
+                        foreach(var error in errors)
+                        {
+                            M3Log.Error(error);
+                        }
                         throw new Exception($"TFC compaction ({tfcType}) failed: {string.Join(" ", errors)}");
+                    }
                 }
 
                 // Put the new TFCs with the basegame's
@@ -636,6 +875,319 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         #endregion
 
+        #region Net indexing
+
+        private static int NetIndexParallelism => Math.Max(1, Environment.ProcessorCount / 2);
+
+        /// <summary>
+        /// Game-relative paths (Windows separators) of every package that takes part in net indexing, sorted.
+        /// </summary>
+        private List<string> EnumerateNetIndexedPackages()
+        {
+            return Directory.EnumerateFiles(gameRoot, "*", SearchOption.AllDirectories)
+                .Select(x => Path.GetRelativePath(gameRoot, x).Replace(Path.DirectorySeparatorChar, '\\'))
+                .Where(x => !IsWorkPath(x) && NetIndexedPackageExtensions.Contains(Path.GetExtension(x), StringComparer.OrdinalIgnoreCase))
+                .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        private class LinkerTableStats
+        {
+            public int PackagesVisited;
+            public int FilesChanged;
+            public int DeclarationsChanged;
+            public int OverridesApplied;
+
+            /// <summary>
+            /// Linkers of the table that were declared by at least one package.
+            /// </summary>
+            public ConcurrentDictionary<string, bool> MatchedLinkers { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+            /// <summary>
+            /// Overrides (see <see cref="MilanLinkerTable.OverrideKey"/>) that matched an export.
+            /// </summary>
+            public ConcurrentDictionary<string, bool> MatchedOverrides { get; } = new(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Applies Project Milan's net index table to every package copied from LE3 (every package the Project Milan mod does
+        /// not install): linker guids and counts, and the net indexes of objects it re-indexed. <see cref="RecordChanges"/>
+        /// then records the edits as ordinary package patches. Project Milan's own files already have the right values.
+        /// </summary>
+        private void ApplyLinkerTable(MilanLinkerTable table)
+        {
+            var paths = EnumerateNetIndexedPackages().Where(x => !IsRefShaderCache(x) && !modOutputs.Contains(x)).ToList();
+            var stats = new LinkerTableStats();
+            var errors = new ConcurrentBag<string>();
+            int done = 0;
+
+            Parallel.ForEach(paths, new ParallelOptions { MaxDegreeOfParallelism = NetIndexParallelism }, relativePath =>
+            {
+                try
+                {
+                    ApplyLinkerTable(table, relativePath, stats);
+                }
+                catch (Exception e)
+                {
+                    M3Log.Exception(e, $"Slash: could not apply the net index table to {relativePath}:");
+                    errors.Add($"{relativePath}: {e.Message}");
+                }
+
+                int n = Interlocked.Increment(ref done);
+                if (n % 50 == 0 || n == paths.Count)
+                    setStatus?.Invoke($"Applying net index table ({n}/{paths.Count})");
+            });
+
+            if (!errors.IsEmpty)
+                throw new Exception($"The net index table could not be applied to {errors.Count} package(s). First: {errors.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).First()}");
+
+            int unmatchedLinkers = table.Linkers.Keys.Count(x => !stats.MatchedLinkers.ContainsKey(x));
+            int unmatchedServerSideOnly = table.ServerSideOnly.Count(x => !stats.MatchedLinkers.ContainsKey(x));
+            int unmatchedOverrides = table.Overrides.Keys.Count(x => !stats.MatchedOverrides.ContainsKey(x));
+            M3Log.Information($"Slash: net index table applied to {stats.PackagesVisited} of {paths.Count} LE3 package(s): {stats.FilesChanged} file(s) changed, " +
+                              $"{stats.DeclarationsChanged} linker declaration(s) changed, {stats.OverridesApplied} net index override(s) applied. " +
+                              $"Table entries that matched nothing: {unmatchedLinkers}/{table.Linkers.Count} linker(s), {unmatchedServerSideOnly}/{table.ServerSideOnly.Count} server side only linker(s), {unmatchedOverrides}/{table.Overrides.Count} override(s)");
+        }
+
+        private void ApplyLinkerTable(MilanLinkerTable table, string relativePath, LinkerTableStats stats)
+        {
+            var path = snapshot.GetGamePath(relativePath);
+            MemoryStream saved;
+            using (var package = MEPackageHandler.OpenMEPackage(path, forceLoadFromDisk: true))
+            {
+                if (package.Game != MEGame.LMP)
+                    return; // Not part of the installation (the compactors skip these too)
+                Interlocked.Increment(ref stats.PackagesVisited);
+
+                bool compressed = package.IsCompressed;
+                var mePackage = (MEPackage)package;
+                var fileName = package.FileNameNoExtension;
+                int declarations = 0;
+                int overrides = 0;
+
+                // The file's own declaration. Localized files are never networked; their own linker is left as it is.
+                if (!NetIndexKeys.IsLocalizationFile(fileName))
+                {
+                    if (table.ServerSideOnly.Contains(fileName))
+                    {
+                        stats.MatchedLinkers[fileName] = true;
+                        if (mePackage.Gen0NetworkedObjectCount != 0)
+                        {
+                            mePackage.Gen0NetworkedObjectCount = 0;
+                            declarations++;
+                        }
+                    }
+                    else if (table.Linkers.TryGetValue(fileName, out var entry))
+                    {
+                        stats.MatchedLinkers[fileName] = true;
+                        bool changed = false;
+                        if (entry.Guid != Guid.Empty && package.PackageGuid != entry.Guid)
+                        {
+                            package.PackageGuid = entry.Guid;
+                            changed = true;
+                        }
+                        if (mePackage.Gen0NetworkedObjectCount != entry.Count)
+                        {
+                            mePackage.Gen0NetworkedObjectCount = entry.Count;
+                            changed = true;
+                        }
+                        if (changed)
+                            declarations++;
+                    }
+                }
+
+                foreach (var export in package.Exports)
+                {
+                    bool isForcedExportRoot = NetIndexKeys.IsForcedExportRoot(export);
+
+                    // Root packages are linker declarations: forced exports, and a package export named like the file
+                    if (export.idxLink == 0 && export.ClassName == "Package")
+                    {
+                        var name = export.InstancedFullPath;
+                        if (table.ServerSideOnly.Contains(name))
+                        {
+                            if (isForcedExportRoot)
+                            {
+                                stats.MatchedLinkers[name] = true;
+                                // No count and [0] both mean server-side only; only a real count needs removing.
+                                if (export.GenerationNetObjectCount.Any(c => c > 0))
+                                {
+                                    export.GenerationNetObjectCount = [];
+                                    declarations++;
+                                }
+                            }
+                        }
+                        else if (table.Linkers.TryGetValue(name, out var entry))
+                        {
+                            stats.MatchedLinkers[name] = true;
+                            bool changed = false;
+                            if (entry.Guid != Guid.Empty && export.PackageGUID != entry.Guid)
+                            {
+                                export.PackageGUID = entry.Guid;
+                                changed = true;
+                            }
+
+                            var counts = export.GenerationNetObjectCount;
+                            if (counts.Length == 0)
+                            {
+                                // An empty count already means 0 (server-side only)
+                                if (entry.Count != 0)
+                                {
+                                    export.GenerationNetObjectCount = [entry.Count];
+                                    changed = true;
+                                }
+                            }
+                            else if (counts[^1] != entry.Count)
+                            {
+                                var newCounts = (int[])counts.Clone();
+                                newCounts[^1] = entry.Count;
+                                export.GenerationNetObjectCount = newCounts;
+                                changed = true;
+                            }
+
+                            if (changed)
+                                declarations++;
+                        }
+                    }
+
+                    // Everything but a declaration is a net object
+                    if (!isForcedExportRoot && table.OverrideLinkers.Count > 0)
+                    {
+                        var linker = export.GetLinker();
+                        if (table.OverrideLinkers.Contains(linker))
+                        {
+                            var key = MilanLinkerTable.OverrideKey(linker, NetIndexKeys.GetLinkerQualifiedPath(export));
+                            if (table.Overrides.TryGetValue(key, out var netIndex))
+                            {
+                                stats.MatchedOverrides[key] = true;
+                                if (export.NetIndex != netIndex)
+                                {
+                                    export.NetIndex = netIndex;
+                                    overrides++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (declarations == 0 && overrides == 0)
+                    return;
+
+                // Keep the file's compression, as the slash diff and the applier assume
+                saved = package.SaveToStream(compressed);
+                Interlocked.Increment(ref stats.FilesChanged);
+                Interlocked.Add(ref stats.DeclarationsChanged, declarations);
+                Interlocked.Add(ref stats.OverridesApplied, overrides);
+                M3Log.Information($"Slash: net index table changed {relativePath}: {declarations} declaration(s), {overrides} override(s)");
+            }
+
+            // Replace rather than overwrite, so a failed write can't leave half a package behind
+            using (saved)
+            {
+                var temp = path + ".slashnew";
+                using (var output = new FileStream(temp, FileMode.Create, FileAccess.Write))
+                {
+                    saved.Position = 0;
+                    saved.CopyTo(output);
+                }
+                File.Move(temp, path, overwrite: true);
+            }
+        }
+
+        /// <summary>
+        /// Checks every package in the finished game with the shared net index inventory. Any finding fails generation: the
+        /// table or the Project Milan mod's files are wrong, and need fixing in Project Milan.
+        /// </summary>
+        private void CheckNetIndexing()
+        {
+            var relativePaths = EnumerateNetIndexedPackages();
+            var scans = new ConcurrentBag<PackageNetScan>();
+            int done = 0;
+            Parallel.ForEach(relativePaths, new ParallelOptions { MaxDegreeOfParallelism = NetIndexParallelism }, relativePath =>
+            {
+                scans.Add(PackageNetScan.Read(snapshot.GetGamePath(relativePath), MEGame.LMP));
+                int n = Interlocked.Increment(ref done);
+                if (n % 50 == 0 || n == relativePaths.Count)
+                    setStatus?.Invoke($"Checking net indexing ({n}/{relativePaths.Count})");
+            });
+
+            // Merged in path order so the result is deterministic
+            var inventory = new LinkerInventory();
+            var unreadable = new List<(string path, string error)>();
+            foreach (var scan in scans.OrderBy(x => x.Path, StringComparer.OrdinalIgnoreCase))
+            {
+                var relativePath = Path.GetRelativePath(gameRoot, scan.Path);
+                if (scan.Error != null)
+                {
+                    unreadable.Add((relativePath, scan.Error));
+                    continue;
+                }
+
+                if (scan.SkipReason != null)
+                {
+                    if (scan.SkipReason != "GuidCache")
+                        M3Log.Warning($"Slash net index check: {relativePath} skipped; it is a {scan.SkipReason} package");
+                    continue;
+                }
+
+                inventory.Add(scan, relativePath, GetNetIndexOrigin(relativePath));
+            }
+
+            var findings = inventory.Analyze();
+            M3Log.Information($"Slash net index check: {inventory.Files.Count} packages, {inventory.LinkerCount} linkers, {inventory.ExportCount} exports; {findings.Count} finding(s), {unreadable.Count} unreadable package(s)");
+            if (findings.Count == 0 && unreadable.Count == 0)
+                return;
+
+            string OriginsOf(Finding finding) => string.Join(";", finding.Files.Select(f => inventory.Files[f].Origin).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase));
+            string Csv(params string[] fields) => string.Join(",", fields.Select(f => f.IndexOfAny([',', '"', '\r', '\n']) >= 0 ? $"\"{f.Replace("\"", "\"\"")}\"" : f));
+
+            var findingsPath = NetIndexFindingsPath;
+            File.WriteAllLines(findingsPath, new[] { Csv("Issue", "Linker", "Object", "Origins", "Detail", "Files") }
+                .Concat(findings.Select(f => Csv(f.Issue, f.Linker, f.Object, OriginsOf(f), f.Detail, string.Join(";", f.Files.Select(file => inventory.Files[file].Path)))))
+                .Concat(unreadable.Select(x => Csv("PACKAGE_ERROR", "", "", "", x.error, x.path))), new UTF8Encoding(false));
+
+            var summary = new StringBuilder();
+            summary.Append($"Net index checking found {findings.Count} finding(s) and {unreadable.Count} unreadable package(s). All of them are in {findingsPath}.");
+            foreach (var issue in Issues.All)
+            {
+                int count = findings.Count(f => f.Issue == issue);
+                if (count > 0)
+                    summary.Append($"\n  {issue}: {count}");
+            }
+            if (unreadable.Count > 0)
+                summary.Append($"\n  PACKAGE_ERROR: {unreadable.Count}");
+
+            summary.Append("\nFirst findings:");
+            foreach (var finding in findings.Take(20))
+            {
+                var subject = finding.Object.Length == 0 ? finding.Linker : $"{finding.Linker} :: {finding.Object}";
+                var detail = finding.Detail.Length <= 300 ? finding.Detail : finding.Detail[..300] + "...";
+                summary.Append($"\n  {finding.Issue} | {subject} [{OriginsOf(finding)}] | {detail}");
+            }
+            foreach (var (path, error) in unreadable.Take(Math.Max(0, 20 - findings.Count)))
+                summary.Append($"\n  PACKAGE_ERROR | {path} | {error}");
+
+            var message = summary.ToString();
+            M3Log.Error(message);
+            throw new Exception(message);
+        }
+
+        /// <summary>
+        /// Which content a file belongs to: a DLC folder name, or BaseGame for everything else.
+        /// </summary>
+        private static string GetNetIndexOrigin(string relativePath)
+        {
+            var parts = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            for (int i = 0; i < parts.Length - 1; i++)
+            {
+                if (parts[i].Equals("DLC", StringComparison.OrdinalIgnoreCase) && i + 1 < parts.Length - 1)
+                    return parts[i + 1];
+            }
+            return "BaseGame";
+        }
+
+        #endregion
+
         #region Diffing
 
         /// <summary>
@@ -670,8 +1222,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     AddDeletion(relativePath, size, "removed while slashing");
             }
 
-            // Compacted caches whose data has all been moved out, or that nothing used to begin with
-            foreach (var relativePath in current.Where(x => IsCompactableCache(x) && snapshot.Files.ContainsKey(x) && snapshot.IsUnchanged(x)))
+            // Compacted caches whose data has all been moved out, or that nothing used to begin with. Caches left in LE3 are
+            // never changed, so they are always candidates.
+            var unchangedCaches = current.Where(x => IsCompactableCache(x) && snapshot.Files.ContainsKey(x) && snapshot.IsUnchanged(x))
+                .Select(x => (relativePath: x, size: snapshot.Files[x].Size))
+                .Concat(filesLeftInLE3.Select(x => (relativePath: x.Key, size: x.Value.Size)))
+                .OrderBy(x => x.relativePath, StringComparer.OrdinalIgnoreCase);
+            foreach (var (relativePath, size) in unchangedCaches)
             {
                 var name = GetFileName(relativePath);
                 if (after.ReferencedFiles.Contains(name))
@@ -683,11 +1240,11 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                         .Where(b => b.Sources.Any(s => !s.Payload && s.Filename.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
                         .Select(b => GetFileName(b.Filename))
                         .ToList();
-                    AddDeletion(relativePath, snapshot.Files[relativePath].Size, destinations.Count > 0 ? $"orphaned: used data moved to {string.Join(", ", destinations)}" : "orphaned: no longer referenced");
+                    AddDeletion(relativePath, size, destinations.Count > 0 ? $"orphaned: used data moved to {string.Join(", ", destinations)}" : "orphaned: no longer referenced");
                 }
                 else
                 {
-                    AddDeletion(relativePath, snapshot.Files[relativePath].Size, "not used by anything");
+                    AddDeletion(relativePath, size, "not used by anything");
                 }
             }
         }
@@ -831,13 +1388,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     addPayload(position, claim.newOffset - position);
 
                     var sourceRelPath = FindOriginalCacheFile(claim.sourceFile);
-                    if (sourceRelPath != null && RangesMatch(file, claim.newOffset, snapshot.GetSnapshotPath(sourceRelPath), claim.sourceOffset, claim.length))
+                    if (sourceRelPath != null && RangesMatch(file, claim.newOffset, GetOriginalPath(sourceRelPath), claim.sourceOffset, claim.length))
                     {
                         int sourceIndex = build.Sources.FindIndex(x => !x.Payload && x.Filename.Equals(sourceRelPath, StringComparison.OrdinalIgnoreCase));
                         if (sourceIndex < 0)
                         {
                             sourceIndex = build.Sources.Count;
-                            build.Sources.Add(new MilanSlashSourceFile { Filename = sourceRelPath, Size = snapshot.Files[sourceRelPath].Size });
+                            build.Sources.Add(new MilanSlashSourceFile { Filename = sourceRelPath, Size = GetOriginalSize(sourceRelPath) });
                         }
                         addSegment(sourceIndex, claim.sourceOffset, claim.length);
                         sourcedBytes += claim.length;
@@ -867,7 +1424,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             var verifyPath = Path.Combine(workRoot, "BuildVerification.tmp");
             using (var verifyStream = new FileStream(verifyPath, FileMode.Create, FileAccess.Write))
             {
-                MilanSlashApplier.AssembleBuild(build, source => source.Payload ? payloadPath : snapshot.GetSnapshotPath(source.Filename), verifyStream);
+                MilanSlashApplier.AssembleBuild(build, source => source.Payload ? payloadPath : GetOriginalPath(source.Filename), verifyStream);
             }
             var reproduced = new FileInfo(verifyPath).Length == build.DestSize && MUtilities.CalculateHash(verifyPath, "sha256") == build.DestHash;
             File.Delete(verifyPath);
@@ -883,7 +1440,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// </summary>
         private string FindOriginalCacheFile(string fileName)
         {
-            var matches = snapshot.Files.Keys.Where(x => IsCacheFile(x) && GetFileName(x).Equals(fileName, StringComparison.OrdinalIgnoreCase)).Take(2).ToList();
+            var matches = OriginalFiles.Select(x => x.RelativePath).Where(x => IsCacheFile(x) && GetFileName(x).Equals(fileName, StringComparison.OrdinalIgnoreCase)).Take(2).ToList();
             return matches.Count == 1 ? matches[0] : null;
         }
 
