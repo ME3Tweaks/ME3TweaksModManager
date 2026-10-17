@@ -173,7 +173,6 @@ namespace ME3TweaksModManager.modmanager.helpers
             var environmentVars = new Dictionary<string, string>();
             if (target.GameSource != null)
             {
-
                 // IS GAME STEAM BASED?
                 // 07/26/2026 - Do not run if app is under WINE as steam will never actually be running in the prefix.
                 if (target.GameSource.Contains(@"Steam") && !WineWorkarounds.WineDetected)
@@ -213,18 +212,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                     environmentVars[@"SteamOverlayGameId"] = gameId.ToString();
 
                     // Make steam_appid.txt next to exe. It can help launch game if steam.exe is already running
-                    var steamappidfile = Path.Combine(exeDir, @"steam_appid.txt");
-                    if (!File.Exists(steamappidfile))
-                    {
-                        try
-                        {
-                            File.WriteAllText(steamappidfile, gameId.ToString());
-                        }
-                        catch (Exception e)
-                        {
-                            M3Log.Error($@"Could not install steam_appid.txt: {e.Message}");
-                        }
-                    }
+                    WriteSteamAppId(exeDir, gameId);
                 }
             }
 
@@ -277,6 +265,27 @@ namespace ME3TweaksModManager.modmanager.helpers
             }
 
             Thread.Sleep(3500); // Keep task alive for a bit
+        }
+
+        /// <summary>
+        /// Writes the steam App ID to the given exectuable directory so steam can know its a steam game
+        /// </summary>
+        /// <param name="exeDir"></param>
+        /// <param name="gameId"></param>
+        public static void WriteSteamAppId(string exeDir, int gameId)
+        {
+            var steamappidfile = Path.Combine(exeDir, @"steam_appid.txt");
+            if (!File.Exists(steamappidfile))
+            {
+                try
+                {
+                    File.WriteAllText(steamappidfile, gameId.ToString());
+                }
+                catch (Exception e)
+                {
+                    M3Log.Error($@"Could not install steam_appid.txt: {e.Message}");
+                }
+            }
         }
 
         private static void RunGame(GameTargetWPF target, string exe, string commandLineArgsString, List<string> commandLineArgsList, Dictionary<string, string> environmentVars)
