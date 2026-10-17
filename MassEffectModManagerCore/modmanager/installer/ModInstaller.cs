@@ -735,9 +735,9 @@ namespace ME3TweaksModManager.modmanager.installer
                 // There is probably better way to do this
                 var shouldTrack = InstallOptionsPackage.InstallTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)
                                                                         && targetPath.ContainsAny(MEDirectories.OfficialDLC(InstallOptionsPackage.InstallTarget.Game).Select(x => $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
-                if ((shouldTrack || !targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
+                if (!InstallOptionsPackage.IsMilanInstall && ((shouldTrack || !targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
                     && targetPath.Contains(InstallOptionsPackage.InstallTarget.TargetPath) // Must be within the game directory (no config files)
-                    && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
+                    && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))) //no pcconsoletoc
                 {
                     //not installing to DLC
                     basegameFilesInstalled.Add(targetPath);
