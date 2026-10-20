@@ -240,7 +240,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             MigrateMe3ProfileCheckBox.Visibility = !File.Exists(LMPDirectory.LocalProfilePath)
                 ? Visibility.Visible : Visibility.Collapsed;
 
-            LE3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.LE3 && !x.TextureModded));
+            var le3Targets = mainwindow.InstallationTargets.Where(x => x.Game == MEGame.LE3).ToList();
+
+            LE3Targets.ReplaceAll(le3Targets.Where(x => !x.TextureModded));
+
+            if (LE3Targets.Count == 0)
+            {
+                // Do we have a backup?
+                var textureTargets = mainwindow.InstallationTargets.Where(x => x.Game == MEGame.LE3 && x.TextureModded);
+
+                // Add a backup
+                var le3Backup = BackupService.GetGameBackupPath(MEGame.LE3);
+                if (le3Backup != null && Directory.Exists(le3Backup))
+                {
+                    // Add texture modded targets - we will generate next to it
+                    LE3Targets.AddRange(textureTargets);
+                }
+            }
+
             SelectedTarget = LE3Targets.FirstOrDefault();
 
             if (SelectedTarget != null)
