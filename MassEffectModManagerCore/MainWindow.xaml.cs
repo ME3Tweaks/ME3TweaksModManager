@@ -563,7 +563,12 @@ namespace ME3TweaksModManager
             // Failed mods listener
             M3LoadedMods.Instance.FailedMods.PublicPropertyChanged += (a, b) =>
             {
-                if (b.PropertyName == @"BindableCount")
+                if (b.PropertyName != @"BindableCount")
+                    return;
+
+                // This can be raised on the mod loader thread while it holds the collection's sync lock.
+                // Don't block on the UI thread here, as it may be waiting on that same lock to read the collection.
+                Dispatcher.InvokeAsync(() =>
                 {
                     bool isopening = M3LoadedMods.Instance.FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
                     bool isclosing = M3LoadedMods.Instance.FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
@@ -584,7 +589,7 @@ namespace ME3TweaksModManager
                     }
 
                     oldFailedBindableCount = M3LoadedMods.Instance.FailedMods.BindableCount;
-                }
+                });
             };
 
             // Setting changed listener.
