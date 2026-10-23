@@ -498,6 +498,17 @@ namespace ME3TweaksModManager.modmanager.installer
             SortedSet<string> customDLCsBeingInstalled = new SortedSet<string>();
             List<string> mappedReadOnlyTargets = new List<string>();
 
+            // Check that files don't try to escape their installation destination
+            List<string> escapingDestinations = new List<string>();
+            void checkDestination(string destFile, string allowedRoot)
+            {
+                if (!destFile.IsSubPathOf(allowedRoot))
+                {
+                    M3Log.Error($@"Mod file destination {destFile} is outside of the allowed directory {allowedRoot}");
+                    escapingDestinations.Add(destFile);
+                }
+            }
+
             foreach (var unpackedQueue in installationQueues.UnpackedJobMappings)
             {
                 M3Log.Information(@"Building map of unpacked file destinations");
@@ -522,7 +533,9 @@ namespace ME3TweaksModManager.modmanager.installer
 
                     if (unpackedQueue.Key.Header == ModJob.JobHeader.ME1_CONFIG)
                     {
-                        var destFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", originalMapping.Key);
+                        var me1ConfigDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config");
+                        var destFile = Path.Combine(me1ConfigDir, originalMapping.Key);
+                        checkDestination(destFile, me1ConfigDir);
                         if (InstallOptionsPackage.ModBeingInstalled.IsInArchive)
                         {
                             int archiveIndex = Extensions.IndexOf(InstallOptionsPackage.ModBeingInstalled.Archive.ArchiveFileNames, sourceFile, StringComparer.InvariantCultureIgnoreCase);
@@ -542,7 +555,9 @@ namespace ME3TweaksModManager.modmanager.installer
                     else
                     {
 
-                        var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? InstallOptionsPackage.InstallTarget.GetDLCPath() : InstallOptionsPackage.InstallTarget.TargetPath, originalMapping.Key); //official
+                        var destRoot = unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? InstallOptionsPackage.InstallTarget.GetDLCPath() : InstallOptionsPackage.InstallTarget.TargetPath;
+                        var destFile = Path.Combine(destRoot, originalMapping.Key); //official
+                        checkDestination(destFile, destRoot);
 
                         //Extract Custom DLC name
                         if (unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC)
@@ -607,11 +622,22 @@ namespace ME3TweaksModManager.modmanager.installer
                         {
                             destFile = Path.Combine(sfarStagingDirectory, fileToInstall.Value.FilePath);
                         }
+                        checkDestination(destFile, sfarStagingDirectory);
                         fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
                         fullPathMappingDisk[sourceFile] = destFile; //used for redirection
                         Debug.WriteLine($@"SFAR Disk Staging: {fileToInstall.Key} => {destFile}");
                     }
                 }
+            }
+
+            if (escapingDestinations.Any())
+            {
+                M3Log.Error($@"Mod tries to install {escapingDestinations.Count} file(s) outside of their allowed directories, aborting");
+                M3Log.Warning(EXITING_INSTALLER_LOGSTR);
+                InstallationResult.Result = EModInstallerResult.INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES;
+                InstallationResult.ErrorMessage = M3L.GetString(M3L.string_interp_errorOccuredBuildingInstallationQueues, $@"Mod file would be installed outside of the game directory: {escapingDestinations[0]}");
+                InstallationResult.ErrorTitle = M3L.GetString(M3L.string_errorInstallingMod);
+                return;
             }
 
             //Check we have enough disk space

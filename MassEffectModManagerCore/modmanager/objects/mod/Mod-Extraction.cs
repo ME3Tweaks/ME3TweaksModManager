@@ -167,6 +167,20 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             }
 
+            // Validate archive paths don't attempt to escape destination
+            var vpatchRedirectsFolder = M3Filesystem.GetVPatchRedirectsFolder();
+            var trashFolder = Path.Combine(MCoreFilesystem.GetTempDirectory(), @"Trash");
+            foreach (var index in fileIndicesToExtract)
+            {
+                var info = archive.ArchiveFileData[index];
+                var destination = outputFilePathMapping(info);
+                if (!destination.IsSubPathOf(outputFolderPath) && !destination.IsSubPathOf(vpatchRedirectsFolder) && !destination.IsSubPathOf(trashFolder))
+                {
+                    M3Log.Error($@"Archive entry {info.FileName} maps outside of the extraction directory: {destination}");
+                    throw new Exception($@"Archive entry {info.FileName} would extract outside of the mod directory. This archive is not safe to extract.");
+                }
+            }
+
             if (compressPackages)
             {
                 compressionQueue = new BlockingCollection<string>();
