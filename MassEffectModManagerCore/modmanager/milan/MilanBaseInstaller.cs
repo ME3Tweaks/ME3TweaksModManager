@@ -435,18 +435,6 @@ namespace ME3TweaksModManager.modmanager.milan
 
         #endregion
 
-        /// <summary>
-        /// Returns if there is a Project Milan mod (moddesc 10 LMP mod with milan=true) in the library. Returns the highest version number if multiple are found, if the highest have the same, then the first alphabetical will be used.
-        /// </summary>
-        /// <returns></returns>
-        public static Mod GetMilanMod()
-        {
-            var lmpMods = M3LoadedMods.GetModsForGame(MEGame.LMP);
-            var milanMods = lmpMods.Where(x => x.IsProjectMilan).OrderByDescending(x => x.ParsedModVersion).ToList();
-            return milanMods.FirstOrDefault();
-        }
-
-
         /** The interop used to communicate back to a UI about the install */
         private MBIInterop interop;
 
@@ -804,16 +792,43 @@ namespace ME3TweaksModManager.modmanager.milan
         }
 
         /// <summary>
+        /// Checks the linker patch merge wrote every file the plan expects from it. What it wrote is then verified against the
+        /// final state like every other file, which also catches anything it wrote that isn't expected.
+        /// </summary>
+        /// <param name="writtenFiles">Game-relative paths of the files the merge wrote.</param>
+        private void CheckLinkerPatchOutputs(IReadOnlyCollection<string> writtenFiles)
+        {
+            if (plan.Slash == null)
+                return;
+
+            var written = writtenFiles.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var missing = plan.LinkerPatchOutputs.Where(x => !written.Contains(x)).ToList();
+            if (missing.Count > 0)
+            {
+                throw new Exception($"The linker patch merge did not produce {missing.Count} expected file(s). First file: {missing[0]}");
+            }
+
+            M3Log.Information($@"Linker patch merge wrote {written.Count} file(s), including all {plan.LinkerPatchOutputs.Count} expected by the slash manifest");
+        }
+
+        /// <summary>
         /// Verifies every file in the finished installation against the final state recorded in the slash manifest when it
         /// was generated, so we know the user's game is exactly the one we built and tested.
         /// </summary>
         private void VerifyFinalState(string gamePath)
         {
             if (slashManifest == null)
-                return; // Nothing was slashed, so there is no recorded state this installation should match
+            {
+                // Nothing was slashed, so there is no recorded state this installation should match. A build that's about to ship has to have one though.
+                if (interop.UserInstall)
+                    throw new Exception("The Project Milan mod has no usable slash manifest, so this installation can't be verified");
+                return;
+            }
 
             if (slashManifest.FinalFiles.Count == 0)
             {
+                if (interop.UserInstall)
+                    throw new Exception("The slash manifest has no recorded final file state, so this installation can't be verified");
                 M3Log.Warning(@"The slash manifest has no recorded final file state; the installation cannot be verified");
                 return;
             }
@@ -832,22 +847,20 @@ namespace ME3TweaksModManager.modmanager.milan
             }
 
 #if DEBUG
-            M3Log.Warning($@"The installation does not match the final state recorded in the slash manifest ({problems.Count} difference(s)). Continuing as this is a development build.");
-#else
-            throw new Exception($"The installation does not match the expected result ({problems.Count} difference(s); see the log for all of them). First difference: {problems[0]}");
+            if (!interop.UserInstall)
+            {
+                M3Log.Warning($@"The installation does not match the final state recorded in the slash manifest ({problems.Count} difference(s)). Continuing as this is a development build.");
+                return;
+            }
 #endif
+            throw new Exception($"The installation does not match the expected result ({problems.Count} difference(s); see the log for all of them). First difference: {problems[0]}");
         }
 
 #if DEBUG
         /// <summary>
-        /// Generates a new slash manifest for this installation and writes it into the Project Milan mod's MilanDelta folder,
-        /// replacing any existing one. Generation slashes the game (TFC compaction, RefShaderCache reduction), records the
-        /// differences, and restores the game; the manifest is then applied here the same way it is on users' machines, which
-        /// both proves it works and leaves this installation identical to what users will get.
-        /// <para>
-        /// The basegame TFCs were left in LE3 (<see cref="MilanInstallPlan.LeftInLE3"/>), so they are read from there, as they
-        /// are when users install. Any the slashed game still uses are copied in once the manifest has been applied.
-        /// </para>
+        /// Has Project Milan generate a new slash manifest for this (unslashed) installation, then applies it here the same way
+        /// it gets applied for users. The basegame TFCs were left in LE3, so they're read from there; any the slashed game
+        /// still uses get copied in afterwards.
         /// </summary>
         private void GenerateAndApplyMilanSlash(string gamePath)
         {
@@ -855,9 +868,23 @@ namespace ME3TweaksModManager.modmanager.milan
             var leftInLE3 = plan.LeftInLE3.ToDictionary(x => x.DestRelativePath.Replace(Path.DirectorySeparatorChar, '\\'), x => le3Sources.GetVanillaSourceFile(x.SourcePath), StringComparer.OrdinalIgnoreCase);
             string resolveBuildSource(string relativePath) => leftInLE3.TryGetValue(relativePath, out var path) ? path : MilanSlashApplier.Resolve(gamePath, relativePath);
 
-            interop.SetStatus?.Invoke(@"Generating slash manifest...");
-            var manifest = MilanSlashGenerator.Generate(gamePath, milanDeltaFolder, plan.ModOutputs, leftInLE3, s => interop.SetStatus?.Invoke(s));
-            GC.Collect(); // Generation can hold several GB (the RefShaderCache, package diffs); release it before applying
+            var root = Path.GetFullPath(gamePath);
+            var request = new MilanSlashRequest
+            {
+                GameRoot = root,
+                ModOutputs = plan.ModOutputs.Select(x => x.Replace(Path.DirectorySeparatorChar, '\\')).ToList(),
+                FilesLeftInLE3 = leftInLE3,
+                // Project Milan compares vtables against these, as LE3's script was compiled against the vanilla ones
+                VanillaOfPatched = plan.LE3Files.Where(x => x.Value.Delta != null)
+                    .ToDictionary(x => x.Key, x => le3Sources.GetVanillaSourceFile(x.Value.SourcePath), StringComparer.OrdinalIgnoreCase),
+                ExcludedFiles = Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)
+                    .Select(x => Path.GetRelativePath(root, x).Replace(Path.DirectorySeparatorChar, '\\'))
+                    .Where(MilanFinalState.IsExcluded).ToList(),
+            };
+
+            interop.SetStatus?.Invoke(@"Project Milan is generating the slash manifest...");
+            interop.GenerateSlash(request);
+            var manifest = MilanSlashApplier.LoadManifest(milanDeltaFolder) ?? throw new Exception("Project Milan didn't write a slash manifest");
 
             interop.SetStatus?.Invoke(@"Applying generated slash manifest...");
             MilanSlashApplier.Apply(manifest, milanDeltaFolder, gamePath, s => interop.SetStatus?.Invoke(s), resolveBuildSource);
@@ -874,6 +901,16 @@ namespace ME3TweaksModManager.modmanager.milan
             }
             M3Log.Information($@"Slash: {leftInLE3.Count} TFC(s) were read from LE3; {leftInLE3.Count(x => !deleted.Contains(x.Key))} still used by the slashed game were copied in");
             slashManifest = manifest;
+        }
+
+        /// <summary>
+        /// Records every file in the finished installation into the new slash manifest, so users' installs can be verified against it.
+        /// </summary>
+        private void RecordFinalState(string gamePath)
+        {
+            slashManifest.FinalFiles = MilanFinalState.Capture(gamePath, s => interop.SetStatus?.Invoke(s));
+            slashManifest.Save(milanDeltaFolder);
+            M3Log.Information($"Recorded final state of {slashManifest.FinalFiles.Count} files ({FileSize.FormatSize(slashManifest.FinalFiles.Sum(x => x.Size))}) into the slash manifest");
         }
 #endif
 
@@ -1024,6 +1061,65 @@ namespace ME3TweaksModManager.modmanager.milan
         }
 
         /// <summary>
+        /// Gets the Project Milan Launcher mod. Null if not found.
+        /// </summary>
+        private static Mod GetMilanLauncherMod()
+        {
+            // Newest one if there's somehow more than one
+            return M3LoadedMods.Instance.AllLoadedMods.ToList()
+                .Where(x => x.Game == MEGame.LELauncher && x.IsProjectMilan)
+                .MaxBy(x => x.ParsedModVersion);
+        }
+
+        /// <summary>
+        /// Installs Project Milan Launcher into Game\Launcher
+        /// </summary>
+        private void InstallMilanLauncher(string destinationFolderPath)
+        {
+            var launcherMod = GetMilanLauncherMod();
+            if (launcherMod == null)
+            {
+                M3Log.Warning(@"Project Milan Launcher mod not found; not installing it");
+                return;
+            }
+
+            var gameDir = Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(destinationFolderPath));
+            if (gameDir == null)
+            {
+                M3Log.Warning(@"Not installing Project Milan Launcher: installation has no parent folder");
+                return;
+            }
+
+            var launcherTarget = new GameTargetWPF(MEGame.LELauncher, Path.Combine(gameDir, @"Launcher"), false);
+            var failedValidationReason = launcherTarget.ValidateTarget();
+            if (failedValidationReason != null)
+            {
+                M3Log.Warning($@"Not installing Project Milan Launcher: no usable LE launcher at {launcherTarget.TargetPath}: {failedValidationReason}");
+                return;
+            }
+
+            var optionsPackage = new ModInstallOptionsPackage()
+            {
+                InstallTarget = launcherTarget,
+                ModBeingInstalled = launcherMod,
+                SkipPrerequesitesCheck = true,
+            };
+            optionsPackage.SetNoOptions();
+
+            interop.SetStatus?.Invoke("Installing Project Milan Launcher...");
+            M3Log.Information($@"Installing Project Milan Launcher into {launcherTarget.TargetPath}");
+            var mi = new ModInstaller(optionsPackage);
+            mi.SetPercent = setPercent;
+            mi.SetAction = setAction;
+            mi.SetPercentVisibility = setPercentVisibility;
+            mi.InstallMod().GetAwaiter().GetResult();
+            if (mi.InstallationResult.Result != EModInstallerResult.INSTALL_SUCCESSFUL)
+            {
+                throw new Exception($"Installing Project Milan Launcher failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
+            }
+        }
+
+        /// <summary>
         /// Paths, relative to the installation root, of every file the Project Milan mod installs.
         /// </summary>
         private static List<string> GetModOutputs(Mod milanMod, string destinationFolderPath)
@@ -1068,11 +1164,16 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         /// <param name="le3SourcePath"></param>
         /// <param name="destinationFolderPath"></param>
-        /// <param name="generateSlashManifest">Development builds only: instead of applying the Project Milan mod's slash manifest, generate a new one against this installation (see <see cref="MilanSlashGenerator"/>), then apply it.</param>
-        public void CreateInstallation(GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop, bool generateSlashManifest = false)
+        /// <param name="milanmod">The Project Milan mod to install</param>
+        /// <param name="interop">If <see cref="MBIInterop.GenerateSlash"/> is set (development builds), a new slash manifest is generated for this installation instead of applying the mod's one.</param>
+        public void CreateInstallation(Mod milanmod, GameTarget sourceGameTarget, string destinationFolderPath, MBIInterop interop)
         {
             this.interop = interop;
             destinationFolderPath = Path.GetFullPath(destinationFolderPath);
+            bool generateSlashManifest = false;
+#if DEBUG
+            generateSlashManifest = interop.GenerateSlash != null;
+#endif
 
             bool successful = true;
             string errorMessage = null;
@@ -1084,11 +1185,6 @@ namespace ME3TweaksModManager.modmanager.milan
                 // Validate the Project Milan mod and its MilanDelta manifest before touching the
                 // destination directory - an invalid/missing/tampered manifest must reject the build.
                 interop.SetStatus?.Invoke("Validating Project Milan build...");
-                var milanmod = GetMilanMod();
-                if (milanmod == null)
-                {
-                    throw new Exception("No Project Milan mod found in the mod library.");
-                }
                 LoadMilanDeltaManifest(milanmod);
 
                 // Slash is applied as the installation is built. Generating a new slash manifest needs an unslashed installation.
@@ -1100,6 +1196,8 @@ namespace ME3TweaksModManager.modmanager.milan
                     slash = MilanSlashApplier.LoadManifest(milanDeltaFolder);
                     if (slash == null)
                     {
+                        if (interop.UserInstall)
+                            throw new Exception("The Project Milan mod has no slash manifest");
                         M3Log.Warning(@"Project Milan mod has no slash manifest; the installation will not be optimized");
                     }
                 }
@@ -1113,7 +1211,9 @@ namespace ME3TweaksModManager.modmanager.milan
 #if DEBUG
                 leaveTFCsInLE3 = generateSlashManifest; // The generator reads them from LE3
 #endif
-                plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath), leaveTFCsInLE3);
+                // Development builds skip a stale slash manifest rather than failing, unless we're testing exactly what users get
+                plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath), leaveTFCsInLE3,
+                    allowStaleSlash: App.IsDebug && !interop.UserInstall);
                 slashManifest = plan.Slash;
 
                 // Wipe the destination directory so we start from a clean slate.
@@ -1179,10 +1279,13 @@ namespace ME3TweaksModManager.modmanager.milan
 #endif
 
                 // Ensure linker patches are generated
+                var linkerPatchFiles = new List<string>();
                 if (LinkerPatchMerge.NeedsMerged(lmpTarget))
                 {
-                    LinkerPatchMerge.RunLinkerPatchMerge(lmpTarget);
+                    interop.SetStatus?.Invoke(@"Merging linker patches...");
+                    linkerPatchFiles.AddRange(LinkerPatchMerge.RunLinkerPatchMerge(lmpTarget).Select(x => Path.GetRelativePath(destinationFolderPath, x).Replace(Path.DirectorySeparatorChar, '\\')));
                 }
+                CheckLinkerPatchOutputs(linkerPatchFiles);
 #if DEBUG
                 // TODO: Build the LMP vanilla object database against the (slashed) installation here
 #endif
@@ -1198,13 +1301,16 @@ namespace ME3TweaksModManager.modmanager.milan
 #if DEBUG
                 if (generateSlashManifest)
                 {
-                    MilanSlashGenerator.RecordFinalState(slashManifest, milanDeltaFolder, destinationFolderPath, s => interop.SetStatus?.Invoke(s));
+                    RecordFinalState(destinationFolderPath);
                 }
                 else
 #endif
                 {
                     VerifyFinalState(destinationFolderPath);
                 }
+
+                // Outside the LMP install, so done after it's verified
+                InstallMilanLauncher(destinationFolderPath);
 
                 // Legacy: Don't write steam app id. When running from M3 it will write it automatically. Don't need to do it here
 

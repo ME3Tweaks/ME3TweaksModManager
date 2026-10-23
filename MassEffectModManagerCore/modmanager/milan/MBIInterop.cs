@@ -21,5 +21,17 @@ namespace ME3TweaksModManager.modmanager.milan
         /// Adds the specified target
         /// </summary>
         public Action<GameTargetWPF> AddTarget { get; set; }
+
+        /// <summary>
+        /// Development builds only: set when a Project Milan build is driving us. The install is left unslashed and this is
+        /// called to have Project Milan generate the slash manifest for it, which is then applied. Throws if it fails.
+        /// </summary>
+        public Action<MilanSlashRequest> GenerateSlash { get; set; }
+
+        /// <summary>
+        /// Install exactly like a user's (release) Mod Manager would, even in a development build: no skipping a stale slash
+        /// manifest, and the result has to match the recorded final state. Used to test a Project Milan build before it ships.
+        /// </summary>
+        public bool UserInstall { get; set; }
     }
 }

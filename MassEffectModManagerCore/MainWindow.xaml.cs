@@ -2007,7 +2007,8 @@ namespace ME3TweaksModManager
 
         private void CallApplyMod()
         {
-            if (SelectedMod.IsProjectMilan)
+            // Milan launcher mod installs normally
+            if (SelectedMod.Game == MEGame.LMP && SelectedMod.IsProjectMilan)
             {
                 MilanBaseInstallerPanel.BuildBaseMilan(this, SelectedMod);
                 return;

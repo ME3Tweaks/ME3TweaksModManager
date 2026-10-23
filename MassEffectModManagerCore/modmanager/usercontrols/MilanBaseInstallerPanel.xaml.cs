@@ -87,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void Install()
         {
-            // Project Milan builds just rebuild the same dev install over and over, so don't ask
+            // Project Milan pipelines rebuild the same dev install over and over, so don't ask.
             if (session != null)
             {
                 Directory.CreateDirectory(InstallLocation);
