@@ -205,6 +205,10 @@ namespace ME3TweaksModManager
                         {
                             CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
                         }
+                        if (parsedCommandLineArgs.Value.MilanBuildPipe != null)
+                        {
+                            CommandLinePending.PendingMilanBuildPipe = parsedCommandLineArgs.Value.MilanBuildPipe;
+                        }
                         if (parsedCommandLineArgs.Value.DisableWineWorkarounds)
                         {
                             ignoreWine = true;
@@ -727,5 +731,8 @@ namespace ME3TweaksModManager
 
         [Option(@"disablewineworkarounds", HelpText = "Disables Wine workarounds if Wine is detected. Used for Wine development.")]
         public bool DisableWineWorkarounds { get; set; }
+
+        [Option(@"milanbuild", HelpText = "Connects to a Project Milan build on the given pipe, which then drives building the base Milan installation. Development builds only.")]
+        public string MilanBuildPipe { get; set; }
     }
 }

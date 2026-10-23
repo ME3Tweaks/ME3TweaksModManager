@@ -78,6 +78,10 @@ namespace ME3TweaksModManager.modmanager.localizations
         internal static System.Windows.MessageBoxResult ShowDialog(System.Windows.Window owner, string message, string caption, System.Windows.MessageBoxButton buttons, System.Windows.MessageBoxImage image, System.Windows.MessageBoxResult defaultResult, 
             string yesContent = null, string noContent = null, string okContent = null, string cancelContent = null)
         {
+            // Nobody's around to click anything while a Project Milan build is driving us
+            if (ME3TweaksModManager.modmanager.milan.MilanBuildSession.Current?.AnswerDialog(caption, message, buttons, defaultResult) is { } answer)
+                return answer;
+
             var button = translateWpfButton(buttons);
             var messageBox = new MessageBoxModel
             {

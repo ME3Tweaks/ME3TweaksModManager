@@ -26,6 +26,7 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksModManager.modmanager.milan;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.batch;
@@ -190,6 +191,8 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingMergeModCompileManifest = parsedCommandLineArgs.Value.MergeModManifestToCompile;
                 if (parsedCommandLineArgs.Value.FeatureLevel > 0)
                     CommandLinePending.PendingFeatureLevel = parsedCommandLineArgs.Value.FeatureLevel;
+                if (parsedCommandLineArgs.Value.MilanBuildPipe != null)
+                    CommandLinePending.PendingMilanBuildPipe = parsedCommandLineArgs.Value.MilanBuildPipe;
                 return await handleInitialPending();
             }
 
@@ -3179,6 +3182,12 @@ namespace ME3TweaksModManager
                     CompileMergeMod(CommandLinePending.PendingMergeModCompileManifest, CommandLinePending.PendingFeatureLevel);
                     CommandLinePending.PendingMergeModCompileManifest = null;
                     CommandLinePending.PendingFeatureLevel = 0;
+                }
+
+                if (CommandLinePending.PendingMilanBuildPipe != null)
+                {
+                    MilanBuildSession.Start(CommandLinePending.PendingMilanBuildPipe);
+                    CommandLinePending.PendingMilanBuildPipe = null;
                 }
 
             }

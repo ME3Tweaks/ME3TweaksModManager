@@ -62,6 +62,11 @@
         public static string PendingMergeModCompileManifest;
 
         /// <summary>
+        /// Pipe of a Project Milan build to connect to
+        /// </summary>
+        public static string PendingMilanBuildPipe;
+
+        /// <summary>
         /// Sets PendingGame to null if there are no items in the pending system that depend on it
         /// </summary>
         public static void ClearGameDependencies()

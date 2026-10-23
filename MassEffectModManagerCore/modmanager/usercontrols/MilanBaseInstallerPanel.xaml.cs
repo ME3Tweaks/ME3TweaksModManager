@@ -1,4 +1,4 @@
-﻿using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.Targets;
@@ -26,15 +26,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool MigrateMe3Profile { get; set; }
 
         /// <summary>
-        /// Development builds only: generate a new slash manifest for the Project Milan mod instead of applying the existing one.
-        /// </summary>
-        public bool GenerateSlashManifest { get; set; }
-
-        /// <summary>
         /// The install controller for the running install.
         /// </summary>
         private MilanBaseInstaller InstallController { get; set; }
         private GameTargetWPF builtTarget;
+        private readonly Mod milanMod;
+
+        /// <summary>
+        /// Set when a Project Milan build is driving this install. It runs without asking anything and Project Milan generates the slash manifest.
+        /// </summary>
+        private readonly MilanBuildSession session;
+        private readonly string sessionDestination;
+        private readonly string sessionLE3Target;
+        private readonly bool sessionGeneratesSlash;
 
         #region Commands
         public GenericCommand InstallCommand { get; private set; }
@@ -46,7 +50,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Prechecks and then opens the milan installer panel
         /// </summary>
         /// <param name="mw"></param>
-        internal static void BuildBaseMilan(MainWindow mw, Mod milanMod)
+        /// <param name="session">Set when a Project Milan build is driving this; destination and le3Target can then override the defaults</param>
+        internal static void BuildBaseMilan(MainWindow mw, Mod milanMod, MilanBuildSession session = null, string destination = null, string le3Target = null, bool generateSlash = true)
         {
             if (milanMod == null)
             {
@@ -54,13 +59,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
-            var mbip = new MilanBaseInstallerPanel();
+            var mbip = new MilanBaseInstallerPanel(milanMod, session, destination, le3Target, generateSlash);
             mbip.Close += (a, b) => { mw.ReleaseBusyControl(); };
-            mw.ShowBusyControl(mbip);
+            // Don't let a startup notice block the build, keep it queued behind the installer
+            bool deferUpdateNotice = session != null && mw.BusyContentM3 is SingleItemPanel2 { Content: ModUpdateInformationPanel };
+            mw.ShowBusyControl(mbip, swapImmediately: deferUpdateNotice);
         }
 
-        public MilanBaseInstallerPanel()
+        private MilanBaseInstallerPanel(Mod milanMod, MilanBuildSession session, string destination, string le3Target, bool generateSlash)
         {
+            this.milanMod = milanMod;
+            this.session = session;
+            sessionGeneratesSlash = generateSlash;
+            sessionDestination = destination;
+            sessionLE3Target = le3Target;
             // Should this be here? Or should we have this in OnPanelVisible so queued panels
             // don't get bound?
             LoadCommands();
@@ -75,14 +87,26 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void Install()
         {
-            if (PerformPrecheck())
+            // Project Milan builds just rebuild the same dev install over and over, so don't ask
+            if (session != null)
+            {
+                Directory.CreateDirectory(InstallLocation);
+            }
+            if (session != null || PerformPrecheck())
             {
                 // Initialize and begin installation.
                 var interop = new MBIInterop
                 {
-                    SetStatus = (status) => Dispatcher.Invoke(() => StatusText = status),
+                    SetStatus = (status) =>
+                    {
+                        Dispatcher.Invoke(() => StatusText = status);
+                        session?.SetStatus(status);
+                    },
                     InstallationFinished = installFinished,
-                    AddTarget = target => builtTarget = target
+                    AddTarget = target => builtTarget = target,
+                    GenerateSlash = session != null && sessionGeneratesSlash ? session.GenerateSlash : null,
+                    UserInstall = session != null && !sessionGeneratesSlash
+
                 };
                 var controller = new MilanBaseInstaller();
                 var sourceTarget = SelectedTarget;
@@ -91,10 +115,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 InstallController = controller;
                 SourceTargetSelector.IsEnabled = false;
                 MigrateMe3ProfileCheckBox.IsEnabled = false;
-                var generateSlashManifest = App.IsDebug && GenerateSlashManifest;
                 Task.Run(() =>
                 {
-                    InstallController.CreateInstallation(SelectedTarget, InstallLocation, interop, generateSlashManifest);
+                    controller.CreateInstallation(milanMod, sourceTarget, destination, interop);
                 });
             }
         }
@@ -182,6 +205,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void installFinished(bool success, string message)
         {
             InstallController = null;
+            session?.Finished(success, message);
             if (success)
             {
                 M3Log.Information("Milan base installation completed successfully.");
@@ -207,7 +231,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     SourceTargetSelector.IsEnabled = true;
                     MigrateMe3ProfileCheckBox.IsEnabled = true;
                     StatusText = "Installation failed.";
-                    M3L.ShowDialog(window, $"The installation failed with the following error:\n\n{message}", "Installation Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    if (session != null)
+                    {
+                        OnClosing(DataEventArgs.Empty); // Project Milan shows the error
+                    }
+                    else
+                    {
+                        M3L.ShowDialog(window, $"The installation failed with the following error:\n\n{message}", "Installation Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 });
             }
         }
@@ -216,6 +247,37 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             // We check install path when you press install to improve performance
             return InstallController == null && SelectedTarget != null && !string.IsNullOrWhiteSpace(InstallLocation);
+        }
+
+        /// <summary>
+        /// Gets the Game folder LE3 is in. Null if it can't be used as a source.
+        /// </summary>
+        private static string GetLEGameDirectory(GameTarget le3Target)
+        {
+            if (string.IsNullOrWhiteSpace(le3Target?.TargetPath))
+            {
+                return null;
+            }
+
+            var gameDir = Directory.GetParent(Path.TrimEndingDirectorySeparator(Path.GetFullPath(le3Target.TargetPath)));
+            if (gameDir == null)
+            {
+                return null;
+            }
+
+            if (!le3Target.Supported && !le3Target.TextureModded)
+            {
+                return gameDir.FullName;
+            }
+
+            return Directory.Exists(Path.Combine(gameDir.FullName, @"Launcher")) ? gameDir.FullName : null;
+        }
+
+        // Install next to the other LE games
+        public void OnSelectedTargetChanged()
+        {
+            var gameDir = GetLEGameDirectory(SelectedTarget);
+            InstallLocation = gameDir != null ? Path.Combine(gameDir, @"LMP") : null;
         }
 
         private bool CanCancel()
@@ -240,32 +302,35 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             MigrateMe3ProfileCheckBox.Visibility = !File.Exists(LMPDirectory.LocalProfilePath)
                 ? Visibility.Visible : Visibility.Collapsed;
 
-            var le3Targets = mainwindow.InstallationTargets.Where(x => x.Game == MEGame.LE3).ToList();
-
-            LE3Targets.ReplaceAll(le3Targets.Where(x => !x.TextureModded));
-
-            if (LE3Targets.Count == 0)
-            {
-                // Do we have a backup?
-                var textureTargets = mainwindow.InstallationTargets.Where(x => x.Game == MEGame.LE3 && x.TextureModded);
-
-                // Add a backup
-                var le3Backup = BackupService.GetGameBackupPath(MEGame.LE3);
-                if (le3Backup != null && Directory.Exists(le3Backup))
-                {
-                    // Add texture modded targets - we will generate next to it
-                    LE3Targets.AddRange(textureTargets);
-                }
-            }
+            // Texture/modded files get pulled from the backup instead, so those targets are only usable if there is one
+            var hasLE3Backup = BackupService.GetGameBackupPath(MEGame.LE3) != null;
+            LE3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.LE3
+                                                                            && x.Selectable
+                                                                            && (hasLE3Backup || !x.TextureModded)
+                                                                            && GetLEGameDirectory(x) != null));
 
             SelectedTarget = LE3Targets.FirstOrDefault();
 
-            if (SelectedTarget != null)
+            if (session != null)
             {
-                var rootPath = Directory.GetParent(SelectedTarget.TargetPath)?.FullName;
-                if (rootPath != null && Path.GetFileName(rootPath) == "Game")
+                if (sessionLE3Target != null)
                 {
-                    InstallLocation = Path.Combine(rootPath, @"LMP");
+                    SelectedTarget = LE3Targets.FirstOrDefault(x => string.Equals(Path.GetFullPath(x.TargetPath), Path.GetFullPath(sessionLE3Target), StringComparison.OrdinalIgnoreCase))
+                                     ?? new GameTargetWPF(MEGame.LE3, sessionLE3Target, false, isCustomOption: true, skipInit: true);
+                }
+                if (sessionDestination != null)
+                {
+                    InstallLocation = sessionDestination;
+                }
+
+                if (CanInstall())
+                {
+                    Install();
+                }
+                else
+                {
+                    session.Finished(false, "Mod Manager couldn't work out which LE3 to build from or where to put the installation");
+                    OnClosing(DataEventArgs.Empty);
                 }
             }
         }

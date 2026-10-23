@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.milan;
 using Serilog;
 using Serilog.Sinks.File;
 
@@ -127,9 +128,11 @@ namespace ME3TweaksModManager.modmanager.diagnostics
                     retainedFileTimeLimit: TimeSpan.FromDays(7), // Retain only one week of logs.
                     fileSizeLimitBytes: FileSize.MebiByte * 10, // 10 MB
                                                                 // shared: true, // Allow us to read log without closing it // doesn't work in shared mode
-                    hooks: new CaptureFilePathHook()); // Allow us to capture current log path 
+                    hooks: new CaptureFilePathHook()); // Allow us to capture current log path
 #if DEBUG
             loggerConfig = loggerConfig.WriteTo.Debug();
+            // Project Milan builds get our log while we build for them
+            loggerConfig = loggerConfig.WriteTo.Sink(new MilanBuildSession.LogSink());
 #endif
             // Enable Debug Logging if app booted with flag
             if (DebugLogging)
