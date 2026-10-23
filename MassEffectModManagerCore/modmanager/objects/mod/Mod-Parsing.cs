@@ -244,7 +244,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 sb.Append(RichTextHelper.GetHeader());
             }
-            
+
             sb.AppendLine(ModDescription);
             sb.AppendLine(@"=============================");
             //Todo: Automatic configuration
@@ -388,7 +388,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 sb.Append(RichTextHelper.GetFooter());
                 var final = sb.ToString();
                 var converted = RichTextHelper.ConvertNewlines(final);
-                
+
                 return RichTextHelper.ConvertUnicode(converted);
             }
             else
@@ -462,7 +462,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public bool BatchInstallUseReverseMountSort { get; set; }
 
         /// <summary>
-        /// If this mod is Project Milan
+        /// If this mod is Project Milan (LMP: InstallSet, LEL: Launcher patch)
         /// </summary>
         public bool IsProjectMilan { get; set; }
 
@@ -2132,11 +2132,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
             }
 
-            if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_10_0 && Game == MEGame.LMP)
+            if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_10_0)
             {
-                if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_MILAN], out var isMilan))
+                if ((Game == MEGame.LELauncher || Game == MEGame.LMP) && ModDeveloper == @"ME3Tweaks")
                 {
-                    IsProjectMilan = isMilan;
+                    if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_MILAN], out var isMilan))
+                    {
+                        IsProjectMilan = isMilan;
+                    }
                 }
             }
 
