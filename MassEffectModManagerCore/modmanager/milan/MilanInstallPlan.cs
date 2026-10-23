@@ -2,6 +2,7 @@
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.ME3Tweaks.M3Merge.LinkerPatches;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.milan.slash;
 
@@ -104,6 +105,12 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         public List<MilanSlashDeletionEntry> PostInstallDeletions { get; } = new();
 
+        /// <summary>
+        /// Files in the finished installation that the linker patch merge writes (BioGame\LinkerPatches), from the linker
+        /// patch manifests the Project Milan mod installs. Paths are relative to the installation root.
+        /// </summary>
+        public HashSet<string> LinkerPatchOutputs { get; } = new(StringComparer.OrdinalIgnoreCase);
+
         #region Building
 
         /// <summary>
@@ -119,7 +126,7 @@ namespace ME3TweaksModManager.modmanager.milan
         /// <param name="leaveTFCsInLE3">If the basegame TFCs should be left in LE3 for the slash generator to read (<see cref="LeftInLE3"/>) rather than copied. Only for generating a slash manifest; <paramref name="slash"/> must be null.</param>
         /// <exception cref="Exception">The installation cannot succeed. Every problem found is logged; the message lists them.</exception>
         public static MilanInstallPlan Build(LE3SourceResolver sources, IEnumerable<MilanBaseInstaller.CopyManifest> manifests, IReadOnlyList<MELocalization> voLanguages,
-            IReadOnlyDictionary<string, MilanDeltaFileEntry> milanDeltas, string milanDeltaFolder, MilanSlashManifest slash, IEnumerable<string> modOutputs, bool leaveTFCsInLE3 = false)
+            IReadOnlyDictionary<string, MilanDeltaFileEntry> milanDeltas, string milanDeltaFolder, MilanSlashManifest slash, IEnumerable<string> modOutputs, bool leaveTFCsInLE3 = false, bool allowStaleSlash = false)
         {
             if (leaveTFCsInLE3 && slash != null)
                 throw new ArgumentException(@"TFCs can only be left in LE3 when generating a slash manifest, not when applying one");
@@ -155,18 +162,21 @@ namespace ME3TweaksModManager.modmanager.milan
                 var slashProblems = plan.PlanSlash(slash, milanDeltaFolder);
                 if (slashProblems.Count > 0)
                 {
-#if DEBUG
-                    // In development the mod is rebuilt far more often than its slash manifest is regenerated. Don't fail the
-                    // whole install over a stale manifest; just skip it. Release builds treat this as an invalid build.
-                    foreach (var problem in slashProblems)
+                    if (allowStaleSlash)
                     {
-                        M3Log.Warning($@"Slash planning: {problem}");
+                        // In development the mod is rebuilt far more often than its slash manifest is regenerated. Don't fail the
+                        // whole install over a stale manifest; just skip it. Release builds treat this as an invalid build.
+                        foreach (var problem in slashProblems)
+                        {
+                            M3Log.Warning($@"Slash planning: {problem}");
+                        }
+                        M3Log.Warning(@"The slash manifest does not match this installation, most likely because the Project Milan mod was rebuilt since it was generated. Skipping slash; regenerate the slash manifest to fix this.");
+                        plan.ClearSlash();
                     }
-                    M3Log.Warning(@"The slash manifest does not match this installation, most likely because the Project Milan mod was rebuilt since it was generated. Skipping slash; regenerate the slash manifest to fix this.");
-                    plan.ClearSlash();
-#else
-                    problems.AddRange(slashProblems);
-#endif
+                    else
+                    {
+                        problems.AddRange(slashProblems);
+                    }
                 }
             }
 
@@ -181,9 +191,26 @@ namespace ME3TweaksModManager.modmanager.milan
 
             M3Log.Information($@"Installation plan: {plan.Copies.Count} file(s) copied from LE3 ({plan.Copies.Count(x => x.Delta != null)} MilanDelta patched, {plan.Copies.Count(x => x.SlashPatch != null)} slash patched), {plan.LeftInLE3.Count} left in LE3 for the slash generator, " +
                               $@"{plan.InlineBuilds.Count} slash build(s) from LE3 files, {plan.ModPatches.Count} slash patch(es) of Project Milan files, " +
-                              $@"{plan.PostInstallBuilds.Count} post-install slash build(s), {plan.PostInstallDeletions.Count} post-install slash deletion(s)");
+                              $@"{plan.PostInstallBuilds.Count} post-install slash build(s), {plan.PostInstallDeletions.Count} post-install slash deletion(s), {plan.LinkerPatchOutputs.Count} file(s) from the linker patch merge");
             return plan;
         }
+
+        /// <summary>
+        /// If the file is a linker patch manifest in a DLC's LinkerPatches folder, which the linker patch merge builds BioGame\LinkerPatches from.
+        /// </summary>
+        private static bool IsLinkerPatchManifest(string relativePath)
+        {
+            var parts = relativePath.Replace('/', '\\').Split('\\');
+            return parts.Length == 5 && parts[0].Equals(@"BioGame", StringComparison.OrdinalIgnoreCase) && parts[1].Equals(@"DLC", StringComparison.OrdinalIgnoreCase)
+                   && parts[3].Equals(LinkerPatchMerge.LINKER_PATCH_DLC_FOLDERNAME, StringComparison.OrdinalIgnoreCase)
+                   && parts[4].EndsWith(LinkerPatchMerge.LINKER_PATCH_MANIFEST_EXTENSION, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// If the file is written by the linker patch merge.
+        /// </summary>
+        private static bool IsLinkerPatchOutput(string relativePath) =>
+            relativePath.Replace('/', '\\').StartsWith($@"BioGame\{LinkerPatchMerge.LINKER_PATCH_OUTPUT_FOLDERNAME}\", StringComparison.OrdinalIgnoreCase);
 
         private static bool IsBasegameTFC(string relativePath) =>
             relativePath.Replace('/', '\\').StartsWith(@"BioGame\CookedPCConsole\", StringComparison.OrdinalIgnoreCase) && relativePath.EndsWith(@".tfc", StringComparison.OrdinalIgnoreCase);
@@ -441,6 +468,7 @@ namespace ME3TweaksModManager.modmanager.milan
             // are never used - TFCs and AFCs nothing references, the originals of compacted ones, files mods left in LE3 - so
             // they aren't copied at all. Slash builds read their sources straight from LE3, so they don't need copies either.
             var unused = new List<string>();
+            var linkerPatchOutputs = new List<string>();
             if (slash.FinalFiles.Count > 0)
             {
                 var finalFiles = slash.FinalFiles.Select(x => x.Filename).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -452,9 +480,17 @@ namespace ME3TweaksModManager.modmanager.milan
                 produced.ExceptWith(notCopied);
                 produced.UnionWith(slash.Builds.Select(x => x.Filename));
                 produced.UnionWith(ModOutputs);
+
+                // The linker patch merge builds BioGame\LinkerPatches once the mod is installed, if the mod ships linker patches
+                bool modHasLinkerPatches = ModOutputs.Any(IsLinkerPatchManifest);
                 foreach (var file in finalFiles)
                 {
-                    if (!produced.Contains(file) && !MilanFinalState.IsExcluded(file) && !MilanLocalizationFiles.IsOptionalLocalization(file))
+                    if (produced.Contains(file) || MilanFinalState.IsExcluded(file) || MilanLocalizationFiles.IsOptionalLocalization(file))
+                        continue;
+
+                    if (modHasLinkerPatches && IsLinkerPatchOutput(file))
+                        linkerPatchOutputs.Add(file);
+                    else
                         problems.Add($"{file} is part of a finished installation, but nothing installs it");
                 }
             }
@@ -480,6 +516,7 @@ namespace ME3TweaksModManager.modmanager.milan
             }
             PostInstallBuilds.AddRange(postInstallBuilds);
             PostInstallDeletions.AddRange(postInstallDeletions);
+            LinkerPatchOutputs.UnionWith(linkerPatchOutputs);
 
             foreach (var path in notCopied)
             {
@@ -504,6 +541,7 @@ namespace ME3TweaksModManager.modmanager.milan
             InlineBuilds.Clear();
             ModPatches.Clear();
             PostInstallBuilds.Clear();
+            LinkerPatchOutputs.Clear();
             PostInstallDeletions.Clear();
         }
 
