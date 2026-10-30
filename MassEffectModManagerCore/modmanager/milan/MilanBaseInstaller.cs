@@ -263,6 +263,7 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXNotificationImages_SniperRifles.pcc",
             "SFXNotification_ModLarge.pcc",
             "SFXNotification_WeaponUpgrades.pcc",
+            "SFXWeaponImages_HeavyWeapons.pcc",
 
             // Pawns
             "SFXPawn_Atlas.pcc",
