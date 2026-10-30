@@ -118,26 +118,6 @@ namespace ME3TweaksModManager.modmanager.windows
                         {
                             M3Log.Information(@"Migrating me3cmm.ini settings");
                             IniData me3cmmini = new FileIniDataParser().ReadFile(me3cmminif);
-                            var updaterServiceUsername = me3cmmini[@"UpdaterService"][@"username"];
-                            if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceUsername) && !string.IsNullOrWhiteSpace(updaterServiceUsername))
-                            {
-                                Settings.UpdaterServiceUsername = updaterServiceUsername;
-                                M3Log.Information(@"Migrated Updater Service Username: " + updaterServiceUsername);
-                            }
-
-                            var manifestsPath = me3cmmini[@"UpdaterService"][@"manifestspath"];
-                            if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceManifestStoragePath) && !string.IsNullOrWhiteSpace(manifestsPath))
-                            {
-                                Settings.UpdaterServiceManifestStoragePath = manifestsPath;
-                                M3Log.Information(@"Migrated Updater Service Manifests Path: " + manifestsPath);
-                            }
-
-                            var lzmaStoragePath = me3cmmini[@"UpdaterService"][@"lzmastoragepath"];
-                            if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceLZMAStoragePath) && !string.IsNullOrWhiteSpace(lzmaStoragePath))
-                            {
-                                Settings.UpdaterServiceLZMAStoragePath = lzmaStoragePath;
-                                M3Log.Information(@"Migrated Updater Service LZMA Storage Path: " + lzmaStoragePath);
-                            }
 
                             //Modmaker Auto Injections
                             var controllerModOption = me3cmmini[@"Settings"][@"controllermoduser"];

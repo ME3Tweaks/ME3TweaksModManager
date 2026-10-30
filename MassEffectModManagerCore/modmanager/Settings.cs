@@ -181,13 +181,6 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _modMakerControllerModOption, value);
         }
 
-        private static string _updaterServiceUsername;
-        public static string UpdaterServiceUsername
-        {
-            get => _updaterServiceUsername;
-            set => SetProperty(ref _updaterServiceUsername, value);
-        }
-
         private static string _selectedFilters;
         public static string SelectedFilters
         {
@@ -214,20 +207,6 @@ namespace ME3TweaksModManager.modmanager
         {
             get => _webclientTimeout;
             set => SetProperty(ref _webclientTimeout, Math.Clamp(value, 1, 300)); // Clamp between 1-300 seconds
-        }
-
-        private static string _updateServiceLZMAStoragePath;
-        public static string UpdaterServiceLZMAStoragePath
-        {
-            get => _updateServiceLZMAStoragePath;
-            set => SetProperty(ref _updateServiceLZMAStoragePath, value);
-        }
-
-        private static string _updateServiceManifestStoragePath;
-        public static string UpdaterServiceManifestStoragePath
-        {
-            get => _updateServiceManifestStoragePath;
-            set => SetProperty(ref _updateServiceManifestStoragePath, value);
         }
 
         private static bool _logMixinStartup = false;
@@ -571,10 +550,6 @@ namespace ME3TweaksModManager.modmanager
             ModDownloadCacheFolder = LoadSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", null);
             PlayDialogSounds = LoadSettingBool(settingsIni, "UI", "PlayDialogSounds", true);
 
-            UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
-            UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
-            UpdaterServiceManifestStoragePath = LoadSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", null);
-
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogModUpdater = LoadSettingBool(settingsIni, "Logging", "LogModUpdater", false);
             LogBackupAndRestore = LoadSettingBool(settingsIni, "Logging", "LogBackupAndRestore", false);
@@ -803,9 +778,6 @@ namespace ME3TweaksModManager.modmanager
 
                     SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
                     SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
-                    SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
-                    SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
-                    SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
                     SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
                     SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
                     SaveSettingBool(settingsIni, "UI", "SkipDarkNet", SkipDarkNet);
