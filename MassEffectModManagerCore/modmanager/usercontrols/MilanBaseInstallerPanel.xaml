@@ -22,7 +22,7 @@
                 HorizontalAlignment="Center" 
                 Margin="0,0,5,0"/>
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Project Milan" FontWeight="Bold" FontSize="24" VerticalAlignment="Center"/>
+                <TextBlock Text="Legendary Edition Multiplayer" FontWeight="Bold" FontSize="24" VerticalAlignment="Center"/>
                 <TextBlock Text="Base Installer" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
             </StackPanel>
         </DockPanel>
@@ -33,7 +33,7 @@
 
         </DockPanel>
         <StackPanel>
-            <TextBlock Text="Project Milan's initial installation must be created from a copy of Mass Effect 3 Legendary Edition." TextWrapping="Wrap" MaxWidth="400"/>
+            <TextBlock Text="Legendary Edition Multiplayer's initial installation will be created from an unmodified copy of Mass Effect 3 Legendary Edition. Your backup will be used if your main game is modified." TextWrapping="Wrap" MaxWidth="400"/>
             <DockPanel>
                 <TextBlock Text="Source installation" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120" FontWeight="Bold"/>
                 <usercontrols:TargetSelector x:Name="SourceTargetSelector"
