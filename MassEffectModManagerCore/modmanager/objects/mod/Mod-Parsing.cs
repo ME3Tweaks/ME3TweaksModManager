@@ -2134,7 +2134,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             if (ModDescTargetVersion >= ModDescConsts.MODDESC_VERSION_10_0)
             {
-                if ((Game == MEGame.LELauncher || Game == MEGame.LMP) && ModDeveloper == @"ME3Tweaks")
+                // Launcher checks on its own loading path
+                if (Game == MEGame.LMP && ModDeveloper == @"ME3Tweaks")
                 {
                     if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_MILAN], out var isMilan))
                     {
@@ -2343,6 +2344,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 if (!ReadASIModsToInstall(iniData))
                 {
                     return;
+                }
+                
+                // Check if Milan launcher
+                if (bool.TryParse(iniData[Mod.MODDESC_HEADERKEY_MODINFO][MODDESC_DESCRIPTOR_MODINFO_MILAN], out var isMilan))
+                {
+                    IsProjectMilan = isMilan;
                 }
             }
 
