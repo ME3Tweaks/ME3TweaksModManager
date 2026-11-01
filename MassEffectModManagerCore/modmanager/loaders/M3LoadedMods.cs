@@ -559,13 +559,17 @@ namespace ME3TweaksModManager.modmanager.loaders
                 NumTotalMods = 0; // we are no longer loading so set this to zero.
                 NumModsLoaded = 0;
                 ModsLoaded = true;
-                if (canAutoCheckForModUpdates)
+
+                if (forceUpdateCheckOnCompletion && scopedModsToCheckForUpdates != null)
                 {
-                    ModUpdater.Instance.CheckAllModsForUpdates();
-                }
-                else if (forceUpdateCheckOnCompletion && scopedModsToCheckForUpdates != null)
-                {
+                    // This path is used for scoped checks (such as mod import) and should not be throttled.
                     ModUpdater.Instance.CheckModsForUpdates(scopedModsToCheckForUpdates);
+                }
+                else if (canAutoCheckForModUpdates)
+                {
+                    // Mark auto-check throttle window so subsequent reloads don't immediately auto-check again.
+                    Settings.LastContentCheck = DateTime.Now;
+                    ModUpdater.Instance.CheckAllModsForUpdates();
                 }
 
 
