@@ -60,7 +60,8 @@ namespace ME3TweaksModManager.modmanager.milan
             // Gestures (animations, especially in menus)
             "GesturesConfig.pcc",
             // Required for main menu to load
-            "EntryMenu.pcc",
+            // 10/29/2026 - Should be now handled by DLC since DLC mounts before this loads
+            //"EntryMenu.pcc",
 
             // Beleive it or not this file is required for MP map transitions
             // gonna guess it's the transition map. Without it, game dies transitioning MP maps
@@ -264,7 +265,7 @@ namespace ME3TweaksModManager.modmanager.milan
             "SFXNotification_ModLarge.pcc",
             "SFXNotification_WeaponUpgrades.pcc",
             "SFXWeaponImages_HeavyWeapons.pcc",
-
+            
             // Pawns
             "SFXPawn_Atlas.pcc",
             "SFXPawn_Banshee.pcc",
@@ -359,6 +360,8 @@ namespace ME3TweaksModManager.modmanager.milan
             "Wwise_Power_Tech_Overload.afc",
             "Wwise_Power_Biotic_DarkChan.afc",
             "Wwise_Weapons_S_Quarian.afc",
+            "Wwise_Weapons_Heavy_MiniNuke.afc",
+
 
             // Main Menu Audio (might strip later)
             "Wwise_Smls_NorfTL.afc",
