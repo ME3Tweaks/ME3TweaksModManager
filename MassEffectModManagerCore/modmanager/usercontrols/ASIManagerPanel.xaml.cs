@@ -345,12 +345,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             InitializeComponent();
 
             //This has to be done here as mainwindow will not be available until this is called
-            MEGame[] gameEnum = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LMP };
+            MEGame[] gameEnum = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LMP, MEGame.LELauncher };
             int index = 0;
             foreach (var game in gameEnum)
             {
                 if (!Settings.GenerationSettingOT && game.IsOTGame()) continue;
-                if (!Settings.GenerationSettingLE && game.IsLEGame()) continue;
+                if (!Settings.GenerationSettingLE && (game.IsLEGame() || game != MEGame.LELauncher)) continue;
                 var targets = mainwindow.InstallationTargets.Where(x => x.Game == game).ToList();
                 if (targets.Count > 0)
                 {
