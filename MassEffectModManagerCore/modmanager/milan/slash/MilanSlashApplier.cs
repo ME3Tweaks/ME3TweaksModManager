@@ -46,13 +46,18 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             }
 
             if (manifest == null || !manifest.MilanSlash)
+            {
                 throw new Exception($"{SlashManifestFileName} is not a valid Milan slash manifest.");
-
+            }
             if (manifest.Version != SupportedSlashVersion)
+            {
                 throw new Exception($"{SlashManifestFileName} has unsupported version {manifest.Version} (expected {SupportedSlashVersion}).");
+            }
 
             if (!string.Equals(manifest.ComputeSignature(), manifest.Signature, StringComparison.OrdinalIgnoreCase))
+            {
                 throw new Exception($"{SlashManifestFileName} signature does not match its contents. This build may be corrupted or tampered with.");
+            }
 
             return manifest;
         }
@@ -70,9 +75,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             void checkOutput(string relPath)
             {
                 if (!outputs.Add(relPath))
+                {
                     problems.Add($"{relPath} is written by more than one slash operation");
+                }
                 if (MilanFinalState.IsExcluded(relPath))
+                {
                     problems.Add($"{relPath} may not be changed by a slash manifest");
+                }
             }
 
             foreach (var build in manifest.Builds)
@@ -82,7 +91,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 checkOutput(build.Filename);
 
                 if (build.Sources.Count == 0)
+                {
                     problems.Add($"{build.Filename} has no sources");
+                }
 
                 foreach (var source in build.Sources)
                 {
@@ -109,8 +120,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 long totalSize = 0;
                 foreach (var segment in build.Segments)
                 {
-                    if (segment.SourceIndex < 0 || segment.SourceIndex >= build.Sources.Count || segment.Offset < 0 || segment.Length <= 0
-                        || segment.Offset + segment.Length > build.Sources[segment.SourceIndex].Size)
+                    if (segment.SourceIndex < 0 || segment.SourceIndex >= build.Sources.Count || segment.Offset < 0 || segment.Length <= 0 || segment.Offset + segment.Length > build.Sources[segment.SourceIndex].Size)
                     {
                         problems.Add($"{build.Filename} has an invalid segment {segment}");
                         break;
@@ -119,29 +129,43 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 }
 
                 if (totalSize != build.DestSize)
+                {
                     problems.Add($"{build.Filename} segments total {totalSize} bytes, but the manifest expects {build.DestSize}");
+                }
             }
 
             foreach (var patch in manifest.Patches)
             {
                 if (patch.Mode != MilanSlashPatchModes.Package && patch.Mode != MilanSlashPatchModes.Raw)
+                {
                     problems.Add($"{patch.Filename} has unsupported patch mode '{patch.Mode}'");
+                }
 
                 if (TryResolve(milanDeltaFolder, patch.Delta, problems, out var deltaPath) && !File.Exists(deltaPath))
+                {
                     problems.Add($"Slash delta file is missing: {patch.Delta}");
+                }
 
                 if (IsValidRelativePath(patch.Filename, problems))
+                {
                     checkOutput(patch.Filename);
+                }
             }
 
             foreach (var deletion in manifest.Deletions)
             {
                 if (!IsValidRelativePath(deletion.Filename, problems))
+                {
                     continue;
+                }
                 if (outputs.Contains(deletion.Filename))
+                {
                     problems.Add($"{deletion.Filename} is both written and deleted by the slash manifest");
+                }
                 if (MilanFinalState.IsExcluded(deletion.Filename))
+                {
                     problems.Add($"{deletion.Filename} may not be changed by a slash manifest");
+                }
             }
 
             return problems;
@@ -188,13 +212,18 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             foreach (var patch in manifest.Patches)
             {
                 if (!TryResolve(gameRoot, patch.Filename, problems, out var sourcePath))
+                {
                     continue;
+                }
 
                 if (!File.Exists(sourcePath))
                 {
-                    // Users' LE3 installations may not have every localization; those files are simply skipped
+                    // Users' LE3 installations may not have every localization
+                    // Skip those foles but log them
                     if (!MilanLocalizationFiles.IsOptionalLocalization(patch.Filename))
+                    {
                         problems.Add($"{patch.Filename} is missing");
+                    }
                     continue;
                 }
 
@@ -208,7 +237,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                 setStatus?.Invoke($"Verifying {Path.GetFileName(patch.Filename)}");
                 var hash = MUtilities.CalculateHash(sourcePath, @"sha256");
                 if (!string.Equals(hash, patch.SourceFileHash, StringComparison.OrdinalIgnoreCase))
+                {
                     problems.Add($"{patch.Filename} does not match the file the slash manifest was generated against (hash {hash}, expected {patch.SourceFileHash})");
+                }
             }
 
             foreach (var deletion in manifest.Deletions)
@@ -218,7 +249,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
                 // A file that is already gone is fine; one that is a different size means the game isn't what we expect
                 if (File.Exists(path) && new FileInfo(path).Length != deletion.Size)
+                {
                     problems.Add($"{deletion.Filename} is {new FileInfo(path).Length} bytes, expected {deletion.Size}");
+                }
             }
 
             return problems;
@@ -344,7 +377,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
                     {
                         int read = source.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
                         if (read <= 0)
+                        {
                             throw new Exception($"Unexpected end of {build.Sources[segment.SourceIndex].Filename} while building {build.Filename}");
+                        }
                         output.Write(buffer, 0, read);
                         remaining -= read;
                     }
@@ -391,7 +426,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
             VerifySize(source.Length, patch.SourceSize, patch.Filename, @"source");
             if (!JPatch.ApplyJPatch(source, deltaStream, output))
+            {
                 throw new Exception($"Slash delta for {patch.Filename} could not be applied");
+            }
 
             VerifySize(output.Length, patch.DestSize, patch.Filename, @"output");
             VerifyHash(MUtilities.CalculateHash(output, @"sha256"), patch.DestHash, patch.Filename, @"output");
@@ -422,7 +459,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
             using var patched = new MemoryStream();
             if (!JPatch.ApplyJPatch(decompressed, deltaStream, patched))
+            {
                 throw new Exception($"Slash delta for {patch.Filename} could not be applied");
+            }
 
             VerifySize(patched.Length, patch.DestSize, patch.Filename, @"output");
             VerifyHash(MUtilities.CalculateHash(patched, @"sha256"), patch.DestHash, patch.Filename, @"output");
@@ -437,13 +476,17 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         internal static void VerifySize(long actual, long expected, string fileName, string stage)
         {
             if (actual != expected)
+            {
                 throw new Exception($"Slash {stage} size mismatch for {fileName}: expected {expected}, got {actual}.");
+            }
         }
 
         internal static void VerifyHash(string actual, string expected, string fileName, string stage)
         {
             if (!string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase))
+            {
                 throw new Exception($"Slash {stage} hash mismatch for {fileName}: expected {expected}, got {actual}.");
+            }
         }
 
         /// <summary>
@@ -452,13 +495,17 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         internal static string Resolve(string root, string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath) || Path.IsPathRooted(relativePath))
+            {
                 throw new Exception($"Invalid slash manifest path: '{relativePath}'");
+            }
 
             var fullRoot = Path.GetFullPath(root);
             var fullPath = Path.GetFullPath(Path.Combine(fullRoot, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
             var rootWithSeparator = Path.EndsInDirectorySeparator(fullRoot) ? fullRoot : fullRoot + Path.DirectorySeparatorChar;
             if (!fullPath.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase))
+            {
                 throw new Exception($"Slash manifest path escapes its root folder: '{relativePath}'");
+            }
 
             return fullPath;
         }
@@ -504,7 +551,9 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             try
             {
                 if (File.Exists(path))
+                {
                     File.Delete(path);
+                }
             }
             catch (Exception e)
             {

@@ -10,13 +10,13 @@ namespace ME3TweaksModManager.modmanager.milan
     /// </summary>
     internal class MilanDeltaSignableBody
     {
-        [JsonPropertyName("milan")]
+        [JsonPropertyName(@"milan")]
         public bool Milan { get; set; }
 
-        [JsonPropertyName("version")]
+        [JsonPropertyName(@"version")]
         public double Version { get; set; }
 
-        [JsonPropertyName("deltas")]
+        [JsonPropertyName(@"deltas")]
         public List<MilanDeltaFileEntry> Deltas { get; set; } = new();
     }
 
@@ -27,53 +27,53 @@ namespace ME3TweaksModManager.modmanager.milan
     /// </summary>
     internal class MilanDeltaManifest : MilanDeltaSignableBody
     {
-        [JsonPropertyName("signature")]
+        [JsonPropertyName(@"signature")]
         public string Signature { get; set; }
     }
 
     internal class MilanDeltaFileEntry
     {
-        [JsonPropertyName("comment")]
+        [JsonPropertyName(@"comment")]
         public string Comment { get; set; }
 
         /// <summary>
         /// Destination filename this delta applies to, e.g. "Core.pcc".
         /// </summary>
-        [JsonPropertyName("filename")]
+        [JsonPropertyName(@"filename")]
         public string Filename { get; set; }
 
         /// <summary>
         /// Path of the JPatch delta file, relative to the MilanDelta folder.
         /// </summary>
-        [JsonPropertyName("delta")]
+        [JsonPropertyName(@"delta")]
         public string Delta { get; set; }
 
         /// <summary>
         /// Expected size, in bytes, of the decompressed LE3 source package before patching.
         /// </summary>
-        [JsonPropertyName("sourcesize")]
+        [JsonPropertyName(@"sourcesize")]
         public long SourceSize { get; set; }
 
         /// <summary>
         /// Expected SHA-256 (lowercase hex) of the decompressed LE3 source package before patching.
         /// </summary>
-        [JsonPropertyName("sourcehash")]
+        [JsonPropertyName(@"sourcehash")]
         public string SourceHash { get; set; }
 
         /// <summary>
         /// Expected size, in bytes, of the decompressed package data after patching.
         /// </summary>
-        [JsonPropertyName("destsize")]
+        [JsonPropertyName(@"destsize")]
         public long DestSize { get; set; }
 
         /// <summary>
         /// Expected SHA-256 (lowercase hex) of the decompressed package data after patching.
         /// </summary>
-        [JsonPropertyName("desthash")]
+        [JsonPropertyName(@"desthash")]
         public string DestHash { get; set; }
 
         /// <summary>Optional preprocessing format. Null preserves legacy raw deltas.</summary>
-        [JsonPropertyName("format")]
+        [JsonPropertyName(@"format")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Format { get; set; }
     }

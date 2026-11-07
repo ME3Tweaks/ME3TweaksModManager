@@ -11,35 +11,35 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     /// </summary>
     internal class MilanSlashSignableBody
     {
-        [JsonPropertyName("milanslash")]
+        [JsonPropertyName(@"milanslash")]
         public bool MilanSlash { get; set; }
 
-        [JsonPropertyName("version")]
+        [JsonPropertyName(@"version")]
         public double Version { get; set; }
 
         /// <summary>
         /// Files to assemble from ranges of other files, such as TFCs built from the data of existing TFCs.
         /// </summary>
-        [JsonPropertyName("builds")]
+        [JsonPropertyName(@"builds")]
         public List<MilanSlashBuildEntry> Builds { get; set; } = new();
 
         /// <summary>
         /// Files to transform with a JPatch delta.
         /// </summary>
-        [JsonPropertyName("patches")]
+        [JsonPropertyName(@"patches")]
         public List<MilanSlashPatchEntry> Patches { get; set; } = new();
 
         /// <summary>
         /// Files to remove entirely once everything else has been built.
         /// </summary>
-        [JsonPropertyName("deletions")]
+        [JsonPropertyName(@"deletions")]
         public List<MilanSlashDeletionEntry> Deletions { get; set; } = new();
 
         /// <summary>
         /// Size and hash of every file in the finished installation this manifest was generated from, recorded after
         /// everything the installer does (slash, TOC, bink bypass). Used to verify an end user's installation matches exactly.
         /// </summary>
-        [JsonPropertyName("finalfiles")]
+        [JsonPropertyName(@"finalfiles")]
         public List<MilanSlashFinalFileEntry> FinalFiles { get; set; } = new();
     }
 
@@ -51,7 +51,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
     /// </summary>
     internal class MilanSlashManifest : MilanSlashSignableBody
     {
-        [JsonPropertyName("signature")]
+        [JsonPropertyName(@"signature")]
         public string Signature { get; set; }
 
         /// <summary>
@@ -84,25 +84,25 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// <summary>
         /// File to create, relative to the game root. May be a new file, or the same file as one of the sources.
         /// </summary>
-        [JsonPropertyName("filename")]
+        [JsonPropertyName(@"filename")]
         public string Filename { get; set; }
 
         /// <summary>
         /// Files that data is pulled from.
         /// </summary>
-        [JsonPropertyName("sources")]
+        [JsonPropertyName(@"sources")]
         public List<MilanSlashSourceFile> Sources { get; set; } = new();
 
         /// <summary>
         /// Ranges to copy, in output order.
         /// </summary>
-        [JsonPropertyName("segments")]
+        [JsonPropertyName(@"segments")]
         public List<MilanSlashSegment> Segments { get; set; } = new();
 
-        [JsonPropertyName("destsize")]
+        [JsonPropertyName(@"destsize")]
         public long DestSize { get; set; }
 
-        [JsonPropertyName("desthash")]
+        [JsonPropertyName(@"desthash")]
         public string DestHash { get; set; }
     }
 
@@ -111,20 +111,20 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// <summary>
         /// Path of the file, relative to the game root, or to the MilanDelta folder if <see cref="Payload"/> is set.
         /// </summary>
-        [JsonPropertyName("filename")]
+        [JsonPropertyName(@"filename")]
         public string Filename { get; set; }
 
         /// <summary>
         /// If this is a payload file shipped in the MilanDelta folder rather than a file in the game.
         /// </summary>
-        [JsonPropertyName("payload")]
+        [JsonPropertyName(@"payload")]
         public bool Payload { get; set; }
 
         /// <summary>
         /// Expected size of the file on disk. Game files such as TFCs are too large to hash up front; the output hash
         /// catches bad data.
         /// </summary>
-        [JsonPropertyName("size")]
+        [JsonPropertyName(@"size")]
         public long Size { get; set; }
     }
 
@@ -180,61 +180,61 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
     internal class MilanSlashPatchEntry
     {
-        [JsonPropertyName("comment")]
+        [JsonPropertyName(@"comment")]
         public string Comment { get; set; }
 
         /// <summary>
         /// File to patch, relative to the game root. The patched result replaces it.
         /// </summary>
-        [JsonPropertyName("filename")]
+        [JsonPropertyName(@"filename")]
         public string Filename { get; set; }
 
         /// <summary>
         /// JPatch delta file, relative to the MilanDelta folder.
         /// </summary>
-        [JsonPropertyName("delta")]
+        [JsonPropertyName(@"delta")]
         public string Delta { get; set; }
 
         /// <summary>
         /// One of <see cref="MilanSlashPatchModes"/>.
         /// </summary>
-        [JsonPropertyName("mode")]
+        [JsonPropertyName(@"mode")]
         public string Mode { get; set; }
 
         /// <summary>
         /// For package mode, if the result should be saved compressed.
         /// </summary>
-        [JsonPropertyName("compressed")]
+        [JsonPropertyName(@"compressed")]
         public bool Compressed { get; set; }
 
         /// <summary>
         /// Size of the file on disk before patching. Checked before anything is modified.
         /// </summary>
-        [JsonPropertyName("sourcefilesize")]
+        [JsonPropertyName(@"sourcefilesize")]
         public long SourceFileSize { get; set; }
 
         /// <summary>
         /// SHA-256 of the file on disk before patching. Checked before anything is modified.
         /// </summary>
-        [JsonPropertyName("sourcefilehash")]
+        [JsonPropertyName(@"sourcefilehash")]
         public string SourceFileHash { get; set; }
 
         /// <summary>
         /// Size of the data the delta is applied to (decompressed package data in package mode, the file in raw mode).
         /// </summary>
-        [JsonPropertyName("sourcesize")]
+        [JsonPropertyName(@"sourcesize")]
         public long SourceSize { get; set; }
 
-        [JsonPropertyName("sourcehash")]
+        [JsonPropertyName(@"sourcehash")]
         public string SourceHash { get; set; }
 
         /// <summary>
         /// Size of the data the delta produces.
         /// </summary>
-        [JsonPropertyName("destsize")]
+        [JsonPropertyName(@"destsize")]
         public long DestSize { get; set; }
 
-        [JsonPropertyName("desthash")]
+        [JsonPropertyName(@"desthash")]
         public string DestHash { get; set; }
     }
 
@@ -247,13 +247,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// <summary>
         /// Why the file is deleted.
         /// </summary>
-        [JsonPropertyName("comment")]
+        [JsonPropertyName(@"comment")]
         public string Comment { get; set; }
 
-        [JsonPropertyName("filename")]
+        [JsonPropertyName(@"filename")]
         public string Filename { get; set; }
 
-        [JsonPropertyName("size")]
+        [JsonPropertyName(@"size")]
         public long Size { get; set; }
     }
 
@@ -262,13 +262,13 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         /// <summary>
         /// Path relative to the game root.
         /// </summary>
-        [JsonPropertyName("filename")]
+        [JsonPropertyName(@"filename")]
         public string Filename { get; set; }
 
-        [JsonPropertyName("size")]
+        [JsonPropertyName(@"size")]
         public long Size { get; set; }
 
-        [JsonPropertyName("hash")]
+        [JsonPropertyName(@"hash")]
         public string Hash { get; set; }
     }
 }

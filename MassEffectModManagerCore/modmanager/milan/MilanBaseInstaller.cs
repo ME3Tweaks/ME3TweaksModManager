@@ -29,15 +29,15 @@ namespace ME3TweaksModManager.modmanager.milan
         /// Files from Binaries folder
         /// </summary>
         private static readonly string[] BinaryFiles = [
-            "amd_ags_x64.dll",
-            "bink2w64.dll",
-            "MassEffect3.exe",
-            "oo2core_8_win64.dll",
-            "PhysXCooking64.dll",
-            "PhysXCore64.dll",
-            "Activation.dll",
-            "Activation64.dll",
-            "PhysXLoader64.dll"
+            @"amd_ags_x64.dll",
+            @"bink2w64.dll",
+            @"MassEffect3.exe",
+            @"oo2core_8_win64.dll",
+            @"PhysXCooking64.dll",
+            @"PhysXCore64.dll",
+            @"Activation.dll",
+            @"Activation64.dll",
+            @"PhysXLoader64.dll"
         ];
 
         /// <summary>
@@ -45,347 +45,347 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         private static readonly string[] CookedFiles = [
             // Base required files for game boot
-            "Core.pcc",
-            "Engine.pcc",
-            "SFXGame.pcc",
-            "Startup.pcc",
-            "Coalesced.bin",
-            "GlobalShaderCache-PC-D3D-SM5.bin",
-            "IpDrv.pcc",
-            "RefShaderCache-PC-D3D-SM5.upk",
-            "SFXOnlineFoundation.pcc",
-            "WwiseAudio.pcc",
-            "GuidCache.pcc", // Replaced with Milan's version by a MilanDelta patch
+           @"Core.pcc",
+           @"Engine.pcc",
+           @"SFXGame.pcc",
+           @"Startup.pcc",
+           @"Coalesced.bin",
+           @"GlobalShaderCache-PC-D3D-SM5.bin",
+           @"IpDrv.pcc",
+           @"RefShaderCache-PC-D3D-SM5.upk",
+           @"SFXOnlineFoundation.pcc",
+           @"WwiseAudio.pcc",
+           @"GuidCache.pcc", // Replaced with Milan's version by a MilanDelta patch
 
             // Gestures (animations, especially in menus)
-            "GesturesConfig.pcc",
+           @"GesturesConfig.pcc",
             // Required for main menu to load
             // 10/29/2026 - Should be now handled by DLC since DLC mounts before this loads
             //"EntryMenu.pcc",
 
             // Beleive it or not this file is required for MP map transitions
             // gonna guess it's the transition map. Without it, game dies transitioning MP maps
-            "entry.pcc",
+           @"entry.pcc",
 
             // Required for MP to not crash and die
             //"SFXGUI_WeaponUIDataSF.pcc", // Removed; now merged for mipping in Project Milan
 
             // Basegame Weapons
-            "SFXWeapon_AssaultRifle_Argus.pcc",
-            "SFXWeapon_AssaultRifle_Avenger.pcc",
-            "SFXWeapon_AssaultRifle_Cobra.pcc",
-            "SFXWeapon_AssaultRifle_Collector.pcc",
-            "SFXWeapon_AssaultRifle_Falcon.pcc",
-            "SFXWeapon_AssaultRifle_Geth.pcc",
-            "SFXWeapon_AssaultRifle_Mattock.pcc",
-            "SFXWeapon_AssaultRifle_Reckoning.pcc",
-            "SFXWeapon_AssaultRifle_Revenant.pcc",
-            "SFXWeapon_AssaultRifle_Saber.pcc",
-            "SFXWeapon_AssaultRifle_Valkyrie.pcc",
-            "SFXWeapon_AssaultRifle_Vindicator.pcc",
-            "SFXWeapon_Pistol_Carnifex.pcc",
-            "SFXWeapon_Pistol_Eagle.pcc",
-            "SFXWeapon_Pistol_EndGameCarnifex.pcc",
-            "SFXWeapon_Pistol_Ivory.pcc",
-            "SFXWeapon_Pistol_Phalanx.pcc",
-            "SFXWeapon_Pistol_Predator.pcc",
-            "SFXWeapon_Pistol_Scorpion.pcc",
-            "SFXWeapon_Pistol_Talon.pcc",
-            "SFXWeapon_Pistol_Thor.pcc",
-            "SFXWeapon_Shotgun_Claymore.pcc",
-            "SFXWeapon_Shotgun_Crusader.pcc",
-            "SFXWeapon_Shotgun_Disciple.pcc",
-            "SFXWeapon_Shotgun_Eviscerator.pcc",
-            "SFXWeapon_Shotgun_Geth.pcc",
-            "SFXWeapon_Shotgun_Graal.pcc",
-            "SFXWeapon_Shotgun_Katana.pcc",
-            "SFXWeapon_Shotgun_Raider.pcc",
-            "SFXWeapon_Shotgun_Scimitar.pcc",
-            "SFXWeapon_Shotgun_Striker.pcc",
-            "SFXWeapon_SMG_Hornet.pcc",
-            "SFXWeapon_SMG_Hurricane.pcc",
-            "SFXWeapon_SMG_Locust.pcc",
-            "SFXWeapon_SMG_Shuriken.pcc",
-            "SFXWeapon_SMG_Tempest.pcc",
-            "SFXWeapon_SniperRifle_BlackWidow.pcc",
-            "SFXWeapon_SniperRifle_Incisor.pcc",
-            "SFXWeapon_SniperRifle_Indra.pcc",
-            "SFXWeapon_SniperRifle_Javelin.pcc",
-            "SFXWeapon_SniperRifle_Mantis.pcc",
-            "SFXWeapon_SniperRifle_Raptor.pcc",
-            "SFXWeapon_SniperRifle_Valiant.pcc",
-            "SFXWeapon_SniperRifle_Viper.pcc",
-            "SFXWeapon_SniperRifle_Widow.pcc",
+           @"SFXWeapon_AssaultRifle_Argus.pcc",
+           @"SFXWeapon_AssaultRifle_Avenger.pcc",
+           @"SFXWeapon_AssaultRifle_Cobra.pcc",
+           @"SFXWeapon_AssaultRifle_Collector.pcc",
+           @"SFXWeapon_AssaultRifle_Falcon.pcc",
+           @"SFXWeapon_AssaultRifle_Geth.pcc",
+           @"SFXWeapon_AssaultRifle_Mattock.pcc",
+           @"SFXWeapon_AssaultRifle_Reckoning.pcc",
+           @"SFXWeapon_AssaultRifle_Revenant.pcc",
+           @"SFXWeapon_AssaultRifle_Saber.pcc",
+           @"SFXWeapon_AssaultRifle_Valkyrie.pcc",
+           @"SFXWeapon_AssaultRifle_Vindicator.pcc",
+           @"SFXWeapon_Pistol_Carnifex.pcc",
+           @"SFXWeapon_Pistol_Eagle.pcc",
+           @"SFXWeapon_Pistol_EndGameCarnifex.pcc",
+           @"SFXWeapon_Pistol_Ivory.pcc",
+           @"SFXWeapon_Pistol_Phalanx.pcc",
+           @"SFXWeapon_Pistol_Predator.pcc",
+           @"SFXWeapon_Pistol_Scorpion.pcc",
+           @"SFXWeapon_Pistol_Talon.pcc",
+           @"SFXWeapon_Pistol_Thor.pcc",
+           @"SFXWeapon_Shotgun_Claymore.pcc",
+           @"SFXWeapon_Shotgun_Crusader.pcc",
+           @"SFXWeapon_Shotgun_Disciple.pcc",
+           @"SFXWeapon_Shotgun_Eviscerator.pcc",
+           @"SFXWeapon_Shotgun_Geth.pcc",
+           @"SFXWeapon_Shotgun_Graal.pcc",
+           @"SFXWeapon_Shotgun_Katana.pcc",
+           @"SFXWeapon_Shotgun_Raider.pcc",
+           @"SFXWeapon_Shotgun_Scimitar.pcc",
+           @"SFXWeapon_Shotgun_Striker.pcc",
+           @"SFXWeapon_SMG_Hornet.pcc",
+           @"SFXWeapon_SMG_Hurricane.pcc",
+           @"SFXWeapon_SMG_Locust.pcc",
+           @"SFXWeapon_SMG_Shuriken.pcc",
+           @"SFXWeapon_SMG_Tempest.pcc",
+           @"SFXWeapon_SniperRifle_BlackWidow.pcc",
+           @"SFXWeapon_SniperRifle_Incisor.pcc",
+           @"SFXWeapon_SniperRifle_Indra.pcc",
+           @"SFXWeapon_SniperRifle_Javelin.pcc",
+           @"SFXWeapon_SniperRifle_Mantis.pcc",
+           @"SFXWeapon_SniperRifle_Raptor.pcc",
+           @"SFXWeapon_SniperRifle_Valiant.pcc",
+           @"SFXWeapon_SniperRifle_Viper.pcc",
+           @"SFXWeapon_SniperRifle_Widow.pcc",
             
             // Basegame MP Level Files (excluding BioP which break things)
             // Includes level audio
-            "BioA_MPCer.pcc",
-            "BioA_MPCer_White.pcc",
-            "BioA_MPDish.pcc",
-            "BioA_MPDish_000_BG.pcc",
-            "BioA_MPDish_200.pcc",
-            "BioA_MPDish_300.pcc",
-            "BioA_MPDish_300_rails.pcc",
-            "BioA_MPDish_400.pcc",
-            "BioA_MPNov.pcc",
-            "BioA_MPNov_000_BG.pcc",
-            "BioA_MPNov_100Exterior.pcc",
-            "BioA_MPNov_White.pcc",
-            "BioA_MPRctr.pcc",
-            "BioA_MPRctr_100Cover.pcc",
-            "BioA_MPSlum_100.pcc",
-            "BioA_MPSlum_200.pcc",
-            "BioA_MPSlum_400TempVista.pcc",
-            "BioA_MPTowr.pcc",
-            "BioA_MPTowr_200.pcc",
-            "BioA_MPTowr_300_UI_Lights.pcc",
-            "BioD_MPCer.pcc",
-            "BioD_MPDish.pcc",
-            "BioD_MPNov.pcc",
-            "BioD_MPRctr.pcc",
-            "BioD_MPSlum.pcc",
-            "BioD_MPTowr.pcc",
-            "BioSnd_MPCer.pcc",
-            "BioSnd_MPDish.pcc",
-            "BioSnd_MPNov.pcc",
-            "BioSnd_MPRctr.pcc",
-            "BioSnd_MPSlum.pcc",
-            "BioSnd_MPTowr.pcc",
-            "wwise_mpcer_streaming.afc",
-            "wwise_mpdish_streaming.afc",
-            "wwise_mpnov_streaming.afc",
-            "wwise_mprctr_streaming.afc",
-            "Wwise_MPSlum_NonStreaming.afc",
-            "wwise_mpslum_streaming.afc",
-            "Wwise_MPTowr_NonStreaming.afc",
-            "Wwise_MPTowr_Streaming.afc",
+           @"BioA_MPCer.pcc",
+           @"BioA_MPCer_White.pcc",
+           @"BioA_MPDish.pcc",
+           @"BioA_MPDish_000_BG.pcc",
+           @"BioA_MPDish_200.pcc",
+           @"BioA_MPDish_300.pcc",
+           @"BioA_MPDish_300_rails.pcc",
+           @"BioA_MPDish_400.pcc",
+           @"BioA_MPNov.pcc",
+           @"BioA_MPNov_000_BG.pcc",
+           @"BioA_MPNov_100Exterior.pcc",
+           @"BioA_MPNov_White.pcc",
+           @"BioA_MPRctr.pcc",
+           @"BioA_MPRctr_100Cover.pcc",
+           @"BioA_MPSlum_100.pcc",
+           @"BioA_MPSlum_200.pcc",
+           @"BioA_MPSlum_400TempVista.pcc",
+           @"BioA_MPTowr.pcc",
+           @"BioA_MPTowr_200.pcc",
+           @"BioA_MPTowr_300_UI_Lights.pcc",
+           @"BioD_MPCer.pcc",
+           @"BioD_MPDish.pcc",
+           @"BioD_MPNov.pcc",
+           @"BioD_MPRctr.pcc",
+           @"BioD_MPSlum.pcc",
+           @"BioD_MPTowr.pcc",
+           @"BioSnd_MPCer.pcc",
+           @"BioSnd_MPDish.pcc",
+           @"BioSnd_MPNov.pcc",
+           @"BioSnd_MPRctr.pcc",
+           @"BioSnd_MPSlum.pcc",
+           @"BioSnd_MPTowr.pcc",
+           @"wwise_mpcer_streaming.afc",
+           @"wwise_mpdish_streaming.afc",
+           @"wwise_mpnov_streaming.afc",
+           @"wwise_mprctr_streaming.afc",
+           @"Wwise_MPSlum_NonStreaming.afc",
+           @"wwise_mpslum_streaming.afc",
+           @"Wwise_MPTowr_NonStreaming.afc",
+           @"Wwise_MPTowr_Streaming.afc",
 
             // Basegame Weapon Mods
-            "SFXWeaponMods_AssaultRifles.pcc",
-            "SFXWeaponMods_Pistols.pcc",
-            "SFXWeaponMods_Shotguns.pcc",
-            "SFXWeaponMods_SMGs.pcc",
-            "SFXWeaponMods_SniperRifles.pcc",
+           @"SFXWeaponMods_AssaultRifles.pcc",
+           @"SFXWeaponMods_Pistols.pcc",
+           @"SFXWeaponMods_Shotguns.pcc",
+           @"SFXWeaponMods_SMGs.pcc",
+           @"SFXWeaponMods_SniperRifles.pcc",
 
             // Gui Assets for weapons
-            "SFXGUI_WMod_AssaultRifleAccuracy.pcc",
-            "SFXGUI_WMod_AssaultRifleDamage.pcc",
-            "SFXGUI_WMod_PistolAccuracy.pcc",
-            "SFXGUI_WMod_PistolDamage.pcc",
-            "SFXGUI_WMod_PistolStability.pcc",
-            "SFXGUI_WMod_ShotgunDamage.pcc",
-            "SFXGUI_WMod_ShotgunMeleeDamage.pcc",
-            "SFXGUI_WMod_SMGAccuracy.pcc",
-            "SFXGUI_WMod_SMGDamage.pcc",
-            "SFXGUI_WMod_SniperRifleAccuracy.pcc",
-            "SFXGUI_WMod_SniperRifleDamage.pcc",
-            "SFXGUI_W_A_Argus.pcc",
-            "SFXGUI_W_A_Avenger.pcc",
-            "SFXGUI_W_A_Cobra.pcc",
-            "SFXGUI_W_A_Collector.pcc",
-            "SFXGUI_W_A_Falcon.pcc",
-            "SFXGUI_W_A_Geth.pcc",
-            "SFXGUI_W_A_Mattock.pcc",
-            "SFXGUI_W_A_Reckoning.pcc",
-            "SFXGUI_W_A_Revenant.pcc",
-            "SFXGUI_W_A_Saber.pcc",
-            "SFXGUI_W_A_Valkyrie.pcc",
-            "SFXGUI_W_A_Vindicator.pcc",
-            "SFXGUI_W_H_ArcProjector.pcc",
-            "SFXGUI_W_H_Avalanche.pcc",
-            "SFXGUI_W_H_Blackstorm.pcc",
-            "SFXGUI_W_H_Cain.pcc",
-            "SFXGUI_W_H_Flamethrower_Player.pcc",
-            "SFXGUI_W_H_GrenadeLauncher.pcc",
-            "SFXGUI_W_H_MiniGun.pcc",
-            "SFXGUI_W_H_MissileLauncher.pcc",
-            "SFXGUI_W_H_ParticleBeam.pcc",
-            "SFXGUI_W_H_RocketLauncher.pcc",
-            "SFXGUI_W_H_TitanMissileLauncher.pcc",
-            "SFXGUI_W_P_Carnifex.pcc",
-            "SFXGUI_W_P_Eagle.pcc",
-            "SFXGUI_W_P_Ivory.pcc",
-            "SFXGUI_W_P_Phalanx.pcc",
-            "SFXGUI_W_P_Predator.pcc",
-            "SFXGUI_W_P_Scorpion.pcc",
-            "SFXGUI_W_P_Talon.pcc",
-            "SFXGUI_W_P_Thor.pcc",
-            "SFXGUI_W_SG_Claymore.pcc",
-            "SFXGUI_W_SG_Crusader.pcc",
-            "SFXGUI_W_SG_Disciple.pcc",
-            "SFXGUI_W_SG_Eviscerator.pcc",
-            "SFXGUI_W_SG_Geth.pcc",
-            "SFXGUI_W_SG_Graal.pcc",
-            "SFXGUI_W_SG_Katana.pcc",
-            "SFXGUI_W_SG_Raider.pcc",
-            "SFXGUI_W_SG_Scimitar.pcc",
-            "SFXGUI_W_SG_Striker.pcc",
-            "SFXGUI_W_SMG_Hornet.pcc",
-            "SFXGUI_W_SMG_Hurricane.pcc",
-            "SFXGUI_W_SMG_Locust.pcc",
-            "SFXGUI_W_SMG_Shuriken.pcc",
-            "SFXGUI_W_SMG_Tempest.pcc",
-            "SFXGUI_W_S_BlackWidow.pcc",
-            "SFXGUI_W_S_Incisor.pcc",
-            "SFXGUI_W_S_Indra.pcc",
-            "SFXGUI_W_S_Javelin.pcc",
-            "SFXGUI_W_S_Mantis.pcc",
-            "SFXGUI_W_S_Raptor.pcc",
-            "SFXGUI_W_S_Valiant.pcc",
-            "SFXGUI_W_S_Viper.pcc",
-            "SFXGUI_W_S_Widow.pcc",
+           @"SFXGUI_WMod_AssaultRifleAccuracy.pcc",
+           @"SFXGUI_WMod_AssaultRifleDamage.pcc",
+           @"SFXGUI_WMod_PistolAccuracy.pcc",
+           @"SFXGUI_WMod_PistolDamage.pcc",
+           @"SFXGUI_WMod_PistolStability.pcc",
+           @"SFXGUI_WMod_ShotgunDamage.pcc",
+           @"SFXGUI_WMod_ShotgunMeleeDamage.pcc",
+           @"SFXGUI_WMod_SMGAccuracy.pcc",
+           @"SFXGUI_WMod_SMGDamage.pcc",
+           @"SFXGUI_WMod_SniperRifleAccuracy.pcc",
+           @"SFXGUI_WMod_SniperRifleDamage.pcc",
+           @"SFXGUI_W_A_Argus.pcc",
+           @"SFXGUI_W_A_Avenger.pcc",
+           @"SFXGUI_W_A_Cobra.pcc",
+           @"SFXGUI_W_A_Collector.pcc",
+           @"SFXGUI_W_A_Falcon.pcc",
+           @"SFXGUI_W_A_Geth.pcc",
+           @"SFXGUI_W_A_Mattock.pcc",
+           @"SFXGUI_W_A_Reckoning.pcc",
+           @"SFXGUI_W_A_Revenant.pcc",
+           @"SFXGUI_W_A_Saber.pcc",
+           @"SFXGUI_W_A_Valkyrie.pcc",
+           @"SFXGUI_W_A_Vindicator.pcc",
+           @"SFXGUI_W_H_ArcProjector.pcc",
+           @"SFXGUI_W_H_Avalanche.pcc",
+           @"SFXGUI_W_H_Blackstorm.pcc",
+           @"SFXGUI_W_H_Cain.pcc",
+           @"SFXGUI_W_H_Flamethrower_Player.pcc",
+           @"SFXGUI_W_H_GrenadeLauncher.pcc",
+           @"SFXGUI_W_H_MiniGun.pcc",
+           @"SFXGUI_W_H_MissileLauncher.pcc",
+           @"SFXGUI_W_H_ParticleBeam.pcc",
+           @"SFXGUI_W_H_RocketLauncher.pcc",
+           @"SFXGUI_W_H_TitanMissileLauncher.pcc",
+           @"SFXGUI_W_P_Carnifex.pcc",
+           @"SFXGUI_W_P_Eagle.pcc",
+           @"SFXGUI_W_P_Ivory.pcc",
+           @"SFXGUI_W_P_Phalanx.pcc",
+           @"SFXGUI_W_P_Predator.pcc",
+           @"SFXGUI_W_P_Scorpion.pcc",
+           @"SFXGUI_W_P_Talon.pcc",
+           @"SFXGUI_W_P_Thor.pcc",
+           @"SFXGUI_W_SG_Claymore.pcc",
+           @"SFXGUI_W_SG_Crusader.pcc",
+           @"SFXGUI_W_SG_Disciple.pcc",
+           @"SFXGUI_W_SG_Eviscerator.pcc",
+           @"SFXGUI_W_SG_Geth.pcc",
+           @"SFXGUI_W_SG_Graal.pcc",
+           @"SFXGUI_W_SG_Katana.pcc",
+           @"SFXGUI_W_SG_Raider.pcc",
+           @"SFXGUI_W_SG_Scimitar.pcc",
+           @"SFXGUI_W_SG_Striker.pcc",
+           @"SFXGUI_W_SMG_Hornet.pcc",
+           @"SFXGUI_W_SMG_Hurricane.pcc",
+           @"SFXGUI_W_SMG_Locust.pcc",
+           @"SFXGUI_W_SMG_Shuriken.pcc",
+           @"SFXGUI_W_SMG_Tempest.pcc",
+           @"SFXGUI_W_S_BlackWidow.pcc",
+           @"SFXGUI_W_S_Incisor.pcc",
+           @"SFXGUI_W_S_Indra.pcc",
+           @"SFXGUI_W_S_Javelin.pcc",
+           @"SFXGUI_W_S_Mantis.pcc",
+           @"SFXGUI_W_S_Raptor.pcc",
+           @"SFXGUI_W_S_Valiant.pcc",
+           @"SFXGUI_W_S_Viper.pcc",
+           @"SFXGUI_W_S_Widow.pcc",
 
             // GUI weapon packages referenced by SFXGUI_WeaponUIDataDLC_CON_MPMerged.Data
-            "SFXGUI_W_A_Cerb_GUN01.pcc",
-            "SFXGUI_W_A_Krogan_GUN02.pcc",
-            "SFXGUI_W_A_Lancer.pcc",
-            "SFXGUI_W_A_LMG_GUN02.pcc",
-            "SFXGUI_W_A_Prothean.pcc",
-            "SFXGUI_W_A_Quarian.pcc",
-            "SFXGUI_W_P_Asari_GUN02.pcc",
-            "SFXGUI_W_P_Bloodpack.pcc",
-            "SFXGUI_W_P_Silencer.pcc",
-            "SFXGUI_W_S_Batarian_GUN02.pcc",
-            "SFXGUI_W_S_Turian_GUN01.pcc",
-            "SFXGUI_W_SG_Assault_GUN02.pcc",
-            "SFXGUI_W_SG_Quarian_GUN01.pcc",
-            "SFXGUI_W_SG_Salarian.pcc",
-            "SFXGUI_W_SMG_Bloodpack.pcc",
-            "SFXGUI_W_SMG_Geth_GUN01.pcc",
+           @"SFXGUI_W_A_Cerb_GUN01.pcc",
+           @"SFXGUI_W_A_Krogan_GUN02.pcc",
+           @"SFXGUI_W_A_Lancer.pcc",
+           @"SFXGUI_W_A_LMG_GUN02.pcc",
+           @"SFXGUI_W_A_Prothean.pcc",
+           @"SFXGUI_W_A_Quarian.pcc",
+           @"SFXGUI_W_P_Asari_GUN02.pcc",
+           @"SFXGUI_W_P_Bloodpack.pcc",
+           @"SFXGUI_W_P_Silencer.pcc",
+           @"SFXGUI_W_S_Batarian_GUN02.pcc",
+           @"SFXGUI_W_S_Turian_GUN01.pcc",
+           @"SFXGUI_W_SG_Assault_GUN02.pcc",
+           @"SFXGUI_W_SG_Quarian_GUN01.pcc",
+           @"SFXGUI_W_SG_Salarian.pcc",
+           @"SFXGUI_W_SMG_Bloodpack.pcc",
+           @"SFXGUI_W_SMG_Geth_GUN01.pcc",
 
             // GUI assets for weapons and other stuff
-            "SFXNotificationImages_AssaultRifles.pcc",
-            "SFXNotificationImages_GAW_1.pcc",
-            "SFXNotificationImages_GAW_2.pcc",
-            "SFXNotificationImages_HeavyPistols.pcc",
-            "SFXNotificationImages_HeavyWeapons.pcc",
-            "SFXNotificationImages_Shotguns.pcc",
-            "SFXNotificationImages_SMGs.pcc",
-            "SFXNotificationImages_SniperRifles.pcc",
-            "SFXNotification_ModLarge.pcc",
-            "SFXNotification_WeaponUpgrades.pcc",
-            "SFXWeaponImages_HeavyWeapons.pcc",
+           @"SFXNotificationImages_AssaultRifles.pcc",
+           @"SFXNotificationImages_GAW_1.pcc",
+           @"SFXNotificationImages_GAW_2.pcc",
+           @"SFXNotificationImages_HeavyPistols.pcc",
+           @"SFXNotificationImages_HeavyWeapons.pcc",
+           @"SFXNotificationImages_Shotguns.pcc",
+           @"SFXNotificationImages_SMGs.pcc",
+           @"SFXNotificationImages_SniperRifles.pcc",
+           @"SFXNotification_ModLarge.pcc",
+           @"SFXNotification_WeaponUpgrades.pcc",
+           @"SFXWeaponImages_HeavyWeapons.pcc",
             
             // Pawns
-            "SFXPawn_Atlas.pcc",
-            "SFXPawn_Banshee.pcc",
-            "SFXPawn_Brute.pcc",
-            "SFXPawn_Cannibal.pcc",
-            "SFXPawn_Centurion.pcc",
-            "SFXPawn_GethHunter.pcc",
-            "SFXPawn_GethPrime.pcc",
-            "SFXPawn_GethPyro.pcc",
-            "SFXPawn_GethRocketTrooper.pcc",
-            "SFXPawn_GethTrooper.pcc",
-            "SFXPawn_Guardian.pcc",
-            "SFXPawn_Gunner.pcc",
-            "SFXPawn_Harvester.pcc",
-            "SFXPawn_Husk.pcc",
-            "SFXPawn_Marauder.pcc",
-            "SFXPawn_Nemesis.pcc",
-            "SFXPawn_Phantom.pcc",
-            "SFXPawn_Ravager.pcc",
-            "SFXPawn_Trooper.pcc",
+           @"SFXPawn_Atlas.pcc",
+           @"SFXPawn_Banshee.pcc",
+           @"SFXPawn_Brute.pcc",
+           @"SFXPawn_Cannibal.pcc",
+           @"SFXPawn_Centurion.pcc",
+           @"SFXPawn_GethHunter.pcc",
+           @"SFXPawn_GethPrime.pcc",
+           @"SFXPawn_GethPyro.pcc",
+           @"SFXPawn_GethRocketTrooper.pcc",
+           @"SFXPawn_GethTrooper.pcc",
+           @"SFXPawn_Guardian.pcc",
+           @"SFXPawn_Gunner.pcc",
+           @"SFXPawn_Harvester.pcc",
+           @"SFXPawn_Husk.pcc",
+           @"SFXPawn_Marauder.pcc",
+           @"SFXPawn_Nemesis.pcc",
+           @"SFXPawn_Phantom.pcc",
+           @"SFXPawn_Ravager.pcc",
+           @"SFXPawn_Trooper.pcc",
 
             // Audio - Enemies
-            "VocalizationBanks.afc", // Also has localizations
-            "ss_cerberus_trooper_S.afc", // Localized
-            "ss_exertion_palette_D.afc", // Localized
-            "Wwise_Crt_Cerb_Nem_SFX.afc",
-            "Wwise_Crt_Cerb_Phtm_SFX.afc",
-            "Wwise_Crt_Geth_Hunter_SFX.afc",
-            "Wwise_Crt_Geth_Prime_SFX.afc",
-            "Wwise_Crt_Geth_Pyro_SFX.afc",
-            "Wwise_Crt_Geth_Trooper_SFX.afc",
-            "Wwise_Crt_Reap_Banshee_SFX.afc",
-            "Wwise_Crt_Reap_Brute_SFX.afc",
-            "Wwise_Crt_Reap_Cann_SFX.afc",
-            "Wwise_Crt_Reap_Harvester_SFX.afc",
-            "Wwise_Crt_Reap_Husk_SFX.afc",
-            "Wwise_Crt_Reap_Marauder_SFX.afc",
-            "wwise_crt_reap_ravenger_sfx.afc",
-            "Wwise_Crt_Reap_Swarmer_SFX.afc",
-            "DLC_EXP_Pack003_Base_1_SFX.afc", // Collectors
-            "DLC_EXP_Pack003_Base_2_SFX.afc", // Collectors
-            "DLC_EXP_Pack003_Base_3_SFX.afc", // Collectors
+           @"VocalizationBanks.afc", // Also has localizations
+           @"ss_cerberus_trooper_S.afc", // Localized
+           @"ss_exertion_palette_D.afc", // Localized
+           @"Wwise_Crt_Cerb_Nem_SFX.afc",
+           @"Wwise_Crt_Cerb_Phtm_SFX.afc",
+           @"Wwise_Crt_Geth_Hunter_SFX.afc",
+           @"Wwise_Crt_Geth_Prime_SFX.afc",
+           @"Wwise_Crt_Geth_Pyro_SFX.afc",
+           @"Wwise_Crt_Geth_Trooper_SFX.afc",
+           @"Wwise_Crt_Reap_Banshee_SFX.afc",
+           @"Wwise_Crt_Reap_Brute_SFX.afc",
+           @"Wwise_Crt_Reap_Cann_SFX.afc",
+           @"Wwise_Crt_Reap_Harvester_SFX.afc",
+           @"Wwise_Crt_Reap_Husk_SFX.afc",
+           @"Wwise_Crt_Reap_Marauder_SFX.afc",
+           @"wwise_crt_reap_ravenger_sfx.afc",
+           @"Wwise_Crt_Reap_Swarmer_SFX.afc",
+           @"DLC_EXP_Pack003_Base_1_SFX.afc", // Collectors
+           @"DLC_EXP_Pack003_Base_2_SFX.afc", // Collectors
+           @"DLC_EXP_Pack003_Base_3_SFX.afc", // Collectors
 
             // Audio - Weapons
             // Needs merged in some kind of AFC compaction pass.
-            "DLC_CON_GUN01_1_SFX.afc",
-            "DLC_CON_GUN01_2_SFX.afc",
-            "DLC_CON_GUN01_3_SFX.afc",
-            "DLC_CON_GUN02_1_SFX.afc",
-            "DLC_EXP_Pack003_Base_SFX.afc",
-            "DLC_EXP_Pack003_1_SFX.afc",
-            "DLC_EXP_Pack003_2_SFX.afc",
-            "DLC_EXP_Pack003_3_SFX.afc",
+           @"DLC_CON_GUN01_1_SFX.afc",
+           @"DLC_CON_GUN01_2_SFX.afc",
+           @"DLC_CON_GUN01_3_SFX.afc",
+           @"DLC_CON_GUN02_1_SFX.afc",
+           @"DLC_EXP_Pack003_Base_SFX.afc",
+           @"DLC_EXP_Pack003_1_SFX.afc",
+           @"DLC_EXP_Pack003_2_SFX.afc",
+           @"DLC_EXP_Pack003_3_SFX.afc",
 
             // Misc
-            "AreaMap_NumIcon.pcc",
-            "BIOGame_DEU.tlk",
-            "BIOGame_ESN.tlk",
-            "BIOGame_FRA.tlk",
-            "BIOGame_INT.tlk",
-            "BIOGame_ITA.tlk",
-            "BIOGame_JPN.tlk",
-            "BIOGame_POL.tlk",
-            "BIOGame_RUS.tlk",
-            "BIOG_UIWorld.pcc",
-            "GameFramework.pcc",
-            "GFxUI.pcc",
-            "SFXGUI_A_LegalLogos.pcc",
-            "SFXGUI_Fonts.pcc",
-            "SFXGUI_FontsJPN.pcc",
-            "Textures.tfc",
+           @"AreaMap_NumIcon.pcc",
+           @"BIOGame_DEU.tlk",
+           @"BIOGame_ESN.tlk",
+           @"BIOGame_FRA.tlk",
+           @"BIOGame_INT.tlk",
+           @"BIOGame_ITA.tlk",
+           @"BIOGame_JPN.tlk",
+           @"BIOGame_POL.tlk",
+           @"BIOGame_RUS.tlk",
+           @"BIOG_UIWorld.pcc",
+           @"GameFramework.pcc",
+           @"GFxUI.pcc",
+           @"SFXGUI_A_LegalLogos.pcc",
+           @"SFXGUI_Fonts.pcc",
+           @"SFXGUI_FontsJPN.pcc",
+           @"Textures.tfc",
 
             // Required for weapon previews and other textures. Not copied in slash systems
-            "Textures_DLC_CON_GUN01.tfc",
-            "Textures_DLC_CON_GUN02.tfc",
-            "Textures_DLC_EXP_Pack001.tfc",
-            "Textures_DLC_EXP_Pack002.tfc",
-            "Textures_DLC_EXP_Pack003.tfc", // Lancer, Silencer
-            "Textures_DLC_EXP_Pack003_Base.tfc", // Lancer, Silencer
-            "Textures_DLC_METR_Patch01.tfc",
-            "Textures_DLC_HEN_PR.tfc", // PPR
+           @"Textures_DLC_CON_GUN01.tfc",
+           @"Textures_DLC_CON_GUN02.tfc",
+           @"Textures_DLC_EXP_Pack001.tfc",
+           @"Textures_DLC_EXP_Pack002.tfc",
+           @"Textures_DLC_EXP_Pack003.tfc", // Lancer, Silencer
+           @"Textures_DLC_EXP_Pack003_Base.tfc", // Lancer, Silencer
+           @"Textures_DLC_METR_Patch01.tfc",
+           @"Textures_DLC_HEN_PR.tfc", // PPR
 
             // Other audio
-            "Wwise_VO_Exertions.afc", // Contains MP-specific stuff
-            "Wwise_GUI_MultiPlayer_Specific.afc", // MP Promotion
-            "Wwise_Generic_Explosions.afc",
-            "Wwise_Generic_Foley.afc",
-            "Wwise_Generic_GUI.afc",
-            "Wwise_Generic_Gameplay.afc",
-            "Wwise_Main_Menu_NonStreaming.afc",
-            "Wwise_Main_Menu_Streaming.afc",
-            "Wwise_Power_Tech_Overload.afc",
-            "Wwise_Power_Biotic_DarkChan.afc",
-            "Wwise_Weapons_S_Quarian.afc",
-            "Wwise_Weapons_Heavy_MiniNuke.afc",
+           @"Wwise_VO_Exertions.afc", // Contains MP-specific stuff
+           @"Wwise_GUI_MultiPlayer_Specific.afc", // MP Promotion
+           @"Wwise_Generic_Explosions.afc",
+           @"Wwise_Generic_Foley.afc",
+           @"Wwise_Generic_GUI.afc",
+           @"Wwise_Generic_Gameplay.afc",
+           @"Wwise_Main_Menu_NonStreaming.afc",
+           @"Wwise_Main_Menu_Streaming.afc",
+           @"Wwise_Power_Tech_Overload.afc",
+           @"Wwise_Power_Biotic_DarkChan.afc",
+           @"Wwise_Weapons_S_Quarian.afc",
+           @"Wwise_Weapons_Heavy_MiniNuke.afc",
 
 
             // Main Menu Audio (might strip later)
-            "Wwise_Smls_NorfTL.afc",
-            "Wwise_Generic_Galaxy_Map.afc",
-            "Wwise_Generic_Scripting.afc",
-            "Wwise_Smls_CaptainsCabin.afc",
+           @"Wwise_Smls_NorfTL.afc",
+           @"Wwise_Generic_Galaxy_Map.afc",
+           @"Wwise_Generic_Scripting.afc",
+           @"Wwise_Smls_CaptainsCabin.afc",
 
             // Photo Mode
-            "BIOG_PhotoModeFilters.pcc",
+           @"BIOG_PhotoModeFilters.pcc",
         ];
 
         private static readonly string[] Patch02Files = [
             // Patch02
-            "SFXGUI_FontsJPN_DLC.pcc",
-            "SFXGUI_Fonts_DLC.pcc",
+           @"SFXGUI_FontsJPN_DLC.pcc",
+           @"SFXGUI_Fonts_DLC.pcc",
         ];
 
         /// <summary>
         /// Required movies for the game to boot. I am not sure why it needs both startup loops.
         /// </summary>
         private static readonly string[] MovieFiles = [
-            "load_f01.bik",
-            "StartupLoop.bik",
-            "StartupLoop_a.bik",
+           @"load_f01.bik",
+           @"StartupLoop.bik",
+           @"StartupLoop_a.bik",
         ];
 
         #endregion
@@ -396,8 +396,8 @@ namespace ME3TweaksModManager.modmanager.milan
         {
             // Copy main binary dependencies
             new CopyManifest(
-                SourceSubFolder: "Binaries",
-                DestSubFolder: "Binaries",
+                SourceSubFolder: @"Binaries",
+                DestSubFolder: @"Binaries",
                 Files: BinaryFiles
             ),
 
@@ -407,7 +407,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 DestSubFolder: @"BioGame\CookedPCConsole",
                 Files: CookedFiles,
                 UseRelativePathing: false,
-                ExtraPatterns: [ "*.tfc" ]
+                ExtraPatterns: [ @"*.tfc" ]
             ),
 
             // Re-route DLC Patch02 files into BioGame/CookedPCConsole
@@ -432,8 +432,8 @@ namespace ME3TweaksModManager.modmanager.milan
                 DestSubFolder: @"Engine\Shaders",
                 UseRelativePathing: false,
                 Files: [],
-                ExtraPatterns: ["*.usf"]
-                
+                ExtraPatterns: [@"*.usf"]
+
             )
         };
 
@@ -449,8 +449,8 @@ namespace ME3TweaksModManager.modmanager.milan
 
         #region MilanDelta manifest
 
-        private const string MilanDeltaFolderName = "MilanDelta";
-        private const string MilanDeltaManifestFileName = "manifest.json";
+        private const string MilanDeltaFolderName = @"MilanDelta";
+        private const string MilanDeltaManifestFileName = @"manifest.json";
         private const double SupportedMilanDeltaVersion = 0.2;
 
         private enum MilanDeltaVerificationFailureKind
@@ -491,7 +491,7 @@ namespace ME3TweaksModManager.modmanager.milan
             var manifestPath = Path.Combine(deltaFolder, MilanDeltaManifestFileName);
             if (!File.Exists(manifestPath))
             {
-                throw new Exception($"Project Milan mod is missing its {MilanDeltaFolderName} manifest ({MilanDeltaManifestFileName}). This is not a valid Project Milan build.");
+                throw new Exception($"{milanMod.ModName} mod is missing its {MilanDeltaFolderName} manifest ({MilanDeltaManifestFileName}). This is not a valid Project Milan build.");
             }
 
             MilanDeltaManifest manifest;
@@ -517,7 +517,7 @@ namespace ME3TweaksModManager.modmanager.milan
             // Verify the manifest hasn't been corrupted or tampered with: recompute the signature over
             // the exact same compact {milan, version, deltas} body that was originally signed.
             var bodyJson = JsonSerializer.Serialize<MilanDeltaSignableBody>(manifest);
-            var computedSignature = MUtilities.CalculateHash(Encoding.UTF8.GetBytes(bodyJson), "sha256");
+            var computedSignature = MUtilities.CalculateHash(Encoding.UTF8.GetBytes(bodyJson), @"sha256");
             if (!string.Equals(computedSignature, manifest.Signature, StringComparison.OrdinalIgnoreCase))
             {
                 throw new Exception($"{MilanDeltaManifestFileName} signature does not match its contents. This build may be corrupted or tampered with.");
@@ -525,9 +525,10 @@ namespace ME3TweaksModManager.modmanager.milan
 
             foreach (var entry in manifest.Deltas)
             {
-                if (entry.Format != null && (entry.Format != MilanDelta.TlkDeltaXml.Format
-                    || !Path.GetExtension(entry.Filename).Equals(".tlk", StringComparison.OrdinalIgnoreCase)))
-                    throw new Exception($"Unsupported delta format '{entry.Format}' for {entry.Filename}.");
+                if (entry.Format != null && (entry.Format != MilanDelta.TlkDeltaXml.Format || !Path.GetExtension(entry.Filename).Equals(@".tlk", StringComparison.OrdinalIgnoreCase)))
+                {
+                    throw new Exception($@"Unsupported delta format '{entry.Format}' for {entry.Filename}.");
+                }
             }
 
             milanDeltaFolder = deltaFolder;
@@ -547,12 +548,11 @@ namespace ME3TweaksModManager.modmanager.milan
             using var decompressedStream = MEPackage.GetDecompressedPackageStream(sourceStream);
             decompressedStream.Position = 0;
 
-            VerifySizeAndHash(decompressedStream.Length, () => MUtilities.CalculateHash(decompressedStream, "sha256"),
-                entry.SourceSize, entry.SourceHash, entry.Filename, "source");
+            VerifySizeAndHash(decompressedStream.Length, () => MUtilities.CalculateHash(decompressedStream, @"sha256"), entry.SourceSize, entry.SourceHash, entry.Filename, @"source");
 
             using var patchedStream = ApplyMilanDeltaPatch(decompressedStream, entry);
 
-            // Re-compress the verified, patched data - this becomes the final data of the file.
+            // Re-compress the verified, patched data - this becomes the final data of the file
             patchedStream.Position = 0;
             using var package = MEPackageHandler.OpenMEPackageFromStream(patchedStream, packagePath);
             using var saved = package.SaveToStream(compress: true);
@@ -560,24 +560,21 @@ namespace ME3TweaksModManager.modmanager.milan
         }
 
         /// <summary>
-        /// Applies a MilanDelta JPatch delta to a file that is not a package (e.g. Coalesced.bin), which has no
-        /// compression to undo: the delta is applied to the file's bytes as they are, and the patched output is returned as is.
-        /// Both the input and the output are verified against the manifest's recorded size and SHA-256 hash.
+        /// Applies a MilanDelta JPatch file to non-package files
         /// </summary>
         private byte[] ApplyMilanRawDelta(string sourceFile, MilanDeltaFileEntry entry)
         {
             var bytes = File.ReadAllBytes(sourceFile);
             if (entry.Format == MilanDelta.TlkDeltaXml.Format)
+            {
                 bytes = MilanDelta.TlkDeltaXml.Decompress(bytes);
-            using var sourceStream = new MemoryStream(bytes);
+            }
 
-            VerifySizeAndHash(sourceStream.Length, () => MUtilities.CalculateHash(sourceStream, "sha256"),
-                entry.SourceSize, entry.SourceHash, entry.Filename, "source");
+            using var sourceStream = new MemoryStream(bytes);
+            VerifySizeAndHash(sourceStream.Length, () => MUtilities.CalculateHash(sourceStream, @"sha256"), entry.SourceSize, entry.SourceHash, entry.Filename, @"source");
 
             using var patchedStream = ApplyMilanDeltaPatch(sourceStream, entry);
-            return entry.Format == MilanDelta.TlkDeltaXml.Format
-                ? MilanDelta.TlkDeltaXml.Compress(patchedStream.ToArray())
-                : patchedStream.ToArray();
+            return entry.Format == MilanDelta.TlkDeltaXml.Format ? MilanDelta.TlkDeltaXml.Compress(patchedStream.ToArray()) : patchedStream.ToArray();
         }
 
         /// <summary>
@@ -767,7 +764,9 @@ namespace ME3TweaksModManager.modmanager.milan
         private void FinishModSlash(string gamePath)
         {
             if (plan.Slash == null)
+            {
                 return;
+            }
 
             var missed = plan.ModPatches.Keys.Where(x => !appliedModPatches.Contains(x)).ToList();
             if (missed.Count > 0)
@@ -803,7 +802,9 @@ namespace ME3TweaksModManager.modmanager.milan
         private void CheckLinkerPatchOutputs(IReadOnlyCollection<string> writtenFiles)
         {
             if (plan.Slash == null)
+            {
                 return;
+            }
 
             var written = writtenFiles.ToHashSet(StringComparer.OrdinalIgnoreCase);
             var missing = plan.LinkerPatchOutputs.Where(x => !written.Contains(x)).ToList();
@@ -973,7 +974,7 @@ namespace ME3TweaksModManager.modmanager.milan
             var file = le3Sources.GetVanillaSourceFile(copy.SourcePath);
             var destFile = Path.Combine(destGamePath, copy.DestRelativePath);
             Directory.CreateDirectory(Path.GetDirectoryName(destFile));
-            M3Log.Information($"Copying {file} to {destFile}");
+            M3Log.Information($@"Copying {file} to {destFile}");
 
             bool convertToLMP = LMPLicensee.AppliesTo(destFile);
             var slashPatch = copy.SlashPatch;
@@ -1128,13 +1129,9 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         private static List<string> GetModOutputs(Mod milanMod, string destinationFolderPath)
         {
-            // Stand-in for the installation, which doesn't exist yet; only its paths are used
+            // Fake target to prepare installation
             var target = new GameTargetWPF(MEGame.LMP, destinationFolderPath, false, isCustomOption: true, skipInit: true);
             var queues = milanMod.GetInstallationQueues(CreateMilanInstallOptions(milanMod, target));
-            if (queues.SFARJobs.Count > 0)
-            {
-                throw new Exception("Project Milan cannot install files into SFARs.");
-            }
 
             var dlcPath = MEDirectories.GetDLCPath(MEGame.LMP, target.TargetPath);
             var outputs = new List<string>();
@@ -1154,12 +1151,12 @@ namespace ME3TweaksModManager.modmanager.milan
         }
 
         /// <summary>
-        /// Path, relative to the installation root, of the splash image shown when the game boots.
+        /// Path to the splash file location
         /// </summary>
         private static readonly string SplashRelativePath = Path.Combine(@"BioGame", @"Splash", @"PC", @"splash.bmp");
 
         /// <summary>
-        /// Path of the splash image the Project Milan mod ships, which may not exist.
+        /// Path of the splash image in Project Milan mod folder
         /// </summary>
         private static string GetSplashSourcePath(Mod milanMod) => Path.Combine(milanMod.ModPath, @"MilanSplash", @"splash.bmp");
 
@@ -1201,16 +1198,26 @@ namespace ME3TweaksModManager.modmanager.milan
                     if (slash == null)
                     {
                         if (interop.UserInstall)
+                        {
+                            // Incorrectly built Project Milan
                             throw new Exception("The Project Milan mod has no slash manifest");
+                        }
                         M3Log.Warning(@"Project Milan mod has no slash manifest; the installation will not be optimized");
                     }
                 }
 
                 // Work out and check everything that can be checked up front, so an installation that can't succeed fails
-                // before anything is written.
+                // before anything is written
                 interop.SetStatus?.Invoke("Checking LE3 installation...");
                 le3Sources = new LE3SourceResolver(sourceGameTarget.TargetPath, BackupService.GetGameBackupPath(MEGame.LE3));
-                M3Log.Information($"Building Project Milan from {le3Sources.SourceRoot}" + (le3Sources.BackupRoot != null ? $"; modified files will be taken from the LE3 backup at {le3Sources.BackupRoot}" : "; there is no LE3 backup to take modified files from"));
+                M3Log.Information($@"Building Project Milan from {le3Sources.SourceRoot}");
+                if (le3Sources.BackupRoot == null)
+                {
+                    M3Log.Information($@"We will also source files from {le3Sources.BackupRoot}");
+                } else
+                {
+                    M3Log.Warning("No backup available; only sourcing from game");
+                }
                 bool leaveTFCsInLE3 = false;
 #if DEBUG
                 leaveTFCsInLE3 = generateSlashManifest; // The generator reads them from LE3
@@ -1232,18 +1239,18 @@ namespace ME3TweaksModManager.modmanager.milan
                 ExecutePlan(destinationFolderPath);
 
                 // Rename game executable. This is used a lot by tooling to identify the target game
-                var existingExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffect3.exe");
-                var newNameExe = Path.Combine(destinationFolderPath, "Binaries", "Win64", "MassEffectMultiplayer.exe");
+                var existingExe = Path.Combine(destinationFolderPath, @"Binaries", @"Win64", @"MassEffect3.exe");
+                var newNameExe = Path.Combine(destinationFolderPath, @"Binaries", @"Win64", @"MassEffectMultiplayer.exe");
                 File.Move(existingExe, newNameExe);
 
-                // Shaders copy over; we just make directory here first
+                // Copy shaders usfs. Probably not useful but might as well keep them
                 Directory.CreateDirectory(Path.Combine(destinationFolderPath, @"Engine", @"Shaders"));
 
                 // Install Project Milan
                 var lmpTarget = new GameTargetWPF(MEGame.LMP, destinationFolderPath, true);
                 var optionsPackage = CreateMilanInstallOptions(milanmod, lmpTarget);
 
-                interop.SetStatus?.Invoke("Installing Project Milan...");
+                interop.SetStatus?.Invoke("Installing Legendary Edition Multiplayer...");
                 ModInstaller mi = new ModInstaller(optionsPackage);
                 mi.SetPercent = setPercent;
                 mi.SetAction = setAction;
@@ -1258,7 +1265,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
                 if (mi.InstallationResult.Result != EModInstallerResult.INSTALL_SUCCESSFUL)
                 {
-                    throw new Exception($"Installing Project Milan failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
+                    throw new Exception($"Installing {optionsPackage.ModBeingInstalled.ModName} failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
                 }
                 asiSupportFiles.AddRange(mi.ASISupportFiles.Select(x => Path.GetRelativePath(destinationFolderPath, x).Replace(Path.DirectorySeparatorChar, '\\')));
 
@@ -1283,6 +1290,7 @@ namespace ME3TweaksModManager.modmanager.milan
 #endif
 
                 // Ensure linker patches are generated
+                // Project Milan V1 doesn't have these anymore
                 var linkerPatchFiles = new List<string>();
                 if (LinkerPatchMerge.NeedsMerged(lmpTarget))
                 {
@@ -1347,16 +1355,16 @@ namespace ME3TweaksModManager.modmanager.milan
             interop?.SetStatus?.Invoke("Removing incomplete installation...");
             try
             {
-                M3Log.Information($"Deleting incomplete installation at {destinationFolderPath}");
+                M3Log.Information($@"Deleting incomplete installation at {destinationFolderPath}");
                 if (!MUtilities.DeleteFilesAndFoldersRecursively(destinationFolderPath, throwOnFailed: false, deleteDirectoryItself: deleteDirectoryItself))
                 {
-                    M3Log.Error($"Could not fully delete the incomplete installation at {destinationFolderPath}");
+                    M3Log.Error($@"Could not fully delete the incomplete installation at {destinationFolderPath}");
                 }
             }
             catch (Exception e)
             {
                 // Never hide the original failure
-                M3Log.Exception(e, $"Could not delete the incomplete installation at {destinationFolderPath}:");
+                M3Log.Exception(e, $@"Could not delete the incomplete installation at {destinationFolderPath}:");
             }
         }
 

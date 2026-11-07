@@ -593,7 +593,7 @@ namespace ME3TweaksModManager.modmanager.milan
         private static bool IsUnchecked(string relativePath) => UncheckedSourceFiles.Contains(relativePath, StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Cheaply checks there is a vanilla copy of a file by size alone: the file itself, or the LE3 backup's copy.
+        /// Cheaply checks there is a vanilla copy of a file by size alone
         /// </summary>
         /// <param name="size">The size of the copy that will be used.</param>
         /// <param name="problem">Why there is no usable copy, if there isn't one.</param>
@@ -611,10 +611,14 @@ namespace ME3TweaksModManager.modmanager.milan
 
             size = info.Length;
             if (IsUnchecked(relativePath) || !vanillaDatabase.TryGetValue(relativePath, out var vanillaVersions))
-                return true; // Not checked (see GetVanillaSourceFile)
+            {
+                return true; // Not checked
+            }
 
             if (vanillaVersions.Any(x => x.size == info.Length))
+            {
                 return true;
+            }
 
             if (BackupRoot != null)
             {
@@ -626,7 +630,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
             }
 
-            problem = $"{relativePath} in your LE3 installation is modified, and there is no vanilla copy of it in an LE3 backup. Project Milan must be built from vanilla LE3 files: restore this file, or create an LE3 backup.";
+            problem = $"Unable to obtain an unmodified copy of {relativePath}. Your version is modified, and there is no vanilla copy of it in an LE3 backup. Project Milan must be built from vanilla LE3 files, repair the game to install Project Milan.";
             return false;
         }
 
@@ -639,7 +643,9 @@ namespace ME3TweaksModManager.modmanager.milan
         {
             var relativePath = GetRelativePath(sourceFile);
             if (IsUnchecked(relativePath))
+            {
                 return sourceFile;
+            }
 
             if (!vanillaDatabase.ContainsKey(relativePath))
             {
@@ -648,7 +654,9 @@ namespace ME3TweaksModManager.modmanager.milan
             }
 
             if (IsVanillaLE3File(sourceFile, relativePath))
+            {
                 return sourceFile;
+            }
 
             if (BackupRoot != null)
             {
