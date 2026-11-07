@@ -282,6 +282,13 @@ namespace ME3TweaksModManager.modmanager.milan
 
                     if (localizedMatches.Count == 0)
                     {
+                        // 11/07/2026 - Skip localization files that are missing except INT
+                        if (MilanLocalizationFiles.IsOptionalLocalization(fileName))
+                        {
+                            M3Log.Information($@"Not copying missing localization file {fileName}");
+                            continue;
+                        }
+
                         problems.Add($"{fileName} does not exist in {sources.SourceRoot}");
                         continue;
                     }
