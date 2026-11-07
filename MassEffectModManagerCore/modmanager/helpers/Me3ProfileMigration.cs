@@ -46,7 +46,15 @@ namespace ME3TweaksModManager.modmanager.helpers
                     ?? throw new InvalidOperationException("ME3 Profile Dump (group 499) was not found in the ASI manifest.");
                 var installed = await Task.Run(() => ASIManager.InstallASIToTarget(asi, me3Target));
                 if (!installed)
+                {
                     throw new IOException("ME3 Profile Dump ASI installation did not complete successfully.");
+                }
+
+                // 11/07/2026 - Install bink bypass
+                if (!me3Target.IsBinkBypassInstalled())
+                {
+                    me3Target.InstallBinkBypass(true);
+                }
             }
             catch (Exception e)
             {
