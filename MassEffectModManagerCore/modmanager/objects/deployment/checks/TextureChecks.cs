@@ -54,6 +54,11 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
             var referencedFiles = item.ModToValidateAgainst.GetAllRelativeReferences().Select(x => Path.Combine(item.ModToValidateAgainst.ModPath, x)).ToList();
             var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == @".tfc").ToList();
+            if (item.ModToValidateAgainst.IsProjectMilan && item.ModToValidateAgainst.Game == MEGame.LMP)
+            {
+                // LMP needs LE3 TFCs as slash occurs at install not deploy
+                allTFCs.AddRange(GetLE3DLCTFCs());
+            }
             int numChecked = 0;
             foreach (var f in referencedFiles)
             {

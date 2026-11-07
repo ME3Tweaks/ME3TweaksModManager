@@ -32,11 +32,11 @@ namespace ME3TweaksModManager.modmanager.telemetry
 
         public override void OnStart(Activity activity)
         {
-            activity.SetTag("BuildDate", _buildDate);
-            activity.SetTag("Version", _version);
-            activity.SetTag("Environment", _environment);
+            activity.SetTag(@"BuildDate", _buildDate);
+            activity.SetTag(@"Version", _version);
+            activity.SetTag(@"Environment", _environment);
             // Use OTel's own semantic convention for user id, not "ai.user.id"
-            activity.SetTag("enduser.id", _userId);
+            activity.SetTag(@"enduser.id", _userId);
         }
     }
 
