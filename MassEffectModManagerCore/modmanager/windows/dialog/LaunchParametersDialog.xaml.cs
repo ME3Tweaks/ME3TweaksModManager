@@ -164,6 +164,8 @@ namespace ME3TweaksModManager.modmanager.windows
                     // LE2 has no unofficial localizations.
                     break;
                 case MEGame.LE3:
+                    // 11/06/2026 - Add LMP
+                case MEGame.LMP:
                     LanguageOptions.Add(new LauncherLanguageOption { DisplayString = M3L.GetString(M3L.string_english), LanguageString = @"INT" });
                     LanguageOptions.Add(new LauncherLanguageOption { DisplayString = M3L.GetString(M3L.string_french), LanguageString = @"FRA" });
                     LanguageOptions.Add(new LauncherLanguageOption { DisplayString = M3L.GetString(M3L.string_frenchTextEnglishVoiceover), LanguageString = @"FRE" });
