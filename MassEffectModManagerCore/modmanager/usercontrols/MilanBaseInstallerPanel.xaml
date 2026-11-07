@@ -11,29 +11,21 @@
     MinHeight="200"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel>
-        <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
-            <Image
-                DockPanel.Dock="Left"
-                Source="/images/milan.png"
-                Height="128"
-                Width="128"
-                RenderOptions.BitmapScalingMode="HighQuality"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center" 
-                Margin="0,0,5,0"/>
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Legendary Edition Multiplayer" FontWeight="Bold" FontSize="24" VerticalAlignment="Center"/>
-                <TextBlock Text="Base Installer" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
-            </StackPanel>
-        </DockPanel>
+        <Image
+            DockPanel.Dock="Top"
+            Source="/images/lmpbi.png"
+            RenderOptions.BitmapScalingMode="HighQuality"
+            Margin="0,0,0,5"/>
         <DockPanel DockPanel.Dock="Bottom" Margin="3,20,0,0">
-            <Button Content="Generate installation" Command="{Binding InstallCommand}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" DockPanel.Dock="Right"/>
+            <Button Content="Install Legendary Edition Multiplayer" ToolTip="Generates an LMP target and installs Legendary Edition Multiplayer into it" Command="{Binding InstallCommand}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" DockPanel.Dock="Right"/>
             <Button Content="Cancel" Margin="0,0,5,0" Command="{Binding CancelCommand}" DockPanel.Dock="Right"/>
             <TextBlock HorizontalAlignment="Left" Text="{Binding StatusText}" Margin="0,0,5,0"/>
-
         </DockPanel>
         <StackPanel>
-            <TextBlock Text="Legendary Edition Multiplayer's initial installation will be created from an unmodified copy of Mass Effect 3 Legendary Edition. Your backup will be used if your main game is modified." TextWrapping="Wrap" MaxWidth="400"/>
+            <TextBlock 
+                Text="Installing Legendary Edition Multiplayer will create a separate game installation specifically for multiplayer, known as LMP. You can launch it from the game launcher or from Mod Manager. Installation requires a game backup or an unmodified copy of Mass Effect 3 Legendary Edition." 
+                TextWrapping="Wrap"
+                Margin="0,0,0,10"/>
             <DockPanel>
                 <TextBlock Text="Source installation" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120" FontWeight="Bold"/>
                 <usercontrols:TargetSelector x:Name="SourceTargetSelector"
@@ -52,7 +44,7 @@
             <CheckBox x:Name="MigrateMe3ProfileCheckBox" Margin="0,12,0,0" Visibility="Collapsed"
                       IsChecked="{Binding MigrateMe3Profile}"
                       Content="Migrate my original ME3 multiplayer profile after installation"
-                      ToolTip="Mod Manager will install the ME3 profile dumper ASI, launch ME3, and ask before writing MP_Profile."/>
+                      ToolTip="Mod Manager will install the ME3 profile dumper ASI, launch ME3, then write your MP_Profile file once you enter multiplayer"/>
 
         </StackPanel>
 

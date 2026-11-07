@@ -55,6 +55,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (milanMod == null)
             {
+                // This shouldn't be available anymore now that alpha menu is gone.
                 M3L.ShowDialog(MainWindow.Instance, "You must download and import Project Milan into your mod library in order to make a game target for LMP.", "Project Milan not found", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -88,9 +89,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void Install()
         {
             // Project Milan pipelines rebuild the same dev install over and over, so don't ask.
-            if (session != null)
+            if (session != null && !EnsureInstallDirectory(out var directoryError))
             {
-                Directory.CreateDirectory(InstallLocation);
+                // Show error message on failure
+                session.Finished(false, directoryError);
+                OnClosing(DataEventArgs.Empty);
+                return;
             }
             if (session != null || PerformPrecheck())
             {
@@ -140,22 +144,83 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             owner.SelectedGameTarget = target;
         }
 
-        // This method should be async cause it's going to be long running for hash checks.
-        private bool PerformPrecheck()
+        /// <summary>
+        /// Checks the install directory and its top level folders are writable
+        /// </summary>
+        private bool IsInstallDirectoryWritable()
         {
+            if (!MUtilities.IsDirectoryWritable(InstallLocation))
+            {
+                return false;
+            }
+
+            foreach (var subDir in Directory.GetDirectories(InstallLocation))
+            {
+                if (!MUtilities.IsDirectoryWritable(subDir))
+                {
+                    M3Log.Warning($"Installation subdirectory {subDir} is not writable");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Makes sure the install directory exists and is writable. If it isn't, runs PermissionsGranter to create it
+        /// </summary>
+        private bool EnsureInstallDirectory(out string error)
+        {
+            error = null;
             try
             {
-                Directory.CreateDirectory(InstallLocation);
+                if (Directory.Exists(InstallLocation))
+                {
+                    if (IsInstallDirectoryWritable())
+                    {
+                        return true;
+                    }
+
+                    // Could have been made by an admin
+                    M3Log.Warning($"Installation directory {InstallLocation} is not writable, requesting permissions");
+                    if (MUtilities.EnableWritePermissionsToFolders(new List<string> { InstallLocation }) && IsInstallDirectoryWritable())
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (MUtilities.CreateDirectoryWithWritePermission(InstallLocation) && MUtilities.IsDirectoryWritable(InstallLocation))
+                    {
+                        return true;
+                    }
+                }
+
+                error = $"Mod Manager could not create or write to the installation directory:\n\n{InstallLocation}\n\nThis usually means Mod Manager doesn't have permission to write there. If you cancelled the administrator prompt, try again and allow it.";
             }
             catch (Exception e)
             {
                 M3Log.Exception(e, "Unable to create installation directory:");
+                error = $"Mod Manager could not create the installation directory:\n\n{InstallLocation}\n\n{e.Message}";
+            }
+
+            M3Log.Error($"Unable to create or write to installation directory {InstallLocation}");
+            return false;
+        }
+
+        // This method should be async cause it's going to be long running for hash checks
+        private bool PerformPrecheck()
+        {
+            if (!EnsureInstallDirectory(out var directoryError))
+            {
+                M3L.ShowDialog(window, directoryError, "Unable to create installation directory", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
             if (!Directory.Exists(InstallLocation))
             {
                 M3Log.Error($"Installation path '{InstallLocation}' does not exist.");
+                M3L.ShowDialog(window, $"The installation directory does not exist:\n\n{InstallLocation}", "Unable to create installation directory", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
@@ -216,11 +281,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var migrate = MigrateMe3Profile;
                     OnClosing(DataEventArgs.Empty);
                     if (builtTarget != null)
+                    {
+                        // Add target to the target selector
                         addTarget(owner, builtTarget);
+                    }
                     if (migrate && me3Target != null)
+                    {
                         _ = Me3ProfileMigration.StartAsync(owner, me3Target);
+                    }
                     else if (migrate)
-                        M3L.ShowDialog(owner, "Project Milan was installed, but Mod Manager could not find an original ME3 installation for profile migration.", "ME3 target not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                    {
+                        M3L.ShowDialog(owner, $"{milanMod.ModName} was installed, but Mod Manager could not find an original ME3 installation for profile migration.", "ME3 target not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 });
             }
             else
@@ -230,7 +302,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     SourceTargetSelector.IsEnabled = true;
                     MigrateMe3ProfileCheckBox.IsEnabled = true;
-                    StatusText = "Installation failed.";
+                    StatusText = "Installation failed";
                     if (session != null)
                     {
                         OnClosing(DataEventArgs.Empty); // Project Milan shows the error
@@ -310,7 +382,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                                                             && GetLEGameDirectory(x) != null));
 
             SelectedTarget = LE3Targets.FirstOrDefault();
+            if (LE3Targets.Count == 0)
+            {
+                M3Log.Error($"Aborting LMP install: No suitable LE3 targets available and no backup");
+                M3L.ShowDialog(MainWindow.Instance, 
+                    "Unable to find an installation source for Legenary Edition Multiplayer. Legendary Edition Multiplayer requires a backup or a copy of Mass Effect 3 Legendary Edition that is not texture modded.",
+                    "Unable to install LMP",
+                    MessageBoxButton.OK, 
+                    MessageBoxImage.Error);
 
+                // Close panel
+                OnClosing(DataEventArgs.Empty);
+                return;
+            }
             if (session != null)
             {
                 if (sessionLE3Target != null)
@@ -329,7 +413,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
-                    session.Finished(false, "Mod Manager couldn't work out which LE3 to build from or where to put the installation");
+                    session.Finished(false, "Mod Manager couldn't determine out which LE3 to build from or where to put the installation");
                     OnClosing(DataEventArgs.Empty);
                 }
             }
