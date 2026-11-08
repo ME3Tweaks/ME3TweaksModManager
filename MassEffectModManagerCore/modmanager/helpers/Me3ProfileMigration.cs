@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.IO.Pipes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,12 +11,16 @@ using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
-    /// <summary>Receives one ME3ProfileDump export after an opted-in Milan installation.</summary>
+    /// <summary>
+    /// Receives one ME3ProfileDump export after an opted-in Milan installation
+    /// </summary>
     internal sealed class Me3ProfileMigration : IDisposable
     {
-        // Protocol: one UTF-8 JSON document followed by '\n' or end of connection.
-        internal const string PipeName = "m3convertmpprofile";
+        internal const string ExportFileName = "ME3MPProfile.json";
+
+        // 8MiB. What a chungus. Most are about 115KB.
         private const int MaxJsonBytes = 8 * 1024 * 1024;
+        private static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(2); // Backup in case the watcher misses an event
         private static Me3ProfileMigration active;
         private readonly MainWindow window;
         private readonly CancellationTokenSource cancellation = new();
@@ -28,8 +31,8 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             this.window = window;
             waitingTask = BackgroundTaskEngine.SubmitBackgroundJob("ME3ProfileMigration",
-                "Waiting for ME3 to load the multiplayer menu and send its profile...",
-                "ME3 multiplayer profile received.");
+                "Navigate to the multiplayer menu in ME3 to begin the profile migration",
+                "ME3 multiplayer profile received");
         }
 
         public static async Task StartAsync(MainWindow window, GameTargetWPF me3Target)
@@ -60,17 +63,22 @@ namespace ME3TweaksModManager.modmanager.helpers
             {
                 M3Log.Exception(e, "Could not install ME3 Profile Dump ASI for profile migration");
                 if (!window.AppExiting)
+                {
                     M3L.ShowDialog(window, $"Project Milan was installed, but the ME3 Profile Dump ASI could not be installed:\n\n{e.Message}",
-                        "Profile migration failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                       "Profile migration failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 return;
             }
 
-            if (window.AppExiting) return;
-
+            if (window.AppExiting)
+            {
+                return;
+            }
             var migration = new Me3ProfileMigration(window);
             active = migration;
             window.Closed += migration.WindowClosed;
-            _ = migration.ListenAsync(); // Bind before launching ME3.
+            RemoveStaleExport(); // Nuke old data to ensure we don't import old garbo
+            _ = migration.WatchAsync();
             _ = Task.Run(() =>
             {
                 try { GameLauncher.LaunchGame(me3Target); }
@@ -85,14 +93,59 @@ namespace ME3TweaksModManager.modmanager.helpers
             });
         }
 
-        private async Task ListenAsync()
+        private static string ExportPath => Path.Combine(M3Filesystem.GetAppDataFolder(), ExportFileName);
+
+        /// <summary>
+        /// Removes old transferred profile data and its temporary file too
+        /// </summary>
+        private static void RemoveStaleExport()
         {
+            var path = ExportPath;
             try
             {
-                using var pipe = new NamedPipeServerStream(PipeName, PipeDirection.In, 1,
-                    PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
-                await pipe.WaitForConnectionAsync(cancellation.Token);
-                var json = await ReadJsonAsync(pipe, cancellation.Token);
+                File.Delete(path);
+                File.Delete(path + ".tmp");
+            }
+            catch (Exception e)
+            {
+                M3Log.Warning($"Could not delete stale ME3 profile export: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Watches for the profile to be written on disk
+        /// </summary>
+        /// <returns></returns>
+        private async Task WatchAsync()
+        {
+            // Use the current time to make sure we don't import something old
+            var startedUtc = DateTime.UtcNow;
+            try
+            {
+                var path = ExportPath;
+                using var signal = new SemaphoreSlim(0);
+                using var watcher = new FileSystemWatcher(Path.GetDirectoryName(path), ExportFileName)
+                {
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size
+                };
+                void Changed(object s, FileSystemEventArgs e)
+                {
+                    if (signal.CurrentCount == 0)
+                    {
+                        signal.Release();
+                    }
+                }
+                watcher.Created += Changed;
+                watcher.Changed += Changed;
+                watcher.Renamed += Changed; // Final transfer comes in as a rename
+                watcher.EnableRaisingEvents = true;
+
+                string json;
+                while ((json = TryReadExport(path, startedUtc)) == null)
+                {
+                    await signal.WaitAsync(PollInterval, cancellation.Token);
+                }
+
                 CompleteWaitingTask("ME3 multiplayer profile received.");
                 await window.Dispatcher.InvokeAsync(() => Import(json));
             }
@@ -102,29 +155,60 @@ namespace ME3TweaksModManager.modmanager.helpers
                 M3Log.Exception(e, "ME3 profile migration failed");
                 CompleteWaitingTask("ME3 profile migration failed.");
                 if (!cancellation.IsCancellationRequested)
+                {
                     await window.Dispatcher.InvokeAsync(() =>
-                        M3L.ShowDialog(window, $"Could not receive the ME3 profile: {e.Message}", "Profile migration failed", MessageBoxButton.OK, MessageBoxImage.Error));
+                    M3L.ShowDialog(window, $"Could not read the ME3 profile: {e.Message}", "Profile migration failed", MessageBoxButton.OK, MessageBoxImage.Error));
+                }
             }
-            finally { Dispose(); }
+            finally
+            {
+                Dispose();
+            }
         }
 
-        private static async Task<string> ReadJsonAsync(Stream pipe, CancellationToken token)
+        /// <summary>
+        /// Attempts to read the contents of the export. Returns null until it succeeds.
+        /// </summary>
+        private static string TryReadExport(string path, DateTime notBeforeUtc)
         {
-            using var data = new MemoryStream();
-            var buffer = new byte[8192];
-            while (true)
+            string data;
+            try
             {
-                var count = await pipe.ReadAsync(buffer, token);
-                if (count == 0) break;
-                var end = Array.IndexOf(buffer, (byte)'\n', 0, count);
-                var length = end < 0 ? count : end;
-                if (data.Length + length > MaxJsonBytes)
-                    throw new InvalidDataException("The ME3 profile export exceeds the 8 MB pipe limit.");
-                data.Write(buffer, 0, length);
-                if (end >= 0) break;
+                var info = new FileInfo(path);
+                if (!info.Exists || info.LastWriteTimeUtc < notBeforeUtc)
+                {
+                    return null;
+                }
+
+                // Share delete so the read never blocks the ASI's replace.
+                data = File.ReadAllText(path);
             }
-            if (data.Length == 0) throw new InvalidDataException("The named pipe contained no profile JSON.");
-            return new UTF8Encoding(false, true).GetString(data.ToArray());
+            catch (FileNotFoundException)
+            {
+                // File is not available yet
+                return null;
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                // File is currently in use
+                M3Log.Warning($"ME3 profile export not readable yet, will retry: {e.Message}");
+                return null;
+            }
+
+            if (data.Length == 0)
+            {
+                throw new InvalidDataException("The ME3 profile export file is empty!");
+            }
+            try
+            {
+                // Data read, no longer needed
+                File.Delete(path);
+            }
+            catch (Exception e)
+            {
+                M3Log.Warning($"Failed to delete dumped transient profile: {e.Message}");
+            }
+            return data;
         }
 
         private void Import(string json)
