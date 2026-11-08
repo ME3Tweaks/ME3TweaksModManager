@@ -1,5 +1,6 @@
 ﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.M3Merge.LinkerPatches;
 using ME3TweaksCoreWPF.Targets;
@@ -1184,11 +1185,12 @@ namespace ME3TweaksModManager.modmanager.milan
             try
             {
                 // Validate the Project Milan mod and its MilanDelta manifest before touching the
-                // destination directory - an invalid/missing/tampered manifest must reject the build.
+                // destination directory - an invalid/missing/tampered manifest must abort cause it would
+                // result in a different final state
                 interop.SetStatus?.Invoke("Validating Project Milan build...");
                 LoadMilanDeltaManifest(milanmod);
 
-                // Slash is applied as the installation is built. Generating a new slash manifest needs an unslashed installation.
+                // Slash is applied as the installation is built. Generating a new slash manifest needs an unslashed installation to compute the difference
                 MilanSlashManifest slash = null;
 #if DEBUG
                 if (!generateSlashManifest)
@@ -1200,7 +1202,7 @@ namespace ME3TweaksModManager.modmanager.milan
                         if (interop.UserInstall)
                         {
                             // Incorrectly built Project Milan
-                            throw new Exception("The Project Milan mod has no slash manifest");
+                            throw new Exception("This mod is missing its slash manifest - cannot install");
                         }
                         M3Log.Warning(@"Project Milan mod has no slash manifest; the installation will not be optimized");
                     }
@@ -1214,7 +1216,8 @@ namespace ME3TweaksModManager.modmanager.milan
                 if (le3Sources.BackupRoot == null)
                 {
                     M3Log.Information($@"We will also source files from {le3Sources.BackupRoot}");
-                } else
+                }
+                else
                 {
                     M3Log.Warning("No backup available; only sourcing from game");
                 }
@@ -1223,11 +1226,20 @@ namespace ME3TweaksModManager.modmanager.milan
                 leaveTFCsInLE3 = generateSlashManifest; // The generator reads them from LE3
 #endif
                 // Development builds skip a stale slash manifest rather than failing, unless we're testing exactly what users get
-                plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath), leaveTFCsInLE3,
-                    allowStaleSlash: App.IsDebug && !interop.UserInstall);
+                plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath), leaveTFCsInLE3, allowStaleSlash: App.IsDebug && !interop.UserInstall);
                 slashManifest = plan.Slash;
 
-                // Wipe the destination directory so we start from a clean slate.
+                // READY TO BUILD MP TARGET ==================================================
+                // Cache gamersettings on reinstall so settings don't get lost
+                string gamerSettings = null;
+                var gamerSettingsF = MEDirectories.GetLODConfigFile(MEGame.LMP, destinationFolderPath);
+                if (File.Exists(gamerSettingsF))
+                {
+                    gamerSettings = File.ReadAllText(gamerSettingsF);
+                    MLog.Information(@"Cached gamersettings.ini into memory");
+                }
+
+                // Wipe the destination directory so we start from a clean slate
                 interop.SetStatus?.Invoke("Preparing installation directory...");
                 if (Directory.Exists(destinationFolderPath))
                 {
@@ -1257,8 +1269,19 @@ namespace ME3TweaksModManager.modmanager.milan
                 mi.SetPercentVisibility = setPercentVisibility;
                 mi.PostFileInstalled = installedFile => SlashInstalledModFile(destinationFolderPath, installedFile);
                 // InstallMod is async (it awaits ASI installs), so it must complete before the installation is TOC'd.
-                // We are on a background thread with no synchronization context, so blocking here is safe.
+                // We are on a background thread with no synchronization context, so blocking here is safe
                 mi.InstallMod().GetAwaiter().GetResult();
+
+
+                // Original code was scoped so we have a null check here on F, but I can't 
+                // see why this would ever be null
+                if (gamerSettings != null && gamerSettingsF != null)
+                {
+                    Directory.GetParent(gamerSettingsF).Create();
+                    File.WriteAllText(gamerSettingsF, gamerSettings);
+                    MLog.Information(@"Restored gamersettings.ini");
+                }
+
                 if (modFileSlashFailure != null)
                 {
                     ExceptionDispatchInfo.Capture(modFileSlashFailure).Throw();
@@ -1273,7 +1296,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 var splashSource = GetSplashSourcePath(milanmod);
                 if (File.Exists(splashSource))
                 {
-                    M3Log.Information($@"Installing Project Milan Splash image");
+                    M3Log.Information($@"Installing Project Milan splash");
                     var splashDest = Path.Combine(destinationFolderPath, SplashRelativePath);
                     Directory.CreateDirectory(Path.GetDirectoryName(splashDest));
                     File.Copy(splashSource, splashDest, overwrite: true);
@@ -1363,7 +1386,6 @@ namespace ME3TweaksModManager.modmanager.milan
             }
             catch (Exception e)
             {
-                // Never hide the original failure
                 M3Log.Exception(e, $@"Could not delete the incomplete installation at {destinationFolderPath}:");
             }
         }
