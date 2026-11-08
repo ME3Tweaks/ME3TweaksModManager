@@ -86,6 +86,7 @@
         <None Remove="images\dvd.png" />
         <None Remove="images\gameicons\Unknown_48.ico" />
         <None Remove="images\lighttheme.png" />
+        <None Remove="images\lmpbi.png" />
         <None Remove="images\loadingspinner.png" />
         <None Remove="images\me3tweaks.png" />
         <None Remove="images\modmaker.png" />
@@ -132,15 +133,13 @@
     </ItemGroup>
     <ItemGroup>
         <Resource Include="images\dvd.png" />
+        <Resource Include="images\lmpbi.png" />
         <Resource Include="images\steam.png" />
         <Resource Include="images\terminal.png" />
-    </ItemGroup>
-    <ItemGroup>
         <Resource Include="appicon.ico" />
         <Resource Include="images\darktheme.png" />
         <Resource Include="images\lighttheme.png" />
 		<Resource Include="images\me3tweaks.png" />
-		<Resource Include="images\milan.png" />
 		<Resource Include="images\modmaker.png" />
         <Resource Include="images\nexusmods_scenethemed.png" />
         <Resource Include="images\unknown.png" />
