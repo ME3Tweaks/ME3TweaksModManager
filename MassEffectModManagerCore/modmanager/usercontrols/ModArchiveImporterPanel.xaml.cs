@@ -225,6 +225,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                && CompressedMods_ListBox.SelectedItem is Mod cm
                                && cm.ExeExtractionTransform == null
                                && cm.ValidMod
+                               && !cm.IsProjectMilan // Do not let users direct install Project Milan. It won't work.
                                && MAI.CurrentState == EModArchiveImportState.SCANCOMPLETED
                                && mainwindow != null // Might happen if app is closing or panel closed?
                                && mainwindow.InstallationTargets.Any(x => x.Game == cm.Game);
