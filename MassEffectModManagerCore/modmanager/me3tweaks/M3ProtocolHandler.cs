@@ -223,7 +223,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 return;
             }
 
-            // A link can come from anywhere, and its server decides which game the player connects to.
+            // Bring window the the front
+            MainWindow.Instance?.Activate();
+            
+            // Tell user to verify the join request
             var gameName = MEGame.LMP.ToGameName();
             if (M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_joinMultiplayerLobby, gameName, code, server),
                     M3L.GetString(M3L.string_title_joinMultiplayerLobby), MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)

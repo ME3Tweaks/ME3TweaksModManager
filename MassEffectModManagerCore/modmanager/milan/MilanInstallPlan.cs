@@ -532,15 +532,18 @@ namespace ME3TweaksModManager.modmanager.milan
             PostInstallDeletions.AddRange(postInstallDeletions);
             LinkerPatchOutputs.UnionWith(linkerPatchOutputs);
 
+#if DEBUG
+            // clogs up logs in release builds
             foreach (var path in notCopied)
             {
                 M3Log.Information($@"Not copying {path} from LE3: slash {(InlineBuilds.Any(x => x.Filename.Equals(path, StringComparison.OrdinalIgnoreCase)) ? @"rebuilds" : @"deletes")} it");
             }
+#endif
 
             Copies.RemoveAll(x => unused.Contains(x.DestRelativePath, StringComparer.OrdinalIgnoreCase));
             foreach (var path in unused)
             {
-                M3Log.Information($@"Not copying {path} from LE3: it is not part of a finished installation");
+                M3Log.Information($@"Not copying {path} from LE3 - final install doesn't need it");
             }
             return problems;
         }
