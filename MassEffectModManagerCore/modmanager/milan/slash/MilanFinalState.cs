@@ -28,6 +28,7 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             @"Binaries\Win64\bink2w64_original.dll",
             // ASIs are managed separately from the game content
             @"Binaries\Win64\ASI\",
+            // DRM activation dlls are also excluded
             // Ignore TOC
             @"\PCConsoleTOC.bin",
             // Linker patches (not used yet)
@@ -35,10 +36,29 @@ namespace ME3TweaksModManager.modmanager.milan.slash
         ];
 
         /// <summary>
+        /// DRM activation dlls.
+        /// </summary>
+        private static readonly string[] DRMFileNames =
+        [
+            @"Activation.dll",
+            @"Activation64.dll",
+        ];
+
+        /// <summary>
+        /// If the file (any path, or just a file name) is a DRM activation dll; see <see cref="DRMFileNames"/>.
+        /// </summary>
+        public static bool IsDRMFile(string path) => DRMFileNames.Contains(Path.GetFileName(path.Replace('\\', Path.DirectorySeparatorChar)), StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
         /// If the given game-relative path (Windows separators) is excluded from final state checks.
         /// </summary>
         public static bool IsExcluded(string relativePath)
         {
+            if (IsDRMFile(relativePath))
+            {
+                return true;
+            }
+
             foreach (var path in ExcludedPaths)
             {
                 if (path.StartsWith('\\'))

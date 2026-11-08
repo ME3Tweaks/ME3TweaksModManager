@@ -289,6 +289,13 @@ namespace ME3TweaksModManager.modmanager.milan
                             continue;
                         }
 
+                        // Some clients seem to have these, others don't
+                        if (MilanFinalState.IsDRMFile(fileName))
+                        {
+                            M3Log.Warning($@"Missing DRM dll, skipping {fileName}");
+                            continue;
+                        }
+
                         problems.Add($"{fileName} does not exist in {sources.SourceRoot}");
                         continue;
                     }
@@ -597,7 +604,7 @@ namespace ME3TweaksModManager.modmanager.milan
 
         public bool IsInVanillaDatabase(string sourceFile) => vanillaDatabase.ContainsKey(GetRelativePath(sourceFile));
 
-        private static bool IsUnchecked(string relativePath) => UncheckedSourceFiles.Contains(relativePath, StringComparer.OrdinalIgnoreCase);
+        private static bool IsUnchecked(string relativePath) => UncheckedSourceFiles.Contains(relativePath, StringComparer.OrdinalIgnoreCase) || MilanFinalState.IsDRMFile(relativePath);
 
         /// <summary>
         /// Cheaply checks there is a vanilla copy of a file by size alone
