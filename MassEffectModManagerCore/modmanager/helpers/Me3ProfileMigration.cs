@@ -150,21 +150,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                     MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.Yes)
                     return;
 
-                Directory.CreateDirectory(LMPDirectory.SaveFolderPath);
-                var temp = Path.Combine(LMPDirectory.SaveFolderPath, $"MP_Profile.{Guid.NewGuid():N}.tmp");
-                try
-                {
-                    File.WriteAllBytes(temp, profileBytes);
-                    Me3MpProfileConverter.ValidateFile(temp);
-                    if (File.Exists(destination))
-                    {
-                        var backup = destination + $".backup-{DateTime.UtcNow:yyyyMMddTHHmmssfffZ}";
-                        File.Replace(temp, destination, backup);
-                    }
-                    else File.Move(temp, destination);
-                }
-                finally { if (File.Exists(temp)) File.Delete(temp); }
-
+                LmpProfileImport.WriteProfile(profileBytes);
                 M3L.ShowDialog(window, $"ME3 profile converted successfully to:\n\n{destination}",
                     "Profile migration complete", MessageBoxButton.OK, MessageBoxImage.Information);
             }

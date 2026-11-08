@@ -64,7 +64,21 @@ namespace ME3TweaksModManager.modmanager.helpers
             AddString(93, "completionTimes");
             AddString(94, "completionTimes2");
             AddString(95, "completionTimes3");
+            return Serialize(settings);
 
+            void AddString(int id, string name)
+            {
+                var value = OptionalString(accomplishments, name);
+                if (string.IsNullOrEmpty(value)) value = EffectiveString(byId, id);
+                settings.Add(id, value ?? "");
+            }
+        }
+
+        /// <summary>
+        /// Writes MilanHost records. Values are strings, except the int at ID 92.
+        /// </summary>
+        internal static byte[] Serialize(SortedDictionary<int, object> settings)
+        {
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream, Encoding.Unicode, true);
             WriteBigEndian(writer, settings.Count);
@@ -81,13 +95,6 @@ namespace ME3TweaksModManager.modmanager.helpers
                 writer.Write((byte)0);
             }
             return stream.ToArray();
-
-            void AddString(int id, string name)
-            {
-                var value = OptionalString(accomplishments, name);
-                if (string.IsNullOrEmpty(value)) value = EffectiveString(byId, id);
-                settings.Add(id, value ?? "");
-            }
         }
 
         public static void ValidateFile(string path)
