@@ -232,7 +232,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 #endif
                 }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
-                commandLineArgs.Add((target.Game.ToMEMGameNum()).ToString()); // MEM Game Num is 1-3
+                commandLineArgs.Add((target.Game.ToMEMGameNum()).ToString()); // MEM Game Num is 1-3, 4 is LMP
                 commandLineArgs.Add(@"-autoterminate");
 
             }

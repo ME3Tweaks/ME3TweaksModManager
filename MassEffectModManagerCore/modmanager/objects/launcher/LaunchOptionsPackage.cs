@@ -45,6 +45,12 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
         public bool AutoResumeSave { get; set; }
 
         /// <summary>
+        /// If the game should skip directly to the MP menu (LMP only)
+        /// </summary>
+        [JsonProperty(@"skiptomp")]
+        public bool SkipToMP { get; set; }
+
+        /// <summary>
         /// If rumble should be enabled
         /// </summary>
         [JsonProperty(@"noforcefeedback")]
