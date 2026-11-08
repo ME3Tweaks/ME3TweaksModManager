@@ -10,6 +10,7 @@ using ME3TweaksModManager.ui;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -23,7 +24,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public GameTarget SelectedTarget { get; set; }
         public string InstallLocation { get; set; }
         public string StatusText { get; set; } = @"";
+        public bool StartFreshProfile { get; set; } = true;
         public bool MigrateMe3Profile { get; set; }
+        public bool ImportLempProfile { get; set; }
+
+        /// <summary>
+        /// LEMP (not LMP) mp_save.asi text save to convert after install
+        /// </summary>
+        public string LempSavePath { get; set; }
 
         /// <summary>
         /// The install controller for the running install.
@@ -44,6 +52,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public GenericCommand InstallCommand { get; private set; }
         public GenericCommand CancelCommand { get; private set; }
         public GenericCommand BrowseLocationCommand { get; private set; }
+        public GenericCommand BrowseLempSaveCommand { get; private set; }
         #endregion
 
         /// <summary>
@@ -83,7 +92,34 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InstallCommand = new GenericCommand(Install, CanInstall);
             CancelCommand = new GenericCommand(Cancel, CanCancel);
+            BrowseLempSaveCommand = new GenericCommand(BrowseLempSave, () => InstallController == null);
             //BrowseLocationCommand = new GenericCommand(SelectTargetFolder, );
+        }
+
+        private void BrowseLempSave()
+        {
+            var ofd = new OpenFileDialog
+            {
+                Title = "Select a LEMP multiplayer save",
+                Filter = "LEMP multiplayer save|*.txt|All files|*.*",
+                CheckFileExists = true
+            };
+            if (ofd.ShowDialog(window) != true)
+            {
+                return;
+            }
+
+            // Check it now so a bad file doesn't show up after a long install
+            try
+            {
+                LmpProfileImport.ConvertLempSave(ofd.FileName);
+                LempSavePath = ofd.FileName;
+            }
+            catch (Exception e)
+            {
+                M3Log.Exception(e, $"Selected LEMP save {ofd.FileName} can't be converted");
+                M3L.ShowDialog(window, $"This file can't be converted to an LMP multiplayer profile:\n\n{e.Message}", "Invalid LEMP save", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Install()
@@ -118,7 +154,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 builtTarget = null;
                 InstallController = controller;
                 SourceTargetSelector.IsEnabled = false;
-                MigrateMe3ProfileCheckBox.IsEnabled = false;
+                ProfileImportPanel.IsEnabled = false;
                 Task.Run(() =>
                 {
                     controller.CreateInstallation(milanMod, sourceTarget, destination, interop);
@@ -279,13 +315,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var owner = mainwindow;
                     var me3Target = owner.GetME3TargetForProfileMigration();
                     var migrate = MigrateMe3Profile;
+                    var lempSave = ImportLempProfile ? LempSavePath : null;
                     OnClosing(DataEventArgs.Empty);
                     if (builtTarget != null)
                     {
                         // Add target to the target selector
                         addTarget(owner, builtTarget);
                     }
-                    if (migrate && me3Target != null)
+                    if (lempSave != null)
+                    {
+                        LmpProfileImport.ImportLempSave(owner, lempSave);
+                    }
+                    else if (migrate && me3Target != null)
                     {
                         _ = Me3ProfileMigration.StartAsync(owner, me3Target);
                     }
@@ -301,7 +342,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Dispatcher.Invoke(() =>
                 {
                     SourceTargetSelector.IsEnabled = true;
-                    MigrateMe3ProfileCheckBox.IsEnabled = true;
+                    ProfileImportPanel.IsEnabled = true;
                     StatusText = "Installation failed";
                     if (session != null)
                     {
@@ -318,7 +359,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private bool CanInstall()
         {
             // We check install path when you press install to improve performance
-            return InstallController == null && SelectedTarget != null && !string.IsNullOrWhiteSpace(InstallLocation);
+            return InstallController == null && SelectedTarget != null && !string.IsNullOrWhiteSpace(InstallLocation)
+                   && (!ImportLempProfile || LempSavePath != null);
         }
 
         /// <summary>
@@ -371,7 +413,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InitializeComponent();
 
-            MigrateMe3ProfileCheckBox.Visibility = !File.Exists(LMPDirectory.LocalProfilePath)
+            ProfileImportPanel.Visibility = !File.Exists(LMPDirectory.LocalProfilePath)
                 ? Visibility.Visible : Visibility.Collapsed;
 
             // Texture/modded files get pulled from the backup instead, so those targets are only usable if there is one

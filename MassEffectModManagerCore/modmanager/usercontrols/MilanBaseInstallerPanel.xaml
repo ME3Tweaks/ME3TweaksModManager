@@ -41,10 +41,21 @@
                 <TextBlock Text="Install location" DockPanel.Dock="Left" VerticalAlignment="Center" MinWidth="120"  FontWeight="Bold"/>
                 <xctk:WatermarkTextBox IsEnabled="False" IsReadOnly="True" Text="{Binding InstallLocation, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
-            <CheckBox x:Name="MigrateMe3ProfileCheckBox" Margin="0,12,0,0" Visibility="Collapsed"
-                      IsChecked="{Binding MigrateMe3Profile}"
-                      Content="Migrate my original ME3 multiplayer profile after installation"
-                      ToolTip="Mod Manager will install the ME3 profile dumper ASI, launch ME3, then write your MP_Profile file once you enter multiplayer"/>
+            <StackPanel x:Name="ProfileImportPanel" Margin="0,12,0,0" Visibility="Collapsed">
+                <TextBlock Text="Multiplayer profile" FontWeight="Bold" Margin="0,0,0,3"/>
+                <RadioButton GroupName="ProfileImport" IsChecked="{Binding StartFreshProfile}"
+                             Content="Start with a new multiplayer profile"/>
+                <RadioButton GroupName="ProfileImport" Margin="0,3,0,0" IsChecked="{Binding MigrateMe3Profile}"
+                             Content="Migrate my original ME3 multiplayer profile after installation"
+                             ToolTip="Mod Manager will install the ME3 profile dumper ASI, launch ME3, then write your MP_Profile file once you enter multiplayer"/>
+                <RadioButton GroupName="ProfileImport" Margin="0,3,0,0" IsChecked="{Binding ImportLempProfile}"
+                             Content="Import a LEMP multiplayer save after installation"
+                             ToolTip="Converts the text save written by the LEMP multiplayer mod (mp_save.asi) into your MP_Profile file"/>
+                <DockPanel Margin="20,3,0,0" IsEnabled="{Binding ImportLempProfile}">
+                    <Button Content="Browse..." DockPanel.Dock="Right" Margin="5,0,0,0" Command="{Binding BrowseLempSaveCommand}"/>
+                    <xctk:WatermarkTextBox IsReadOnly="True" Watermark="Select a LEMP save file" Text="{Binding LempSavePath, Mode=OneWay}"/>
+                </DockPanel>
+            </StackPanel>
 
         </StackPanel>
 
