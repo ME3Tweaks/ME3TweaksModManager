@@ -2993,10 +2993,12 @@
     <system:String x:Key="string_customOptions">Custom options</system:String>
     <system:String x:Key="string_asiModOptions">ASI mod options</system:String>
     <system:String x:Key="string_automaticallyResumeLastSave">Automatically resume last save</system:String>
+    <system:String x:Key="string_bootToMultiplayerMenu">Boot to multiplayer menu</system:String>
     <system:String x:Key="string_launchParametersSetName">Launch Parameters set name:</system:String>
     <system:String x:Key="string_customArguments">Custom arguments:</system:String>
     <system:String x:Key="string_startGameCustom">Start Game (Custom)</system:String>
     <system:String x:Key="string_tooltip_autoResume">Instructs game to automatically attempt to resume the last savegame</system:String>
+    <system:String x:Key="string_tooltip_bootToMultiplayerMenu">Instructs game to automatically load into the multiplayer menu, skipping the title screen</system:String>
     <system:String x:Key="string_noForceFeedback">No force feedback</system:String>
     <system:String x:Key="string_tooltip_disablesControllerVibration">Disables controller vibration</system:String>
     <system:String x:Key="string_enableProcessMinidumps">Enable process minidumps</system:String>

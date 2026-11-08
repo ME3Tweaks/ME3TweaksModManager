@@ -2239,10 +2239,12 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_customOptions = "string_customOptions";
 		public const string string_asiModOptions = "string_asiModOptions";
 		public const string string_automaticallyResumeLastSave = "string_automaticallyResumeLastSave";
+		public const string string_bootToMultiplayerMenu = "string_bootToMultiplayerMenu";
 		public const string string_launchParametersSetName = "string_launchParametersSetName";
 		public const string string_customArguments = "string_customArguments";
 		public const string string_startGameCustom = "string_startGameCustom";
 		public const string string_tooltip_autoResume = "string_tooltip_autoResume";
+		public const string string_tooltip_bootToMultiplayerMenu = "string_tooltip_bootToMultiplayerMenu";
 		public const string string_noForceFeedback = "string_noForceFeedback";
 		public const string string_tooltip_disablesControllerVibration = "string_tooltip_disablesControllerVibration";
 		public const string string_enableProcessMinidumps = "string_enableProcessMinidumps";
