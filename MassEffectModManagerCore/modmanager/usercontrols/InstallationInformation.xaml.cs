@@ -578,6 +578,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             notifyRestoredCallback);
                     } catch (Exception ex)
                     {
+                        if (selectedTarget.Game == MEGame.LMP)
+                        {
+                            M3Log.Information("The following error is expected until LMP is stabilized");
+                        }
                         M3Log.Exception(ex, $"Error populating modified basegame files:");
                     }
                 }
