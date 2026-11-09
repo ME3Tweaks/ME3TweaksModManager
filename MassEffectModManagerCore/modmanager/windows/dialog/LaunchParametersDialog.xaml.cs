@@ -127,7 +127,6 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_bootToMultiplayerMenu), ToolTip = M3L.GetString(M3L.string_tooltip_bootToMultiplayerMenu), CommandLineText = @"-skiptomp", SaveKey = LauncherCustomParameter.KEY_SKIPTOMP, IsSelected = LaunchPackage.SkipToMP });
             }
-            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = M3L.GetString(M3L.string_tooltip_autoResume), CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave });
             CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_noForceFeedback), ToolTip = M3L.GetString(M3L.string_tooltip_disablesControllerVibration), CommandLineText = @"-NOFORCEFEEDBACK", SaveKey = LauncherCustomParameter.KEY_NOFORCEFEEDBACK, IsSelected = LaunchPackage.NoForceFeedback });
             CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_enableProcessMinidumps), ToolTip = M3L.GetString(M3L.string_tooltip_enableMinidumps), CommandLineText = @"-enableminidumps", SaveKey = LauncherCustomParameter.KEY_MINIDUMPS, IsSelected = LaunchPackage.EnableMinidumps });
 
