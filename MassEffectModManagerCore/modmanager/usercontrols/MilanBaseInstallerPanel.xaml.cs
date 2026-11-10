@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (milanMod == null)
             {
                 // This shouldn't be available anymore now that alpha menu is gone.
-                M3L.ShowDialog(MainWindow.Instance, "You must download and import Project Milan into your mod library in order to make a game target for LMP.", "Project Milan not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(MainWindow.Instance, "You must download and import Legendary Edition Multiplayer into your mod library in order to make a game target for LMP.", "Legendary Edition Multiplayer not found", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -83,6 +83,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             sessionGeneratesSlash = generateSlash;
             sessionDestination = destination;
             sessionLE3Target = le3Target;
+            StatusText = $"Version {milanMod.ModVersionString}";
             // Should this be here? Or should we have this in OnPanelVisible so queued panels
             // don't get bound?
             LoadCommands();
