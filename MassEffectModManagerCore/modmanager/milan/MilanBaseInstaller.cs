@@ -1181,6 +1181,20 @@ namespace ME3TweaksModManager.modmanager.milan
             string errorMessage = null;
             bool destinationPrepared = false;
             bool destinationExisted = Directory.Exists(destinationFolderPath);
+
+            // Cached on reinstall so settings don't get lost, even if the install fails
+            string gamerSettings = null;
+            var gamerSettingsF = MEDirectories.GetLODConfigFile(MEGame.LMP, destinationFolderPath);
+            void restoreGamerSettings()
+            {
+                if (gamerSettings != null && gamerSettingsF != null)
+                {
+                    Directory.GetParent(gamerSettingsF).Create();
+                    File.WriteAllText(gamerSettingsF, gamerSettings);
+                    MLog.Information(@"Restored gamersettings.ini");
+                }
+            }
+
             // Copy the source files over.
             try
             {
@@ -1230,9 +1244,6 @@ namespace ME3TweaksModManager.modmanager.milan
                 slashManifest = plan.Slash;
 
                 // READY TO BUILD MP TARGET ==================================================
-                // Cache gamersettings on reinstall so settings don't get lost
-                string gamerSettings = null;
-                var gamerSettingsF = MEDirectories.GetLODConfigFile(MEGame.LMP, destinationFolderPath);
                 if (File.Exists(gamerSettingsF))
                 {
                     gamerSettings = File.ReadAllText(gamerSettingsF);
@@ -1271,16 +1282,6 @@ namespace ME3TweaksModManager.modmanager.milan
                 // InstallMod is async (it awaits ASI installs), so it must complete before the installation is TOC'd.
                 // We are on a background thread with no synchronization context, so blocking here is safe
                 mi.InstallMod().GetAwaiter().GetResult();
-
-
-                // Original code was scoped so we have a null check here on F, but I can't 
-                // see why this would ever be null
-                if (gamerSettings != null && gamerSettingsF != null)
-                {
-                    Directory.GetParent(gamerSettingsF).Create();
-                    File.WriteAllText(gamerSettingsF, gamerSettings);
-                    MLog.Information(@"Restored gamersettings.ini");
-                }
 
                 if (modFileSlashFailure != null)
                 {
@@ -1344,6 +1345,9 @@ namespace ME3TweaksModManager.modmanager.milan
                     VerifyFinalState(destinationFolderPath);
                 }
 
+                // Restore after verify
+                restoreGamerSettings();
+
                 // Outside the LMP install, so done after it's verified
                 InstallMilanLauncher(destinationFolderPath);
 
@@ -1362,6 +1366,16 @@ namespace ME3TweaksModManager.modmanager.milan
                 if (destinationPrepared)
                 {
                     DeleteFailedInstallation(destinationFolderPath, deleteDirectoryItself: !destinationExisted);
+
+                    // Put settings back so the next attempt picks them up
+                    try
+                    {
+                        restoreGamerSettings();
+                    }
+                    catch (Exception re)
+                    {
+                        M3Log.Exception(re, @"Could not restore gamersettings.ini after failed installation:");
+                    }
                 }
 #if DEBUG
                 throw;
