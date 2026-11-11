@@ -1225,7 +1225,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 // Work out and check everything that can be checked up front, so an installation that can't succeed fails
                 // before anything is written
                 interop.SetStatus?.Invoke("Checking LE3 installation...");
-                le3Sources = new LE3SourceResolver(sourceGameTarget.TargetPath, BackupService.GetGameBackupPath(MEGame.LE3));
+                le3Sources = new LE3SourceResolver(sourceGameTarget.TargetPath, BackupService.GetGameBackupPath(MEGame.LE3, logReturnedPath: true));
                 M3Log.Information($@"Building Project Milan from {le3Sources.SourceRoot}");
                 if (le3Sources.BackupRoot == null)
                 {
@@ -1233,7 +1233,8 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
                 else
                 {
-                    M3Log.Warning("No backup available; only sourcing from game");
+
+                    M3Log.Warning("No backup available, only sourcing from game");
                 }
                 bool leaveTFCsInLE3 = false;
 #if DEBUG
