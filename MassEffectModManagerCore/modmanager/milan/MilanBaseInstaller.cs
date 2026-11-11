@@ -1227,7 +1227,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 interop.SetStatus?.Invoke("Checking LE3 installation...");
                 le3Sources = new LE3SourceResolver(sourceGameTarget.TargetPath, BackupService.GetGameBackupPath(MEGame.LE3, logReturnedPath: true));
                 M3Log.Information($@"Building Project Milan from {le3Sources.SourceRoot}");
-                if (le3Sources.BackupRoot == null)
+                if (le3Sources.BackupRoot != null)
                 {
                     M3Log.Information($@"We will also source files from {le3Sources.BackupRoot}");
                 }
