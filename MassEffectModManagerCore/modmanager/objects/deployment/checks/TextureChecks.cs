@@ -30,6 +30,22 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         }
 
         /// <summary>
+        /// Gets paths to TFCs for deploying Project Milan - since it is its own game target it needs a resolver
+        /// </summary>
+        private static List<string> GetLE3DLCTFCs()
+        {
+            var le3Root = BackupService.GetGameBackupPath(MEGame.LE3) ?? MainWindow.Instance.InstallationTargets.FirstOrDefault(x => x.Game == MEGame.LE3 && x.Selectable)?.TargetPath;
+            var dlcFolder = le3Root != null ? Path.Combine(le3Root, @"BioGame", @"DLC") : null;
+            if (dlcFolder == null || !Directory.Exists(dlcFolder))
+            {
+                M3Log.Warning(@"No usable LE3 installation found! We won't be able to fetch TFCs for LE3");
+                return [];
+            }
+
+            return Directory.EnumerateFiles(dlcFolder, @"*.tfc", SearchOption.AllDirectories).Where(x => !Path.GetFileName(x).Contains(@"DLC_MOD", StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        /// <summary>
         /// Checks texture references and known bad texture setups
         /// </summary>
         /// <param name="item"></param>

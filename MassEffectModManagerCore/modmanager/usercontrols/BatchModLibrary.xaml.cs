@@ -378,7 +378,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void CreateNewGroup()
         {
-            var gameDialog = DropdownSelectorDialog.GetSelection<MEGame>(window, M3L.GetString(M3L.string_gameSelector), MEGameSelector.GetEnabledGames(), M3L.GetString(M3L.string_dialog_selectGameInstallGroup), null);
+            var gameDialog = DropdownSelectorDialog.GetSelection<MEGame>(window, M3L.GetString(M3L.string_gameSelector), MEGameSelector.GetEnabledGames()
+                .Except([MEGame.LMP])
+                , M3L.GetString(M3L.string_dialog_selectGameInstallGroup), null);
             if (gameDialog is MEGame game)
             {
                 var editGroupUI = new BatchModQueueEditor(mainwindow) { SelectedGame = game };

@@ -175,7 +175,6 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 return null;
             }
 
-
             try
             {
                 var modernQueue = JsonConvert.DeserializeObject<BatchLibraryInstallQueue>(queueJson, new JsonSerializerSettings()

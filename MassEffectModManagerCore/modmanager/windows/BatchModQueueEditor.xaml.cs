@@ -234,7 +234,9 @@ namespace ME3TweaksModManager.modmanager.windows
             Owner = owner;
             DataContext = this;
             LoadCommands();
-            Games = MEGameSelector.GetGameSelectorsIncludingLauncher().ToArray();
+            Games = MEGameSelector.GetGameSelectorsIncludingLauncher()
+                .Where(x => x.Game != MEGame.LMP) // LMP is not supported by this 
+                .ToArray();
             ModsInGroupView.Filter = FilterShownModsInGroup;
             AvailableModsView.Filter = FilterAvailableMods;
             AvailableASIModsView.Filter = FilterAvailableASIMods;
