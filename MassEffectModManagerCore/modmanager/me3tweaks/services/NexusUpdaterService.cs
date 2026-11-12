@@ -106,7 +106,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 {
                     var cached = File.ReadAllText(GetServiceCacheFile());
                     Database = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(cached);
-                    Database[MEGame.LMP.ToString()] = new(); // TODO FIX THIS ONCE LMP IS UP AND RUNNING
+                    if (!Database.TryGetValue(MEGame.LMP.ToString(), out _))
+                    {
+                        // Force an empty DB for it
+                        Database[MEGame.LMP.ToString()] = new();
+                    }
                     ServiceLoaded = true;
                     M3Log.Information($@"Loaded cached {ServiceLoggingName}");
                     return true;
