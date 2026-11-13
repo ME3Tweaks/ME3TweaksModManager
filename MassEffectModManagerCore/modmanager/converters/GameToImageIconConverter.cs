@@ -25,6 +25,9 @@ namespace ME3TweaksModManager.modmanager.converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // Nothing selected, show nothing
+            if (value == null) { return null; }
+
             init();
             float size = 48;
             if (parameter is float sizeF)
