@@ -74,12 +74,20 @@ namespace ME3TweaksModManager.modmanager
                 manifestRefreshTimer.Start();
             }
 
+            if (App.BuildNumber > 138)
+            {
+                // Temp - 10.0 updates must check via beta mode
+                betamode = true;
+                StartupManifestURL.LoadBalancing = false;
+            }
+
             foreach (var staticurl in StartupManifestURL.GetAllLinks())
             {
                 Uri myUri = new Uri(staticurl);
                 string host = myUri.Host;
 
                 var fetchUrl = staticurl;
+                
                 if (betamode && host == @"me3tweaks.com") fetchUrl += @"&beta=true"; //only me3tweaks source supports beta. fallback will always just use whatever was live when it synced
 
                 try
