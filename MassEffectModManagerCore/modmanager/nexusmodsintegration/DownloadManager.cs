@@ -309,6 +309,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
                         ModArchiveImport mai = new ModArchiveImport()
                         {
                             AutomatedMode = true,
+                            IsDownloadedArchive = true,
                             ArchiveStream = item.DownloadedStream,
 
                             // We need to figure out how to handle a panelresult from here...

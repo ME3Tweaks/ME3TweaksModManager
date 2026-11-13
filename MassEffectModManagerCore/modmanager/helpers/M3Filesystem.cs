@@ -130,8 +130,14 @@ namespace ME3TweaksModManager.modmanager.helpers
             {
                 return Settings.ModDownloadCacheFolder;
             }
-            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetAppDataFolder(), @"downloadedmodscache")).FullName;
+            return Directory.CreateDirectory(GetTemporaryModDownloadCachePath()).FullName;
         }
+
+        /// <summary>
+        /// Location where failed-downloads are put when the mod does not parse (minbuild requirement)
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetTemporaryModDownloadCachePath() => Path.Combine(MCoreFilesystem.GetAppDataFolder(), @"downloadedmodscache");
 
         internal static string GetNexusModsUpdateServiceCachedFile()
         {

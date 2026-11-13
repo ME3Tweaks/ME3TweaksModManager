@@ -75,7 +75,7 @@ namespace ME3TweaksModManager.modmanager.importer
         /// <summary>
         /// Current activity state
         /// </summary>
-         public EModArchiveImportState CurrentState { get; private set; }
+        public EModArchiveImportState CurrentState { get; private set; }
 
         private void OnCurrentStateChanged()
         {
@@ -200,6 +200,11 @@ namespace ME3TweaksModManager.modmanager.importer
         /// Archive file on disk this was initialized from (if any)
         /// </summary>
         public string ArchiveFilePath { get; set; }
+
+        /// <summary>
+        /// Is this an archive that loaded from in-app download in this session
+        /// </summary>
+        internal bool IsDownloadedArchive { get; init; }
         /// <summary>
         /// Stream containing the archive
         /// </summary>
@@ -265,14 +270,21 @@ namespace ME3TweaksModManager.modmanager.importer
 
             ScanningFile = Path.GetFileName(ArchiveFilePath);
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModArchiveInspector");
-            nbw.DoWork += InspectArchiveBackgroundThread;
+            nbw.DoWork += (sender, args) =>
+            {
+                InspectArchiveBackgroundThread(sender, args);
+                if (!IsCancelRequested && CompressedMods.OfType<Mod>().Any(mod => mod.RequiresModManagerUpdate))
+                {
+                    args.Result = SaveBuildBlockedArchive((string)args.Argument);
+                }
+            };
             ProgressValue = 0;
             ProgressMaximum = 100;
             ProgressIndeterminate = true;
 
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                HandleScanResults();
+                HandleScanResults(b.Error == null && !b.Cancelled ? b.Result as string : null);
             };
             ActionText = M3L.GetString(M3L.string_interp_scanningX, ScanningFile);
             nbw.RunWorkerAsync(ArchiveFilePath);
@@ -321,8 +333,23 @@ namespace ME3TweaksModManager.modmanager.importer
         /// Processes the results of the archive scan operation, including updating file source records,
         /// detecting improperly packed mods, and transitioning to the appropriate state.
         /// </summary>
-        private void HandleScanResults()
+        private void HandleScanResults(string retainedArchivePath)
         {
+            var buildBlockedMods = CompressedMods.OfType<Mod>().Where(mod => mod.RequiresModManagerUpdate).ToList();
+            if (buildBlockedMods.Count > 0 && !IsCancelRequested && (retainedArchivePath != null || IsDownloadedArchive))
+            {
+                var archiveMessage = retainedArchivePath != null
+                    // OK
+                    ? M3L.GetString(M3L.string_interp_reimportArchiveAfterUpdating, retainedArchivePath)
+                    // Failed to save
+                    : M3L.GetString(M3L.string_couldNotRetainArchiveAfterUpdating);
+                foreach (var mod in buildBlockedMods)
+                {
+                    // Add a special load failed reason for the user to see
+                    mod.LoadFailedReason += Environment.NewLine + Environment.NewLine + archiveMessage;
+                }
+            }
+
             if (SourceNXMLink != null)
             {
                 var downloadLink = SourceNXMLink.ToNexusDownloadPageLink();
@@ -381,9 +408,111 @@ namespace ME3TweaksModManager.modmanager.importer
                     M3Log.Information(@"Import was canceled, not importing mods from archive");
                     CurrentState = EModArchiveImportState.CANCELED;
                 }
+                else if (buildBlockedMods.Count > 0 && !CompressedMods.Any(mod => mod.SelectedForImport && mod.ValidMod))
+                {
+                    // Set text to failed reason in automated mode
+                    ActionText = buildBlockedMods[0].LoadFailedReason;
+                    ArchiveStream?.Dispose();
+                    SetImportErrorState();
+                }
                 else
                 {
                     BeginImporting();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Saves an archive that failed to import so the download isn't lost
+        /// </summary>
+        /// <param name="originalPath"></param>
+        /// <returns></returns>
+        private string SaveBuildBlockedArchive(string originalPath)
+        {
+            string stagingPath = null;
+            long? streamPosition = null;
+            try
+            {
+                var diskPath = (ArchiveStream as FileStream)?.Name;
+                if (diskPath == null)
+                {
+                    if (ArchiveStream == null)
+                    {
+                        // Use original disk path on disk
+                        diskPath = originalPath;
+                    }
+                }
+                if (diskPath != null)
+                {
+                    // Get true full path
+                    diskPath = Path.GetFullPath(diskPath);
+
+                    if (!IsDownloadedArchive || 
+                        !string.Equals(Path.GetDirectoryName(diskPath), Path.GetFullPath(M3Filesystem.GetTemporaryModDownloadCachePath()), StringComparison.OrdinalIgnoreCase))
+                        return File.Exists(diskPath) ? diskPath : null;
+                }
+
+                if (!IsDownloadedArchive)
+                {
+                    // Do nothing if this isn't a download
+                    return null;
+                }
+
+                // Write archive to cache
+                var cache = Directory.CreateDirectory(Path.Combine(M3LoadedMods.GetCurrentModLibraryDirectory(), @"CachedDownloads"));
+                var fileName = Path.GetFileName(diskPath ?? originalPath);
+                var destination = Path.Combine(cache.FullName, fileName);
+                stagingPath = Path.Combine(cache.FullName, $@"{Guid.NewGuid():N}.tmp");
+                using (var output = new FileStream(stagingPath, FileMode.CreateNew, FileAccess.Write))
+                {
+                    if (ArchiveStream != null)
+                    {
+                        streamPosition = ArchiveStream.Position;
+                        ArchiveStream.Position = 0;
+                        ArchiveStream.CopyTo(output);
+                    }
+                    else
+                    {
+                        using var input = File.OpenRead(diskPath);
+                        input.CopyTo(output);
+                    }
+                }
+
+                try
+                {
+                    File.Move(stagingPath, destination);
+                }
+                catch (IOException) when (File.Exists(destination))
+                {
+                    destination = Path.Combine(cache.FullName, $@"{Guid.NewGuid():N}-{fileName}");
+                    File.Move(stagingPath, destination);
+                }
+
+                stagingPath = null;
+                return destination;
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or ObjectDisposedException or NotSupportedException)
+            {
+                M3Log.Warning($@"Could not save build-blocked archive {originalPath}: {e.Message}");
+                return null;
+            }
+            finally
+            {
+                if (streamPosition.HasValue)
+                {
+                    ArchiveStream.Position = streamPosition.Value;
+                }
+
+                if (stagingPath != null)
+                {
+                    try
+                    {
+                        File.Delete(stagingPath);
+                    }
+                    catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+                    {
+                        M3Log.Warning($@"Could not remove partial cached archive {stagingPath}: {e.Message}");
+                    }
                 }
             }
         }

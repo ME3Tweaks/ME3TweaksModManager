@@ -444,6 +444,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// The reason the mod failed to load
         /// </summary>
         public string LoadFailedReason { get; set; }
+        internal bool RequiresModManagerUpdate { get; private set; }
 #if AZURE && DEBUG
         public void OnLoadFailedReasonChanged()
         {
@@ -706,6 +707,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 MinimumSupportedBuild = minBuild;
                 if (App.BuildNumber < minBuild)
                 {
+                    RequiresModManagerUpdate = true;
                     ModName = (ModPath == "" && IsInArchive)
                         ? Path.GetFileNameWithoutExtension(Archive.FileName)
                         : Path.GetFileName(ModPath);
@@ -768,6 +770,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             // LE1DP workaround removed 05/02/2023
             if (parsedModCmmVer > App.HighestSupportedModDesc)
             {
+                RequiresModManagerUpdate = true;
                 M3Log.Error(@"The cmmver specified by this mod is higher than the version supported by this build of ME3Tweaks Mod Manager. You may need to update Mod Manager for this mod to load.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_unsupportedModdescVersion, parsedModCmmVer, App.HighestSupportedModDesc);
                 return;

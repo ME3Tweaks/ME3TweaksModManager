@@ -1403,6 +1403,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_loadFailed = "string_loadFailed";
 		public const string string_interp_errorReadingArchiveModdesc = "string_interp_errorReadingArchiveModdesc";
 		public const string string_interp_validation_modparsing_cannotLoadBuildTooOld = "string_interp_validation_modparsing_cannotLoadBuildTooOld";
+		public const string string_interp_reimportArchiveAfterUpdating = "string_interp_reimportArchiveAfterUpdating";
+		public const string string_couldNotRetainArchiveAfterUpdating = "string_couldNotRetainArchiveAfterUpdating";
 		public const string string_interp_validation_modparsing_missingModInfoGameDescriptor = "string_interp_validation_modparsing_missingModInfoGameDescriptor";
 		public const string string_interp_validation_modparsing_blacklistedfileFound = "string_interp_validation_modparsing_blacklistedfileFound";
 		public const string string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles = "string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles";

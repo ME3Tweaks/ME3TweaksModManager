@@ -49,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <summary>
         /// List of mods listed in the importer panel
         /// </summary>
-        public ModArchiveImporterPanel(string file, Stream archiveStream = null, NexusProtocolLink link = null)
+        public ModArchiveImporterPanel(string file, Stream archiveStream = null, NexusProtocolLink link = null, bool isDownloadedArchive = false)
         {
             M3MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", this);
             MAI = new ModArchiveImport()
@@ -57,6 +57,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ArchiveStream = archiveStream,
                 SourceNXMLink = link,
                 ArchiveFilePath = file,
+                IsDownloadedArchive = isDownloadedArchive,
 
                 // Callbacks
                 OnCompressedModAdded = CompressedModAdded,
@@ -89,10 +90,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
+                    else if (!MAI.CompressedMods.Any(mod => mod.ValidMod))
+                    {
+                        // At least one failed mod - select it
+                        CompressedMods_ListBox.SelectedItem = MAI.CompressedMods.OfType<Mod>()
+                            .FirstOrDefault(mod => mod.RequiresModManagerUpdate);
+                    }
 
                     // Todo: Change to link, maybe via NTFS streams?
                     // To support other providers
-
 
                     if (MAI.CompressedMods.Count == 1 && MAI.CompressedMods[0] is BatchLibraryInstallQueue)
                     {
