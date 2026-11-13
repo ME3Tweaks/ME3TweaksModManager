@@ -373,6 +373,8 @@
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
             <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
             <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch" DockPanel.Dock="Left"/>
+            <!-- LMP can't be texture modded, so put its version where TM would go -->
+            <TextBlock Text="{Binding LMPVersion, StringFormat='v{0}'}" DockPanel.Dock="Right" Margin="3,0,0,0" Visibility="{Binding LMPVersion, Converter={StaticResource NullOrEmptyVisibilityConverter}, FallbackValue=Collapsed}"/>
             <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}"  DockPanel.Dock="Right" Margin="3,0,0,0" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
                 <TextBlock Text="{Binding ALOTVersion}" DockPanel.Dock="Right"/>
                 <!-- IDK how this works properly but I'm not going to touch it-->

@@ -17,6 +17,8 @@
             <DockPanel HorizontalAlignment="Stretch">
                 <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
                 <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
+                <!-- LMP can't be texture modded, so put version in the spot where TM would go to save space -->
+                <TextBlock Text="{Binding LMPVersion, StringFormat='v{0}'}" DockPanel.Dock="Right" Margin="3,0,1,0" Visibility="{Binding LMPVersion, Converter={StaticResource NullOrEmptyVisibilityConverter}, FallbackValue=Collapsed}"/>
                 <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}" DockPanel.Dock="Right" Margin="3,0,0,0">
                     <!-- This is a real hack job -->
                     <TextBlock Text="{Binding ALOTVersion}" DockPanel.Dock="Right" 
