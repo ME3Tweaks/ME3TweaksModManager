@@ -202,7 +202,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         OnClosing(DataEventArgs.Empty);
                         if (!UseLocalLogViewer)
                         {
-                            var res = M3L.ShowDialog(Window.GetWindow(this), lup.Response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                            var res = M3L.ShowDialog(MainWindow.Instance, lup.Response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
 
                         // 12/13/2025 - Add local log viewer if ME3Tweaks is down or inaccessible
