@@ -1679,7 +1679,7 @@
                         Orientation="Horizontal">
                         <Image
                             Name="BottomBarGameID_Image"
-                            Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"
+                            Source="{Binding ApplyModIconGame, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"
                             Width="24"
                             Height="24"
                             Margin="5,0"

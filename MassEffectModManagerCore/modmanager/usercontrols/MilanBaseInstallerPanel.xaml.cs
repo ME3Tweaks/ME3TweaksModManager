@@ -48,6 +48,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private readonly string sessionLE3Target;
         private readonly bool sessionGeneratesSlash;
 
+        /// <summary>
+        /// Existing LMP install to rebuild in place. User already agreed to the update so it starts on its own.
+        /// </summary>
+        private readonly string updateDestination;
+
         #region Commands
         public GenericCommand InstallCommand { get; private set; }
         public GenericCommand CancelCommand { get; private set; }
@@ -60,7 +65,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         /// <param name="mw"></param>
         /// <param name="session">Set when a Project Milan build is driving this; destination and le3Target can then override the defaults</param>
-        internal static void BuildBaseMilan(MainWindow mw, Mod milanMod, MilanBuildSession session = null, string destination = null, string le3Target = null, bool generateSlash = true)
+        /// <param name="updateDestination">Existing LMP install to update. Install starts automatically</param>
+        internal static void BuildBaseMilan(MainWindow mw, Mod milanMod, MilanBuildSession session = null, string destination = null, string le3Target = null, bool generateSlash = true, string updateDestination = null)
         {
             if (milanMod == null)
             {
@@ -69,16 +75,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
-            var mbip = new MilanBaseInstallerPanel(milanMod, session, destination, le3Target, generateSlash);
+            var mbip = new MilanBaseInstallerPanel(milanMod, session, destination, le3Target, generateSlash, updateDestination);
             mbip.Close += (a, b) => { mw.ReleaseBusyControl(); };
             // Don't let a startup notice block the build, keep it queued behind the installer
             bool deferUpdateNotice = session != null && mw.BusyContentM3 is SingleItemPanel2 { Content: ModUpdateInformationPanel };
             mw.ShowBusyControl(mbip, swapImmediately: deferUpdateNotice);
         }
 
-        private MilanBaseInstallerPanel(Mod milanMod, MilanBuildSession session, string destination, string le3Target, bool generateSlash)
+        private MilanBaseInstallerPanel(Mod milanMod, MilanBuildSession session, string destination, string le3Target, bool generateSlash, string updateDestination)
         {
             this.milanMod = milanMod;
+            this.updateDestination = updateDestination;
             this.session = session;
             sessionGeneratesSlash = generateSlash;
             sessionDestination = destination;
@@ -261,6 +268,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return false;
             }
 
+            // Updating an existing install, it's supposed to have stuff in it
+            if (updateDestination != null)
+            {
+                return true;
+            }
+
             bool nukeContents = false;
             var filesInDir = Directory.GetFiles(InstallLocation);
             if (filesInDir.Length > 0)
@@ -438,6 +451,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 OnClosing(DataEventArgs.Empty);
                 return;
             }
+
+            // Update rebuilds the existing install in place
+            if (updateDestination != null)
+            {
+                InstallLocation = updateDestination;
+                if (CanInstall())
+                {
+                    Install();
+                }
+                return;
+            }
+
             if (session != null)
             {
                 if (sessionLE3Target != null)

@@ -10,6 +10,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Helpers.MEM;
 using ME3TweaksCore.Localization;
 using ME3TweaksCore.ME3Tweaks.M3Merge;
+using ME3TweaksCore.Misc;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services;
@@ -127,6 +128,13 @@ namespace ME3TweaksModManager
 
 
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
+
+        /// <summary>
+        /// Game icon next to the Apply Mod button - LMP icon can show without a target
+        /// </summary>
+        public MEGame? ApplyModIconGame => SelectedMod is { Game: MEGame.LMP, IsProjectMilan: true }
+            ? MEGame.LMP // Show LMP
+            : SelectedGameTarget?.Game; // Show the target
 
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
 
@@ -1838,6 +1846,18 @@ namespace ME3TweaksModManager
                 var gamesToLoad = result.ModsToCheckForUpdates.Select(x => x.Game).Distinct().ToArray();
                 if (gamesToLoad.Length == 0)
                     gamesToLoad = null;
+
+                // LMP was imported/updated, check if the install needs updating once the library reloads
+                if (result.ModsToCheckForUpdates.Append(result.ModToHighlightOnReload).Any(x => x.Game == MEGame.LMP && x.IsProjectMilan))
+                {
+                    void onModsReloaded(object sender, EventArgs e)
+                    {
+                        M3LoadedMods.ModsReloaded -= onModsReloaded;
+                        PromptForLMPInstallOrUpdate();
+                    }
+                    M3LoadedMods.ModsReloaded += onModsReloaded;
+                }
+
                 M3LoadedMods.Instance.LoadMods(result.ModToHighlightOnReload, result.ModsToCheckForUpdates.Any(),
                     result.ModsToCheckForUpdates.ToList(), gamesToLoad, result.ModifiedModdescFiles);
             }
@@ -2131,6 +2151,60 @@ namespace ME3TweaksModManager
             return !M3LoadedMods.Instance.IsLoadingMods;
         }
 
+        /// <summary>
+        /// If the LMP target is older than the LMP mod
+        /// </summary>
+        private static bool IsLMPOutdated(GameTarget lmpTarget, Mod lmpMod)
+        {
+            return !ProperVersion.TryParse(lmpTarget.LMPVersion, out var installedVersion)
+                   || ProperVersion.IsLessThan(installedVersion, lmpMod.ParsedModVersion);
+        }
+
+        /// <summary>
+        /// After LMP is imported, tells the user if it still needs installing/updating and offers to do it
+        /// </summary>
+        private void PromptForLMPInstallOrUpdate()
+        {
+            var lmpMod = M3LoadedMods.Instance.AllLoadedMods
+                .Where(x => x.Game == MEGame.LMP && x.IsProjectMilan)
+                .OrderByDescending(x => x.ParsedModVersion, Comparer<Version>.Create(ProperVersion.CompareVersions))
+                .FirstOrDefault();
+
+            if (lmpMod == null)
+            {
+                // No LMP
+                return;
+            }
+
+            var lmpTarget = GetCurrentTarget(MEGame.LMP);
+            if (lmpTarget == null)
+            {
+                // Fresh install has profile options, so show the installer instead of automatically doing stuff
+                var installResult = M3L.ShowDialog(this,
+                    $"{lmpMod.ModName} {lmpMod.ModVersionString} has been imported, but it isn't installed yet. It must be installed before it can be played.\n\nInstall it now?",
+                    "Install LMP", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (installResult == MessageBoxResult.Yes)
+                {
+                    MilanBaseInstallerPanel.BuildBaseMilan(this, lmpMod);
+                }
+                return;
+            }
+
+            if (!IsLMPOutdated(lmpTarget, lmpMod))
+            {
+                return;
+            }
+
+            var installedVersion = lmpTarget.LMPVersion ?? "unknown";
+            var updateResult = M3L.ShowDialog(this,
+                $"{lmpMod.ModName} {lmpMod.ModVersionString} has been imported, but the installed copy is version {installedVersion}. The installation must be updated to use the new version.\n\n{lmpTarget.TargetPath}\n\nUpdate it now?",
+                "LMP update required", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (updateResult == MessageBoxResult.Yes)
+            {
+                MilanBaseInstallerPanel.BuildBaseMilan(this, lmpMod, updateDestination: lmpTarget.TargetPath);
+            }
+        }
+
         private bool CanApplyMod()
         {
             if (SelectedMod == null)
@@ -2142,9 +2216,9 @@ namespace ME3TweaksModManager
             // This doesn't depend on the target selector - it generates the LMP target
             if (SelectedMod.Game == MEGame.LMP && SelectedMod.IsProjectMilan)
             {
-                // We should show the LMP icon... not sure how we would do that
-                // given the icon shows the target, not the mod image
-                ApplyModButtonText = "Install LMP";
+                // Offer update if the selected LMP target is older than this mod
+                var isUpdate = SelectedGameTarget?.Game == MEGame.LMP && IsLMPOutdated(SelectedGameTarget, SelectedMod);
+                ApplyModButtonText = isUpdate ? "Update LMP" : "Install LMP";
                 return true;
             }
 
