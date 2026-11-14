@@ -1848,7 +1848,7 @@ namespace ME3TweaksModManager
                     gamesToLoad = null;
 
                 // LMP was imported/updated, check if the install needs updating once the library reloads
-                if (result.ModsToCheckForUpdates.Append(result.ModToHighlightOnReload).Any(x => x.Game == MEGame.LMP && x.IsProjectMilan))
+                if (result.ModsToCheckForUpdates.Append(result.ModToHighlightOnReload).Any(x => x != null && x.Game == MEGame.LMP && x.IsProjectMilan))
                 {
                     void onModsReloaded(object sender, EventArgs e)
                     {
