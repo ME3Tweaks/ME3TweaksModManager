@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ME3TweaksCore.Helpers;
-using ME3TweaksCore.Misc;
-using ME3TweaksCore.Services;
-using ME3TweaksModManager.modmanager.diagnostics;
+﻿using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ShortTimeoutWebClient = ME3TweaksCore.Misc.ShortTimeoutWebClient;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {

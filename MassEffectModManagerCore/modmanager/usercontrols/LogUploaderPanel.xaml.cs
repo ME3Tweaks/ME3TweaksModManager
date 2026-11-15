@@ -96,6 +96,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public string SelectedSaveText { get; set; } = M3L.GetString(M3L.string_noSaveSelected);
         public GameTargetWPF SelectedDiagnosticTarget { get; set; }
 
+        private void OnSelectedDiagnosticTargetChanged()
+        {
+            // As we can show/hide stuff we need to resize next frame
+            TriggerResizeNextFrame();
+        }
+
         private void LoadCommands()
         {
             UploadLogCommand = new GenericCommand(StartLogUploadManual, CanUploadLog);

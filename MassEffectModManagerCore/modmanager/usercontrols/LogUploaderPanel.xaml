@@ -104,23 +104,26 @@
                         ToolTip="{DynamicResource string_tooltip_extendedDiagnostics}"
                         IsChecked="{Binding AdvancedDiagnostics}"
                         IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
-                    <TextBlock
-                        Text="{DynamicResource string_saveFile}"
-                        FontWeight="Bold"
-                        Margin="0,10,0,0" />
-                    <TextBlock
-                        Text="{DynamicResource string_description_saveFile}"
-                        TextWrapping="Wrap" />
                     <StackPanel
-                        Orientation="Horizontal">
+                        Visibility="{Binding SelectedDiagnosticTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher_Not_LMP'}">
                         <TextBlock
-                            Text="{Binding SelectedSaveText}"
-                            VerticalAlignment="Center" />
-                        <Button
-                            Content="{DynamicResource string_selectSaveFile}"
-                            HorizontalAlignment="Right"
-                            Command="{Binding SelectSaveCommand}"
-                            Margin="5,0" />
+                            Text="{DynamicResource string_saveFile}"
+                            FontWeight="Bold"
+                            Margin="0,10,0,0" />
+                        <TextBlock
+                            Text="{DynamicResource string_description_saveFile}"
+                            TextWrapping="Wrap" />
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <TextBlock
+                                Text="{Binding SelectedSaveText}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Content="{DynamicResource string_selectSaveFile}"
+                                HorizontalAlignment="Right"
+                                Command="{Binding SelectSaveCommand}"
+                                Margin="5,0" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
