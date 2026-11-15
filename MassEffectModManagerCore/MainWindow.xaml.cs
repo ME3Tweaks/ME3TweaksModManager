@@ -2161,6 +2161,27 @@ namespace ME3TweaksModManager
         }
 
         /// <summary>
+        /// After LMP is installed, rescans targets so the new version shows and reloads LMP mods so the install/update button refreshes
+        /// </summary>
+        internal void RefreshAfterLMPInstall(GameTargetWPF lmpTarget, Mod lmpMod)
+        {
+            // Run on a background thread to not stall UI
+            Task.Run(() => PopulateTargets(lmpTarget)).ContinueWithOnUIThread(_ =>
+            {
+                // Custom install locations aren't found by a rescan, so keep it in the list
+                if (lmpTarget != null && !InstallationTargets.Any(x => x.Game == MEGame.LMP && x.TargetPath.Equals(lmpTarget.TargetPath, StringComparison.OrdinalIgnoreCase)))
+                {
+                    lmpTarget.ReloadGameTarget(false);
+                    InstallationTargets.Add(lmpTarget);
+                    SelectedGameTarget = lmpTarget;
+                }
+
+                // Reload LMP mods and focus LMP
+                M3LoadedMods.Instance.LoadMods(lmpMod, gamesToLoad: new[] { MEGame.LMP });
+            });
+        }
+
+        /// <summary>
         /// After LMP is imported, tells the user if it still needs installing/updating and offers to do it
         /// </summary>
         private void PromptForLMPInstallOrUpdate()

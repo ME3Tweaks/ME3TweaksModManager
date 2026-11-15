@@ -170,24 +170,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private static void addTarget(MainWindow owner, GameTargetWPF target)
-        {
-            // Keep the installed target in the selector, replacing an earlier entry for the same installation.
-            var existing = owner.InstallationTargets.FirstOrDefault(x => x.Game == target.Game &&
-                string.Equals(x.TargetPath, target.TargetPath, StringComparison.OrdinalIgnoreCase));
-            var existingIndex = existing == null ? -1 : owner.InstallationTargets.IndexOf(existing);
-            if (existingIndex != -1)
-            {
-                owner.InstallationTargets.RemoveAt(existingIndex);
-                owner.InstallationTargets.Insert(existingIndex, target);
-            }
-            else
-            {
-                owner.InstallationTargets.Add(target);
-            }
-            owner.SelectedGameTarget = target;
-        }
-
         /// <summary>
         /// Checks the install directory and its top level folders are writable
         /// </summary>
@@ -331,11 +313,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var migrate = MigrateMe3Profile;
                     var lempSave = ImportLempProfile ? LempSavePath : null;
                     OnClosing(DataEventArgs.Empty);
-                    if (builtTarget != null)
-                    {
-                        // Add target to the target selector
-                        addTarget(owner, builtTarget);
-                    }
+                    owner.RefreshAfterLMPInstall(builtTarget, milanMod);
                     if (lempSave != null)
                     {
                         LmpProfileImport.ImportLempSave(owner, lempSave);
