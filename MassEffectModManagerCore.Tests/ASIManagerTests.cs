@@ -203,5 +203,93 @@ namespace ME3TweaksModManager.Tests
                 }
             }
         }
+
+        [TestMethod]
+        public void TestManifestExtendedGroupsAndUnknownGames()
+        {
+            GlobalTest.Init();
+
+            // MilanHost under <extendedgroups>, and a group for a game id this build doesn't know.
+            var manifest = @"<ASIManifest>
+<updategroup groupid='424243' game='4'><asimod><name>LE1 Test ASI</name><installedname>LE1Test</installedname><author>ME3Tweaks</author><version>1</version><description>test</description><hash>22222222222222222222222222222222</hash><sourcecode>https://example.com/source</sourcecode><downloadlink>https://example.com/download</downloadlink></asimod></updategroup>
+<updategroup groupid='777777' game='99'><asimod><name>Future Game ASI</name><installedname>FutureTest</installedname><author>ME3Tweaks</author><version>1</version><description>test</description><hash>33333333333333333333333333333333</hash><sourcecode>https://example.com/source</sourcecode><downloadlink>https://example.com/download</downloadlink></asimod></updategroup>
+<extendedgroups>
+<updategroup groupid='501' game='8'><asimod><name>MilanHost</name><installedname>MilanHost</installedname><author>ME3Tweaks</author><version>1</version><description>test</description><hash>44444444444444444444444444444444</hash><sourcecode>https://example.com/source</sourcecode><downloadlink>https://example.com/download</downloadlink></asimod></updategroup>
+</extendedgroups>
+</ASIManifest>";
+
+            WithIsolatedManifestCache(() =>
+            {
+                ASIManager.LoadManifest(forceLocal: false, preloadedManifestData: manifest);
+
+                // Unknown game id is skipped instead of failing the whole manifest
+                Assert.IsTrue(ASIManager.GetASIModsByGame(MEGame.LE1).Any(x => x.UpdateGroupId == 424243), "Manifest should still load when it contains an unknown game id.");
+                Assert.IsFalse(ASIManager.AllASIMods.Any(x => x.UpdateGroupId == 777777), "Group for an unknown game id should be skipped.");
+
+                // <extendedgroups> is read, and nothing is added on top of the manifest
+                var milanHost = ASIManager.GetASIModsByGame(MEGame.LMP).SingleOrDefault(x => x.UpdateGroupId == 501);
+                Assert.IsNotNull(milanHost, "MilanHost should be read from <extendedgroups>.");
+                Assert.HasCount(1, milanHost.Versions, "MilanHost should only have the manifest's versions.");
+                Assert.IsFalse(ASIManager.GetASIModsByGame(MEGame.ME3).Any(x => x.UpdateGroupId == 499), "No ASI groups should be defined in code anymore.");
+
+                // No game should have the same group id twice
+                foreach (var game in new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LMP, MEGame.LELauncher })
+                {
+                    var dupes = ASIManager.GetASIModsByGame(game).GroupBy(x => x.UpdateGroupId).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
+                    Assert.IsEmpty(dupes, $"{game} has duplicate ASI groups: {string.Join(',', dupes)}");
+                }
+            });
+        }
+
+        /// <summary>
+        /// Runs a manifest test without touching the real cached/staged manifest files.
+        /// </summary>
+        private static void WithIsolatedManifestCache(Action test)
+        {
+            var backupManifestPath = ASIManager.ManifestLocation + @".bak_test";
+            var backupStagedPath = ASIManager.StagedManifestLocation + @".bak_test";
+            var hadManifest = File.Exists(ASIManager.ManifestLocation);
+            var hadStaged = File.Exists(ASIManager.StagedManifestLocation);
+
+            try
+            {
+                if (hadManifest)
+                {
+                    File.Move(ASIManager.ManifestLocation, backupManifestPath, true);
+                }
+
+                if (hadStaged)
+                {
+                    File.Move(ASIManager.StagedManifestLocation, backupStagedPath, true);
+                }
+
+                test();
+            }
+            finally
+            {
+                if (File.Exists(ASIManager.ManifestLocation))
+                {
+                    File.Delete(ASIManager.ManifestLocation);
+                }
+
+                if (File.Exists(ASIManager.StagedManifestLocation))
+                {
+                    File.Delete(ASIManager.StagedManifestLocation);
+                }
+
+                if (hadManifest)
+                {
+                    File.Move(backupManifestPath, ASIManager.ManifestLocation, true);
+                }
+
+                if (hadStaged)
+                {
+                    File.Move(backupStagedPath, ASIManager.StagedManifestLocation, true);
+                }
+
+                // Put the real manifest back for any test that runs after this one
+                ASIManager.LoadManifest(forceLocal: true);
+            }
+        }
     }
 }
