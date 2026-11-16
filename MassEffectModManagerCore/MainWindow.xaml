@@ -1727,7 +1727,7 @@
                                         ToolTip="{DynamicResource string_tooltip_autobootSave}"
                                         Header="{DynamicResource string_bootIntoSpecificSaveFile}"
                                         Command="{Binding StartGameSpecificSaveCommand}"
-                                        Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                                        Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame_Not_LMP'}">
                                         <MenuItem.Icon>
                                             <fa5:ImageAwesome
                                                 Style="{StaticResource EnableDisableImageStyle}"
