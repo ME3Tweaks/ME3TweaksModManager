@@ -1140,6 +1140,11 @@ namespace ME3TweaksModManager.modmanager.milan
             mi.SetAction = setAction;
             mi.SetPercentVisibility = setPercentVisibility;
             mi.InstallMod().GetAwaiter().GetResult();
+            // Submit install telemetry for LMP
+            if (mi.InstallationResult != null)
+            {
+                ModInstaller.SubmitTelemetry(optionsPackage, mi.InstallationResult);
+            }
             if (mi.InstallationResult.Result != EModInstallerResult.INSTALL_SUCCESSFUL)
             {
                 throw new Exception($"Installing Project Milan Launcher failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");
@@ -1309,6 +1314,13 @@ namespace ME3TweaksModManager.modmanager.milan
                 {
                     ExceptionDispatchInfo.Capture(modFileSlashFailure).Throw();
                 }
+
+                // Submit install telemetry for LMP
+                if (mi.InstallationResult != null)
+                {
+                    ModInstaller.SubmitTelemetry(optionsPackage, mi.InstallationResult);
+                }
+
                 if (mi.InstallationResult.Result != EModInstallerResult.INSTALL_SUCCESSFUL)
                 {
                     throw new Exception($"Installing {optionsPackage.ModBeingInstalled.ModName} failed: {mi.InstallationResult.ErrorMessage ?? mi.InstallationResult.Result.ToString()}");

@@ -1628,5 +1628,53 @@ namespace ME3TweaksModManager.modmanager.installer
 
             return true;
         }
+
+        /// <summary>
+        /// Submits telemetyr about a mod result
+        /// </summary>
+        /// <param name="installOptionsPackage"></param>
+        /// <param name="installerResult"></param>
+        public static void SubmitTelemetry(ModInstallOptionsPackage installOptionsPackage, ModInstallationResult installerResult)
+        {
+            if (!Settings.EnableTelemetry)
+            {
+                // Reduce crash risk
+                return;
+            }
+
+            var telemetryInfo = new Dictionary<string, string>()
+            {
+                {@"Mod name", $@"{installOptionsPackage.ModBeingInstalled.ModName} {installOptionsPackage.ModBeingInstalled.ModVersionString}"},
+                {@"Installed from", installOptionsPackage.ModBeingInstalled.IsInArchive ? @"Archive" : @"Library"},
+                {@"Type", installOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null ? @"RCW .me2mod" : @"Standard"},
+                {@"Game", installOptionsPackage.ModBeingInstalled.Game.ToString()},
+                {@"Result", installerResult.Result.ToString()},
+                {@"Author", installOptionsPackage.ModBeingInstalled.ModDeveloper}
+            };
+
+            string alternateOptionsPicked = "";
+            foreach (var job in installOptionsPackage.ModBeingInstalled.InstallationJobs)
+            {
+                foreach (var af in job.AlternateFiles)
+                {
+                    if (string.IsNullOrWhiteSpace(af.FriendlyName)) continue;
+                    if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
+                    alternateOptionsPicked += $@"{af.FriendlyName}={af.UIIsSelected.ToString()}";
+                }
+                foreach (var ad in job.AlternateDLCs)
+                {
+                    if (string.IsNullOrWhiteSpace(ad.FriendlyName)) continue;
+                    if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
+                    alternateOptionsPicked += $@"{ad.FriendlyName}={ad.UIIsSelected.ToString()}";
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(alternateOptionsPicked))
+            {
+                telemetryInfo[@"Alternate Options Selected"] = alternateOptionsPicked;
+            }
+            M3OpenTelemetry.TrackEvent(@"Installed a mod", telemetryInfo);
+        }
+
     }
 }
