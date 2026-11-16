@@ -2176,6 +2176,10 @@ namespace ME3TweaksModManager
                     SelectedGameTarget = lmpTarget;
                 }
 
+                // Update selected target so start game button updates for it
+                Settings.LastSelectedTarget = SelectedGameTarget?.TargetPath;
+                UpdateSelectedLaunchOption();
+
                 // Reload LMP mods and focus LMP
                 M3LoadedMods.Instance.LoadMods(lmpMod, gamesToLoad: new[] { MEGame.LMP });
             });
