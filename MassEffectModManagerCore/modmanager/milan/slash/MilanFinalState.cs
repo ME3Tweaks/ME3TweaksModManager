@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.M3Merge.LinkerPatches;
+using ME3TweaksCore.Services;
 
 namespace ME3TweaksModManager.modmanager.milan.slash
 {
@@ -33,6 +34,8 @@ namespace ME3TweaksModManager.modmanager.milan.slash
             @"\PCConsoleTOC.bin",
             // Linker patches (not used yet)
             $@"BioGame\{LinkerPatchMerge.LINKER_PATCH_OUTPUT_FOLDERNAME}\{LinkerPatchMerge.LINKER_PATCH_BUILD_RECORD_FILENAME}",
+            // Vanilla database, written from this state after verifying
+            $@"\{VanillaDatabaseService.TargetDatabaseFilename}",
         ];
 
         /// <summary>

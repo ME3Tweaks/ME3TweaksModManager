@@ -3,6 +3,7 @@ using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.ME3Tweaks.M3Merge.LinkerPatches;
+using ME3TweaksCore.Services;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.installer;
 using ME3TweaksModManager.modmanager.milan.slash;
@@ -862,6 +863,26 @@ namespace ME3TweaksModManager.modmanager.milan
             throw new Exception($"The installation does not match the expected result ({problems.Count} difference(s); see the log for all of them). First difference: {problems[0]}");
         }
 
+        /// <summary>
+        /// Generates the vanilla DB for the target
+        /// </summary>
+        private void WriteVanillaDatabase(string gamePath)
+        {
+            if (slashManifest == null || slashManifest.FinalFiles.Count == 0)
+            {
+                M3Log.Warning(@"No final state recorded in the slash manifest; not writing a vanilla database");
+                return;
+            }
+
+            var files = slashManifest.FinalFiles.Where(x => !MilanFinalState.IsExcluded(x.Filename)).ToList();
+
+            // Use MD5 if files are marked iwth MD5 otherwise fall back to SHA
+            var useMD5 = files.All(x => !string.IsNullOrEmpty(x.MD5));
+            VanillaDatabaseService.WriteTargetDatabase(gamePath,
+                files.Select(x => (x.Filename, checked((int)x.Size), useMD5 ? x.MD5 : x.Hash)),
+                useMD5 ? VanillaHashAlgorithm.MD5 : VanillaHashAlgorithm.SHA256);
+        }
+
 #if DEBUG
         /// <summary>
         /// Has Project Milan generate a new slash manifest for this (unslashed) installation, then applies it here the same way
@@ -1345,6 +1366,8 @@ namespace ME3TweaksModManager.modmanager.milan
                 {
                     VerifyFinalState(destinationFolderPath);
                 }
+
+                WriteVanillaDatabase(destinationFolderPath);
 
                 // Restore after verify
                 restoreGamerSettings();

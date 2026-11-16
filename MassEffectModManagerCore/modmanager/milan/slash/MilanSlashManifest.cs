@@ -270,5 +270,12 @@ namespace ME3TweaksModManager.modmanager.milan.slash
 
         [JsonPropertyName(@"hash")]
         public string Hash { get; set; }
+
+        /// <summary>
+        /// Optional MD5, used for building vanilla DB in post 1.0.36 builds
+        /// </summary>
+        [JsonPropertyName(@"md5")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string MD5 { get; set; }
     }
 }

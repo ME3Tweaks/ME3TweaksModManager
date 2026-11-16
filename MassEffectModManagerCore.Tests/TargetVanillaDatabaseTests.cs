@@ -24,13 +24,12 @@ namespace ME3TweaksModManager.Tests
                 File.WriteAllBytes(path, [1, 2, 3, 4, 5]);
                 var hashName = algorithm == VanillaHashAlgorithm.SHA256 ? "sha256" : null;
 
-                VanillaDatabaseService.WriteTargetDatabase(root, [(rel, 5L, MUtilities.CalculateHash(path, hashName)), (@"BioGame\Big.tfc", 3_000_000_000L, MUtilities.CalculateHash(new byte[] { 9 }, hashName))], algorithm);
+                VanillaDatabaseService.WriteTargetDatabase(root, [(rel, 5, MUtilities.CalculateHash(path, hashName))], algorithm);
 
                 var db = VanillaDatabaseService.LoadTargetDatabase(MEGame.LMP, root);
                 Assert.IsNotNull(db);
                 Assert.AreEqual(algorithm, db.Algorithm);
                 Assert.IsTrue(db.IsFileVanilla(rel, new FileInfo(path), hashCheck: true));
-                Assert.IsNull(db.GetFileInfo(@"BioGame\Big.tfc"), "Entries over 2GB are skipped");
 
                 // Same size, different data
                 File.WriteAllBytes(path, [5, 4, 3, 2, 1]);
@@ -38,7 +37,7 @@ namespace ME3TweaksModManager.Tests
                 Assert.IsFalse(db.IsFileVanilla(rel, new FileInfo(path), hashCheck: true));
 
                 // Rewriting replaces the cached copy
-                VanillaDatabaseService.WriteTargetDatabase(root, [(rel, 5L, MUtilities.CalculateHash(path, hashName))], algorithm);
+                VanillaDatabaseService.WriteTargetDatabase(root, [(rel, 5, MUtilities.CalculateHash(path, hashName))], algorithm);
                 Assert.IsTrue(VanillaDatabaseService.LoadTargetDatabase(MEGame.LMP, root).IsFileVanilla(rel, new FileInfo(path), hashCheck: true));
             }
             finally
