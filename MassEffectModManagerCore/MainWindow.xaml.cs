@@ -3034,8 +3034,15 @@ namespace ME3TweaksModManager
 
                 #endregion
 
-                M3ServiceLoader.LoadServices(bw, Settings.ForcePullContentNextBoot);
+                // Build changes force a content pull
+                var newBuild = Settings.LastBootedBuild != App.BuildNumber;
+                if (newBuild)
+                {
+                    M3Log.Information($@"Build has changed, forcing online content fetch");
+                }
+                M3ServiceLoader.LoadServices(bw, Settings.ForcePullContentNextBoot || newBuild);
                 Settings.ForcePullContentNextBoot = false; // We have pulled content now
+                Settings.LastBootedBuild = App.BuildNumber;
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedRichText))); // Update localized tip shown
                 M3SupportedOS.StartupCompleted = true;

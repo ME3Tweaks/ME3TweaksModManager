@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             var messageEnd = useCachedContent ? M3L.GetString(M3L.string_loadedME3TweaksServices) : M3L.GetString(M3L.string_refreshedME3TweaksServices);
 
             var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"FetchCombinedServiceManifest", messageStart, messageEnd);
-            var combinedServicesManifest = MCoreServiceLoader.LoadServices(CombinedServiceFetchURL, useCachedContent);
+            var combinedServicesManifest = MCoreServiceLoader.LoadServices(CombinedServiceFetchURL, useCachedContent, forceOnlineFetch);
 
             // ME3Tweaks Mod Manager Specific Service Loaders
             foreach (var serviceLoader in M3ServiceLoaders)

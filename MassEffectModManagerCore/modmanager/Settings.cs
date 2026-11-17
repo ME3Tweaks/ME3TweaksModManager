@@ -442,6 +442,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _forcePullContentNextBoot, value);
         }
 
+        private static int _lastBootedBuild = 0;
+        public static int LastBootedBuild
+        {
+            get => _lastBootedBuild;
+            set => SetProperty(ref _lastBootedBuild, value);
+        }
+
         private static bool _oneTimeMessageLe1CoalescedOverwriteWarning = true;
         public static bool OneTimeMessage_LE1CoalescedOverwriteWarning
         {
@@ -569,6 +576,7 @@ namespace ME3TweaksModManager.modmanager
 
             SSUILoadAllSaves = LoadSettingBool(settingsIni, "SaveSelector", "SSUILoadAllSaves", false);
             ForcePullContentNextBoot = LoadSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", false);
+            LastBootedBuild = LoadSettingInt(settingsIni, "ModManager", "LastBootedBuild", 0);
             InstanceGuid = LoadSettingGuid(settingsIni, "ModManager", "InstanceGuid", Guid.Empty);
 
             // LEGENDARY
@@ -814,6 +822,7 @@ namespace ME3TweaksModManager.modmanager
                     SaveSettingBool(settingsIni, "ModManager", "EnableLE1CoalescedMerge", EnableLE1CoalescedMerge);
                     SaveSettingBool(settingsIni, "ModManager", "EnableLE12DAMerge", EnableLE12DAMerge);
                     SaveSettingBool(settingsIni, "ModManager", "ForcePullContentNextBoot", ForcePullContentNextBoot);
+                    SaveSettingInt(settingsIni, "ModManager", "LastBootedBuild", LastBootedBuild);
                     SaveSettingBool(settingsIni, "ModManager", "ShowInstalledModsInLibrary", ShowInstalledModsInLibrary);
 
                     SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
