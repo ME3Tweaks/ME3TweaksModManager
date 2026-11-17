@@ -241,6 +241,31 @@ namespace ME3TweaksModManager.Tests
             });
         }
 
+        [TestMethod]
+        public void TestStaleCacheIsReplacedByNewerEmbeddedManifest()
+        {
+            GlobalTest.Init();
+
+            var staleManifest = @"<ASIManifest><updategroup groupid='626262' game='4'><asimod><name>Stale Test ASI</name><installedname>StaleTest</installedname><author>ME3Tweaks</author><version>1</version><description>test</description><hash>55555555555555555555555555555555</hash><sourcecode>https://example.com/source</sourcecode><downloadlink>https://example.com/download</downloadlink></asimod></updategroup></ASIManifest>";
+
+            WithIsolatedManifestCache(() =>
+            {
+                // Cache older than the embedded manifest gets replaced
+                File.WriteAllText(ASIManager.ManifestLocation, staleManifest);
+                File.SetLastWriteTimeUtc(ASIManager.ManifestLocation, new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+                ASIManager.LoadManifest(forceLocal: true);
+
+                Assert.IsFalse(ASIManager.AllASIMods.Any(x => x.UpdateGroupId == 626262), "Stale cached manifest should not be used when the embedded one is newer.");
+                Assert.IsTrue(ASIManager.GetASIModsByGame(MEGame.LMP).Any(x => x.UpdateGroupId == 501), "Embedded manifest should be used when it is newer than the cache.");
+                Assert.IsFalse(File.ReadAllText(ASIManager.ManifestLocation).Contains(@"626262"), "Stale cache file should be overwritten with the embedded manifest.");
+
+                // Cache newer than the embedded manifest is kept
+                File.WriteAllText(ASIManager.ManifestLocation, staleManifest);
+                ASIManager.LoadManifest(forceLocal: true);
+                Assert.IsTrue(ASIManager.AllASIMods.Any(x => x.UpdateGroupId == 626262), "Cached manifest newer than the embedded one should be used.");
+            });
+        }
+
         /// <summary>
         /// Runs a manifest test without touching the real cached/staged manifest files.
         /// </summary>
