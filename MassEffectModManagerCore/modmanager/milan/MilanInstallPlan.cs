@@ -1,4 +1,6 @@
-﻿using LegendaryExplorerCore.GameFilesystem;
+﻿using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
@@ -111,6 +113,28 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         public HashSet<string> LinkerPatchOutputs { get; } = new(StringComparer.OrdinalIgnoreCase);
 
+       
+        /// <summary>
+        /// A language set of files that has files but is not available for install
+        /// </summary>
+        /// <param name="Language"></param>
+        /// <param name="ModifiedFiles"></param>
+        /// <param name="MissingFiles"></param>
+        /// <param name="DroppedFileCount"></param>
+        internal record UnavailableLanguage(MELocalization Language, List<string> ModifiedFiles, List<string> MissingFiles, int DroppedFileCount);
+
+        /// <summary>
+        /// Languages left out of the installation
+        /// </summary>
+        public List<UnavailableLanguage> UnavailableLanguages { get; } = new();
+
+        /// <summary>
+        /// Requested localization files LE3 doesn't have
+        /// </summary>
+        private readonly List<string> missingLocalizationFiles = new();
+
+        private static MELocalization GetLanguage(string path) => Path.GetFileName(path.Replace('\\', Path.DirectorySeparatorChar)).GetUnrealLocalization();
+
         #region Building
 
         /// <summary>
@@ -191,7 +215,8 @@ namespace ME3TweaksModManager.modmanager.milan
 
             M3Log.Information($@"Installation plan: {plan.Copies.Count} file(s) copied from LE3 ({plan.Copies.Count(x => x.Delta != null)} MilanDelta patched, {plan.Copies.Count(x => x.SlashPatch != null)} slash patched), {plan.LeftInLE3.Count} left in LE3 for the slash generator, " +
                               $@"{plan.InlineBuilds.Count} slash build(s) from LE3 files, {plan.ModPatches.Count} slash patch(es) of Project Milan files, " +
-                              $@"{plan.PostInstallBuilds.Count} post-install slash build(s), {plan.PostInstallDeletions.Count} post-install slash deletion(s), {plan.LinkerPatchOutputs.Count} file(s) from the linker patch merge");
+                              $@"{plan.PostInstallBuilds.Count} post-install slash build(s), {plan.PostInstallDeletions.Count} post-install slash deletion(s), {plan.LinkerPatchOutputs.Count} file(s) from the linker patch merge, " +
+                              $@"{plan.UnavailableLanguages.Count} language(s) left out");
             return plan;
         }
 
@@ -286,6 +311,7 @@ namespace ME3TweaksModManager.modmanager.milan
                         if (MilanLocalizationFiles.IsOptionalLocalization(fileName))
                         {
                             M3Log.Information($@"Not copying missing localization file {fileName}");
+                            missingLocalizationFiles.Add(fileName);
                             continue;
                         }
 
@@ -347,11 +373,57 @@ namespace ME3TweaksModManager.modmanager.milan
 
         /// <summary>
         /// Checks every source has a copy of the right size, either in the LE3 installation or in the LE3 backup. Full hash
-        /// checks are done when files are copied.
+        /// checks are done when files are copied, except for optional localizations, which are done up front
         /// </summary>
         private void CheckSources(LE3SourceResolver sources, List<string> problems)
         {
-            foreach (var copy in Copies)
+            // Localized files to check
+            var localizations = Copies.Where(x => MilanLocalizationFiles.IsOptionalLocalization(x.DestRelativePath)).ToList();
+            var unavailable = new ConcurrentBag<CopyEntry>();
+
+            // Scan each file to determine where we can pull it from, up to 4 threads
+            Parallel.ForEach(localizations, new ParallelOptions { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount / 2, 1, 4) }, copy =>
+            {
+                if (sources.TryGetVanillaSource(copy.SourcePath, out var source, out var problem))
+                {
+                    copy.SourceSize = source.Length;
+                }
+                else
+                {
+                    M3Log.Warning($@"No vanilla copy of localization {copy.DestRelativePath} is available: {problem}");
+                    unavailable.Add(copy);
+                }
+            });
+
+            // Any missing LOC marks the language as unavailable
+            var modifiedByLanguage = unavailable.ToLookup(x => GetLanguage(x.DestRelativePath));
+            var missingByLanguage = missingLocalizationFiles.ToLookup(GetLanguage);
+            foreach (var language in modifiedByLanguage.Select(x => x.Key).Union(missingByLanguage.Select(x => x.Key)))
+            {
+                var languageCopies = localizations.Where(x => GetLanguage(x.DestRelativePath) == language).ToList();
+                if (languageCopies.Count == 0)
+                {
+                    // Found no copies of loc files, so nothign to do here
+                    continue;
+                }
+
+                foreach (var copy in languageCopies)
+                {
+                    Copies.Remove(copy);
+                    LE3Files.Remove(copy.DestRelativePath);
+                }
+
+
+                var dropped = new UnavailableLanguage(language,
+                    modifiedByLanguage[language].Select(x => x.DestRelativePath).Order(StringComparer.OrdinalIgnoreCase).ToList(),
+                    missingByLanguage[language].Order(StringComparer.OrdinalIgnoreCase).ToList(),
+                    languageCopies.Count);
+                M3Log.Warning($@"Leaving out {language}: {dropped.ModifiedFiles.Count} file(s) modified with no vanilla copy");
+                UnavailableLanguages.Add(dropped);
+            }
+
+            var localizationSet = localizations.ToHashSet();
+            foreach (var copy in Copies.Where(x => !localizationSet.Contains(x)))
             {
                 if (sources.TryCheckSize(copy.SourcePath, out var size, out var problem))
                 {
@@ -419,8 +491,15 @@ namespace ME3TweaksModManager.modmanager.milan
                 // Otherwise it isn't in the installation to begin with
             }
 
+            var droppedLanguages = UnavailableLanguages.Select(x => x.Language).ToHashSet();
             foreach (var build in slash.Builds)
             {
+                if (MilanLocalizationFiles.IsOptionalLocalization(build.Filename) && droppedLanguages.Contains(GetLanguage(build.Filename)))
+                {
+                    M3Log.Information($@"Slash: skipping build of {build.Filename} (language skipped)");
+                    continue;
+                }
+
                 bool needsModFiles = ModOutputs.Contains(build.Filename);
                 foreach (var source in build.Sources.Where(x => !x.Payload))
                 {
@@ -603,6 +682,11 @@ namespace ME3TweaksModManager.modmanager.milan
             BackupRoot = backupRoot;
         }
 
+        /// <summary>
+        /// Resolved vanilla files, keyed by relative path. Lazy so parallel copies don't hash the same file twice
+        /// </summary>
+        private readonly ConcurrentDictionary<string, Lazy<(LE3VanillaSource source, string problem)>> resolved = new(StringComparer.OrdinalIgnoreCase);
+
         public string GetRelativePath(string sourceFile) => Path.GetRelativePath(SourceRoot, sourceFile);
 
         public bool IsInVanillaDatabase(string sourceFile) => vanillaDatabase.ContainsKey(GetRelativePath(sourceFile));
@@ -648,9 +732,9 @@ namespace ME3TweaksModManager.modmanager.milan
             }
 
             // Texture modded but otherwise untouched
-            if (vanillaVersions.Any(x => x.size == info.Length - MEPackage.MEMPackageTag.Length) && HasMEMMarker(sourceFile))
+            if (vanillaVersions.Any(x => x.size == info.Length - MEPackage.MEMPackageTagLength) && HasMEMMarker(sourceFile))
             {
-                size = info.Length - MEPackage.MEMPackageTag.Length;
+                size = info.Length - MEPackage.MEMPackageTagLength;
                 return true;
             }
 
@@ -722,7 +806,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
             }
 
-            var strippedLength = info.Length - MEMEndOfFileMarker.Length;
+            var strippedLength = info.Length - MEPackage.MEMPackageTagLength;
             if (IsVanillaWithoutMarker(sourceFile, strippedLength, vanillaVersions))
             {
                 // Log in case it dies later
@@ -743,13 +827,13 @@ namespace ME3TweaksModManager.modmanager.milan
             try
             {
                 using var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
-                if (fs.Length < MEPackage.MEMPackageTag.Length)
+                if (fs.Length < MEPackage.MEMPackageTagLength)
                 {
                     // Cannot store the marker, this file is likely invalid
                     return false;
                 }
-                fs.Seek(-MEMEndOfFileMarker.Length, SeekOrigin.End);
-                return fs.ReadStringASCII(MEMEndOfFileMarker.Length) == MEMEndOfFileMarker;
+                fs.Seek(-MEPackage.MEMPackageTagLength, SeekOrigin.End);
+                return MEPackage.MEMPackageTag.SequenceEqual(fs.ReadToBuffer(MEPackage.MEMPackageTagLength));
             }
             catch (Exception e)
             {

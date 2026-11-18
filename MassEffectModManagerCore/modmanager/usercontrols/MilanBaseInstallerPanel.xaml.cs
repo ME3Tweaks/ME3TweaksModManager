@@ -153,9 +153,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     InstallationFinished = installFinished,
                     AddTarget = target => builtTarget = target,
                     GenerateSlash = session != null && sessionGeneratesSlash ? session.GenerateSlash : null,
-                    UserInstall = session != null && !sessionGeneratesSlash
-
+                    UserInstall = session != null && !sessionGeneratesSlash,
+                    ConfirmSkipUnavailableLanguages = session == null ? ConfirmSkipUnavailableLanguages : null
                 };
+                userCancelledInstall = false;
                 var controller = new MilanBaseInstaller();
                 var sourceTarget = SelectedTarget;
                 var destination = InstallLocation;
@@ -299,6 +300,48 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true;
         }
 
+        /// <summary>
+        /// Set when the user backs out of the install from a prompt, so it isn't reported as a failure
+        /// </summary>
+        private bool userCancelledInstall;
+
+        /// <summary>
+        /// Called from the install thread. Tells the user which languages can't be installed and asks whether to continue without them
+        /// </summary>
+        private bool ConfirmSkipUnavailableLanguages(IReadOnlyList<MilanInstallPlan.UnavailableLanguage> languages)
+        {
+            var lines = languages.OrderBy(x => x.Language.ToString()).Select(x =>
+            {
+                var reasons = new List<string>();
+                if (x.ModifiedFiles.Count > 0)
+                {
+                    reasons.Add($"{x.ModifiedFiles.Count} modified file(s) with no unmodified copy in your backup");
+                }
+                if (x.MissingFiles.Count > 0)
+                {
+                    reasons.Add($"{x.MissingFiles.Count} missing file(s)");
+                }
+                return $"  {x.Language}: {string.Join(", ", reasons)}";
+            });
+
+            var message = "The following languages are missing unmodified files from LE3 and won't be available in your LMP install:\n\n" +
+                          string.Join("\n", lines) +
+                          "\n\nInstall without these languages?";
+
+            bool proceed = false;
+            Dispatcher.Invoke(() =>
+            {
+                proceed = M3L.ShowDialog(window, message, "Languages unavailable", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
+            });
+
+            if (!proceed)
+            {
+                M3Log.Information(@"User aborted Milan install due to unavailable languages");
+                userCancelledInstall = true;
+            }
+            return proceed;
+        }
+
         private void installFinished(bool success, string message)
         {
             InstallController = null;
@@ -335,10 +378,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     SourceTargetSelector.IsEnabled = true;
                     ProfileImportPanel.IsEnabled = true;
-                    StatusText = "Installation failed";
+                    StatusText = userCancelledInstall ? "Installation cancelled" : "Installation failed";
                     if (session != null)
                     {
                         OnClosing(DataEventArgs.Empty); // Project Milan shows the error
+                    }
+                    else if (userCancelledInstall)
+                    {
+                        // Not a failure
                     }
                     else
                     {

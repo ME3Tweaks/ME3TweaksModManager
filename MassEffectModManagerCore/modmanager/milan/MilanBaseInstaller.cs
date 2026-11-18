@@ -1270,6 +1270,25 @@ namespace ME3TweaksModManager.modmanager.milan
                 plan = MilanInstallPlan.Build(le3Sources, installManifests, SupportedVOLanguages, milanDeltaLookup, milanDeltaFolder, slash, GetModOutputs(milanmod, destinationFolderPath), leaveTFCsInLE3, allowStaleSlash: App.IsDebug && !interop.UserInstall);
                 slashManifest = plan.Slash;
 
+                // Languages with files modded in LE3 (usually texture mods) and no backup copy, or missing files
+                // Make user decide what to do
+                if (plan.UnavailableLanguages.Count > 0)
+                {
+                    var languages = string.Join(@", ", plan.UnavailableLanguages.Select(x => x.Language));
+                    if (interop.ConfirmSkipUnavailableLanguages == null)
+                    {
+                        var first = plan.UnavailableLanguages[0];
+                        throw new Exception($"Some localizations can't be fully installed from this LE3 installation ({languages}). First file: {first.ModifiedFiles.Concat(first.MissingFiles).FirstOrDefault()}");
+                    }
+
+                    if (!interop.ConfirmSkipUnavailableLanguages(plan.UnavailableLanguages))
+                    {
+                        throw new OperationCanceledException("The installation was cancelled because some localizations are not available");
+                    }
+
+                    M3Log.Warning($@"User chose to install without these languages: {languages}");
+                }
+
                 // READY TO BUILD MP TARGET ==================================================
                 if (File.Exists(gamerSettingsF))
                 {
@@ -1414,7 +1433,10 @@ namespace ME3TweaksModManager.modmanager.milan
                     }
                 }
 #if DEBUG
-                throw;
+                if (e is not OperationCanceledException)
+                {
+                    throw;
+                }
 #endif
             }
             finally
