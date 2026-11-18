@@ -447,7 +447,7 @@ namespace ME3TweaksModManager.modmanager.importer
                     // Get true full path
                     diskPath = Path.GetFullPath(diskPath);
 
-                    if (!IsDownloadedArchive || 
+                    if (!IsDownloadedArchive ||
                         !string.Equals(Path.GetDirectoryName(diskPath), Path.GetFullPath(M3Filesystem.GetTemporaryModDownloadCachePath()), StringComparison.OrdinalIgnoreCase))
                         return File.Exists(diskPath) ? diskPath : null;
                 }
@@ -683,7 +683,18 @@ namespace ME3TweaksModManager.modmanager.importer
             nbw.DoWork += ExtractModsBackgroundThread;
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error == null && b.Result is List<IImportableMod> modList && modList.Any(x => x is Mod))
+                object workerResult = EModImportResult.USER_ABORTED_IMPORT;
+                if (b.Error != null)
+                {
+                    workerResult = EModImportResult.ERROR_EXTRACTING_ARCHIVE;
+                }
+                else if (!b.Cancelled)
+                {
+                    workerResult = b.Result;
+                }
+                // Canceled is the default case
+
+                if (workerResult is List<IImportableMod> modList && modList.Any(x => x is Mod))
                 {
                     var pr = GetPanelResult();
                     pr.ReloadMods = true;
@@ -705,17 +716,17 @@ namespace ME3TweaksModManager.modmanager.importer
                 Exception e = null;
                 long requiredSpace = 0;
                 EModImportResult result = EModImportResult.OK;
-                if (b.Result is (long spaceRequired, EModImportResult res))
+                if (workerResult is (long spaceRequired, EModImportResult res))
                 {
                     result = res;
                     requiredSpace = spaceRequired;
                 }
-                else if (b.Result is (Exception ex, EModImportResult res3))
+                else if (workerResult is (Exception ex, EModImportResult res3))
                 {
                     e = ex; // Used in diagnostics
                     result = res3;
                 }
-                else if (b.Result is EModImportResult res2)
+                else if (workerResult is EModImportResult res2)
                 {
                     result = res2;
                 }
@@ -727,9 +738,18 @@ namespace ME3TweaksModManager.modmanager.importer
                             ProgressValue = 0;
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
-                            ActionText = M3L.GetString(M3L.string_selectModsToImportOrInstall);
-                            SetImportErrorState();
-                            return; //Don't do anything.
+                            // 11/18/2026 - Automated mode needs to set canceled
+                            if (AutomatedMode)
+                            {
+                                ActionText = M3L.GetString(M3L.string_canceled);
+                                CurrentState = EModArchiveImportState.CANCELED;
+                            }
+                            else
+                            {
+                                ActionText = M3L.GetString(M3L.string_selectModsToImportOrInstall);
+                                SetImportErrorState();
+                            }
+                            return;
                         }
                     case EModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR:
                         {
@@ -753,6 +773,21 @@ namespace ME3TweaksModManager.modmanager.importer
                                 M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)));
                             SetImportErrorState();
                             return; //Don't do anything.
+                        }
+                    // 11/18/2026 - Handle error when archive fails to extract
+                    case EModImportResult.ERROR_EXTRACTING_ARCHIVE:
+                        {
+                            ProgressValue = 0;
+                            ProgressMaximum = 100;
+                            ProgressIndeterminate = false;
+                            var errorTitle = M3L.GetString(M3L.string_errorExtractingArchive);
+                            ActionText = errorTitle;
+                            SetImportErrorState();
+                            if (!AutomatedMode && b.Error is Exception workerError)
+                            {
+                                ErrorCallback?.Invoke(errorTitle, M3L.GetString(M3L.string_interp_anErrorOccuredExtractingTheArchiveX, workerError.Message));
+                            }
+                            return;
                         }
                     case EModImportResult.ERROR_COULD_NOT_CREATE_MOD_FOLDER:
                         {
