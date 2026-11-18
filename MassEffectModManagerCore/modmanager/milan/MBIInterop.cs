@@ -33,5 +33,10 @@ namespace ME3TweaksModManager.modmanager.milan
         /// manifest, and the result has to match the recorded final state. Used to test a Project Milan build before it ships.
         /// </summary>
         public bool UserInstall { get; set; }
+
+        /// <summary>
+        /// Callback that lets the user confirm/decline install if some languages will not be available.
+        /// </summary>
+        public Func<IReadOnlyList<MilanInstallPlan.UnavailableLanguage>, bool> ConfirmSkipUnavailableLanguages { get; set; }
     }
 }

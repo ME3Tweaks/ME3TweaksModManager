@@ -544,9 +544,9 @@ namespace ME3TweaksModManager.modmanager.milan
         /// manifest's recorded size and SHA-256 hash before being trusted.
         /// </summary>
         /// <param name="packagePath">Path the package is associated with while it is re-saved.</param>
-        private byte[] ApplyMilanDelta(string sourceFile, string packagePath, MilanDeltaFileEntry entry)
+        private byte[] ApplyMilanDelta(LE3VanillaSource sourceFile, string packagePath, MilanDeltaFileEntry entry)
         {
-            using var sourceStream = new MemoryStream(File.ReadAllBytes(sourceFile));
+            using var sourceStream = new MemoryStream(sourceFile.ReadAllBytes());
             using var decompressedStream = MEPackage.GetDecompressedPackageStream(sourceStream);
             decompressedStream.Position = 0;
 
@@ -564,9 +564,9 @@ namespace ME3TweaksModManager.modmanager.milan
         /// <summary>
         /// Applies a MilanDelta JPatch file to non-package files
         /// </summary>
-        private byte[] ApplyMilanRawDelta(string sourceFile, MilanDeltaFileEntry entry)
+        private byte[] ApplyMilanRawDelta(LE3VanillaSource sourceFile, MilanDeltaFileEntry entry)
         {
-            var bytes = File.ReadAllBytes(sourceFile);
+            var bytes = sourceFile.ReadAllBytes();
             if (entry.Format == MilanDelta.TlkDeltaXml.Format)
             {
                 bytes = MilanDelta.TlkDeltaXml.Decompress(bytes);
@@ -780,7 +780,7 @@ namespace ME3TweaksModManager.modmanager.milan
             {
                 AssembleSlashBuild(build, gamePath, relativePath => plan.ModOutputs.Contains(relativePath)
                     ? MilanSlashApplier.Resolve(gamePath, relativePath)
-                    : le3Sources.GetVanillaSourceFile(plan.LE3Files[relativePath].SourcePath));
+                    : le3Sources.GetVanillaSource(plan.LE3Files[relativePath].SourcePath).Path);
             }
 
             foreach (var deletion in plan.PostInstallDeletions)
@@ -892,7 +892,7 @@ namespace ME3TweaksModManager.modmanager.milan
         private void GenerateAndApplyMilanSlash(string gamePath)
         {
             interop.SetStatus?.Invoke(@"Checking LE3 TFCs...");
-            var leftInLE3 = plan.LeftInLE3.ToDictionary(x => x.DestRelativePath.Replace(Path.DirectorySeparatorChar, '\\'), x => le3Sources.GetVanillaSourceFile(x.SourcePath), StringComparer.OrdinalIgnoreCase);
+            var leftInLE3 = plan.LeftInLE3.ToDictionary(x => x.DestRelativePath.Replace(Path.DirectorySeparatorChar, '\\'), x => le3Sources.GetVanillaSource(x.SourcePath).Path, StringComparer.OrdinalIgnoreCase);
             string resolveBuildSource(string relativePath) => leftInLE3.TryGetValue(relativePath, out var path) ? path : MilanSlashApplier.Resolve(gamePath, relativePath);
 
             var root = Path.GetFullPath(gamePath);
@@ -903,7 +903,7 @@ namespace ME3TweaksModManager.modmanager.milan
                 FilesLeftInLE3 = leftInLE3,
                 // Project Milan compares vtables against these, as LE3's script was compiled against the vanilla ones
                 VanillaOfPatched = plan.LE3Files.Where(x => x.Value.Delta != null)
-                    .ToDictionary(x => x.Key, x => le3Sources.GetVanillaSourceFile(x.Value.SourcePath), StringComparer.OrdinalIgnoreCase),
+                    .ToDictionary(x => x.Key, x => le3Sources.GetVanillaSource(x.Value.SourcePath).Path, StringComparer.OrdinalIgnoreCase),
                 ExcludedFiles = Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)
                     .Select(x => Path.GetRelativePath(root, x).Replace(Path.DirectorySeparatorChar, '\\'))
                     .Where(MilanFinalState.IsExcluded).ToList(),
@@ -983,7 +983,7 @@ namespace ME3TweaksModManager.modmanager.milan
 
             foreach (var build in plan.InlineBuilds)
             {
-                AssembleSlashBuild(build, destGamePath, relativePath => le3Sources.GetVanillaSourceFile(plan.LE3Files[relativePath].SourcePath));
+                AssembleSlashBuild(build, destGamePath, relativePath => le3Sources.GetVanillaSource(plan.LE3Files[relativePath].SourcePath).Path);
             }
         }
 
@@ -993,7 +993,7 @@ namespace ME3TweaksModManager.modmanager.milan
         /// </summary>
         private void CopyFile(MilanInstallPlan.CopyEntry copy, string destGamePath)
         {
-            var file = le3Sources.GetVanillaSourceFile(copy.SourcePath);
+            var file = le3Sources.GetVanillaSource(copy.SourcePath);
             var destFile = Path.Combine(destGamePath, copy.DestRelativePath);
             Directory.CreateDirectory(Path.GetDirectoryName(destFile));
             M3Log.Information($@"Copying {file} to {destFile}");
@@ -1006,7 +1006,7 @@ namespace ME3TweaksModManager.modmanager.milan
             {
                 // Large uncompressed files (the 1.3GB RefShaderCache) are patched straight from LE3 into the installation,
                 // converted to LMP as they are read
-                using var sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+                using var sourceStream = file.OpenRead(1024 * 1024);
                 using var input = convertToLMP ? LMPLicensee.WrapForReading(sourceStream) : sourceStream;
                 using var output = new FileStream(destFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 1024 * 1024);
                 MilanSlashApplier.PatchRaw(slashPatch, slashDeltaPath, input, output);
@@ -1015,7 +1015,7 @@ namespace ME3TweaksModManager.modmanager.milan
 
             if (copy.Delta == null && slashPatch == null)
             {
-                using (var sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (var sourceStream = file.OpenRead())
                 using (var destStream = new FileStream(destFile, FileMode.Create, FileAccess.ReadWrite))
                 {
                     sourceStream.CopyTo(destStream);
@@ -1040,7 +1040,7 @@ namespace ME3TweaksModManager.modmanager.milan
             }
             else
             {
-                data = File.ReadAllBytes(file);
+                data = file.ReadAllBytes();
             }
 
             if (convertToLMP)

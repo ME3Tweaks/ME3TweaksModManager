@@ -647,32 +647,69 @@ namespace ME3TweaksModManager.modmanager.milan
                 }
             }
 
+            // Texture modded but otherwise untouched
+            if (vanillaVersions.Any(x => x.size == info.Length - MEPackage.MEMPackageTag.Length) && HasMEMMarker(sourceFile))
+            {
+                size = info.Length - MEPackage.MEMPackageTag.Length;
+                return true;
+            }
+
             problem = $"Unable to obtain an unmodified copy of {relativePath}. Your version is modified, and there is no vanilla copy of it in an LE3 backup. Project Milan must be built from vanilla LE3 files, repair the game to install Project Milan.";
             return false;
         }
 
         /// <summary>
         /// Returns a vanilla copy of a file from the LE3 installation being copied from: the file itself if it is vanilla,
-        /// otherwise the LE3 backup's copy. A modified file is caught here rather than failing the installation at the end.
-        /// Throws if there is no vanilla copy.
+        /// otherwise the LE3 backup's copy, otherwise the file minus its texture mod marker (if any). A modified file is caught here
+        /// rather than failing the installation at the end. Throws if there is no vanilla copy.
         /// </summary>
-        public string GetVanillaSourceFile(string sourceFile)
+        public LE3VanillaSource GetVanillaSource(string sourceFile)
+        {
+            if (TryGetVanillaSource(sourceFile, out var source, out var problem))
+            {
+                return source;
+            }
+            throw new Exception(problem);
+        }
+
+        /// <summary>
+        /// Non-throwing version of GetVanillaSource
+        /// </summary>
+        public bool TryGetVanillaSource(string sourceFile, out LE3VanillaSource source, out string problem)
         {
             var relativePath = GetRelativePath(sourceFile);
-            if (IsUnchecked(relativePath))
+            (source, problem) = resolved.GetOrAdd(relativePath, _ => new Lazy<(LE3VanillaSource, string)>(() => ResolveVanilla(sourceFile, relativePath))).Value;
+            return source != null;
+        }
+
+        /// <summary>
+        /// Gets a vanilla file
+        /// </summary>
+        /// <param name="sourceFile"></param>
+        /// <param name="relativePath"></param>
+        /// <returns></returns>
+        private (LE3VanillaSource source, string problem) ResolveVanilla(string sourceFile, string relativePath)
+        {
+            var info = new FileInfo(sourceFile);
+            if (!info.Exists)
             {
-                return sourceFile;
+                return (null, $"{relativePath} does not exist in {SourceRoot}");
             }
 
-            if (!vanillaDatabase.ContainsKey(relativePath))
+            if (IsUnchecked(relativePath))
+            {
+                return (new LE3VanillaSource(sourceFile, info.Length), null);
+            }
+
+            if (!vanillaDatabase.TryGetValue(relativePath, out var vanillaVersions))
             {
                 M3Log.Warning($@"{relativePath} is not in the LE3 vanilla database; it cannot be checked for modifications");
-                return sourceFile;
+                return (new LE3VanillaSource(sourceFile, info.Length), null);
             }
 
             if (IsVanillaLE3File(sourceFile, relativePath))
             {
-                return sourceFile;
+                return (new LE3VanillaSource(sourceFile, info.Length), null);
             }
 
             if (BackupRoot != null)
@@ -681,11 +718,62 @@ namespace ME3TweaksModManager.modmanager.milan
                 if (File.Exists(backupFile) && IsVanillaLE3File(backupFile, relativePath))
                 {
                     M3Log.Warning($@"{relativePath} is modified in {SourceRoot}; using the vanilla copy in the LE3 backup instead");
-                    return backupFile;
+                    return (new LE3VanillaSource(backupFile, new FileInfo(backupFile).Length), null);
                 }
             }
 
-            throw new Exception($"{relativePath} in your LE3 installation is modified, and there is no vanilla copy of it in an LE3 backup. Project Milan must be built from vanilla LE3 files: restore this file, or create an LE3 backup.");
+            var strippedLength = info.Length - MEMEndOfFileMarker.Length;
+            if (IsVanillaWithoutMarker(sourceFile, strippedLength, vanillaVersions))
+            {
+                // Log in case it dies later
+                M3Log.Information($@"{relativePath} seems to be vanilla with texture tag stripped");
+                return (new LE3VanillaSource(sourceFile, strippedLength, isMarkerStripped: true), null);
+            }
+
+            return (null, $"{relativePath} has no vanilla copy of it available");
+        }
+
+        /// <summary>
+        /// Tests if the given file has the MEM marker
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        private static bool HasMEMMarker(string file)
+        {
+            try
+            {
+                using var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                if (fs.Length < MEPackage.MEMPackageTag.Length)
+                {
+                    // Cannot store the marker, this file is likely invalid
+                    return false;
+                }
+                fs.Seek(-MEMEndOfFileMarker.Length, SeekOrigin.End);
+                return fs.ReadStringASCII(MEMEndOfFileMarker.Length) == MEMEndOfFileMarker;
+            }
+            catch (Exception e)
+            {
+                M3Log.Warning($@"Could not check {file} for a texture mod marker: {e.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// If the file is vanilla when stripping off the MEM marker
+        /// </summary>
+        private static bool IsVanillaWithoutMarker(string sourceFile, long strippedLength, List<(int size, string md5)> vanillaVersions)
+        {
+            if (!vanillaVersions.Any(x => x.size == strippedLength) || !HasMEMMarker(sourceFile))
+            {
+                // Definitely not vanilla
+                return false;
+            }
+
+            using var source = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024);
+            var md5 = MUtilities.CalculateHash(source, byteLenToHash: strippedLength);
+
+            // Check to see if sizes and MD5s match on any matching files in the MD5 DB
+            return vanillaVersions.Any(x => x.size == strippedLength && string.Equals(x.md5, md5, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -697,6 +785,46 @@ namespace ME3TweaksModManager.modmanager.milan
             var extension = Path.GetExtension(relativePath);
             bool sizeOnly = extension.Equals(@".tfc", StringComparison.OrdinalIgnoreCase) || extension.Equals(@".afc", StringComparison.OrdinalIgnoreCase);
             return VanillaDatabaseService.IsFileVanilla(MEGame.LE3, path, relativePath, false, md5check: !sizeOnly);
+        }
+    }
+
+    /// <summary>
+    /// Handles LE3 file sources - can strip off MEM tag
+    /// </summary>
+    internal class LE3VanillaSource(string path, long length, bool isMarkerStripped = false)
+    {
+        public string Path { get; } = path;
+        public long Length { get; } = length;
+
+        /// <summary>
+        /// If reading the file needs the marker cut off the end
+        /// </summary>
+        public bool IsMarkerStripped { get; } = isMarkerStripped;
+
+        /// <summary>
+        /// Reads the vanilla data into memory
+        /// </summary>
+        public byte[] ReadAllBytes()
+        {
+            if (!IsMarkerStripped)
+            {
+                return File.ReadAllBytes(Path);
+            }
+
+            var data = new byte[Length];
+            using var fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            fs.ReadExactly(data);
+            return data;
+        }
+
+        /// <summary>
+        /// Opens the vanilla data for reading
+        /// </summary>
+        public Stream OpenRead(int bufferSize = 4096)
+        {
+            return IsMarkerStripped
+                ? new MemoryStream(ReadAllBytes(), writable: false)
+                : new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize);
         }
     }
 }
