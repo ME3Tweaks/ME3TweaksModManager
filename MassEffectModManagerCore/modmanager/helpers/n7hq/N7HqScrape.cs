@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace ME3TweaksModManager.modmanager.helpers.n7hq
 {
     /// <summary>
-    /// What N7HqScraper.js read from the N7 HQ profile pages
+    /// What N7HqScraper.js read from the N7HQ profile pages
     /// </summary>
     public class N7HqScrape
     {
@@ -136,7 +136,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
         public string Title { get; set; }
         public string Description { get; set; }
         /// <summary>
-        /// [current, goal]. N7 HQ caps current at the goal
+        /// [current, goal]. N7HQ caps current at the goal
         /// </summary>
         public int[] Progress { get; set; }
         public int? Points { get; set; }

@@ -10,12 +10,12 @@ using Newtonsoft.Json.Linq;
 namespace ME3TweaksModManager.modmanager.helpers.n7hq
 {
     /// <summary>
-    /// Reads a profile from N7 HQ and writes it to LMP's MP_Profile
+    /// Reads a profile from N7HQ and writes it to LMP's MP_Profile
     /// </summary>
     internal static class N7HqProfileImport
     {
         /// <summary>
-        /// Shows the N7 HQ browser, archives what it read, then converts it. Must run on the UI thread
+        /// Shows the N7HQ browser, archives what it read, then converts it. Must run on the UI thread
         /// </summary>
         public static void Import(Window owner)
         {
@@ -28,7 +28,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             string archivePath = null;
             try
             {
-                // Archive first, so the data survives even if conversion fails or N7 HQ goes away
+                // Archive first, so the data survives even if conversion fails or N7HQ goes away
                 archivePath = Archive(browser.Result, browser.ResultJson);
                 var converted = N7HqProfileConverter.Convert(browser.Result, N7HqGameData.Embedded);
                 var exportJson = converted.Export.ToString(Formatting.Indented);
@@ -37,11 +37,11 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
 
                 foreach (var warning in converted.Warnings)
                 {
-                    M3Log.Warning($@"N7 HQ import: {warning}");
+                    M3Log.Warning($@"N7HQ import: {warning}");
                 }
 
                 var o = browser.Result.Overview;
-                var summary = $"Profile: {browser.Result.Name} ({browser.Result.Platform})\nCredits: {o.Credits:N0}\nCharacters: {browser.Result.Characters.Count(c => c.Deployed)} deployed\n\nThe N7 HQ pages were saved to:\n{archivePath}";
+                var summary = $"Profile: {browser.Result.Name} ({browser.Result.Platform})\nCredits: {o.Credits:N0}\nCharacters: {browser.Result.Characters.Count(c => c.Deployed)} deployed\n\nThe N7HQ pages were saved to:\n{archivePath}";
                 if (converted.Warnings.Count > 0)
                 {
                     summary += $"\n\n{converted.Warnings.Count} item(s) couldn't be carried over. They are listed in the Mod Manager log.";
@@ -50,20 +50,20 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
                 var prompt = exists
                     ? $"{summary}\n\nOverwrite the existing LMP MP_Profile? A backup will be kept beside it."
                     : $"{summary}\n\nWrite this as your LMP MP_Profile?";
-                if (M3L.ShowDialog(owner, prompt, "Import N7 HQ multiplayer profile", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.Yes)
+                if (M3L.ShowDialog(owner, prompt, "Import N7HQ multiplayer profile", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.Yes)
                 {
                     return;
                 }
 
                 var destination = LmpProfileImport.WriteProfile(profileBytes);
-                M3Log.Information($@"Imported N7 HQ profile {browser.Result.Name} ({browser.Result.Platform}) to {destination}");
-                M3L.ShowDialog(owner, $"N7 HQ profile converted successfully to:\n\n{destination}", "Profile import complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                M3Log.Information($@"Imported N7HQ profile {browser.Result.Name} ({browser.Result.Platform}) to {destination}");
+                M3L.ShowDialog(owner, $"N7HQ profile converted successfully to:\n\n{destination}", "Profile import complete", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception e)
             {
-                M3Log.Exception(e, @"Failed to import N7 HQ multiplayer profile");
-                M3L.ShowDialog(owner, $"The N7 HQ profile could not be converted: {e.Message}" +
-                    (archivePath == null ? "" : $"\n\nWhat was read from N7 HQ is saved at:\n{archivePath}"),
+                M3Log.Exception(e, @"Failed to import N7HQ multiplayer profile");
+                M3L.ShowDialog(owner, $"The N7HQ profile could not be converted: {e.Message}" +
+                    (archivePath == null ? "" : $"\n\nWhat was read from N7HQ is saved at:\n{archivePath}"),
                     "Profile import failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

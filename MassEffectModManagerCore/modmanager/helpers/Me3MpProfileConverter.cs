@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
-    /// <summary>Converts the version 2 ME3ProfileDump lobby export (or one built from N7 HQ) to MilanHost's local MP_Profile format.</summary>
+    /// <summary>Converts the version 2 ME3ProfileDump lobby export (or one built from N7HQ) to MilanHost's local MP_Profile format.</summary>
     public static class Me3MpProfileConverter
     {
         public static byte[] Convert(string json)

@@ -10,8 +10,8 @@ using Newtonsoft.Json.Linq;
 namespace ME3TweaksModManager.modmanager.helpers.n7hq
 {
     /// <summary>
-    /// Builds an ME3-MP-profile-export document from an N7 HQ scrape, in the same SFXOnlineSaveGameMP
-    /// and SFXAccomplishmentStorage string formats ME3 saved. Appearance, character names and loadouts aren't on N7 HQ.
+    /// Builds an ME3-MP-profile-export document from an N7HQ scrape, in the same SFXOnlineSaveGameMP
+    /// and SFXAccomplishmentStorage string formats ME3 saved. Appearance, character names and loadouts aren't on N7HQ.
     /// </summary>
     public static class N7HqProfileConverter
     {
@@ -55,12 +55,16 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             ["Operation Impact"] = 731,
         };
 
+        // Alliance Mastery was cut from ME3 (no accomplishment data anywhere), but N7HQ still lists it.
+        // Nobody can have progress on it, so skip it without a warning
+        private const int AllianceMasteryGroup = 675;
+
         private static readonly Regex CountLine = new(@"^(?<name>.*?)(?:\s+(?<tier>IV|III|II|I))?\s+-\s+(?<count>\d+)$", RegexOptions.Compiled);
 
         public class Result
         {
             public JObject Export { get; init; }
-            /// <summary>Things on N7 HQ that couldn't be carried over</summary>
+            /// <summary>Things on N7HQ that couldn't be carried over</summary>
             public List<string> Warnings { get; } = new();
         }
 
@@ -68,15 +72,15 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
         {
             if (scrape?.Format != N7HqScrape.FormatName || scrape.Version != 1)
             {
-                throw new InvalidDataException("Expected a version 1 N7 HQ profile scrape.");
+                throw new InvalidDataException("Expected a version 1 N7HQ profile scrape.");
             }
             if (scrape.Overview?.Credits == null)
             {
-                throw new InvalidDataException("The N7 HQ overview page had no credits. Make sure you were logged in and viewing your own profile.");
+                throw new InvalidDataException("The N7HQ overview page had no credits. Make sure you were logged in and viewing your own profile.");
             }
             if (scrape.Characters.Count == 0 || scrape.Inventory.Count == 0)
             {
-                throw new InvalidDataException("No characters or inventory were found on N7 HQ.");
+                throw new InvalidDataException("No characters or inventory were found on N7HQ.");
             }
 
             var warnings = new List<string>();
@@ -165,7 +169,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
         {
             if (item.Icon == null)
             {
-                warnings.Add($"An N7 HQ {item.Section} card had no icon ({string.Join(", ", item.Lines)}).");
+                warnings.Add($"An N7HQ {item.Section} card had no icon ({string.Join(", ", item.Lines)}).");
                 yield break;
             }
             var key = item.Icon[(item.Icon.LastIndexOf('/') + 1)..];
@@ -212,7 +216,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
                     }
                     break;
                 default:
-                    warnings.Add($"Unknown N7 HQ inventory section {item.Section}.");
+                    warnings.Add($"Unknown N7HQ inventory section {item.Section}.");
                     break;
             }
         }
@@ -230,7 +234,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
         {
             if (scrape.Classes.Count > 8)
             {
-                throw new InvalidDataException("N7 HQ listed more than 8 classes.");
+                throw new InvalidDataException("N7HQ listed more than 8 classes.");
             }
             foreach (var cls in scrape.Classes)
             {
@@ -273,7 +277,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
                     var scraped = character.Powers.FirstOrDefault(p => string.Equals(p.Name, power.Name, StringComparison.OrdinalIgnoreCase));
                     if (scraped == null)
                     {
-                        warnings.Add($"{character.Kit}: {power.Name} wasn't on N7 HQ, so it starts unranked.");
+                        warnings.Add($"{character.Kit}: {power.Name} wasn't on N7HQ, so it starts unranked.");
                     }
                     powers.Add(PowerString(power, scraped));
                 }
@@ -296,7 +300,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
         /// </summary>
         private static JObject BuildAccomplishments(N7HqScrape scrape, N7HqGameData data, List<string> warnings, out int currentReward)
         {
-            var table = data.Accomplishments ?? throw new InvalidDataException("The N7 HQ data has no challenge table.");
+            var table = data.Accomplishments ?? throw new InvalidDataException("The N7HQ data has no challenge table.");
             var completion = new int[table.MaxIndex + 1];
             var progress = new int[table.MaxProgressIndex + 1];
             var rewardLevels = new int[table.MaxRewardId + 1];
@@ -306,6 +310,10 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             {
                 if (!table.Groups.TryGetValue(group.Id, out var groupData))
                 {
+                    if (group.Id == AllianceMasteryGroup)
+                    {
+                        continue;
+                    }
                     warnings.Add($"LMP has no challenge group {group.Id} ({group.Title}).");
                     continue;
                 }
@@ -344,7 +352,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
                     Apply(match, challenge);
                 }
 
-                // A few LMP titles differ from N7 HQ's. Pair what's left by goal, in order
+                // A few LMP titles differ from N7HQ's. Pair what's left by goal, in order
                 foreach (var challenge in unmatched)
                 {
                     var match = unused.FirstOrDefault(c => c.Goal != null && c.Goal == challenge.Progress?[1]
@@ -379,7 +387,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             }
 
             var version = table.Version.ToString(CultureInfo.InvariantCulture);
-            // Completion times aren't on N7 HQ. The game only shows them, it doesn't act on them
+            // Completion times aren't on N7HQ. The game only shows them, it doesn't act on them
             var noTimes = string.Join(",", Enumerable.Repeat(0, 250));
             return new JObject
             {
@@ -394,7 +402,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             void Apply(N7HqChallengeData match, N7HqChallenge challenge)
             {
                 Set(completion, match.Index, Math.Max(challenge.TimesCompleted ?? 0, challenge.Complete ? 1 : 0));
-                // N7 HQ caps progress at each tier's goal, so the highest tier has the best value
+                // N7HQ caps progress at each tier's goal, so the highest tier has the best value
                 SetMax(progress, match.Progress, challenge.Progress?[0]);
             }
 

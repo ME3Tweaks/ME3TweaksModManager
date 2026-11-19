@@ -42,7 +42,7 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             {
                 if (!data.byShortName.TryAdd(ShortName(name), id))
                 {
-                    throw new InvalidDataException($"Player variable {ShortName(name)} is in the N7 HQ data more than once.");
+                    throw new InvalidDataException($"Player variable {ShortName(name)} is in the N7HQ data more than once.");
                 }
             }
             return data;

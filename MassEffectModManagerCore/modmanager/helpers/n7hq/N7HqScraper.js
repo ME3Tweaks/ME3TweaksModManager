@@ -210,7 +210,7 @@
     async function fetchPage(url) {
         const response = await fetch(url, { credentials: 'include' });
         if (!response.ok) {
-            throw new Error(`N7 HQ returned ${response.status} for ${url}`);
+            throw new Error(`N7HQ returned ${response.status} for ${url}`);
         }
         return await response.text();
     }
@@ -222,7 +222,7 @@
         const name = query.get('name');
         const platform = query.get('platform');
         if (!name || !platform) {
-            throw new Error('Open your N7 HQ profile page first.');
+            throw new Error('Open your N7HQ profile page first.');
         }
 
         const parser = new DOMParser();

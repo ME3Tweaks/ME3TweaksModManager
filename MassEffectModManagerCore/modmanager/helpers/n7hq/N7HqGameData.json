@@ -1,0 +1,5484 @@
+{
+ "comment": "Generated from the installed LMP game files (Coalesced MPPlayerVariableMappings, MPKits, DefaultMPPlayerVariables, kit character class PowerCustomActionClasses/Loadout; SFXAccomplishmentManager AccomplishmentData, AccomplishmentProgressData, GrinderAccomplishmentData and Rewards with TLK titles). Used to convert N7HQ profiles.",
+ "playerVariables": {
+  "SFXGameContent.SFXWeapon_AssaultRifle_Avenger": 0,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Collector": 1,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Geth": 2,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Mattock": 3,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Cobra": 4,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Falcon": 5,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Revenant": 6,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Vindicator": 7,
+  "SFXGameContent.SFXWeapon_SniperRifle_Incisor": 8,
+  "SFXGameContent.SFXWeapon_SniperRifle_Mantis": 9,
+  "SFXGameContent.SFXWeapon_SniperRifle_Raptor": 10,
+  "SFXGameContent.SFXWeapon_SniperRifle_Javelin": 11,
+  "SFXGameContent.SFXWeapon_SniperRifle_Viper": 12,
+  "SFXGameContent.SFXWeapon_SniperRifle_Widow": 13,
+  "SFXGameContent.SFXWeapon_Shotgun_Claymore": 14,
+  "SFXGameContent.SFXWeapon_Shotgun_Eviscerator": 15,
+  "SFXGameContent.SFXWeapon_Shotgun_Geth": 16,
+  "SFXGameContent.SFXWeapon_Shotgun_Katana": 17,
+  "SFXGameContent.SFXWeapon_Shotgun_Graal": 18,
+  "SFXGameContent.SFXWeapon_Shotgun_Disciple": 19,
+  "SFXGameContent.SFXWeapon_Shotgun_Scimitar": 20,
+  "SFXGameContent.SFXWeapon_Pistol_Carnifex": 21,
+  "SFXGameContent.SFXWeapon_Pistol_Talon": 22,
+  "SFXGameContent.SFXWeapon_Pistol_Thor": 23,
+  "SFXGameContent.SFXWeapon_Pistol_Phalanx": 24,
+  "SFXGameContent.SFXWeapon_Pistol_Predator": 25,
+  "SFXGameContent.SFXWeapon_Pistol_Scorpion": 26,
+  "SFXGameContent.SFXWeapon_SMG_Locust": 27,
+  "SFXGameContent.SFXWeapon_SMG_Hornet": 28,
+  "SFXGameContent.SFXWeapon_SMG_Shuriken": 29,
+  "SFXGameContent.SFXWeapon_SMG_Tempest": 30,
+  "SFXGameContent.SFXWeaponMod_AssaultRifleDamage": 31,
+  "SFXGameContent.SFXWeaponMod_AssaultRifleAccuracy": 32,
+  "SFXGameContent.SFXWeaponMod_AssaultRifleStability": 33,
+  "SFXGameContent.SFXWeaponMod_AssaultRifleMagSize": 34,
+  "SFXGameContent.SFXWeaponMod_AssaultRifleForce": 35,
+  "SFXGameContent.SFXWeaponMod_SniperRifleDamage": 36,
+  "SFXGameContent.SFXWeaponMod_SniperRifleAccuracy": 37,
+  "SFXGameContent.SFXWeaponMod_SniperRifleReloadSpeed": 38,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_BatarianNet": 39,
+  "SFXGameContent.SFXWeaponMod_SniperRifleConstraintDamage": 40,
+  "SFXGameContent.SFXWeaponMod_ShotgunDamage": 41,
+  "SFXGameContent.SFXWeaponMod_ShotgunMeleeDamage": 42,
+  "SFXGameContent.SFXWeaponMod_ShotgunStability": 43,
+  "SFXGameContent.SFXWeaponMod_ShotgunAccuracy": 44,
+  "SFXGameContent.SFXWeaponMod_ShotgunReloadSpeed": 45,
+  "SFXGameContent.SFXWeaponMod_PistolDamage": 46,
+  "SFXGameContent.SFXWeaponMod_PistolAccuracy": 47,
+  "SFXGameContent.SFXWeaponMod_PistolStability": 48,
+  "SFXGameContent.SFXWeaponMod_PistolMagSize": 49,
+  "SFXGameContent.SFXWeaponMod_PistolReloadSpeed": 50,
+  "SFXGameContent.SFXWeaponMod_SMGDamage": 51,
+  "SFXGameContent.SFXWeaponMod_SMGAccuracy": 52,
+  "SFXGameContent.SFXWeaponMod_SMGStability": 53,
+  "SFXGameContent.SFXWeaponMod_SMGMagSize": 54,
+  "SFXGameContent.SFXWeaponMod_SMGConstraintDamage": 55,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_GethMeleePassive": 56,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_GethSentryTurret": 57,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Supercharge": 58,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_GethTurretAttack": 59,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_GethTurretHeal": 60,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_InfernoGrenade_Batarian": 61,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Shockwave_Batarian": 62,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_BioticCharge_Krogan": 63,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_KroganPassive_Vanguard": 64,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Carnage_KroganVanguard": 65,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Barrier_KroganVanguard": 66,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_KroganMeleePassive_Vanguard": 67,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_BubbleShield": 68,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_AsariCommandoPassive": 69,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Reave_Asari": 70,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Pull_Asari": 71,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_AsariMeleePassive_Commando": 72,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_StabilityBonus_0": 73,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_StabilityBonus_1": 74,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_StabilityBonus_2": 75,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_ShieldRegenBonus_0": 76,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_ShieldRegenBonus_1": 77,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_ShieldRegenBonus_2": 78,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_MeleeDamage_0": 79,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_MeleeDamage_1": 80,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_MeleeDamage_2": 81,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_HeadshotDamage_0": 82,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_HeadshotDamage_1": 83,
+  "SFXGameContentDLC_CON_MP1.SFXGameEffect_MatchConsumable_HeadshotDamage_2": 84,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_Flamer": 85,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Consumable_Ammo": 86,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Consumable_Revive": 87,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Consumable_Rocket": 88,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Consumable_Shield": 89,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Incendiary_0": 90,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Incendiary_1": 91,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Incendiary_2": 92,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Disruptor_0": 93,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Disruptor_1": 94,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Disruptor_2": 95,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_ArmorPiercing_0": 96,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_ArmorPiercing_1": 97,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_ArmorPiercing_2": 98,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Warp_0": 99,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Warp_1": 100,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Warp_2": 101,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Cryo_0": 102,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Cryo_1": 103,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Cryo_2": 104,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_PowerBonus_0": 105,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_PowerBonus_1": 106,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_PowerBonus_2": 107,
+  "commendation1": 108,
+  "victory1": 109,
+  "SFXGameContent.SFXWeapon_SniperRifle_Valiant": 110,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_AssaultRifle_0": 111,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_AssaultRifle_1": 112,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_AssaultRifle_2": 113,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_SniperRifle_0": 114,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_SniperRifle_1": 115,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_SniperRifle_2": 116,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_Shotgun_0": 117,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_Shotgun_1": 118,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_Shotgun_2": 119,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_Pistol_0": 120,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_Pistol_1": 121,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_Pistol_2": 122,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_SMG_0": 123,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_SMG_1": 124,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_WeaponDamageBonus_SMG_2": 125,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_SpeedBonus_0": 126,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_SpeedBonus_1": 127,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_SpeedBonus_2": 128,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_ShieldBonus_0": 129,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_ShieldBonus_1": 130,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_ShieldBonus_2": 131,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Overload_Geth": 132,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_Cloak_Geth": 133,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_ProximityMine_Geth": 134,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Saber": 135,
+  "SFXGameContent.SFXWeapon_SniperRifle_BlackWidow": 136,
+  "SFXGameContent.SFXWeapon_Shotgun_Striker": 137,
+  "SFXGameContent.SFXWeapon_Pistol_Ivory": 138,
+  "SFXGameMPContent.SFXPowerCustomActionMP_AdrenalineRush": 139,
+  "SFXGameMPContent.SFXPowerCustomActionMP_AIHacking": 140,
+  "loyalty1": 141,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Barrier": 142,
+  "SFXGameMPContent.SFXPowerCustomActionMP_BioticCharge": 143,
+  "SFXGameMPContent.SFXPowerCustomActionMP_BioticGrenade": 144,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Carnage": 145,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Cloak": 146,
+  "SFXGameMPContent.SFXPowerCustomActionMP_CombatDrone": 147,
+  "SFXGameMPContent.SFXPowerCustomActionMP_ConcussiveShot": 148,
+  "loyalty2": 149,
+  "SFXGameMPContent.SFXPowerCustomActionMP_CryoBlast": 150,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Decoy": 151,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Discharge": 152,
+  "loyalty3": 153,
+  "loyalty4": 154,
+  "loyalty5": 155,
+  "SFXGameMPContent.SFXPowerCustomActionMP_EnergyDrain": 156,
+  "collectible0": 157,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Fortification": 158,
+  "SFXGameMPContent.SFXPowerCustomActionMP_FragGrenade": 159,
+  "SFXGameMPContent.SFXPowerCustomActionMP_GethShieldBoost": 160,
+  "collectible1": 161,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Incinerate": 162,
+  "SFXGameMPContent.SFXPowerCustomActionMP_InfernoGrenade": 163,
+  "collectible2": 164,
+  "collectible3": 165,
+  "SFXGameMPContent.SFXPowerCustomActionMP_LiftGrenade": 166,
+  "collectible4": 167,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Marksman": 168,
+  "collectible5": 169,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Overload": 170,
+  "collectible6": 171,
+  "SFXGameMPContent.SFXPowerCustomActionMP_ProximityMine": 172,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Pull": 173,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Reave": 174,
+  "collectible7": 175,
+  "SFXGameMPContent.SFXPowerCustomActionMP_SentryTurret": 176,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Shockwave": 177,
+  "collectible8": 178,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Singularity": 179,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Slam": 180,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Stasis": 181,
+  "SFXGameMPContent.SFXPowerCustomActionMP_StickyGrenade": 182,
+  "SFXGameMPContent.SFXPowerCustomActionMP_TechArmor": 183,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Throw": 184,
+  "SFXGameMPContent.SFXPowerCustomActionMP_Warp": 185,
+  "premiumcollectible0": 186,
+  "collector0": 187,
+  "SFXGameMPContent.SFXPowerCustomActionMP_AsariMeleePassive": 188,
+  "SFXGameMPContent.SFXPowerCustomActionMP_AsariPassive": 189,
+  "collector1": 190,
+  "collector2": 191,
+  "collector3": 192,
+  "collector4": 193,
+  "collector5": 194,
+  "collector6": 195,
+  "SFXGameMPContent.SFXPowerCustomActionMP_DrellMeleePassive": 196,
+  "SFXGameMPContent.SFXPowerCustomActionMP_DrellPassive": 197,
+  "SFXGameMPContent.SFXPowerCustomActionMP_FemQuarianMeleePassive": 198,
+  "SFXGameMPContent.SFXPowerCustomActionMP_FemQuarianPassive": 199,
+  "SFXGameMPContent.SFXPowerCustomActionMP_HumanMeleePassive_Adept": 200,
+  "SFXGameMPContent.SFXPowerCustomActionMP_HumanMeleePassive_Engineer": 201,
+  "SFXGameMPContent.SFXPowerCustomActionMP_HumanMeleePassive_Infiltrator": 202,
+  "SFXGameMPContent.SFXPowerCustomActionMP_HumanMeleePassive_Sentinel": 203,
+  "SFXGameMPContent.SFXPowerCustomActionMP_HumanMeleePassive_Soldier": 204,
+  "SFXGameMPContent.SFXPowerCustomActionMP_HumanMeleePassive_Vanguard": 205,
+  "SFXGameMPContent.SFXPowerCustomActionMP_HumanPassive": 206,
+  "SFXGameMPContent.SFXPowerCustomActionMP_KroganMeleePassive": 207,
+  "SFXGameMPContent.SFXPowerCustomActionMP_KroganPassive": 208,
+  "SFXGameMPContent.SFXPowerCustomActionMP_SalarianMeleePassive": 209,
+  "SFXGameMPContent.SFXPowerCustomActionMP_SalarianPassive": 210,
+  "collector7": 211,
+  "SFXGameMPContent.SFXPowerCustomActionMP_TurianMeleePassive": 212,
+  "SFXGameMPContent.SFXPowerCustomActionMP_TurianPassive": 213,
+  "collector8": 214,
+  "premiumcollectible1": 215,
+  "premiumcollectible2": 216,
+  "AdeptAsari": 217,
+  "AdeptDrell": 218,
+  "EngineerQuarian": 219,
+  "EngineerSalarian": 220,
+  "InfiltratorSalarian": 221,
+  "InfiltratorQuarian": 222,
+  "SentinelTurian": 223,
+  "SentinelKrogan": 224,
+  "SoldierKrogan": 225,
+  "SoldierTurian": 226,
+  "VanguardDrell": 227,
+  "VanguardAsari": 228,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_BatarianPassive": 229,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_BatarianMeleePassive": 230,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_BatarianAttack": 231,
+  "starter": 232,
+  "avengerpack": 233,
+  "premiumcollectible4": 234,
+  "premiumcollectible5": 235,
+  "collector9": 236,
+  "collector10": 237,
+  "EngineerGeth": 238,
+  "InfiltratorGeth": 239,
+  "SoldierBatarian": 240,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_BatarianArmor": 241,
+  "MPCapacity_Ammo": 242,
+  "MPCapacity_Revive": 243,
+  "MPCapacity_Rocket": 244,
+  "MPCapacity_Shield": 245,
+  "MPRespec": 246,
+  "AdeptHumanFemale": 247,
+  "AdeptHumanMale": 248,
+  "EngineerHumanFemale": 249,
+  "EngineerHumanMale": 250,
+  "InfiltratorHumanFemale": 251,
+  "InfiltratorHumanMale": 252,
+  "SentinelHumanFemale": 253,
+  "SentinelHumanMale": 254,
+  "SoldierHumanFemale": 255,
+  "SoldierHumanMale": 256,
+  "VanguardHumanFemale": 257,
+  "VanguardHumanMale": 258,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_PowerBonusDamage_0": 259,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_PowerBonusDamage_1": 260,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_PowerBonusDamage_2": 261,
+  "SFXGameContent.SFXWeapon_Shotgun_Crusader": 262,
+  "SFXGameContent.SFXWeapon_Pistol_Eagle": 263,
+  "SFXGameContent.SFXWeapon_SMG_Hurricane": 264,
+  "SFXGameMPContent.SFXPowerCustomActionMP_TechArmor_Turian": 265,
+  "SFXGameMPContent.SFXPowerCustomActionMP_TechArmor_Krogan": 266,
+  "SentinelBatarian": 267,
+  "SoldierHumanMaleBF3": 268,
+  "bf3": 269,
+  "LastPromoIDShown": 270,
+  "NewlyAffordableStoreItems": 271,
+  "VanguardKrogan": 272,
+  "AdeptAsariCommando": 273,
+  "SFXGameContentDLC_CON_MP1.SFXWeapon_AssaultRifle_Krogan": 274,
+  "SFXGameContentDLC_CON_MP1.SFXWeapon_SniperRifle_Batarian": 275,
+  "SFXGameContentDLC_CON_MP1.SFXWeapon_SMG_Geth": 276,
+  "SFXGameContentDLC_CON_MP1.SFXPowerCustomActionMP_GethPassive": 277,
+  "SoldierVorcha": 278,
+  "SentinelVorcha": 279,
+  "EngineerQuarianMale": 280,
+  "InfiltratorQuarianMale": 281,
+  "AdeptHumanMaleCerberus": 282,
+  "VanguardHumanMaleCerberus": 283,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_Lash": 284,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_BloodLust": 285,
+  "SFXGameContentDLC_CON_MP2.SFXWeapon_AssaultRifle_Cerberus": 286,
+  "SFXGameContentDLC_CON_MP2.SFXWeapon_Shotgun_Quarian": 287,
+  "SFXGameContentDLC_CON_MP2.SFXWeapon_SniperRifle_Turian": 288,
+  "collector11": 329,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_MeleeDamage_0": 330,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_HeadshotDamage_0": 331,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_PowerBonus_Damage_0": 332,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_PowerBonus_Cooldown_0": 333,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_ShieldStrength_0": 334,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_ShieldRegen_0": 335,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_AssaultRifle_0": 337,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_SniperRifle_0": 338,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_Shotgun_0": 339,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_Pistol_0": 340,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_SMG_0": 341,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_Damping": 342,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_GrenadeCapacity_0": 343,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_Combo_AssaultDamageGrenadeCap_0": 344,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_Combo_PistolDamageBioticDamage_0": 345,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_Combo_ShieldStrengthShieldRegen_0": 346,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_Combo_ShotgunDamageMeleeDamage_0": 347,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_Combo_SMGDamagePowerCooldown_0": 348,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_Combo_SniperDamageTechDamage_0": 349,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_WhipManPassive": 356,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_WhipManMeleePassive": 357,
+  "SFXGameContentDLC_CON_MP2.SFXWeapon_AssaultRifle_Prothean_MP": 358,
+  "commendation2": 359,
+  "victory2": 360,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomAction_WhipSmash": 361,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomAction_EMPGrenade": 362,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_MaleQuarianMeleePassive": 363,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_MaleQuarianPassive": 364,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_VorchaMeleePassive": 365,
+  "SFXGameContentDLC_CON_MP2.SFXPowerCustomActionMP_VorchaPassive": 366,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Argus": 367,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Valkyrie": 368,
+  "SFXGameContent.SFXWeapon_SniperRifle_Indra": 369,
+  "SFXGameContent.SFXWeapon_Shotgun_Raider": 370,
+  "commendation2v2": 371,
+  "reserves1": 372,
+  "AdeptN7": 373,
+  "EngineerN7": 374,
+  "SentinelN7": 375,
+  "VanguardN7": 376,
+  "InfiltratorN7": 377,
+  "SoldierN7": 378,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_CryoCone": 379,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7SentinelPassive": 380,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7SentinelMeleePassive": 381,
+  "customer1": 382,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7SoldierPassive": 383,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7SoldierMeleePassive": 384,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7EngineerPassive": 385,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7EngineerMeleePassive": 386,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7InfiltratorPassive": 387,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7InfiltratorMeleePassive": 388,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7VanguardPassive": 389,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7VanguardMeleePassive": 390,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7AdeptPassive": 391,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_N7AdeptMeleePassive": 392,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_SupplyTurret": 393,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomAction_DevestatorMode": 394,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomAction_MissileLauncher": 395,
+  "victory3": 396,
+  "commendation3": 397,
+  "mp2press": 398,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_SonicSlash": 400,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_ShadowStrike": 401,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_Cloak_N7Infiltrator": 402,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_PalmBlaster": 403,
+  "commendation4": 405,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_AssaultRifleSuperScope": 406,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_PistolHeadShot": 407,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_PistolSuperDamage": 408,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_PistolUltraLight": 409,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_ShotgunDamageAndPen": 410,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_ShotgunSuperMelee": 411,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_SMGPenetration": 412,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_SMGStabilization": 413,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_SniperRifleDamageAndPen": 414,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_SniperRifleSuperScope": 415,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_AssaultRifleDamagePistolDamage_0": 416,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_MeleeDamageBioticDamage_0": 417,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_ShieldStrengthMeleeDamage_0": 418,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_ShotgunDamageGrenadeCap_0": 419,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_SniperDamageSMGDamage_0": 420,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_TechDamagePowerCooldown_0": 421,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_WeaponStabilityAmmoCapacity_0": 422,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_AmmoCapacity_0": 423,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_BioticDamage_0": 424,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_TechDamage_0": 425,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_All_0": 426,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_DarkChannel2": 432,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_AnnihilationSphere": 433,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_AssaultRifleDamagePistolDamage_1": 434,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_MeleeDamageBioticDamage_1": 435,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_ShieldStrengthMeleeDamage_1": 436,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_ShotgunDamageGrenadeCap_1": 437,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_SniperDamageSMGDamage_1": 438,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_TechDamagePowerCooldown_1": 439,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_WeaponStabilityAmmoCapacity_1": 440,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_AmmoCapacity_1": 441,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_BioticDamage_1": 442,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_TechDamage_1": 443,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_All_1": 444,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_AssaultRifleDamagePistolDamage_2": 445,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_MeleeDamageBioticDamage_2": 446,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_ShieldStrengthMeleeDamage_2": 447,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_ShotgunDamageGrenadeCap_2": 448,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_SniperDamageSMGDamage_2": 449,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_TechDamagePowerCooldown_2": 450,
+  "SFXGameContentDLC_CON_MP3.SFXGameEffect_MatchConsumable_Gear_Combo_WeaponStabilityAmmoCapacity_2": 451,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_AmmoCapacity_2": 452,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_BioticDamage_2": 453,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_TechDamage_2": 454,
+  "SFXGameMPContentDLC_Shared_MP.SFXGameEffect_MatchConsumable_Gear_WeaponDamage_All_2": 455,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_AssaultRifleMelee": 466,
+  "SFXGameContentDLC_Shared.SFXWeaponMod_AssaultRifleSuperPen": 467,
+  "SFXGameContentDLC_CON_MP3.SFXWeapon_AssaultRifle_LMG": 468,
+  "SFXGameContentDLC_CON_MP3.SFXWeapon_Shotgun_Assault": 469,
+  "SFXGameContentDLC_CON_MP3.SFXWeapon_Pistol_Asari": 470,
+  "victory5": 471,
+  "commendation5": 472,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_Throw_N7": 473,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_EMPGrenade2": 474,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_HomingGrenade": 475,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomActionMP_ElectricSlash": 476,
+  "SFXGameContentDLC_CON_MP3.SFXPowerCustomAction_MultiFragGrenade": 477,
+  "victory7": 478,
+  "commendation7": 479,
+  "N7SoldierTurian": 480,
+  "N7InfiltratorTurian": 481,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_ShieldBoost": 482,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_BioticOrbs": 483,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Incendiary_3": 484,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Disruptor_3": 485,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_ArmorPiercing_3": 486,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Warp_3": 487,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_AmmoPower_Cryo_3": 488,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_PowerBonusDamage_3": 489,
+  "SFXGameMPContent.SFXGameEffect_MatchConsumable_ShieldBonus_3": 490,
+  "victory8": 491,
+  "commendation8": 492,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_ReconMine": 493,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_VolusPassive": 494,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_VolusMeleePassive": 495,
+  "collectible9": 496,
+  "collectible10": 497,
+  "predatorpack": 498,
+  "avengerpack2": 499,
+  "AdeptVolus": 500,
+  "EngineerVolus": 501,
+  "mp3press": 502,
+  "EngineerTurian": 503,
+  "InfiltratorDrell": 504,
+  "SentinelVolus": 505,
+  "SoldierGeth": 506,
+  "VanguardVolus": 507,
+  "AdeptBatarian": 508,
+  "EngineerVorcha": 509,
+  "InfiltratorAsari": 510,
+  "SentinelAsari": 511,
+  "SoldierMQuarian": 512,
+  "VanguardBatarian": 513,
+  "AdeptKrogan": 514,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Polonium_0": 515,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Needler_0": 517,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Eraser_0": 518,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Phasic_0": 519,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Polonium_1": 520,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Needler_1": 522,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Eraser_1": 523,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Phasic_1": 524,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Polonium_2": 525,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Needler_2": 527,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Eraser_2": 528,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_AmmoPower_Phasic_2": 529,
+  "commendation9": 531,
+  "SFXGameContentDLC_CON_MP4.SFXWeapon_SniperRifle_Collector": 532,
+  "SFXGameContentDLC_CON_MP4.SFXWeapon_SMG_Collector": 533,
+  "victory10": 534,
+  "commendation10": 535,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_Gear_MassMedigel_0": 536,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_Gear_CobraCapacity_0": 537,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_Gear_MedigelCapacity_0": 538,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_Gear_SurvivalCapacity_0": 539,
+  "SFXGameContentDLC_CON_MP4.SFXGameEffect_MatchConsumable_Gear_ThermalCapacity_0": 540,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_Supercharge_Shared": 541,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_GethPassive_Shared": 542,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_GethMeleePassive_Shared": 543,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_Damping_Shared": 544,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_Barrier_Shared": 545,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_Lash_Shared": 546,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_MaleQuarianPassive_Shared": 547,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_MaleQuarianMeleePassive_Shared": 548,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_BatarianPassive_Shared": 549,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_BatarianMeleePassive_Shared": 550,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_HomingGrenade_Shared": 551,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_BloodLust_Shared": 552,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_BatarianNet_Shared": 553,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_VorchaPassive_Shared": 554,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_VorchaMeleePassive_Shared": 555,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_AnnihilationSphere_Shared": 556,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_BatarianArmor_Shared": 557,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_DarkChannel2_Shared": 558,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_Flamer_Shared": 559,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_StimPack": 560,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_JetPackCharge": 561,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_TurianCloak": 562,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_N7TurianMeleePassive": 563,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_N7TurianPassive": 564,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_AsariPassive_Infiltrator": 565,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_AsariPassive_Sentinel": 566,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_Decoy_Volus": 567,
+  "victory11": 568,
+  "commendation11": 569,
+  "SFXGameContentDLC_CON_MP4.SFXPowerCustomActionMP_AsariCloak": 570,
+  "victory12": 571,
+  "commendation12": 572,
+  "customer2": 573,
+  "customer3": 574,
+  "collectible11": 575,
+  "SoldierGethDestroyer": 576,
+  "AdeptCollector": 577,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_SiegePulse": 578,
+  "service1": 579,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_GethDestroyerPassive": 580,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_GethDestroyerMeleePassive": 581,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_HexShield": 582,
+  "SentinelKroganWarlord": 583,
+  "EngineerMerc": 584,
+  "victory13": 585,
+  "commendation13": 586,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_MercBowModalTwo": 587,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_MercPassive": 588,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_MercMeleePassive": 589,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_MercBowModalBase": 590,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_MercBowModalOne": 591,
+  "VanguardTurianFemale": 592,
+  "victory14": 593,
+  "commendation14": 594,
+  "mp4press": 595,
+  "victory15": 596,
+  "commendation15": 597,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_CainMine": 598,
+  "weekly1": 599,
+  "weekly2": 600,
+  "weekly3": 601,
+  "InfiltratorFembot": 602,
+  "SFXGameContentDLC_CON_MP5.SFXGameEffect_MatchConsumable_Gear_VisionHelmet_0": 603,
+  "SFXGameContentDLC_CON_MP5.SFXGameEffect_MatchConsumable_Gear_BatarianGauntlet_0": 604,
+  "weekly4": 605,
+  "weekly5": 606,
+  "SFXGameContentDLC_Shared.SFXPowerCustomActionMP_GethSentryTurret_Shared": 607,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_HammerSmash": 608,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_BioticHammerModal": 609,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_TechHammerModal": 610,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_WarlordMeleePassive": 611,
+  "weekly6": 612,
+  "victory16": 613,
+  "weekly7": 614,
+  "weekly8": 615,
+  "weekly9": 616,
+  "weekly10": 617,
+  "weekly11": 618,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_LineStrike": 620,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_VenomTippedBlades": 621,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_BioticFocus": 622,
+  "SFXGameContentDLC_CON_MP5.SFXWeapon_AssaultRifle_Lancer_MP": 623,
+  "SFXGameContentDLC_CON_MP5.SFXWeapon_SMG_Bloodpack_MP": 624,
+  "SFXGameContentDLC_CON_MP5.SFXWeapon_Shotgun_Salarian_MP": 625,
+  "SFXGameContentDLC_CON_MP5.SFXWeapon_AssaultRifle_Spitfire": 626,
+  "SFXGameContentDLC_CON_MP5.SFXWeapon_AssaultRifle_Adas_MP": 627,
+  "SFXGameContentDLC_CON_MP5.SFXWeapon_Pistol_Bloodpack_MP": 628,
+  "SFXGameContentDLC_CON_MP5.SFXWeapon_Pistol_Silencer_MP": 629,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_RepairMatrix": 630,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_FembotCloak": 631,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_FembotPassive": 632,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_FembotMeleePassive": 633,
+  "prophecy": 634,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_TechArmor_Warlord": 635,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_WarlordPassive": 636,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomAction_DarkSingularity": 637,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_SeekerSwarm": 638,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_DarkChannelProthean": 639,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_CollectorPassive": 640,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_ProtheanMeleePassive": 641,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_FemTurianPassive": 643,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_FemTurianMeleePassive": 644,
+  "collectible12": 645,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_SnapFreeze": 646,
+  "collectible14": 647,
+  "collectible15": 648,
+  "collectible16": 649,
+  "collectible17": 650,
+  "collectible18": 651,
+  "collectible19": 652,
+  "SFXGameContentDLC_CON_MP5.SFXWeaponMod_AssaultRifleUltraLight_MP5": 653,
+  "SFXGameContentDLC_CON_MP5.SFXWeaponMod_SniperRifleUltraLight_MP5": 654,
+  "SFXGameContentDLC_CON_MP5.SFXWeaponMod_ShotgunUltraLight_MP5": 655,
+  "SFXGameContentDLC_CON_MP5.SFXWeaponMod_PistolPowerDamage_MP5": 656,
+  "SFXGameContentDLC_CON_MP5.SFXWeaponMod_SMGPowerDamage_MP5": 657,
+  "weekly12": 658,
+  "SFXGameContentDLC_CON_MP5.SFXPowerCustomActionMP_GethSentryTurret_MP5": 659,
+  "weekly13": 660,
+  "weekly14": 661,
+  "weekly15": 662,
+  "conmp5dlctest": 663,
+  "weekly16": 664,
+  "FreeReckoning": 665,
+  "weekly17": 666,
+  "FreeLodestar": 667,
+  "Lodestar1": 668,
+  "Lodestar2": 669,
+  "collectible20": 670,
+  "SFXGameContent.SFXWeapon_AssaultRifle_Reckoning": 700,
+  "SFXGameContentDLC_CON_MP2.SFXGameEffect_MatchConsumable_Gear_WeaponStability_0": 701,
+  "ach_me1_medalofhonor": 702,
+  "ach_me1_colonialsurvival": 703,
+  "ach_me2_missionaccomplished": 704,
+  "ach_me2_merciless": 705,
+  "ach_me3_missionaccomplished": 706,
+  "ach_me3_theoneandonly": 707,
+  "ach_insanityiii": 708,
+  "ach_me1_medalofhonor_unlock": 709,
+  "ach_me1_colonialsurvival_unlock": 710,
+  "ach_me2_missionaccomplished_unlock": 711,
+  "ach_me2_merciless_unlock": 712,
+  "ach_me3_missionaccomplished_unlock": 713,
+  "ach_me3_theoneandonly_unlock": 714,
+  "ach_insanityiii_unlock": 715,
+  "MilanBanner_ach_me1_medalofhonor": 716,
+  "MilanBanner_ach_me1_colonialsurvival": 717,
+  "MilanBanner_ach_me2_missionaccomplished": 718,
+  "MilanBanner_ach_me2_merciless": 719,
+  "MilanBanner_ach_me3_missionaccomplished": 720,
+  "MilanBanner_ach_me3_theoneandonly": 721,
+  "MilanBanner_ach_insanityiii": 722,
+  "MilanBanner_BarCrawler": 723,
+  "MilanBanner_Berserk": 724,
+  "MilanBanner_Busted": 725,
+  "MilanBanner_Diplomat": 726,
+  "MilanBanner_Sunset": 727,
+  "MilanBanner_KeyartLE1": 728,
+  "MilanBanner_KeyartLE1_Alt": 729,
+  "MilanBanner_KeyartLE2": 730,
+  "MilanBanner_Caretaker": 731,
+  "MilanBanner_Explorer": 732,
+  "MilanBanner_Pathfinder": 733,
+  "MilanBanner_Trailblazer": 734,
+  "MilanBanner_Unknown": 735,
+  "MilanBanner_Legendary": 736,
+  "MilanBanner_Legendary_Alt": 737,
+  "MilanBanner_Trilogy": 738,
+  "MilanBanner_Club": 739,
+  "MilanBanner_SFX": 740,
+  "MilanBanner_N7S1": 741,
+  "MilanBanner_MEMP": 742,
+  "legendarybanner": 743,
+  "MilanBanner_DA_ArlathanGlory": 744,
+  "MilanBanner_DA_ArlathanRitual": 745,
+  "MilanBanner_DA_FromTrickleToFlood": 746,
+  "MilanBanner_DA_TheDeepRoads": 747,
+  "MilanBanner_DA_TheLastStraw2": 749,
+  "MilanBanner_DA_TheWrathOfHeaven": 750,
+  "MilanBanner_DA_Trespasser": 751,
+  "MilanBanner_SaveMassEffect": 752,
+  "savemasseffect": 753,
+  "MilanBanner_MEM": 754,
+  "MilanBanner_ME3Tweaks": 755,
+  "MilanHeavy_Cobra_Hidden": 800,
+  "MilanHeavy_Blackstorm": 801,
+  "MilanHeavy_Blackstorm_Hidden": 802,
+  "MilanHeavy_Blackstar": 803,
+  "MilanHeavy_Blackstar_Hidden": 804,
+  "MilanHeavy_Cain": 805,
+  "MilanHeavy_Cain_Hidden": 806
+ },
+ "defaultPlayerVariables": {
+  "SFXGameContent.SFXWeapon_AssaultRifle_Avenger": 1,
+  "SFXGameContent.SFXWeapon_SniperRifle_Mantis": 1,
+  "SFXGameContent.SFXWeapon_Shotgun_Katana": 1,
+  "SFXGameContent.SFXWeapon_SMG_Shuriken": 1,
+  "SFXGameContent.SFXWeapon_Pistol_Predator": 1,
+  "MPCapacity_Ammo": 2,
+  "MPCapacity_Revive": 2,
+  "MPCapacity_Rocket": 2,
+  "MPCapacity_Shield": 2,
+  "AdeptHumanMale": 1,
+  "EngineerHumanMale": 1,
+  "InfiltratorHumanMale": 1,
+  "SentinelHumanMale": 1,
+  "SoldierHumanMale": 1,
+  "VanguardHumanMale": 1,
+  "AdeptHumanFemale": 1,
+  "EngineerHumanFemale": 1,
+  "InfiltratorHumanFemale": 1,
+  "SentinelHumanFemale": 1,
+  "SoldierHumanFemale": 1,
+  "VanguardHumanFemale": 1
+ },
+ "kits": {
+  "AdeptAsari": {
+   "defaultName": "Asari",
+   "powers": [
+    {
+     "name": "Throw",
+     "id": 184
+    },
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "Stasis",
+     "id": 181
+    },
+    {
+     "name": "MPPassive",
+     "id": 189
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 188
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "AdeptAsariCommando": {
+   "defaultName": "Asari",
+   "powers": [
+    {
+     "name": "Reave",
+     "id": 70
+    },
+    {
+     "name": "Pull",
+     "id": 71
+    },
+    {
+     "name": "MPPassive",
+     "id": 69
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 72
+    },
+    {
+     "name": "BubbleShield",
+     "id": 68
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "AdeptBatarian": {
+   "defaultName": "Krogan Shaman",
+   "powers": [
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "BioticGrenade",
+     "id": 144
+    },
+    {
+     "name": "Lash",
+     "id": 546
+    },
+    {
+     "name": "MPPassive",
+     "id": 549
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 550
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "AdeptCollector": {
+   "defaultName": "Awakened Collector",
+   "powers": [
+    {
+     "name": "SeekerSwarm",
+     "id": 638
+    },
+    {
+     "name": "DarkSingularity",
+     "id": 637
+    },
+    {
+     "name": "MPPassive",
+     "id": 640
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 641
+    },
+    {
+     "name": "DarkChannel",
+     "id": 639
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "AdeptDrell": {
+   "defaultName": "Drell",
+   "powers": [
+    {
+     "name": "Reave",
+     "id": 174
+    },
+    {
+     "name": "Pull",
+     "id": 173
+    },
+    {
+     "name": "BioticGrenade",
+     "id": 144
+    },
+    {
+     "name": "MPPassive",
+     "id": 197
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 196
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "AdeptHumanFemale": {
+   "defaultName": "FAdept",
+   "powers": [
+    {
+     "name": "Singularity",
+     "id": 179
+    },
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "Shockwave",
+     "id": 177
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 200
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "AdeptHumanMale": {
+   "defaultName": "MAdept",
+   "powers": [
+    {
+     "name": "Singularity",
+     "id": 179
+    },
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "Shockwave",
+     "id": 177
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 200
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "AdeptHumanMaleCerberus": {
+   "defaultName": "Human Male",
+   "powers": [
+    {
+     "name": "Singularity",
+     "id": 179
+    },
+    {
+     "name": "WhipSmash",
+     "id": 361
+    },
+    {
+     "name": "Lash",
+     "id": 284
+    },
+    {
+     "name": "MPPassive",
+     "id": 356
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 357
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "AdeptKrogan": {
+   "defaultName": "Krogan Shaman",
+   "powers": [
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "Shockwave",
+     "id": 177
+    },
+    {
+     "name": "Barrier",
+     "id": 545
+    },
+    {
+     "name": "MPPassive",
+     "id": 208
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 207
+    }
+   ],
+   "weapons": [
+    25,
+    17
+   ]
+  },
+  "AdeptN7": {
+   "defaultName": "N7 Fury",
+   "powers": [
+    {
+     "name": "Throw",
+     "id": 473
+    },
+    {
+     "name": "AnnihilationSphere",
+     "id": 433
+    },
+    {
+     "name": "MPPassive",
+     "id": 391
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 392
+    },
+    {
+     "name": "DarkChannel",
+     "id": 432
+    }
+   ],
+   "weapons": [
+    29,
+    25
+   ]
+  },
+  "AdeptVolus": {
+   "defaultName": "Volus Adept",
+   "powers": [
+    {
+     "name": "BioticOrbs",
+     "id": 483
+    },
+    {
+     "name": "Stasis",
+     "id": 181
+    },
+    {
+     "name": "ShieldBoost",
+     "id": 482
+    },
+    {
+     "name": "MPPassive",
+     "id": 494
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 495
+    }
+   ],
+   "weapons": [
+    29,
+    25
+   ]
+  },
+  "EngineerGeth": {
+   "defaultName": "Geth",
+   "powers": [
+    {
+     "name": "Overload",
+     "id": 132
+    },
+    {
+     "name": "GethTurret",
+     "id": 57
+    },
+    {
+     "name": "MPPassive",
+     "id": 277
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 56
+    },
+    {
+     "name": "Supercharge",
+     "id": 58
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerHumanFemale": {
+   "defaultName": "FEngineer",
+   "powers": [
+    {
+     "name": "Overload",
+     "id": 170
+    },
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "CombatDrone",
+     "id": 147
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 201
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerHumanMale": {
+   "defaultName": "MEngineer",
+   "powers": [
+    {
+     "name": "Overload",
+     "id": 170
+    },
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "CombatDrone",
+     "id": 147
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 201
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerMerc": {
+   "defaultName": "Talon Mercenary",
+   "powers": [
+    {
+     "name": "BowModalTwo",
+     "id": 587
+    },
+    {
+     "name": "BowModalOne",
+     "id": 591
+    },
+    {
+     "name": "CainMine",
+     "id": 598
+    },
+    {
+     "name": "MPPassive",
+     "id": 588
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 589
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerN7": {
+   "defaultName": "N7 Demolisher",
+   "powers": [
+    {
+     "name": "HomingGrenade",
+     "id": 475
+    },
+    {
+     "name": "EMPGrenade",
+     "id": 474
+    },
+    {
+     "name": "SupplyTurret",
+     "id": 393
+    },
+    {
+     "name": "MPPassive",
+     "id": 385
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 386
+    }
+   ],
+   "weapons": [
+    29,
+    25
+   ]
+  },
+  "EngineerQuarian": {
+   "defaultName": "FEngineer",
+   "powers": [
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "CryoBlast",
+     "id": 150
+    },
+    {
+     "name": "SentryTurret",
+     "id": 176
+    },
+    {
+     "name": "MPPassive",
+     "id": 199
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 198
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerQuarianMale": {
+   "defaultName": "Quarian Male",
+   "powers": [
+    {
+     "name": "Damping",
+     "id": 342
+    },
+    {
+     "name": "EMPGrenade",
+     "id": 362
+    },
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "MPPassive",
+     "id": 364
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 363
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerSalarian": {
+   "defaultName": "Salarian",
+   "powers": [
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "EnergyDrain",
+     "id": 156
+    },
+    {
+     "name": "MPPassive",
+     "id": 210
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 209
+    },
+    {
+     "name": "Decoy",
+     "id": 151
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerTurian": {
+   "defaultName": "Turian Saboteur",
+   "powers": [
+    {
+     "name": "HomingGrenade",
+     "id": 551
+    },
+    {
+     "name": "SentryTurret",
+     "id": 176
+    },
+    {
+     "name": "Hacking",
+     "id": 140
+    },
+    {
+     "name": "MPPassive",
+     "id": 564
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 563
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "EngineerVolus": {
+   "defaultName": "Volus Engineer",
+   "powers": [
+    {
+     "name": "ReconMine",
+     "id": 493
+    },
+    {
+     "name": "ShieldBoost",
+     "id": 482
+    },
+    {
+     "name": "MPPassive",
+     "id": 494
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 495
+    },
+    {
+     "name": "ProximityMine",
+     "id": 172
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "EngineerVorcha": {
+   "defaultName": "Turian Saboteur",
+   "powers": [
+    {
+     "name": "BatarianNet",
+     "id": 553
+    },
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "Bloodlust",
+     "id": 552
+    },
+    {
+     "name": "MPPassive",
+     "id": 554
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 555
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "InfiltratorAsari": {
+   "defaultName": "Drell Assassin",
+   "powers": [
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "Cloak",
+     "id": 570
+    },
+    {
+     "name": "MPPassive",
+     "id": 565
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 188
+    },
+    {
+     "name": "DarkChannel",
+     "id": 558
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "InfiltratorDrell": {
+   "defaultName": "Drell Assassin",
+   "powers": [
+    {
+     "name": "HomingGrenade",
+     "id": 551
+    },
+    {
+     "name": "ReconMine",
+     "id": 493
+    },
+    {
+     "name": "Cloak",
+     "id": 146
+    },
+    {
+     "name": "MPPassive",
+     "id": 197
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 196
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "InfiltratorFembot": {
+   "defaultName": "Krogan Warlord",
+   "powers": [
+    {
+     "name": "CryoCone",
+     "id": 646
+    },
+    {
+     "name": "RepairMatrix",
+     "id": 630
+    },
+    {
+     "name": "Cloak",
+     "id": 631
+    },
+    {
+     "name": "MPPassive",
+     "id": 632
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 633
+    }
+   ],
+   "weapons": [
+    25,
+    17
+   ]
+  },
+  "InfiltratorGeth": {
+   "defaultName": "Geth",
+   "powers": [
+    {
+     "name": "Cloak",
+     "id": 133
+    },
+    {
+     "name": "MPPassive",
+     "id": 277
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 56
+    },
+    {
+     "name": "ProximityMine",
+     "id": 134
+    },
+    {
+     "name": "Supercharge",
+     "id": 58
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "InfiltratorHumanFemale": {
+   "defaultName": "FInfiltrate",
+   "powers": [
+    {
+     "name": "StickyGrenade",
+     "id": 182
+    },
+    {
+     "name": "CryoBlast",
+     "id": 150
+    },
+    {
+     "name": "Cloak",
+     "id": 146
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 202
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "InfiltratorHumanMale": {
+   "defaultName": "MInfiltrate",
+   "powers": [
+    {
+     "name": "StickyGrenade",
+     "id": 182
+    },
+    {
+     "name": "CryoBlast",
+     "id": 150
+    },
+    {
+     "name": "Cloak",
+     "id": 146
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 202
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "InfiltratorN7": {
+   "defaultName": "N7 Shadow",
+   "powers": [
+    {
+     "name": "ElectricSlash",
+     "id": 476
+    },
+    {
+     "name": "Cloak",
+     "id": 402
+    },
+    {
+     "name": "MPPassive",
+     "id": 387
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 388
+    },
+    {
+     "name": "ShadowStrike",
+     "id": 401
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "InfiltratorQuarian": {
+   "defaultName": "Quarian",
+   "powers": [
+    {
+     "name": "StickyGrenade",
+     "id": 182
+    },
+    {
+     "name": "Hacking",
+     "id": 140
+    },
+    {
+     "name": "Cloak",
+     "id": 146
+    },
+    {
+     "name": "MPPassive",
+     "id": 199
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 198
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "InfiltratorQuarianMale": {
+   "defaultName": "Quarian Male",
+   "powers": [
+    {
+     "name": "Damping",
+     "id": 342
+    },
+    {
+     "name": "EMPGrenade",
+     "id": 362
+    },
+    {
+     "name": "Cloak",
+     "id": 146
+    },
+    {
+     "name": "MPPassive",
+     "id": 364
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 363
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "InfiltratorSalarian": {
+   "defaultName": "Salarian",
+   "powers": [
+    {
+     "name": "EnergyDrain",
+     "id": 156
+    },
+    {
+     "name": "Cloak",
+     "id": 146
+    },
+    {
+     "name": "MPPassive",
+     "id": 210
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 209
+    },
+    {
+     "name": "ProximityMine",
+     "id": 172
+    }
+   ],
+   "weapons": [
+    9,
+    29
+   ]
+  },
+  "N7InfiltratorTurian": {
+   "defaultName": "Turian Ghost",
+   "powers": [
+    {
+     "name": "Overload",
+     "id": 170
+    },
+    {
+     "name": "StimPack",
+     "id": 560
+    },
+    {
+     "name": "Cloak",
+     "id": 562
+    },
+    {
+     "name": "MPPassive",
+     "id": 564
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 563
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "N7SoldierTurian": {
+   "defaultName": "Turian Havoc",
+   "powers": [
+    {
+     "name": "HavocStrike",
+     "id": 561
+    },
+    {
+     "name": "CryoBlast",
+     "id": 150
+    },
+    {
+     "name": "StimPack",
+     "id": 560
+    },
+    {
+     "name": "MPPassive",
+     "id": 564
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 563
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelAsari": {
+   "defaultName": "Volus Mercenary",
+   "powers": [
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "AnnihilationSphere",
+     "id": 556
+    },
+    {
+     "name": "TechArmor",
+     "id": 183
+    },
+    {
+     "name": "MPPassive",
+     "id": 566
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 188
+    }
+   ],
+   "weapons": [
+    0,
+    25
+   ]
+  },
+  "SentinelBatarian": {
+   "defaultName": "Batarian",
+   "powers": [
+    {
+     "name": "Shockwave",
+     "id": 62
+    },
+    {
+     "name": "BatarianNet",
+     "id": 39
+    },
+    {
+     "name": "BatarianArmor",
+     "id": 241
+    },
+    {
+     "name": "MPPassive",
+     "id": 229
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 230
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelHumanFemale": {
+   "defaultName": "FSentinel",
+   "powers": [
+    {
+     "name": "Throw",
+     "id": 184
+    },
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "TechArmor",
+     "id": 183
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 203
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelHumanMale": {
+   "defaultName": "MSentinel",
+   "powers": [
+    {
+     "name": "Throw",
+     "id": 184
+    },
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "TechArmor",
+     "id": 183
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 203
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelKrogan": {
+   "defaultName": "Krogan",
+   "powers": [
+    {
+     "name": "LiftGrenade",
+     "id": 166
+    },
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "TechArmor",
+     "id": 266
+    },
+    {
+     "name": "MPPassive",
+     "id": 208
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 207
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelKroganWarlord": {
+   "defaultName": "Krogan Warlord",
+   "powers": [
+    {
+     "name": "TechHammerModal",
+     "id": 610
+    },
+    {
+     "name": "BioticHammerModal",
+     "id": 609
+    },
+    {
+     "name": "TechArmor",
+     "id": 635
+    },
+    {
+     "name": "MPPassive",
+     "id": 636
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 611
+    }
+   ],
+   "weapons": [
+    25,
+    17
+   ]
+  },
+  "SentinelN7": {
+   "defaultName": "N7 Paladin",
+   "powers": [
+    {
+     "name": "CryoCone",
+     "id": 379
+    },
+    {
+     "name": "Incinerate",
+     "id": 162
+    },
+    {
+     "name": "EnergyDrain",
+     "id": 156
+    },
+    {
+     "name": "MPPassive",
+     "id": 380
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 381
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelTurian": {
+   "defaultName": "Turian",
+   "powers": [
+    {
+     "name": "Warp",
+     "id": 185
+    },
+    {
+     "name": "Overload",
+     "id": 170
+    },
+    {
+     "name": "TechArmor",
+     "id": 265
+    },
+    {
+     "name": "MPPassive",
+     "id": 213
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 212
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelVolus": {
+   "defaultName": "Volus Mercenary",
+   "powers": [
+    {
+     "name": "CombatDrone",
+     "id": 147
+    },
+    {
+     "name": "ShieldBoost",
+     "id": 482
+    },
+    {
+     "name": "MPPassive",
+     "id": 494
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 495
+    },
+    {
+     "name": "Decoy",
+     "id": 567
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SentinelVorcha": {
+   "defaultName": "Vorcha",
+   "powers": [
+    {
+     "name": "Flamer",
+     "id": 85
+    },
+    {
+     "name": "BioticGrenade",
+     "id": 144
+    },
+    {
+     "name": "Bloodlust",
+     "id": 285
+    },
+    {
+     "name": "MPPassive",
+     "id": 366
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 365
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SoldierBatarian": {
+   "defaultName": "Batarian",
+   "powers": [
+    {
+     "name": "InfernoGrenade",
+     "id": 61
+    },
+    {
+     "name": "BatarianAttack",
+     "id": 231
+    },
+    {
+     "name": "BatarianArmor",
+     "id": 241
+    },
+    {
+     "name": "MPPassive",
+     "id": 229
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 230
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SoldierGeth": {
+   "defaultName": "Geth Trooper",
+   "powers": [
+    {
+     "name": "Flamer",
+     "id": 559
+    },
+    {
+     "name": "Fortification",
+     "id": 158
+    },
+    {
+     "name": "MPPassive",
+     "id": 542
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 543
+    },
+    {
+     "name": "Supercharge",
+     "id": 541
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierGethDestroyer": {
+   "defaultName": "Geth Juggernaut",
+   "powers": [
+    {
+     "name": "SiegePulse",
+     "id": 578
+    },
+    {
+     "name": "HexShield",
+     "id": 582
+    },
+    {
+     "name": "GethTurret",
+     "id": 659
+    },
+    {
+     "name": "MPPassive",
+     "id": 580
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 581
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierHumanFemale": {
+   "defaultName": "FSoldier",
+   "powers": [
+    {
+     "name": "AdrenalineRush",
+     "id": 139
+    },
+    {
+     "name": "ConcussiveShot",
+     "id": 148
+    },
+    {
+     "name": "FragGrenade",
+     "id": 159
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 204
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierHumanMale": {
+   "defaultName": "MSoldier",
+   "powers": [
+    {
+     "name": "AdrenalineRush",
+     "id": 139
+    },
+    {
+     "name": "ConcussiveShot",
+     "id": 148
+    },
+    {
+     "name": "FragGrenade",
+     "id": 159
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 204
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierHumanMaleBF3": {
+   "defaultName": "MSoldier",
+   "powers": [
+    {
+     "name": "AdrenalineRush",
+     "id": 139
+    },
+    {
+     "name": "Carnage",
+     "id": 145
+    },
+    {
+     "name": "FragGrenade",
+     "id": 159
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 204
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierKrogan": {
+   "defaultName": "Krogan",
+   "powers": [
+    {
+     "name": "Carnage",
+     "id": 145
+    },
+    {
+     "name": "Fortification",
+     "id": 158
+    },
+    {
+     "name": "InfernoGrenade",
+     "id": 163
+    },
+    {
+     "name": "MPPassive",
+     "id": 208
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 207
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierMQuarian": {
+   "defaultName": "Geth Trooper",
+   "powers": [
+    {
+     "name": "Damping",
+     "id": 544
+    },
+    {
+     "name": "Hacking",
+     "id": 140
+    },
+    {
+     "name": "MPPassive",
+     "id": 547
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 548
+    },
+    {
+     "name": "Marksman",
+     "id": 168
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierN7": {
+   "defaultName": "N7 Destroyer",
+   "powers": [
+    {
+     "name": "MissileLauncher",
+     "id": 395
+    },
+    {
+     "name": "MultiFragGrenade",
+     "id": 477
+    },
+    {
+     "name": "DevestatorMode",
+     "id": 394
+    },
+    {
+     "name": "MPPassive",
+     "id": 383
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 384
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "SoldierTurian": {
+   "defaultName": "Turian",
+   "powers": [
+    {
+     "name": "ConcussiveShot",
+     "id": 148
+    },
+    {
+     "name": "MPPassive",
+     "id": 213
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 212
+    },
+    {
+     "name": "Marksman",
+     "id": 168
+    },
+    {
+     "name": "ProximityMine",
+     "id": 172
+    }
+   ],
+   "weapons": [
+    0,
+    9
+   ]
+  },
+  "SoldierVorcha": {
+   "defaultName": "Vorcha",
+   "powers": [
+    {
+     "name": "Flamer",
+     "id": 85
+    },
+    {
+     "name": "Carnage",
+     "id": 145
+    },
+    {
+     "name": "Bloodlust",
+     "id": 285
+    },
+    {
+     "name": "MPPassive",
+     "id": 366
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 365
+    }
+   ],
+   "weapons": [
+    0,
+    17
+   ]
+  },
+  "VanguardAsari": {
+   "defaultName": "Asari",
+   "powers": [
+    {
+     "name": "Stasis",
+     "id": 181
+    },
+    {
+     "name": "LiftGrenade",
+     "id": 166
+    },
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "MPPassive",
+     "id": 189
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 188
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  },
+  "VanguardBatarian": {
+   "defaultName": "Volus Protector",
+   "powers": [
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "BatarianArmor",
+     "id": 557
+    },
+    {
+     "name": "Lash",
+     "id": 546
+    },
+    {
+     "name": "MPPassive",
+     "id": 549
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 550
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  },
+  "VanguardDrell": {
+   "defaultName": "Drell",
+   "powers": [
+    {
+     "name": "Pull",
+     "id": 173
+    },
+    {
+     "name": "BioticGrenade",
+     "id": 144
+    },
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "MPPassive",
+     "id": 197
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 196
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  },
+  "VanguardHumanFemale": {
+   "defaultName": "FVanguard",
+   "powers": [
+    {
+     "name": "Shockwave",
+     "id": 177
+    },
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 205
+    },
+    {
+     "name": "Discharge",
+     "id": 152
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  },
+  "VanguardHumanMale": {
+   "defaultName": "MVanguard",
+   "powers": [
+    {
+     "name": "Shockwave",
+     "id": 177
+    },
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "MPPassive",
+     "id": 206
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 205
+    },
+    {
+     "name": "Discharge",
+     "id": 152
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  },
+  "VanguardHumanMaleCerberus": {
+   "defaultName": "Human Male",
+   "powers": [
+    {
+     "name": "WhipSmash",
+     "id": 361
+    },
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "Lash",
+     "id": 284
+    },
+    {
+     "name": "MPPassive",
+     "id": 356
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 357
+    }
+   ],
+   "weapons": [
+    17,
+    25
+   ]
+  },
+  "VanguardKrogan": {
+   "defaultName": "Krogan",
+   "powers": [
+    {
+     "name": "Barrier",
+     "id": 66
+    },
+    {
+     "name": "Carnage",
+     "id": 65
+    },
+    {
+     "name": "KroganBioticCharge",
+     "id": 63
+    },
+    {
+     "name": "MPPassive",
+     "id": 64
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 67
+    }
+   ],
+   "weapons": [
+    25,
+    17
+   ]
+  },
+  "VanguardN7": {
+   "defaultName": "N7 Slayer",
+   "powers": [
+    {
+     "name": "SonicSlash",
+     "id": 400
+    },
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "MPPassive",
+     "id": 389
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 390
+    },
+    {
+     "name": "PalmBlaster",
+     "id": 403
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  },
+  "VanguardTurianFemale": {
+   "defaultName": "Cabal Vanguard",
+   "powers": [
+    {
+     "name": "BioticFocus",
+     "id": 622
+    },
+    {
+     "name": "VenomTippedBlades",
+     "id": 621
+    },
+    {
+     "name": "LineStrike",
+     "id": 620
+    },
+    {
+     "name": "MPPassive",
+     "id": 643
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 644
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  },
+  "VanguardVolus": {
+   "defaultName": "Volus Protector",
+   "powers": [
+    {
+     "name": "BioticOrbs",
+     "id": 483
+    },
+    {
+     "name": "BioticCharge",
+     "id": 143
+    },
+    {
+     "name": "ShieldBoost",
+     "id": 482
+    },
+    {
+     "name": "MPPassive",
+     "id": 494
+    },
+    {
+     "name": "MPMeleePassive",
+     "id": 495
+    }
+   ],
+   "weapons": [
+    17,
+    29
+   ]
+  }
+ },
+ "accomplishments": {
+  "version": 22,
+  "maxIndex": 748,
+  "maxProgressIndex": 744,
+  "maxRewardId": 220,
+  "groups": {
+   "100": {
+    "name": "MASSEFFECT",
+    "progress": 100,
+    "reward": 100,
+    "children": []
+   },
+   "105": {
+    "name": "SPECTREMASTERY",
+    "progress": 103,
+    "reward": 105,
+    "children": [
+     {
+      "index": 147,
+      "title": "Points Earned",
+      "goal": 25000000,
+      "progress": 134
+     },
+     {
+      "index": 148,
+      "title": "Waves Completed",
+      "goal": 2500,
+      "progress": 135
+     },
+     {
+      "index": 149,
+      "title": "In-Game Medals Earned",
+      "goal": 5000,
+      "progress": 136
+     }
+    ]
+   },
+   "110": {
+    "name": "SMGMASTERY",
+    "progress": 108,
+    "reward": 110,
+    "children": [
+     {
+      "index": 211,
+      "title": "M-4 Shuriken Use",
+      "goal": 140000,
+      "progress": 183
+     },
+     {
+      "index": 212,
+      "title": "M-9 Tempest Use",
+      "goal": 140000,
+      "progress": 184
+     },
+     {
+      "index": 213,
+      "title": "M-12 Locust Use",
+      "goal": 140000,
+      "progress": 185
+     },
+     {
+      "index": 214,
+      "title": "M-25 Hornet Use",
+      "goal": 140000,
+      "progress": 186
+     },
+     {
+      "index": 215,
+      "title": "Geth Plasma SMG Use",
+      "goal": 140000,
+      "progress": 187
+     },
+     {
+      "index": 216,
+      "title": "N7 Hurricane Use",
+      "goal": 140000,
+      "progress": 188
+     },
+     {
+      "index": 217,
+      "title": "SMG Medals",
+      "goal": 100,
+      "progress": 189
+     },
+     {
+      "index": 614,
+      "title": "Collector SMG Use",
+      "goal": 140000,
+      "progress": 614
+     },
+     {
+      "index": 715,
+      "title": "Blood Pack Punisher Use",
+      "goal": 140000,
+      "progress": 715
+     }
+    ]
+   },
+   "121": {
+    "name": "BLOODPACKMASTERY",
+    "progress": 119,
+    "reward": 121,
+    "children": [
+     {
+      "index": 404,
+      "title": "Graal Spike Thrower Use",
+      "goal": 200000,
+      "progress": 284
+     },
+     {
+      "index": 408,
+      "title": "Krogan Sentinel Waves Completed",
+      "goal": 200,
+      "progress": 288
+     },
+     {
+      "index": 409,
+      "title": "Krogan Soldier Waves Completed",
+      "goal": 200,
+      "progress": 289
+     },
+     {
+      "index": 410,
+      "title": "Krogan Battlemaster Waves Completed",
+      "goal": 200,
+      "progress": 290
+     },
+     {
+      "index": 411,
+      "title": "Vorcha Sentinel Waves Completed",
+      "goal": 200,
+      "progress": 291
+     },
+     {
+      "index": 412,
+      "title": "Vorcha Soldier Waves Completed",
+      "goal": 200,
+      "progress": 292
+     },
+     {
+      "index": 413,
+      "title": "Batarian Soldier Waves Completed",
+      "goal": 200,
+      "progress": 293
+     },
+     {
+      "index": 414,
+      "title": "Batarian Sentinel Waves Completed",
+      "goal": 200,
+      "progress": 294
+     },
+     {
+      "index": 415,
+      "title": "Ballistic Blade Use",
+      "goal": 50000,
+      "progress": 295
+     },
+     {
+      "index": 416,
+      "title": "Submission Net Use",
+      "goal": 80000,
+      "progress": 286
+     },
+     {
+      "index": 417,
+      "title": "Carnage Use",
+      "goal": 50000,
+      "progress": 297
+     },
+     {
+      "index": 580,
+      "title": "Krogan Shaman Waves Completed",
+      "goal": 200,
+      "progress": 433
+     },
+     {
+      "index": 581,
+      "title": "Batarian Slasher Waves Completed",
+      "goal": 200,
+      "progress": 434
+     },
+     {
+      "index": 586,
+      "title": "Vorcha Hunter Waves Completed",
+      "goal": 200,
+      "progress": 421
+     },
+     {
+      "index": 593,
+      "title": "Batarian Brawler Waves Completed",
+      "goal": 200,
+      "progress": 422
+     },
+     {
+      "index": 685,
+      "title": "Krogan Warlord Waves Completed",
+      "goal": 200,
+      "progress": 685
+     }
+    ]
+   },
+   "125": {
+    "name": "N7MASTERY",
+    "progress": 123,
+    "reward": 125,
+    "children": [
+     {
+      "index": 470,
+      "title": "Promotions",
+      "goal": 6,
+      "progress": 329
+     },
+     {
+      "index": 471,
+      "title": "Promotions",
+      "goal": 12,
+      "progress": 329
+     },
+     {
+      "index": 472,
+      "title": "Promotions",
+      "goal": 24,
+      "progress": 329
+     },
+     {
+      "index": 473,
+      "title": "Promotions",
+      "goal": 36,
+      "progress": 329
+     },
+     {
+      "index": 474,
+      "title": "Promotions",
+      "goal": 48,
+      "progress": 329
+     },
+     {
+      "index": 475,
+      "title": "Promotions",
+      "goal": 60,
+      "progress": 329
+     }
+    ]
+   },
+   "126": {
+    "name": "MAPMASTERY",
+    "progress": 124,
+    "reward": 126,
+    "children": [
+     {
+      "index": 480,
+      "title": "Firebase Ghost: Bronze Waves",
+      "goal": 100,
+      "progress": 331
+     },
+     {
+      "index": 481,
+      "title": "Firebase Ghost: Silver Waves",
+      "goal": 100,
+      "progress": 332
+     },
+     {
+      "index": 482,
+      "title": "Firebase Ghost: Gold Waves",
+      "goal": 100,
+      "progress": 333
+     },
+     {
+      "index": 483,
+      "title": "Firebase Ghost: Platinum Waves",
+      "goal": 100,
+      "progress": 334
+     },
+     {
+      "index": 484,
+      "title": "Firebase White: Bronze Waves",
+      "goal": 100,
+      "progress": 335
+     },
+     {
+      "index": 485,
+      "title": "Firebase White: Silver Waves",
+      "goal": 100,
+      "progress": 336
+     },
+     {
+      "index": 486,
+      "title": "Firebase White: Gold Waves",
+      "goal": 100,
+      "progress": 337
+     },
+     {
+      "index": 487,
+      "title": "Firebase White: Platinum Waves",
+      "goal": 100,
+      "progress": 338
+     },
+     {
+      "index": 488,
+      "title": "Firebase Dagger: Bronze Waves",
+      "goal": 100,
+      "progress": 339
+     },
+     {
+      "index": 489,
+      "title": "Firebase Dagger: Silver Waves",
+      "goal": 100,
+      "progress": 340
+     },
+     {
+      "index": 490,
+      "title": "Firebase Dagger: Gold Waves",
+      "goal": 100,
+      "progress": 341
+     },
+     {
+      "index": 491,
+      "title": "Firebase Dagger: Platinum Waves",
+      "goal": 100,
+      "progress": 342
+     },
+     {
+      "index": 492,
+      "title": "Firebase Giant: Bronze Waves",
+      "goal": 100,
+      "progress": 343
+     },
+     {
+      "index": 493,
+      "title": "Firebase Giant: Silver Waves",
+      "goal": 100,
+      "progress": 344
+     },
+     {
+      "index": 494,
+      "title": "Firebase Giant: Gold Waves",
+      "goal": 100,
+      "progress": 345
+     },
+     {
+      "index": 495,
+      "title": "Firebase Giant: Platinum Waves",
+      "goal": 100,
+      "progress": 346
+     },
+     {
+      "index": 496,
+      "title": "Firebase Glacier: Bronze Waves",
+      "goal": 100,
+      "progress": 347
+     },
+     {
+      "index": 497,
+      "title": "Firebase Glacier: Silver Waves",
+      "goal": 100,
+      "progress": 348
+     },
+     {
+      "index": 498,
+      "title": "Firebase Glacier: Gold Waves",
+      "goal": 100,
+      "progress": 349
+     },
+     {
+      "index": 499,
+      "title": "Firebase Glacier: Platinum Waves",
+      "goal": 100,
+      "progress": 350
+     },
+     {
+      "index": 500,
+      "title": "Firebase Reactor: Bronze Waves",
+      "goal": 100,
+      "progress": 351
+     },
+     {
+      "index": 501,
+      "title": "Firebase Reactor: Silver Waves",
+      "goal": 100,
+      "progress": 352
+     },
+     {
+      "index": 502,
+      "title": "Firebase Reactor: Gold Waves",
+      "goal": 100,
+      "progress": 353
+     },
+     {
+      "index": 503,
+      "title": "Firebase Reactor: Platinum Waves",
+      "goal": 100,
+      "progress": 354
+     },
+     {
+      "index": 504,
+      "title": "Firebase Condor: Bronze Waves",
+      "goal": 100,
+      "progress": 355
+     },
+     {
+      "index": 505,
+      "title": "Firebase Condor: Silver Waves",
+      "goal": 100,
+      "progress": 356
+     },
+     {
+      "index": 506,
+      "title": "Firebase Condor: Gold Waves",
+      "goal": 100,
+      "progress": 357
+     },
+     {
+      "index": 507,
+      "title": "Firebase Condor: Platinum Waves",
+      "goal": 100,
+      "progress": 358
+     },
+     {
+      "index": 508,
+      "title": "Firebase Hydra: Bronze Waves",
+      "goal": 100,
+      "progress": 359
+     },
+     {
+      "index": 509,
+      "title": "Firebase Hydra: Silver Waves",
+      "goal": 100,
+      "progress": 360
+     },
+     {
+      "index": 510,
+      "title": "Firebase Hydra: Gold Waves",
+      "goal": 100,
+      "progress": 361
+     },
+     {
+      "index": 511,
+      "title": "Firebase Hydra: Platinum Waves",
+      "goal": 100,
+      "progress": 362
+     },
+     {
+      "index": 512,
+      "title": "Firebase Jade: Bronze Waves",
+      "goal": 100,
+      "progress": 363
+     },
+     {
+      "index": 513,
+      "title": "Firebase Jade: Silver Waves",
+      "goal": 100,
+      "progress": 364
+     },
+     {
+      "index": 514,
+      "title": "Firebase Jade: Gold Waves",
+      "goal": 100,
+      "progress": 365
+     },
+     {
+      "index": 515,
+      "title": "Firebase Jade: Platinum Waves",
+      "goal": 100,
+      "progress": 366
+     },
+     {
+      "index": 516,
+      "title": "Firebase Goddess: Bronze Waves",
+      "goal": 100,
+      "progress": 367
+     },
+     {
+      "index": 517,
+      "title": "Firebase Goddess: Silver Waves",
+      "goal": 100,
+      "progress": 368
+     },
+     {
+      "index": 518,
+      "title": "Firebase Goddess: Gold Waves",
+      "goal": 100,
+      "progress": 369
+     },
+     {
+      "index": 519,
+      "title": "Firebase Goddess: Platinum Waves",
+      "goal": 100,
+      "progress": 370
+     },
+     {
+      "index": 520,
+      "title": "Firebase Rio: Bronze Waves",
+      "goal": 100,
+      "progress": 371
+     },
+     {
+      "index": 521,
+      "title": "Firebase Rio: Silver Waves",
+      "goal": 100,
+      "progress": 372
+     },
+     {
+      "index": 522,
+      "title": "Firebase Rio: Gold Waves",
+      "goal": 100,
+      "progress": 373
+     },
+     {
+      "index": 523,
+      "title": "Firebase Rio: Platinum Waves",
+      "goal": 100,
+      "progress": 374
+     },
+     {
+      "index": 524,
+      "title": "Firebase Vancouver: Bronze Waves",
+      "goal": 100,
+      "progress": 375
+     },
+     {
+      "index": 525,
+      "title": "Firebase Vancouver: Silver Waves",
+      "goal": 100,
+      "progress": 376
+     },
+     {
+      "index": 526,
+      "title": "Firebase Vancouver: Gold Waves",
+      "goal": 100,
+      "progress": 377
+     },
+     {
+      "index": 527,
+      "title": "Firebase Vancouver: Platinum Waves",
+      "goal": 100,
+      "progress": 378
+     },
+     {
+      "index": 528,
+      "title": "Firebase London: Bronze Waves",
+      "goal": 100,
+      "progress": 379
+     },
+     {
+      "index": 529,
+      "title": "Firebase London: Silver Waves",
+      "goal": 100,
+      "progress": 380
+     },
+     {
+      "index": 530,
+      "title": "Firebase London: Gold Waves",
+      "goal": 100,
+      "progress": 381
+     },
+     {
+      "index": 531,
+      "title": "Firebase London: Platinum Waves",
+      "goal": 100,
+      "progress": 382
+     },
+     {
+      "index": 532,
+      "title": "Hazard: Bronze Waves",
+      "goal": 200,
+      "progress": 383
+     },
+     {
+      "index": 533,
+      "title": "Hazard: Silver Waves",
+      "goal": 200,
+      "progress": 384
+     },
+     {
+      "index": 534,
+      "title": "Hazard: Gold Waves",
+      "goal": 200,
+      "progress": 385
+     },
+     {
+      "index": 535,
+      "title": "Hazard: Platinum Waves",
+      "goal": 200,
+      "progress": 386
+     }
+    ]
+   },
+   "104": {
+    "name": "SQUADELITE",
+    "progress": 102,
+    "reward": 104,
+    "children": [
+     {
+      "index": 133,
+      "title": "N7 Weekend Challenge I",
+      "goal": 3,
+      "progress": 128
+     },
+     {
+      "index": 134,
+      "title": "N7 Weekend Challenge II",
+      "goal": 6,
+      "progress": 128
+     },
+     {
+      "index": 135,
+      "title": "N7 Weekend Challenge III",
+      "goal": 9,
+      "progress": 128
+     },
+     {
+      "index": 136,
+      "title": "Bronze Extractions",
+      "goal": 25,
+      "progress": 129
+     },
+     {
+      "index": 137,
+      "title": "Silver Extractions",
+      "goal": 25,
+      "progress": 418
+     },
+     {
+      "index": 138,
+      "title": "Gold Extractions",
+      "goal": 25,
+      "progress": 419
+     },
+     {
+      "index": 139,
+      "title": "Platinum Extractions",
+      "goal": 25,
+      "progress": 420
+     },
+     {
+      "index": 140,
+      "title": "First Aid Medals",
+      "goal": 100,
+      "progress": 130
+     },
+     {
+      "index": 141,
+      "title": "Cobra Missile Launcher Use",
+      "goal": 450000,
+      "progress": 131
+     },
+     {
+      "index": 142,
+      "title": "Survival Medals",
+      "goal": 100,
+      "progress": 132
+     },
+     {
+      "index": 743,
+      "title": "Unknown Map Extractions",
+      "goal": 25,
+      "progress": 743
+     },
+     {
+      "index": 744,
+      "title": "Unknown Enemy Extractions",
+      "goal": 25,
+      "progress": 744
+     }
+    ]
+   },
+   "106": {
+    "name": "SOLOMASTERY",
+    "progress": 104,
+    "reward": 106,
+    "children": [
+     {
+      "index": 154,
+      "title": "Solo Bronze",
+      "goal": 10,
+      "progress": 138
+     },
+     {
+      "index": 155,
+      "title": "Solo Silver",
+      "goal": 5,
+      "progress": 139
+     },
+     {
+      "index": 156,
+      "title": "Solo Gold",
+      "goal": 2,
+      "progress": 140
+     },
+     {
+      "index": 157,
+      "title": "Solo Platinum",
+      "goal": 1,
+      "progress": 141
+     }
+    ]
+   },
+   "127": {
+    "name": "BIOTICMASTERY",
+    "progress": 125,
+    "reward": 127,
+    "children": [
+     {
+      "index": 540,
+      "title": "Biotic Explosions Detonated 1",
+      "goal": 50,
+      "progress": 388
+     },
+     {
+      "index": 541,
+      "title": "Biotic Explosions Detonated 2",
+      "goal": 250,
+      "progress": 388
+     },
+     {
+      "index": 542,
+      "title": "Biotic Explosions Detonated 3",
+      "goal": 500,
+      "progress": 388
+     },
+     {
+      "index": 543,
+      "title": "Throw Use",
+      "goal": 50000,
+      "progress": 389
+     },
+     {
+      "index": 544,
+      "title": "Pull Use",
+      "goal": 50000,
+      "progress": 390
+     },
+     {
+      "index": 545,
+      "title": "Singularity Use",
+      "goal": 50000,
+      "progress": 391
+     },
+     {
+      "index": 546,
+      "title": "Shockwave Use",
+      "goal": 50000,
+      "progress": 392
+     },
+     {
+      "index": 547,
+      "title": "Warp Use",
+      "goal": 50000,
+      "progress": 393
+     },
+     {
+      "index": 548,
+      "title": "Biotic Charge Use",
+      "goal": 50000,
+      "progress": 394
+     },
+     {
+      "index": 549,
+      "title": "Reave Use",
+      "goal": 50000,
+      "progress": 395
+     },
+     {
+      "index": 550,
+      "title": "Stasis Use",
+      "goal": 50000,
+      "progress": 396
+     },
+     {
+      "index": 552,
+      "title": "Dark Channel Use",
+      "goal": 50000,
+      "progress": 398
+     },
+     {
+      "index": 553,
+      "title": "Annihilation Field Use",
+      "goal": 50000,
+      "progress": 399
+     },
+     {
+      "index": 554,
+      "title": "Biotic Slash Use",
+      "goal": 50000,
+      "progress": 400
+     },
+     {
+      "index": 555,
+      "title": "Lash Use",
+      "goal": 50000,
+      "progress": 401
+     },
+     {
+      "index": 556,
+      "title": "Nova Use",
+      "goal": 50000,
+      "progress": 402
+     },
+     {
+      "index": 615,
+      "title": "Smash Use",
+      "goal": 50000,
+      "progress": 615
+     },
+     {
+      "index": 616,
+      "title": "Biotic Orbs Use",
+      "goal": 50000,
+      "progress": 616
+     },
+     {
+      "index": 617,
+      "title": "Barrier Use",
+      "goal": 50000,
+      "progress": 617
+     },
+     {
+      "index": 704,
+      "title": "Dark Sphere Use",
+      "goal": 50000,
+      "progress": 704
+     },
+     {
+      "index": 705,
+      "title": "Seeker Swarm Use",
+      "goal": 50000,
+      "progress": 705
+     },
+     {
+      "index": 706,
+      "title": "Biotic Hammer Use",
+      "goal": 50000,
+      "progress": 706
+     },
+     {
+      "index": 707,
+      "title": "Poison Strike Use",
+      "goal": 50000,
+      "progress": 707
+     }
+    ]
+   },
+   "128": {
+    "name": "TECHMASTERY",
+    "progress": 126,
+    "reward": 128,
+    "children": [
+     {
+      "index": 561,
+      "title": "Tech Explosions Detonated 1",
+      "goal": 50,
+      "progress": 404
+     },
+     {
+      "index": 562,
+      "title": "Tech Explosions Detonated 2",
+      "goal": 250,
+      "progress": 404
+     },
+     {
+      "index": 563,
+      "title": "Tech Explosions Detonated 3",
+      "goal": 500,
+      "progress": 404
+     },
+     {
+      "index": 564,
+      "title": "Incinerate Use",
+      "goal": 50000,
+      "progress": 405
+     },
+     {
+      "index": 565,
+      "title": "Overload Use",
+      "goal": 50000,
+      "progress": 406
+     },
+     {
+      "index": 567,
+      "title": "Cryo Blast Use",
+      "goal": 25000,
+      "progress": 408
+     },
+     {
+      "index": 568,
+      "title": "Combat Drone Use",
+      "goal": 50000,
+      "progress": 409
+     },
+     {
+      "index": 569,
+      "title": "Tech Armor Use",
+      "goal": 25000,
+      "progress": 410
+     },
+     {
+      "index": 570,
+      "title": "Energy Drain Use",
+      "goal": 50000,
+      "progress": 411
+     },
+     {
+      "index": 571,
+      "title": "Sentry Turret Use",
+      "goal": 50000,
+      "progress": 412
+     },
+     {
+      "index": 572,
+      "title": "Submission Net Use",
+      "goal": 50000,
+      "progress": 403
+     },
+     {
+      "index": 574,
+      "title": "Flamer Use",
+      "goal": 50000,
+      "progress": 413
+     },
+     {
+      "index": 575,
+      "title": "Shadow Strike Use",
+      "goal": 50000,
+      "progress": 414
+     },
+     {
+      "index": 576,
+      "title": "Electric Slash Use",
+      "goal": 50000,
+      "progress": 415
+     },
+     {
+      "index": 577,
+      "title": "Snap Freeze Use",
+      "goal": 50000,
+      "progress": 416
+     },
+     {
+      "index": 578,
+      "title": "Geth Turret Use",
+      "goal": 50000,
+      "progress": 417
+     },
+     {
+      "index": 708,
+      "title": "Siege Pulse Use",
+      "goal": 50000,
+      "progress": 708
+     },
+     {
+      "index": 709,
+      "title": "Hex Shield Use",
+      "goal": 25000,
+      "progress": 709
+     },
+     {
+      "index": 712,
+      "title": "Electrical Hammer Use",
+      "goal": 50000,
+      "progress": 712
+     }
+    ]
+   },
+   "112": {
+    "name": "RESURGENCEMASTERY",
+    "progress": 110,
+    "reward": 112,
+    "children": [
+     {
+      "index": 237,
+      "title": "Geth Plasma SMG Use",
+      "goal": 200000,
+      "progress": 203
+     },
+     {
+      "index": 238,
+      "title": "Striker Assault Rifle Use",
+      "goal": 200000,
+      "progress": 204
+     },
+     {
+      "index": 239,
+      "title": "Firebase Hydra Extractions",
+      "goal": 15,
+      "progress": 205
+     },
+     {
+      "index": 240,
+      "title": "Firebase Condor Extractions",
+      "goal": 15,
+      "progress": 206
+     },
+     {
+      "index": 241,
+      "title": "Geth Infiltrator Extractions",
+      "goal": 10,
+      "progress": 207
+     },
+     {
+      "index": 242,
+      "title": "Geth Engineer Extractions",
+      "goal": 10,
+      "progress": 208
+     },
+     {
+      "index": 243,
+      "title": "Asari Justicar Extractions",
+      "goal": 10,
+      "progress": 209
+     },
+     {
+      "index": 244,
+      "title": "Krogan Battlemaster Extractions",
+      "goal": 10,
+      "progress": 210
+     },
+     {
+      "index": 245,
+      "title": "Batarian Sentinel Extractions",
+      "goal": 10,
+      "progress": 211
+     },
+     {
+      "index": 246,
+      "title": "Batarian Soldier Extractions",
+      "goal": 10,
+      "progress": 212
+     },
+     {
+      "index": 405,
+      "title": "Kishock Harpoon Gun Use",
+      "goal": 200000,
+      "progress": 285
+     }
+    ]
+   },
+   "113": {
+    "name": "REBELLIONMASTERY",
+    "progress": 111,
+    "reward": 113,
+    "children": [
+     {
+      "index": 251,
+      "title": "Reegar Carbine Use",
+      "goal": 200000,
+      "progress": 214
+     },
+     {
+      "index": 252,
+      "title": "Krysae Sniper Rifle Use",
+      "goal": 200000,
+      "progress": 215
+     },
+     {
+      "index": 253,
+      "title": "Cerberus Harrier Use",
+      "goal": 200000,
+      "progress": 216
+     },
+     {
+      "index": 254,
+      "title": "Firebase Jade Extractions",
+      "goal": 15,
+      "progress": 217
+     },
+     {
+      "index": 255,
+      "title": "Firebase Goddess Extractions",
+      "goal": 15,
+      "progress": 218
+     },
+     {
+      "index": 256,
+      "title": "Vorcha Soldier Extractions",
+      "goal": 10,
+      "progress": 219
+     },
+     {
+      "index": 257,
+      "title": "Vorcha Sentinel Extractions",
+      "goal": 10,
+      "progress": 220
+     },
+     {
+      "index": 258,
+      "title": "Quarian Engineer Extractions",
+      "goal": 10,
+      "progress": 221
+     },
+     {
+      "index": 259,
+      "title": "Quarian Infiltrator Extractions",
+      "goal": 10,
+      "progress": 222
+     },
+     {
+      "index": 260,
+      "title": "Phoenix Adept Extractions",
+      "goal": 10,
+      "progress": 223
+     },
+     {
+      "index": 261,
+      "title": "Phoenix Vanguard Extractions",
+      "goal": 10,
+      "progress": 224
+     }
+    ]
+   },
+   "114": {
+    "name": "EARTHMASTERY",
+    "progress": 112,
+    "reward": 114,
+    "children": [
+     {
+      "index": 266,
+      "title": "N7 Typhoon Use",
+      "goal": 200000,
+      "progress": 226
+     },
+     {
+      "index": 267,
+      "title": "Acolyte Use",
+      "goal": 200000,
+      "progress": 227
+     },
+     {
+      "index": 268,
+      "title": "N7 Piranha Use",
+      "goal": 200000,
+      "progress": 228
+     },
+     {
+      "index": 269,
+      "title": "Firebase London Extractions",
+      "goal": 15,
+      "progress": 229
+     },
+     {
+      "index": 270,
+      "title": "Firebase Vancouver Extractions",
+      "goal": 15,
+      "progress": 230
+     },
+     {
+      "index": 271,
+      "title": "Firebase Rio Extractions",
+      "goal": 15,
+      "progress": 231
+     },
+     {
+      "index": 272,
+      "title": "N7 Slayer Extractions",
+      "goal": 10,
+      "progress": 232
+     },
+     {
+      "index": 273,
+      "title": "N7 Fury Extractions",
+      "goal": 10,
+      "progress": 233
+     },
+     {
+      "index": 274,
+      "title": "N7 Paladin Extractions",
+      "goal": 10,
+      "progress": 234
+     },
+     {
+      "index": 275,
+      "title": "N7 Destroyer Extractions",
+      "goal": 10,
+      "progress": 235
+     },
+     {
+      "index": 276,
+      "title": "N7 Demolisher Extractions",
+      "goal": 10,
+      "progress": 236
+     },
+     {
+      "index": 277,
+      "title": "N7 Shadow Extractions",
+      "goal": 10,
+      "progress": 237
+     }
+    ]
+   },
+   "115": {
+    "name": "RETALIATIONMASTERY",
+    "progress": 113,
+    "reward": 115,
+    "children": [
+     {
+      "index": 282,
+      "title": "Collector Sniper Rifle Use",
+      "goal": 140000,
+      "progress": 239
+     },
+     {
+      "index": 283,
+      "title": "Collector SMG Use",
+      "goal": 140000,
+      "progress": 240
+     },
+     {
+      "index": 284,
+      "title": "Collector Assault Rifle Use",
+      "goal": 200000,
+      "progress": 241
+     },
+     {
+      "index": 287,
+      "title": "Hazard Extractions",
+      "goal": 50,
+      "progress": 244
+     },
+     {
+      "index": 288,
+      "title": "Volus Adept Extractions",
+      "goal": 10,
+      "progress": 245
+     },
+     {
+      "index": 289,
+      "title": "Volus Engineer Extractions",
+      "goal": 10,
+      "progress": 246
+     },
+     {
+      "index": 290,
+      "title": "Turian Ghost Extractions",
+      "goal": 10,
+      "progress": 247
+     },
+     {
+      "index": 291,
+      "title": "Turian Havoc Extractions",
+      "goal": 10,
+      "progress": 248
+     }
+    ]
+   },
+   "122": {
+    "name": "COMMANDOMASTERY",
+    "progress": 120,
+    "reward": 122,
+    "children": [
+     {
+      "index": 422,
+      "title": "Disciple Use",
+      "goal": 200000,
+      "progress": 436
+     },
+     {
+      "index": 423,
+      "title": "Phaeston Use",
+      "goal": 200000,
+      "progress": 437
+     },
+     {
+      "index": 424,
+      "title": "Scorpion Use",
+      "goal": 200000,
+      "progress": 438
+     },
+     {
+      "index": 425,
+      "title": "Turian Soldier Waves Completed",
+      "goal": 200,
+      "progress": 299
+     },
+     {
+      "index": 426,
+      "title": "Turian Sentinel Waves Completed",
+      "goal": 200,
+      "progress": 300
+     },
+     {
+      "index": 427,
+      "title": "Asari Justicar Waves Completed",
+      "goal": 200,
+      "progress": 301
+     },
+     {
+      "index": 428,
+      "title": "Asari Adept Waves Completed",
+      "goal": 200,
+      "progress": 302
+     },
+     {
+      "index": 429,
+      "title": "Asari Vanguard Waves Completed",
+      "goal": 200,
+      "progress": 303
+     },
+     {
+      "index": 430,
+      "title": "Salarian Engineer Waves Completed",
+      "goal": 200,
+      "progress": 304
+     },
+     {
+      "index": 433,
+      "title": "Salarian Infiltrator Waves Completed",
+      "goal": 200,
+      "progress": 307
+     },
+     {
+      "index": 434,
+      "title": "Squad Revives as Council Race",
+      "goal": 50,
+      "progress": 308
+     },
+     {
+      "index": 435,
+      "title": "Turian Proximity Mine Use",
+      "goal": 50000,
+      "progress": 309
+     },
+     {
+      "index": 582,
+      "title": "Turian Havoc Waves Completed",
+      "goal": 200,
+      "progress": 423
+     },
+     {
+      "index": 585,
+      "title": "Turian Saboteur Waves Completed",
+      "goal": 200,
+      "progress": 424
+     },
+     {
+      "index": 588,
+      "title": "Asari Valkyrie Waves Completed",
+      "goal": 200,
+      "progress": 425
+     },
+     {
+      "index": 589,
+      "title": "Turian Ghost Waves Completed",
+      "goal": 200,
+      "progress": 426
+     },
+     {
+      "index": 591,
+      "title": "Asari Huntress Waves Completed",
+      "goal": 200,
+      "progress": 427
+     },
+     {
+      "index": 686,
+      "title": "Cabal Vanguard Waves Completed",
+      "goal": 200,
+      "progress": 686
+     }
+    ]
+   },
+   "123": {
+    "name": "MACHINEMASTERY",
+    "progress": 121,
+    "reward": 123,
+    "children": [
+     {
+      "index": 440,
+      "title": "Geth Pulse Rifle Use",
+      "goal": 200000,
+      "progress": 313
+     },
+     {
+      "index": 442,
+      "title": "Javelin Use",
+      "goal": 200000,
+      "progress": 311
+     },
+     {
+      "index": 443,
+      "title": "Arc Pistol Use",
+      "goal": 200000,
+      "progress": 312
+     },
+     {
+      "index": 445,
+      "title": "Geth Engineer Waves Completed",
+      "goal": 200,
+      "progress": 314
+     },
+     {
+      "index": 579,
+      "title": "Geth Infiltrator Waves Completed",
+      "goal": 200,
+      "progress": 435
+     },
+     {
+      "index": 446,
+      "title": "Female Quarian Infiltrator Waves Completed",
+      "goal": 200,
+      "progress": 315
+     },
+     {
+      "index": 447,
+      "title": "Male Quarian Engineer Waves Completed",
+      "goal": 200,
+      "progress": 316
+     },
+     {
+      "index": 448,
+      "title": "Male Quarian Infiltrator Waves Completed",
+      "goal": 200,
+      "progress": 317
+     },
+     {
+      "index": 449,
+      "title": "Female Quarian Engineer Waves Completed",
+      "goal": 200,
+      "progress": 318
+     },
+     {
+      "index": 451,
+      "title": "Geth Proximity Mine Use",
+      "goal": 50000,
+      "progress": 320
+     },
+     {
+      "index": 583,
+      "title": "Geth Trooper Waves Completed",
+      "goal": 200,
+      "progress": 428
+     },
+     {
+      "index": 584,
+      "title": "Quarian Marksman Waves Completed",
+      "goal": 200,
+      "progress": 429
+     },
+     {
+      "index": 687,
+      "title": "Geth Juggernaut Waves Completed",
+      "goal": 200,
+      "progress": 687
+     }
+    ]
+   },
+   "124": {
+    "name": "OUTSIDERMASTERY",
+    "progress": 122,
+    "reward": 124,
+    "children": [
+     {
+      "index": 457,
+      "title": "M-13 Raptor Use",
+      "goal": 200000,
+      "progress": 439
+     },
+     {
+      "index": 458,
+      "title": "M-358 Talon Use",
+      "goal": 200000,
+      "progress": 440
+     },
+     {
+      "index": 459,
+      "title": "M-25 Hornet Use",
+      "goal": 200000,
+      "progress": 321
+     },
+     {
+      "index": 460,
+      "title": "Drell Vanguard Waves Completed",
+      "goal": 200,
+      "progress": 322
+     },
+     {
+      "index": 461,
+      "title": "Drell Adept Waves Completed",
+      "goal": 200,
+      "progress": 323
+     },
+     {
+      "index": 462,
+      "title": "Phoenix Adept Waves Completed",
+      "goal": 200,
+      "progress": 324
+     },
+     {
+      "index": 463,
+      "title": "Phoenix Vanguard Waves Completed",
+      "goal": 200,
+      "progress": 325
+     },
+     {
+      "index": 464,
+      "title": "Volus Engineer Waves Completed",
+      "goal": 200,
+      "progress": 326
+     },
+     {
+      "index": 465,
+      "title": "Volus Adept Waves Completed",
+      "goal": 200,
+      "progress": 327
+     },
+     {
+      "index": 587,
+      "title": "Volus Mercenary Waves Completed",
+      "goal": 200,
+      "progress": 430
+     },
+     {
+      "index": 590,
+      "title": "Drell Assassin Waves Completed",
+      "goal": 200,
+      "progress": 431
+     },
+     {
+      "index": 592,
+      "title": "Volus Protector Waves Completed",
+      "goal": 200,
+      "progress": 432
+     },
+     {
+      "index": 684,
+      "title": "Awakened Collector Waves Completed",
+      "goal": 200,
+      "progress": 684
+     },
+     {
+      "index": 688,
+      "title": "Talon Mercenary Waves Completed",
+      "goal": 200,
+      "progress": 688
+     }
+    ]
+   },
+   "107": {
+    "name": "SHOTGUNMASTERY",
+    "progress": 105,
+    "reward": 107,
+    "children": [
+     {
+      "index": 162,
+      "title": "M-23 Katana Use",
+      "goal": 140000,
+      "progress": 143
+     },
+     {
+      "index": 163,
+      "title": "M-27 Scimitar Use",
+      "goal": 140000,
+      "progress": 144
+     },
+     {
+      "index": 164,
+      "title": "M-22 Eviscerator Use",
+      "goal": 140000,
+      "progress": 145
+     },
+     {
+      "index": 165,
+      "title": "Graal Spike Thrower Use",
+      "goal": 140000,
+      "progress": 146
+     },
+     {
+      "index": 166,
+      "title": "M-300 Claymore Use",
+      "goal": 140000,
+      "progress": 147
+     },
+     {
+      "index": 167,
+      "title": "Disciple Use",
+      "goal": 140000,
+      "progress": 148
+     },
+     {
+      "index": 168,
+      "title": "Geth Plasma Shotgun Use",
+      "goal": 140000,
+      "progress": 149
+     },
+     {
+      "index": 169,
+      "title": "M-11 Wraith Use",
+      "goal": 140000,
+      "progress": 150
+     },
+     {
+      "index": 170,
+      "title": "N7 Crusader Use",
+      "goal": 140000,
+      "progress": 151
+     },
+     {
+      "index": 171,
+      "title": "Reegar Carbine Use",
+      "goal": 140000,
+      "progress": 152
+     },
+     {
+      "index": 172,
+      "title": "N7 Piranha Use",
+      "goal": 140000,
+      "progress": 153
+     },
+     {
+      "index": 173,
+      "title": "Shotgun Medals",
+      "goal": 100,
+      "progress": 154
+     },
+     {
+      "index": 612,
+      "title": "AT-12 Raider Shotgun Use",
+      "goal": 140000,
+      "progress": 612
+     },
+     {
+      "index": 716,
+      "title": "Venom Shotgun Use",
+      "goal": 140000,
+      "progress": 716
+     }
+    ]
+   },
+   "108": {
+    "name": "ASSAULTRIFLEMASTERY",
+    "progress": 106,
+    "reward": 108,
+    "children": [
+     {
+      "index": 178,
+      "title": "M-8 Avenger Use",
+      "goal": 140000,
+      "progress": 156
+     },
+     {
+      "index": 179,
+      "title": "Phaeston Use",
+      "goal": 140000,
+      "progress": 157
+     },
+     {
+      "index": 180,
+      "title": "M-15 Vindicator Use",
+      "goal": 140000,
+      "progress": 158
+     },
+     {
+      "index": 181,
+      "title": "M-96 Mattock Use",
+      "goal": 140000,
+      "progress": 159
+     },
+     {
+      "index": 182,
+      "title": "M-37 Falcon Use",
+      "goal": 140000,
+      "progress": 160
+     },
+     {
+      "index": 183,
+      "title": "M-76 Revenant Use",
+      "goal": 140000,
+      "progress": 161
+     },
+     {
+      "index": 184,
+      "title": "Geth Pulse Rifle Use",
+      "goal": 140000,
+      "progress": 162
+     },
+     {
+      "index": 185,
+      "title": "M-99 Saber Use",
+      "goal": 140000,
+      "progress": 163
+     },
+     {
+      "index": 186,
+      "title": "Striker Assault Rifle Use",
+      "goal": 140000,
+      "progress": 164
+     },
+     {
+      "index": 187,
+      "title": "Collector Rifle Use",
+      "goal": 140000,
+      "progress": 165
+     },
+     {
+      "index": 188,
+      "title": "Cerberus Harrier Use",
+      "goal": 140000,
+      "progress": 166
+     },
+     {
+      "index": 189,
+      "title": "N7 Typhoon Use",
+      "goal": 140000,
+      "progress": 167
+     },
+     {
+      "index": 190,
+      "title": "Assault Rifle Medals",
+      "goal": 100,
+      "progress": 168
+     },
+     {
+      "index": 595,
+      "title": "Particle Rifle Use",
+      "goal": 200000,
+      "progress": 441
+     },
+     {
+      "index": 611,
+      "title": "M-55 Argus Assault Rifle Use",
+      "goal": 140000,
+      "progress": 611
+     },
+     {
+      "index": 613,
+      "title": "N7 Valkyrie Assault Rifle Use",
+      "goal": 140000,
+      "progress": 613
+     },
+     {
+      "index": 713,
+      "title": "Geth Spitfire Use",
+      "goal": 140000,
+      "progress": 713
+     },
+     {
+      "index": 714,
+      "title": "Adas Anti-Synthetic Rifle Use",
+      "goal": 140000,
+      "progress": 714
+     },
+     {
+      "index": 729,
+      "title": "M-7 Lancer Use",
+      "goal": 140000,
+      "progress": 729
+     }
+    ]
+   },
+   "111": {
+    "name": "SNIPERRIFLEMASTERY",
+    "progress": 109,
+    "reward": 111,
+    "children": [
+     {
+      "index": 195,
+      "title": "M-92 Mantis Use",
+      "goal": 140000,
+      "progress": 170
+     },
+     {
+      "index": 196,
+      "title": "M-97 Viper Use",
+      "goal": 140000,
+      "progress": 171
+     },
+     {
+      "index": 197,
+      "title": "M-13 Raptor Use",
+      "goal": 140000,
+      "progress": 172
+     },
+     {
+      "index": 198,
+      "title": "M-29 Incisor Use",
+      "goal": 140000,
+      "progress": 173
+     },
+     {
+      "index": 199,
+      "title": "M-98 Widow Use",
+      "goal": 140000,
+      "progress": 174
+     },
+     {
+      "index": 200,
+      "title": "Javelin Use",
+      "goal": 140000,
+      "progress": 175
+     },
+     {
+      "index": 201,
+      "title": "Black Widow Use",
+      "goal": 140000,
+      "progress": 176
+     },
+     {
+      "index": 202,
+      "title": "Kishock Harpoon Gun Use",
+      "goal": 140000,
+      "progress": 177
+     },
+     {
+      "index": 203,
+      "title": "Krysae Sniper Rifle Use",
+      "goal": 140000,
+      "progress": 178
+     },
+     {
+      "index": 204,
+      "title": "M-90 Indra Use",
+      "goal": 140000,
+      "progress": 179
+     },
+     {
+      "index": 205,
+      "title": "N7 Valiant Use",
+      "goal": 140000,
+      "progress": 180
+     },
+     {
+      "index": 206,
+      "title": "Sniper Rifle Medals",
+      "goal": 100,
+      "progress": 181
+     },
+     {
+      "index": 610,
+      "title": "Collector Sniper Rifle Use",
+      "goal": 140000,
+      "progress": 610
+     }
+    ]
+   },
+   "109": {
+    "name": "PISTOLMASTERY",
+    "progress": 107,
+    "reward": 109,
+    "children": [
+     {
+      "index": 222,
+      "title": "M-3 Predator Use",
+      "goal": 140000,
+      "progress": 191
+     },
+     {
+      "index": 223,
+      "title": "M-5 Phalanx Use",
+      "goal": 140000,
+      "progress": 192
+     },
+     {
+      "index": 224,
+      "title": "Arc Pistol Use",
+      "goal": 140000,
+      "progress": 193
+     },
+     {
+      "index": 225,
+      "title": "M-6 Carnifex Use",
+      "goal": 140000,
+      "progress": 194
+     },
+     {
+      "index": 226,
+      "title": "Scorpion Use",
+      "goal": 140000,
+      "progress": 195
+     },
+     {
+      "index": 227,
+      "title": "M-358 Talon Use",
+      "goal": 140000,
+      "progress": 196
+     },
+     {
+      "index": 228,
+      "title": "M-77 Paladin Use",
+      "goal": 140000,
+      "progress": 197
+     },
+     {
+      "index": 229,
+      "title": "N7 Eagle Use",
+      "goal": 140000,
+      "progress": 198
+     },
+     {
+      "index": 230,
+      "title": "Acolyte Use",
+      "goal": 140000,
+      "progress": 199
+     },
+     {
+      "index": 231,
+      "title": "Pistol Medals",
+      "goal": 100,
+      "progress": 200
+     },
+     {
+      "index": 717,
+      "title": "Executioner Pistol Use",
+      "goal": 140000,
+      "progress": 717
+     },
+     {
+      "index": 730,
+      "title": "M-11 Suppressor Use",
+      "goal": 140000,
+      "progress": 730
+     }
+    ]
+   },
+   "116": {
+    "name": "COMBATMASTERY",
+    "progress": 114,
+    "reward": 116,
+    "children": [
+     {
+      "index": 296,
+      "title": "Melee Damage Use 1",
+      "goal": 250000,
+      "progress": 250
+     },
+     {
+      "index": 297,
+      "title": "Melee Damage Use 2",
+      "goal": 500000,
+      "progress": 250
+     },
+     {
+      "index": 298,
+      "title": "Melee Damage Use 3",
+      "goal": 1000000,
+      "progress": 250
+     },
+     {
+      "index": 299,
+      "title": "Over-Cover Grab 1",
+      "goal": 50,
+      "progress": 251
+     },
+     {
+      "index": 300,
+      "title": "Over-Cover Grab 2",
+      "goal": 100,
+      "progress": 251
+     },
+     {
+      "index": 301,
+      "title": "Over-Cover Grab 3",
+      "goal": 250,
+      "progress": 251
+     },
+     {
+      "index": 302,
+      "title": "Headshots 1",
+      "goal": 250,
+      "progress": 252
+     },
+     {
+      "index": 303,
+      "title": "Headshots 2",
+      "goal": 500,
+      "progress": 252
+     },
+     {
+      "index": 304,
+      "title": "Headshots 3",
+      "goal": 1000,
+      "progress": 252
+     },
+     {
+      "index": 305,
+      "title": "Grenade Damage Use 1",
+      "goal": 100000,
+      "progress": 253
+     },
+     {
+      "index": 306,
+      "title": "Grenade Damage Use 2",
+      "goal": 200000,
+      "progress": 253
+     },
+     {
+      "index": 307,
+      "title": "Grenade Damage Use 3",
+      "goal": 300000,
+      "progress": 253
+     }
+    ]
+   },
+   "117": {
+    "name": "CERBERUSMASTERY",
+    "progress": 115,
+    "reward": 117,
+    "children": [
+     {
+      "index": 315,
+      "title": "Cerberus Trooper Points 1",
+      "goal": 150000,
+      "progress": 256
+     },
+     {
+      "index": 316,
+      "title": "Cerberus Trooper Points 2",
+      "goal": 300000,
+      "progress": 256
+     },
+     {
+      "index": 317,
+      "title": "Cerberus Trooper Points 3",
+      "goal": 450000,
+      "progress": 256
+     },
+     {
+      "index": 318,
+      "title": "Centurion Points 1",
+      "goal": 150000,
+      "progress": 257
+     },
+     {
+      "index": 319,
+      "title": "Centurion Points 2",
+      "goal": 300000,
+      "progress": 257
+     },
+     {
+      "index": 320,
+      "title": "Centurion Points 3",
+      "goal": 450000,
+      "progress": 257
+     },
+     {
+      "index": 321,
+      "title": "Nemesis Points 1",
+      "goal": 150000,
+      "progress": 258
+     },
+     {
+      "index": 322,
+      "title": "Nemesis Points 2",
+      "goal": 300000,
+      "progress": 258
+     },
+     {
+      "index": 323,
+      "title": "Nemesis Points 3",
+      "goal": 450000,
+      "progress": 258
+     },
+     {
+      "index": 324,
+      "title": "Guardian Points 1",
+      "goal": 150000,
+      "progress": 259
+     },
+     {
+      "index": 325,
+      "title": "Guardian Points 2",
+      "goal": 300000,
+      "progress": 259
+     },
+     {
+      "index": 326,
+      "title": "Guardian Points 3",
+      "goal": 450000,
+      "progress": 259
+     },
+     {
+      "index": 327,
+      "title": "Atlas Points 1",
+      "goal": 150000,
+      "progress": 260
+     },
+     {
+      "index": 328,
+      "title": "Atlas Points 2",
+      "goal": 300000,
+      "progress": 260
+     },
+     {
+      "index": 329,
+      "title": "Atlas Points 3",
+      "goal": 450000,
+      "progress": 260
+     },
+     {
+      "index": 330,
+      "title": "Phantom Points 1",
+      "goal": 150000,
+      "progress": 261
+     },
+     {
+      "index": 331,
+      "title": "Phantom Points 2",
+      "goal": 300000,
+      "progress": 261
+     },
+     {
+      "index": 332,
+      "title": "Phantom Points 3",
+      "goal": 450000,
+      "progress": 261
+     },
+     {
+      "index": 333,
+      "title": "Dragoon Points 1",
+      "goal": 150000,
+      "progress": 262
+     },
+     {
+      "index": 334,
+      "title": "Dragoon Points 2",
+      "goal": 300000,
+      "progress": 262
+     },
+     {
+      "index": 335,
+      "title": "Dragoon Points 3",
+      "goal": 450000,
+      "progress": 262
+     }
+    ]
+   },
+   "118": {
+    "name": "REAPERMASTERY",
+    "progress": 116,
+    "reward": 118,
+    "children": [
+     {
+      "index": 340,
+      "title": "Cannibal Points 1",
+      "goal": 150000,
+      "progress": 264
+     },
+     {
+      "index": 341,
+      "title": "Cannibal Points 2",
+      "goal": 300000,
+      "progress": 264
+     },
+     {
+      "index": 342,
+      "title": "Cannibal Points 3",
+      "goal": 450000,
+      "progress": 264
+     },
+     {
+      "index": 343,
+      "title": "Marauder Points 1",
+      "goal": 150000,
+      "progress": 265
+     },
+     {
+      "index": 344,
+      "title": "Marauder Points 2",
+      "goal": 300000,
+      "progress": 265
+     },
+     {
+      "index": 345,
+      "title": "Marauder Points 3",
+      "goal": 450000,
+      "progress": 265
+     },
+     {
+      "index": 346,
+      "title": "Husk Points 1",
+      "goal": 150000,
+      "progress": 266
+     },
+     {
+      "index": 347,
+      "title": "Husk Points 2",
+      "goal": 300000,
+      "progress": 266
+     },
+     {
+      "index": 348,
+      "title": "Husk Points 3",
+      "goal": 450000,
+      "progress": 266
+     },
+     {
+      "index": 349,
+      "title": "Brute Points 1",
+      "goal": 150000,
+      "progress": 267
+     },
+     {
+      "index": 350,
+      "title": "Brute Points 2",
+      "goal": 300000,
+      "progress": 267
+     },
+     {
+      "index": 351,
+      "title": "Brute Points 3",
+      "goal": 450000,
+      "progress": 267
+     },
+     {
+      "index": 352,
+      "title": "Ravager Points 1",
+      "goal": 150000,
+      "progress": 268
+     },
+     {
+      "index": 353,
+      "title": "Ravager Points 2",
+      "goal": 300000,
+      "progress": 268
+     },
+     {
+      "index": 354,
+      "title": "Ravager Points 3",
+      "goal": 450000,
+      "progress": 268
+     },
+     {
+      "index": 355,
+      "title": "Banshee Points 1",
+      "goal": 150000,
+      "progress": 269
+     },
+     {
+      "index": 356,
+      "title": "Banshee Points 2",
+      "goal": 300000,
+      "progress": 269
+     },
+     {
+      "index": 357,
+      "title": "Banshee Points 3",
+      "goal": 450000,
+      "progress": 269
+     }
+    ]
+   },
+   "119": {
+    "name": "GETHMASTERY",
+    "progress": 117,
+    "reward": 119,
+    "children": [
+     {
+      "index": 362,
+      "title": "Geth Trooper Points 1",
+      "goal": 150000,
+      "progress": 271
+     },
+     {
+      "index": 363,
+      "title": "Geth Trooper Points 2",
+      "goal": 300000,
+      "progress": 271
+     },
+     {
+      "index": 364,
+      "title": "Geth Trooper Points 3",
+      "goal": 450000,
+      "progress": 271
+     },
+     {
+      "index": 365,
+      "title": "Geth Pyro Points 1",
+      "goal": 150000,
+      "progress": 272
+     },
+     {
+      "index": 366,
+      "title": "Geth Pyro Points 2",
+      "goal": 300000,
+      "progress": 272
+     },
+     {
+      "index": 367,
+      "title": "Geth Pyro Points 3",
+      "goal": 450000,
+      "progress": 272
+     },
+     {
+      "index": 368,
+      "title": "Geth Rocket Trooper Points 1",
+      "goal": 150000,
+      "progress": 273
+     },
+     {
+      "index": 369,
+      "title": "Geth Rocket Trooper Points 2",
+      "goal": 300000,
+      "progress": 273
+     },
+     {
+      "index": 370,
+      "title": "Geth Rocket Trooper Points 3",
+      "goal": 450000,
+      "progress": 273
+     },
+     {
+      "index": 371,
+      "title": "Geth Hunter Points 1",
+      "goal": 150000,
+      "progress": 274
+     },
+     {
+      "index": 372,
+      "title": "Geth Hunter Points 2",
+      "goal": 300000,
+      "progress": 274
+     },
+     {
+      "index": 373,
+      "title": "Geth Hunter Points 3",
+      "goal": 450000,
+      "progress": 274
+     },
+     {
+      "index": 374,
+      "title": "Geth Prime Points 1",
+      "goal": 150000,
+      "progress": 275
+     },
+     {
+      "index": 375,
+      "title": "Geth Prime Points 2",
+      "goal": 300000,
+      "progress": 275
+     },
+     {
+      "index": 376,
+      "title": "Geth Prime Points 3",
+      "goal": 450000,
+      "progress": 275
+     },
+     {
+      "index": 377,
+      "title": "Geth Bomber Points 1",
+      "goal": 150000,
+      "progress": 276
+     },
+     {
+      "index": 378,
+      "title": "Geth Bomber Points 2",
+      "goal": 300000,
+      "progress": 276
+     },
+     {
+      "index": 379,
+      "title": "Geth Bomber Points 3",
+      "goal": 450000,
+      "progress": 276
+     }
+    ]
+   },
+   "120": {
+    "name": "COLLECTORMASTERY",
+    "progress": 118,
+    "reward": 120,
+    "children": [
+     {
+      "index": 384,
+      "title": "Collector Trooper Points 1",
+      "goal": 150000,
+      "progress": 278
+     },
+     {
+      "index": 385,
+      "title": "Collector Trooper Points 2",
+      "goal": 300000,
+      "progress": 278
+     },
+     {
+      "index": 386,
+      "title": "Collector Trooper Points 3",
+      "goal": 450000,
+      "progress": 278
+     },
+     {
+      "index": 387,
+      "title": "Collector Captain Points 1",
+      "goal": 150000,
+      "progress": 279
+     },
+     {
+      "index": 388,
+      "title": "Collector Captain Points 2",
+      "goal": 300000,
+      "progress": 279
+     },
+     {
+      "index": 389,
+      "title": "Collector Captain Points 3",
+      "goal": 450000,
+      "progress": 279
+     },
+     {
+      "index": 390,
+      "title": "Abomination Points 1",
+      "goal": 150000,
+      "progress": 280
+     },
+     {
+      "index": 391,
+      "title": "Abomination Points 2",
+      "goal": 300000,
+      "progress": 280
+     },
+     {
+      "index": 392,
+      "title": "Abomination Points 3",
+      "goal": 450000,
+      "progress": 280
+     },
+     {
+      "index": 393,
+      "title": "Scion Points 1",
+      "goal": 150000,
+      "progress": 281
+     },
+     {
+      "index": 394,
+      "title": "Scion Points 2",
+      "goal": 300000,
+      "progress": 281
+     },
+     {
+      "index": 395,
+      "title": "Scion Points 3",
+      "goal": 450000,
+      "progress": 281
+     },
+     {
+      "index": 396,
+      "title": "Praetorian Points 1",
+      "goal": 150000,
+      "progress": 282
+     },
+     {
+      "index": 397,
+      "title": "Praetorian Points 2",
+      "goal": 300000,
+      "progress": 282
+     },
+     {
+      "index": 398,
+      "title": "Praetorian Points 3",
+      "goal": 450000,
+      "progress": 282
+     }
+    ]
+   },
+   "690": {
+    "name": "RECKONINGMASTERY_1GROUP",
+    "progress": 690,
+    "reward": 206,
+    "children": [
+     {
+      "index": 691,
+      "title": "Awakened Collector Extractions",
+      "goal": 10,
+      "progress": 691
+     },
+     {
+      "index": 692,
+      "title": "Krogan Warlord Extractions",
+      "goal": 10,
+      "progress": 692
+     },
+     {
+      "index": 693,
+      "title": "Cabal Vanguard Extractions",
+      "goal": 10,
+      "progress": 693
+     },
+     {
+      "index": 694,
+      "title": "Geth Juggernaut Extractions",
+      "goal": 10,
+      "progress": 694
+     },
+     {
+      "index": 695,
+      "title": "Talon Mercenary Extractions",
+      "goal": 10,
+      "progress": 695
+     },
+     {
+      "index": 696,
+      "title": "Alliance Infiltrator Extractions",
+      "goal": 10,
+      "progress": 696
+     },
+     {
+      "index": 698,
+      "title": "Blood Pack Punisher Use",
+      "goal": 200000,
+      "progress": 698
+     },
+     {
+      "index": 699,
+      "title": "Venom Shotgun Use",
+      "goal": 200000,
+      "progress": 699
+     },
+     {
+      "index": 700,
+      "title": "Geth Spitfire Use",
+      "goal": 200000,
+      "progress": 700
+     },
+     {
+      "index": 701,
+      "title": "Adas Anti-Synthetic Rifle Use",
+      "goal": 200000,
+      "progress": 701
+     },
+     {
+      "index": 702,
+      "title": "Executioner Pistol Use",
+      "goal": 200000,
+      "progress": 702
+     },
+     {
+      "index": 697,
+      "title": "M-7 Lancer Use",
+      "goal": 200000,
+      "progress": 697
+     },
+     {
+      "index": 703,
+      "title": "M-11 Suppressor Use",
+      "goal": 200000,
+      "progress": 703
+     }
+    ]
+   },
+   "600": {
+    "name": "WEEKLY1GROUP",
+    "progress": 600,
+    "reward": null,
+    "children": [
+     {
+      "index": 601,
+      "title": "Operation Bloodlust",
+      "goal": 1,
+      "progress": 601
+     }
+    ]
+   },
+   "602": {
+    "name": "WEEKLY2GROUP",
+    "progress": 602,
+    "reward": null,
+    "children": [
+     {
+      "index": 603,
+      "title": "Operation Valkyrie",
+      "goal": 50000,
+      "progress": 603
+     }
+    ]
+   },
+   "604": {
+    "name": "WEEKLY3GROUP",
+    "progress": 604,
+    "reward": null,
+    "children": [
+     {
+      "index": 605,
+      "title": "Operation Jackhammer ",
+      "goal": 75000,
+      "progress": 605
+     }
+    ]
+   },
+   "606": {
+    "name": "HALLOWEEN1GROUP",
+    "progress": 606,
+    "reward": 150,
+    "children": [
+     {
+      "index": 607,
+      "title": "Ghostbuster",
+      "goal": 5,
+      "progress": 607
+     },
+     {
+      "index": 608,
+      "title": "Zombie Hunter",
+      "goal": 7500,
+      "progress": 608
+     },
+     {
+      "index": 609,
+      "title": "Monster Killer",
+      "goal": 10000,
+      "progress": 609
+     }
+    ]
+   },
+   "618": {
+    "name": "N7DayGROUP",
+    "progress": 618,
+    "reward": 153,
+    "children": [
+     {
+      "index": 619,
+      "title": "N7 Day Alliance Challenge",
+      "goal": 3,
+      "progress": 619
+     }
+    ]
+   },
+   "620": {
+    "name": "WEEKLY4GROUP",
+    "progress": 620,
+    "reward": null,
+    "children": [
+     {
+      "index": 621,
+      "title": "Operation Blast Furnace",
+      "goal": 75000,
+      "progress": 621
+     }
+    ]
+   },
+   "622": {
+    "name": "WEEKLY5_1GROUP",
+    "progress": 622,
+    "reward": null,
+    "children": [
+     {
+      "index": 623,
+      "title": "Operation Gearhead",
+      "goal": 75000,
+      "progress": 623
+     },
+     {
+      "index": 624,
+      "title": "Operation Gearhead",
+      "goal": 3,
+      "progress": 624
+     }
+    ]
+   },
+   "625": {
+    "name": "WEEKLY6GROUP",
+    "progress": 625,
+    "reward": 155,
+    "children": [
+     {
+      "index": 626,
+      "title": "Operation Privateer",
+      "goal": 50000,
+      "progress": 626
+     }
+    ]
+   },
+   "627": {
+    "name": "WEEKLY7GROUP",
+    "progress": 627,
+    "reward": null,
+    "children": [
+     {
+      "index": 628,
+      "title": "Operation Detonator",
+      "goal": 20000,
+      "progress": 628
+     }
+    ]
+   },
+   "629": {
+    "name": "WEEKLY8GROUP",
+    "progress": 629,
+    "reward": null,
+    "children": [
+     {
+      "index": 630,
+      "title": "Operation Onslaught",
+      "goal": 75000,
+      "progress": 630
+     }
+    ]
+   },
+   "631": {
+    "name": "WEEKLY9GROUP",
+    "progress": 631,
+    "reward": null,
+    "children": [
+     {
+      "index": 632,
+      "title": "Operation Alamo",
+      "goal": 1,
+      "progress": 632
+     }
+    ]
+   },
+   "633": {
+    "name": "WEEKLY10_1GROUP",
+    "progress": 633,
+    "reward": null,
+    "children": [
+     {
+      "index": 634,
+      "title": "Operation Genesis",
+      "goal": 1,
+      "progress": 634
+     },
+     {
+      "index": 635,
+      "title": "Operation Genesis",
+      "goal": 1,
+      "progress": 635
+     }
+    ]
+   },
+   "636": {
+    "name": "WEEKLY11GROUP",
+    "progress": 636,
+    "reward": null,
+    "children": [
+     {
+      "index": 637,
+      "title": "Operation Geronimo",
+      "goal": 1,
+      "progress": 637
+     }
+    ]
+   },
+   "718": {
+    "name": "WEEKLY12GROUP",
+    "progress": 718,
+    "reward": null,
+    "children": [
+     {
+      "index": 719,
+      "title": "Operation Ballistic",
+      "goal": 1,
+      "progress": 719
+     }
+    ]
+   },
+   "720": {
+    "name": "WEEKLY13GROUP",
+    "progress": 720,
+    "reward": null,
+    "children": [
+     {
+      "index": 721,
+      "title": "Operation Firestorm",
+      "goal": 1,
+      "progress": 721
+     }
+    ]
+   },
+   "722": {
+    "name": "WEEKLY14GROUP",
+    "progress": 722,
+    "reward": null,
+    "children": [
+     {
+      "index": 723,
+      "title": "Operation Nightfall",
+      "goal": 50000,
+      "progress": 723
+     }
+    ]
+   },
+   "724": {
+    "name": "WEEKLY15GROUP",
+    "progress": 724,
+    "reward": 219,
+    "children": [
+     {
+      "index": 725,
+      "title": "Operation Heartbreaker",
+      "goal": 20000,
+      "progress": 725
+     }
+    ]
+   },
+   "726": {
+    "name": "WEEKLY16_1GROUP",
+    "progress": 726,
+    "reward": 208,
+    "children": [
+     {
+      "index": 727,
+      "title": "Operation Tribute",
+      "goal": 50000,
+      "progress": 727
+     },
+     {
+      "index": 728,
+      "title": "Operation Tribute",
+      "goal": 50000,
+      "progress": 728
+     }
+    ]
+   },
+   "731": {
+    "name": "WEEKLY17GROUP",
+    "progress": 731,
+    "reward": null,
+    "children": [
+     {
+      "index": 732,
+      "title": "Operation Impact",
+      "goal": 1,
+      "progress": 732
+     }
+    ]
+   },
+   "733": {
+    "name": "LODESTAR1_1GROUP",
+    "progress": 733,
+    "reward": 220,
+    "children": [
+     {
+      "index": 734,
+      "title": "Operation Lodestar (Normal)",
+      "goal": 1,
+      "progress": 734
+     },
+     {
+      "index": 735,
+      "title": "Operation Lodestar (Normal)",
+      "goal": 1,
+      "progress": 735
+     },
+     {
+      "index": 736,
+      "title": "Operation Lodestar (Normal)",
+      "goal": 1,
+      "progress": 736
+     },
+     {
+      "index": 737,
+      "title": "Operation Lodestar (Normal)",
+      "goal": 1,
+      "progress": 737
+     }
+    ]
+   },
+   "738": {
+    "name": "LODESTAR2_1GROUP",
+    "progress": 738,
+    "reward": null,
+    "children": [
+     {
+      "index": 739,
+      "title": "Operation Lodestar (Insanity)",
+      "goal": 1,
+      "progress": 739
+     },
+     {
+      "index": 740,
+      "title": "Operation Lodestar (Insanity)",
+      "goal": 1,
+      "progress": 740
+     },
+     {
+      "index": 741,
+      "title": "Operation Lodestar (Insanity)",
+      "goal": 1,
+      "progress": 741
+     },
+     {
+      "index": 742,
+      "title": "Operation Lodestar (Insanity)",
+      "goal": 1,
+      "progress": 742
+     }
+    ]
+   },
+   "639": {
+    "name": "PROPHECY_1GROUP",
+    "progress": 639,
+    "reward": 157,
+    "children": [
+     {
+      "index": 640,
+      "title": "Operation Prophecy",
+      "goal": 1,
+      "progress": 640
+     },
+     {
+      "index": 641,
+      "title": "Operation Prophecy",
+      "goal": 1,
+      "progress": 641
+     },
+     {
+      "index": 642,
+      "title": "Operation Prophecy",
+      "goal": 1,
+      "progress": 642
+     },
+     {
+      "index": 643,
+      "title": "Operation Prophecy",
+      "goal": 100000,
+      "progress": 643
+     }
+    ]
+   }
+  }
+ }
+}
