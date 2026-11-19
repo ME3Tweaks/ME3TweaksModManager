@@ -1510,6 +1510,20 @@
                        Header="Crash test"
                        Name="CrashTest_MenuItem"
                        Click="RouteDebugCall" />
+                    <MenuItem Header="LMP profile import (no Milan install)">
+                        <MenuItem
+                            Header="Import N7 HQ profile"
+                            Name="DebugImportN7HqProfile_MenuItem"
+                            Click="RouteDebugCall" />
+                        <MenuItem
+                            Header="Migrate ME3 profile (installs dumper ASI, launches ME3)"
+                            Name="DebugMigrateMe3Profile_MenuItem"
+                            Click="RouteDebugCall" />
+                        <MenuItem
+                            Header="Import LEMP save..."
+                            Name="DebugImportLempSave_MenuItem"
+                            Click="RouteDebugCall" />
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"

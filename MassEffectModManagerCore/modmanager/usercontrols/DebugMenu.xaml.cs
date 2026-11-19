@@ -46,11 +46,40 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowXceedDialog_MenuItem)) ShowXceedDialog(window);
             if (sender == nameof(MainWindow.TestMSVCPInstaller_MenuItem)) TestMSVCPPInstaller(window);
             if (sender == nameof(MainWindow.CrashTest_MenuItem)) CrashTest(window);
+            if (sender == nameof(MainWindow.DebugImportN7HqProfile_MenuItem)) helpers.n7hq.N7HqProfileImport.Import(window);
+            if (sender == nameof(MainWindow.DebugMigrateMe3Profile_MenuItem)) DebugMigrateMe3Profile(window);
+            if (sender == nameof(MainWindow.DebugImportLempSave_MenuItem)) DebugImportLempSave(window);
 #endif
         }
 
         
 #if DEBUG
+        // Same flows the Milan installer offers, without running an install first
+        private static void DebugMigrateMe3Profile(MainWindow window)
+        {
+            var me3Target = window.GetME3TargetForProfileMigration();
+            if (me3Target == null)
+            {
+                M3L.ShowDialog(window, "No original ME3 installation is known to Mod Manager.", "ME3 target not found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return;
+            }
+            _ = Me3ProfileMigration.StartAsync(window, me3Target);
+        }
+
+        private static void DebugImportLempSave(MainWindow window)
+        {
+            var ofd = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Select a LEMP multiplayer save",
+                Filter = "LEMP multiplayer save|*.txt|All files|*.*",
+                CheckFileExists = true
+            };
+            if (ofd.ShowDialog(window) == true)
+            {
+                LmpProfileImport.ImportLempSave(window, ofd.FileName);
+            }
+        }
+
         private static void TriggerBTPBuild(MainWindow window)
         {
             if (window.SelectedMod == null)

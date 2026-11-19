@@ -9,15 +9,17 @@ using Newtonsoft.Json.Linq;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
-    /// <summary>Converts the version 2 ME3ProfileDump lobby export to MilanHost's local MP_Profile format.</summary>
+    /// <summary>Converts the version 2 ME3ProfileDump lobby export (or one built from N7 HQ) to MilanHost's local MP_Profile format.</summary>
     public static class Me3MpProfileConverter
     {
         public static byte[] Convert(string json)
         {
             var root = JObject.Parse(json);
-            if ((string)root["format"] != "ME3-MP-profile-export" ||
-                (int?)root["version"] != 2 || (string)root["source"] != "ME3-OT" ||
-                (string)root["trigger"] != "mpLobbyCachedSave")
+            var source = (string)root["source"];
+            var trigger = (string)root["trigger"];
+            var fromLobby = source == "ME3-OT" && trigger == "mpLobbyCachedSave";
+            var fromN7Hq = source == n7hq.N7HqProfileConverter.Source && trigger == n7hq.N7HqProfileConverter.Trigger;
+            if ((string)root["format"] != "ME3-MP-profile-export" || (int?)root["version"] != 2 || !(fromLobby || fromN7Hq))
                 throw new InvalidDataException("Expected a version 2 ME3 multiplayer lobby profile export.");
 
             var save = root["save"] as JObject ?? throw new InvalidDataException("The export has no save data.");

@@ -1,0 +1,29 @@
+﻿<Window
+    x:Class="ME3TweaksModManager.modmanager.windows.N7HqImportWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+    mc:Ignorable="d"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Title="Import N7 HQ multiplayer profile"
+    WindowStartupLocation="CenterOwner"
+    Height="800"
+    Width="1200">
+    <Window.Style>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
+    <DockPanel Margin="5">
+        <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,0,0,5"
+                   Text="Log in to N7 HQ and select the profile to import (including console profiles). Once on the profile you want, select Import at the bottom of this window.&#10;Note: Character appearance, names and loadouts aren't on N7HQ and will not transfer."/>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
+            <Button DockPanel.Dock="Right" Content="Cancel" Padding="10,3" Margin="5,0,0,0" Click="Cancel_Click"/>
+            <Button DockPanel.Dock="Right" Content="Import this profile" Padding="10,3" Command="{Binding ImportCommand}"/>
+            <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+        </DockPanel>
+        <wv2:WebView2 x:Name="webView"/>
+    </DockPanel>
+</Window>

@@ -355,11 +355,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var me3Target = owner.GetME3TargetForProfileMigration();
                     var migrate = MigrateMe3Profile;
                     var lempSave = ImportLempProfile ? LempSavePath : null;
+                    var n7hq = ImportN7HqProfile;
                     OnClosing(DataEventArgs.Empty);
                     owner.RefreshAfterLMPInstall(builtTarget, milanMod);
                     if (lempSave != null)
                     {
                         LmpProfileImport.ImportLempSave(owner, lempSave);
+                    }
+                    else if (n7hq)
+                    {
+                        N7HqProfileImport.Import(owner);
                     }
                     else if (migrate && me3Target != null)
                     {

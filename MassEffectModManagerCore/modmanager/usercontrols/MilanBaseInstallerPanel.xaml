@@ -55,6 +55,9 @@
                     <Button Content="Browse..." DockPanel.Dock="Right" Margin="5,0,0,0" Command="{Binding BrowseLempSaveCommand}"/>
                     <xctk:WatermarkTextBox IsReadOnly="True" Watermark="Select a LEMP save file" Text="{Binding LempSavePath, Mode=OneWay}"/>
                 </DockPanel>
+                <RadioButton GroupName="ProfileImport" Margin="0,3,0,0" IsChecked="{Binding ImportN7HqProfile}"
+                             Content="Import my N7HQ multiplayer profile (any platform) after installation"
+                             ToolTip="Opens N7HQ so you can log in, then converts the profile it shows into your MP_Profile file. Appearance, names and loadouts aren't on N7 HQ"/>
             </StackPanel>
 
         </StackPanel>
