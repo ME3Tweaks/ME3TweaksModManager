@@ -152,7 +152,7 @@ namespace ME3TweaksModManager
                         {
                             M3Log.Error($@"Steam version of {game} at {targetPath} is invalid: {failureReason}");
                         }
-                     
+
                         // only add if directory exists 
                         M3TargetCache.AddCachedTarget(target);
                     }
@@ -186,16 +186,16 @@ namespace ME3TweaksModManager
                 }
 
                 M3Log.Information(@"Loading cached targets");
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME3, targets, out _).Select(x=>x.Target));
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME2, targets, out _).Select(x=>x.Target));
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME1, targets, out _).Select(x=>x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME3, targets, out _).Select(x => x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME2, targets, out _).Select(x => x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.ME1, targets, out _).Select(x => x.Target));
 
                 // Load LE cached targets
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LMP, targets, out _).Select(x=>x.Target));
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE3, targets, out _).Select(x=>x.Target));
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE2, targets, out _).Select(x=>x.Target));
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE1, targets, out _).Select(x=>x.Target));
-                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LELauncher, targets, out _).Select(x=>x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LMP, targets, out _).Select(x => x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE3, targets, out _).Select(x => x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE2, targets, out _).Select(x => x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LE1, targets, out _).Select(x => x.Target));
+                targets.AddRange(M3TargetCache.GetCachedTargets(MEGame.LELauncher, targets, out _).Select(x => x.Target));
 
                 OrderAndSetTargets(targets, selectedTarget);
             }
@@ -338,7 +338,7 @@ namespace ME3TweaksModManager
                 UpdateSelectedLaunchOption();
             }
         }
-        
+
         public void UpdateMenuTargets()
         {
             // Populate the list of available games, for menus
@@ -413,8 +413,11 @@ namespace ME3TweaksModManager
             M3Log.Information(@"User is adding new modding target");
             var ofd = new OpenFileDialog();
             ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
-            string filter =
-                $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffectLauncher.exe;MassEffect1.exe"; //only partially localizable.
+
+            MEGame[] gamesList = [MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LELauncher, MEGame.LMP];
+            // Dynamic list, but ignore ME2Game
+            var supportedExeList = gamesList.SelectMany(MEDirectories.ExecutableNames).Except([@"ME2Game.exe"]).ToArray();
+            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|{string.Join(';', supportedExeList)}"; //only partially localizable.
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
