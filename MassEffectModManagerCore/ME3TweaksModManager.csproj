@@ -173,6 +173,9 @@
              a file in: see modmaker\editor\web\art\README.md for the naming. -->
         <EmbeddedResource Include="modmaker\editor\web\art\*.png" />
         <EmbeddedResource Include="modmaker\data\textlayer.json" />
+        <!-- N7HQ profile import -->
+        <EmbeddedResource Include="modmanager\helpers\n7hq\N7HqScraper.js" />
+        <EmbeddedResource Include="modmanager\helpers\n7hq\N7HqGameData.json" />
         <EmbeddedResource Include="updater\ME3CMM.exe" />
         <EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
     </ItemGroup>

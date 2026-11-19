@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
-    /// Hosts N7 HQ so the user can log in, then reads their profile pages
+    /// Hosts N7HQ so the user can log in, then reads their profile pages
     /// </summary>
     [AddINotifyPropertyChangedInterface]
     public partial class N7HqImportWindow : Window
@@ -19,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.windows
         private const string StartUrl = @"https://n7hq.masseffect.com/en/home";
         private const string ScraperResource = @"ME3TweaksModManager.modmanager.helpers.n7hq.N7HqScraper.js";
 
-        public string StatusText { get; set; } = "Loading N7 HQ...";
+        public string StatusText { get; set; } = "Loading N7HQ...";
         public bool OnProfilePage { get; set; }
         public bool Importing { get; set; }
         public GenericCommand ImportCommand { get; }
@@ -48,20 +48,20 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             try
             {
-                // Own profile folder so the N7 HQ login stays out of other Mod Manager web views
+                // Own profile folder so the N7HQ login stays out of other Mod Manager web views
                 var userData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"ME3TweaksModManager", @"N7HQWebView");
                 var environment = await CoreWebView2Environment.CreateAsync(null, userData);
                 await webView.EnsureCoreWebView2Async(environment);
                 webView.CoreWebView2.NewWindowRequested += NewWindowRequested;
                 webView.CoreWebView2.NavigationCompleted += (_, _) => UpdatePageState();
-                // N7 HQ uses Turbo, which changes pages without a full navigation
+                // N7HQ uses Turbo, which changes pages without a full navigation
                 webView.CoreWebView2.SourceChanged += (_, _) => UpdatePageState();
                 webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
                 webView.CoreWebView2.Navigate(StartUrl);
             }
             catch (Exception e)
             {
-                M3Log.Exception(e, @"Could not start WebView2 for N7 HQ import");
+                M3Log.Exception(e, @"Could not start WebView2 for N7HQ import");
                 StatusText = $"Could not start the web view: {e.Message}";
             }
         }
@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
-            // Only trust our own script on N7 HQ
+            // Only trust our own script on N7HQ
             if (!Uri.TryCreate(e.Source, UriKind.Absolute, out var source) || !source.Host.Equals(N7HqHost, StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -165,7 +165,7 @@ namespace ME3TweaksModManager.modmanager.windows
             }
             catch (Exception e)
             {
-                M3Log.Exception(e, @"Reading the N7 HQ profile failed");
+                M3Log.Exception(e, @"Reading the N7HQ profile failed");
                 StatusText = $"Could not read the profile: {e.Message}";
             }
             finally
