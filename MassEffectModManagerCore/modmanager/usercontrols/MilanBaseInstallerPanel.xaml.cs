@@ -357,7 +357,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     var lempSave = ImportLempProfile ? LempSavePath : null;
                     var n7hq = ImportN7HqProfile;
                     OnClosing(DataEventArgs.Empty);
-                    owner.RefreshAfterLMPInstall(builtTarget, milanMod);
+                    var refresh = owner.RefreshAfterLMPInstall(builtTarget, milanMod);
+                    // Don't tell Project Milan we're done until the target list is back, or its next build request sees no LE3 targets
+                    if (session != null)
+                    {
+                        refresh.ContinueWith(_ => session.Finished(true, message));
+                    }
                     if (lempSave != null)
                     {
                         LmpProfileImport.ImportLempSave(owner, lempSave);
@@ -378,6 +383,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else
             {
+                session?.Finished(false, message);
                 M3Log.Error($"Milan base installation failed: {message}");
                 Dispatcher.Invoke(() =>
                 {
@@ -471,11 +477,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (LE3Targets.Count == 0)
             {
                 M3Log.Error($"Aborting LMP install: No suitable LE3 targets available and no backup");
-                M3L.ShowDialog(MainWindow.Instance, 
-                    "Unable to find an installation source for Legenary Edition Multiplayer. Legendary Edition Multiplayer requires a backup or a copy of Mass Effect 3 Legendary Edition that is not texture modded.",
-                    "Unable to install LMP",
-                    MessageBoxButton.OK, 
-                    MessageBoxImage.Error);
+                const string noSourceMessage = "Unable to find an installation source for Legenary Edition Multiplayer. Legendary Edition Multiplayer requires a backup or a copy of Mass Effect 3 Legendary Edition that is not texture modded.";
+                if (session != null)
+                {
+                    // Project Milan is waiting on us, so it has to hear about this
+                    session.Finished(false, noSourceMessage);
+                }
+                else
+                {
+                    M3L.ShowDialog(MainWindow.Instance, noSourceMessage, "Unable to install LMP", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
                 // Close panel
                 OnClosing(DataEventArgs.Empty);

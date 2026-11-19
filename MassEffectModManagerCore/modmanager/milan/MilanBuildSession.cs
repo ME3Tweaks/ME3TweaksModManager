@@ -144,6 +144,8 @@ namespace ME3TweaksModManager.modmanager.milan
             bool generateSlash = message["generateSlash"]?.GetValue<bool>() ?? true;
             forwardLogs = true;
             M3Log.Information($"Project Milan build requested a base installation of {mod.ModName} {mod.ModVersionString}" + (generateSlash ? "" : " (using its slash manifest)"));
+            // The target list is empty while it's being repopulated, so wait for that to finish via this lock
+            lock (MainWindow.targetRepopulationSyncObj) { }
             App.Current.Dispatcher.Invoke(() => MilanBaseInstallerPanel.BuildBaseMilan(MainWindow.Instance, mod, this, (string)message["destination"], (string)message["le3Target"], generateSlash));
         }
 
