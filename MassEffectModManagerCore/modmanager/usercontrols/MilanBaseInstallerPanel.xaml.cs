@@ -6,6 +6,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.milan;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.helpers.n7hq;
 using ME3TweaksModManager.ui;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,6 +28,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool StartFreshProfile { get; set; } = true;
         public bool MigrateMe3Profile { get; set; }
         public bool ImportLempProfile { get; set; }
+        public bool ImportN7HqProfile { get; set; }
 
         /// <summary>
         /// LEMP (not LMP) mp_save.asi text save to convert after install
@@ -351,7 +353,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 M3Log.Information("Milan base installation completed successfully.");
                 Dispatcher.Invoke(() =>
                 {
-                    var owner = mainwindow;
+                        var owner = MainWindow.Instance;
                     var me3Target = owner.GetME3TargetForProfileMigration();
                     var migrate = MigrateMe3Profile;
                     var lempSave = ImportLempProfile ? LempSavePath : null;
