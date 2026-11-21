@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
-    /// Hosts N7HQ so the user can log in, then reads their profile pages
+    /// Hosts N7HQ so the user can open a public profile by name or log in, then reads the profile pages
     /// </summary>
     [AddINotifyPropertyChangedInterface]
     public partial class N7HqImportWindow : Window
@@ -23,6 +23,19 @@ namespace ME3TweaksModManager.modmanager.windows
         public bool OnProfilePage { get; set; }
         public bool Importing { get; set; }
         public GenericCommand ImportCommand { get; }
+        public GenericCommand OpenProfileCommand { get; }
+
+        public string ProfileName { get; set; }
+        public string SelectedPlatform { get; set; } = @"pc";
+
+        // N7HQ's platform values
+        public Dictionary<string, string> Platforms { get; } = new()
+        {
+            [@"pc"] = @"PC",
+            [@"xbox"] = @"Xbox 360",
+            [@"ps3"] = @"PS3",
+            [@"wiiu"] = @"Wii U",
+        };
 
         /// <summary>
         /// Set when a profile was read successfully
@@ -39,6 +52,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public N7HqImportWindow()
         {
             ImportCommand = new GenericCommand(Import, () => OnProfilePage && !Importing);
+            OpenProfileCommand = new GenericCommand(OpenProfile, () => webView?.CoreWebView2 != null && !Importing && !string.IsNullOrWhiteSpace(ProfileName) && SelectedPlatform != null);
             InitializeComponent();
             this.ApplyDarkNetWindowTheme();
             Loaded += async (_, _) => await InitializeWebViewAsync();
@@ -57,13 +71,35 @@ namespace ME3TweaksModManager.modmanager.windows
                 // N7HQ uses Turbo, which changes pages without a full navigation
                 webView.CoreWebView2.SourceChanged += (_, _) => UpdatePageState();
                 webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
-                webView.CoreWebView2.Navigate(StartUrl);
+
+                // Try to lookup EA App signed in name, if any
+                ProfileName = await Task.Run(EaAppPersona.Find);
+                if (!string.IsNullOrEmpty(ProfileName))
+                {
+                    M3Log.Information($@"Prefilling N7HQ profile from the EA app's EA ID: {ProfileName}");
+                    OpenProfile();
+                }
+                else
+                {
+                    webView.CoreWebView2.Navigate(StartUrl);
+                }
+                CommandManager.InvalidateRequerySuggested();
             }
             catch (Exception e)
             {
                 M3Log.Exception(e, @"Could not start WebView2 for N7HQ import");
                 StatusText = $"Could not start the web view: {e.Message}";
             }
+        }
+
+        private void OpenProfile()
+        {
+            var name = ProfileName?.Trim();
+            if (string.IsNullOrEmpty(name) || SelectedPlatform == null)
+            {
+                return;
+            }
+            webView.CoreWebView2.Navigate($@"{StartUrl}?name={Uri.EscapeDataString(name)}&platform={Uri.EscapeDataString(SelectedPlatform)}");
         }
 
         private void NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
@@ -82,7 +118,7 @@ namespace ME3TweaksModManager.modmanager.windows
             }
             StatusText = OnProfilePage
                 ? "Ready to import the profile shown."
-                : "Log in, then open the profile to import.";
+                : "Open a profile by name, or log in and open it from the profile menu.";
             CommandManager.InvalidateRequerySuggested();
         }
 
@@ -156,7 +192,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 var scrape = N7HqScrape.FromJson(json);
                 if (scrape.Characters.Count == 0 && scrape.Inventory.Count == 0)
                 {
-                    throw new InvalidDataException("No profile data was found. Make sure you're logged in and viewing your own profile.");
+                    throw new InvalidDataException("No profile data was found. Make sure the profile exists and is public, or log in and open it from the profile menu.");
                 }
 
                 ResultJson = json;

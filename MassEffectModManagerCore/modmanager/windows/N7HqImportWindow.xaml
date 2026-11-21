@@ -18,7 +18,15 @@
     </Window.Style>
     <DockPanel Margin="5">
         <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,0,0,5"
-                   Text="Log in to N7HQ and select the profile to import (including console profiles). Once on the profile you want, select Import at the bottom of this window.&#10;Note: Character appearance, names and loadouts aren't on N7HQ and will not transfer."/>
+                   Text="Open a public profile by name below, or log in to N7HQ and select the profile to import (including console profiles). Once on the profile you want, select Import at the bottom of this window.&#10;Note: Character appearance, names and loadouts aren't on N7HQ and will not transfer."/>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+            <TextBlock Text="Profile name" VerticalAlignment="Center" Margin="0,0,5,0" DockPanel.Dock="Left"/>
+            <Button Content="Open profile" Padding="10,3" Margin="5,0,0,0" DockPanel.Dock="Right" Command="{Binding OpenProfileCommand}" IsDefault="True"/>
+            <ComboBox Width="100" Margin="5,0,0,0" DockPanel.Dock="Right"
+                      ItemsSource="{Binding Platforms}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding SelectedPlatform}"/>
+            <TextBox Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" VerticalContentAlignment="Center"
+                     ToolTip="EA ID for PC (filled in from the EA app if it can be found), gamertag for Xbox 360, or PSN ID for PS3"/>
+        </DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
             <Button DockPanel.Dock="Right" Content="Cancel" Padding="10,3" Margin="5,0,0,0" Click="Cancel_Click"/>
             <Button DockPanel.Dock="Right" Content="Import this profile" Padding="10,3" Command="{Binding ImportCommand}"/>
