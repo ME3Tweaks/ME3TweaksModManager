@@ -1,10 +1,10 @@
-using System;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using LegendaryExplorerCore.GameFilesystem;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.localizations;
@@ -39,14 +39,19 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             if (active != null)
             {
-                M3L.ShowDialog(window, "ME3 profile migration is already waiting for a profile.", "Project Milan", MessageBoxButton.OK, MessageBoxImage.Information);
+                M3L.ShowDialog(window, "ME3 profile migration is already waiting for a profile.", "Legendary Edition Multiplayer", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (!EnsureTargetWritable(me3Target))
+            {
+                M3L.ShowDialog(window, $"ME3 target is not writable:\n\n{me3Target.TargetPath}\n\nIf you cancelled the administrator prompt, try again and allow it.", "Profile migration failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             try
             {
-                var asi = ASIManager.GetASIModVersion(MEGame.ME3, 499, includeHidden: true)
-                    ?? throw new InvalidOperationException("ME3 Profile Dump (group 499) was not found in the ASI manifest.");
+                var asi = ASIManager.GetASIModVersion(MEGame.ME3, 499, includeHidden: true) ?? throw new InvalidOperationException("ME3 Profile Dump (group 499) was not found in the ASI manifest.");
                 var installed = await Task.Run(() => ASIManager.InstallASIToTarget(asi, me3Target));
                 if (!installed)
                 {
@@ -64,8 +69,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 M3Log.Exception(e, "Could not install ME3 Profile Dump ASI for profile migration");
                 if (!window.AppExiting)
                 {
-                    M3L.ShowDialog(window, $"Project Milan was installed, but the ME3 Profile Dump ASI could not be installed:\n\n{e.Message}",
-                       "Profile migration failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, $"Legendary Edition Multiplayer was installed, but the ME3 Profile Dump ASI could not be installed:\n\n{e.Message}", "Profile migration failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 return;
             }
@@ -93,7 +97,47 @@ namespace ME3TweaksModManager.modmanager.helpers
             });
         }
 
-        private static string ExportPath => Path.Combine(M3Filesystem.GetAppDataFolder(), ExportFileName);
+        /// <summary>
+        /// Makes sure ME3's game folder is writable, prompting for admin if not. The ASI aborts if it can't write its log so we have to have permisisons
+        /// </summary>
+        internal static bool EnsureTargetWritable(GameTargetWPF me3Target)
+        {
+            if (IsTargetWritable(me3Target))
+            {
+                return true;
+            }
+
+            M3Log.Warning($"ME3 target {me3Target.TargetPath} is not writable, requesting permissions for profile migration");
+            try
+            {
+                return MUtilities.EnableWritePermissionsToFolders(new List<string> { me3Target.TargetPath }) && IsTargetWritable(me3Target);
+            }
+            catch (Exception e)
+            {
+                M3Log.Exception(e, "Error granting write permissions to ME3 target:");
+                return false;
+            }
+        }
+
+        private static bool IsTargetWritable(GameTargetWPF me3Target)
+        {
+            if (!me3Target.IsTargetWritable())
+            {
+                return false;
+            }
+
+            // ASI and its log live down in Binaries\Win32
+            var asiDir = me3Target.GetASIPath();
+            var exeDir = Path.GetDirectoryName(asiDir);
+            if (!MUtilities.IsDirectoryWritable(exeDir))
+            {
+                return false;
+            }
+
+            return !Directory.Exists(asiDir) || MUtilities.IsDirectoryWritable(asiDir);
+        }
+
+        private static string ExportPath =>Path.Combine(M3Filesystem.GetAppDataFolder(), ExportFileName);
 
         /// <summary>
         /// Removes old transferred profile data and its temporary file too
