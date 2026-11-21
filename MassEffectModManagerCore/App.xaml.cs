@@ -259,7 +259,7 @@ namespace ME3TweaksModManager
                 }
 
                 //Get build date
-                BuildHelper.ReadRuildInfo(new BuildHelper.BuildSigner[] { new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" } });
+                BuildHelper.ReadRuildInfo([new BuildHelper.BuildSigner() { SigningName = @"Michael Perez", DisplayName = @"ME3Tweaks" }]);
 
                 if (args.Length > 0)
                 {

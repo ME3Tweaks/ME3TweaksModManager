@@ -4,12 +4,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using AuthenticodeExaminer;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
@@ -321,11 +319,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 ProgressIndeterminate = true;
                 ProgressText = M3L.GetString(M3L.string_verifyingUpdate);
-                var authenticodeInspector = new FileInspector(updateExecutablePath);
-                var validationResult = authenticodeInspector.Validate();
-                if (validationResult != SignatureCheckResult.Valid)
+                var signatureCheck = ME3TweaksSignatureVerifier.CheckFile(updateExecutablePath, out var signatureFailureReason);
+                if (signatureCheck == ME3TweaksSignatureCheckResult.InvalidSignature)
                 {
-                    M3Log.Error($@"The update file is not signed ({validationResult.ToString()}).");
+                    M3Log.Error($@"The update file is not signed: {signatureFailureReason}");
                     if (closeOnBadSignature)
                     {
                         M3Log.Error(@"Update will be aborted.");
@@ -344,10 +341,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 else
                 {
                     // Check it's signed by not just anyone
-                    var signer = authenticodeInspector.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
-                    if (signer != null && (signer != @"Michael Perez" && signer != @"ME3Tweaks"))
+                    if (signatureCheck != ME3TweaksSignatureCheckResult.Trusted)
                     {
-                        M3Log.Error($@"This update is signed, but not by ME3Tweaks. This update is being rejected. The signer name is {signer}");
+                        M3Log.Error($@"This update is signed, but not by ME3Tweaks. This update is being rejected. {signatureFailureReason}");
                         if (closeOnBadSignature)
                         {
                             M3Log.Error(@"Update will be aborted.");
