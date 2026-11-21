@@ -59,6 +59,23 @@ namespace ME3TweaksModManager.modmanager.helpers
         }
 
         /// <summary>
+        /// Asks for a LEMP save, then imports it. Must run on the UI thread
+        /// </summary>
+        public static void PromptAndImportLempSave(Window window)
+        {
+            var ofd = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Select a LEMP profile file",
+                Filter = "LEMP multiplayer profile|*.txt|All files|*.*",
+                CheckFileExists = true
+            };
+            if (ofd.ShowDialog(window) == true)
+            {
+                ImportLempSave(window, ofd.FileName);
+            }
+        }
+
+        /// <summary>
         /// Converts a LEMP save into LMP's MP_Profile. Asks first if one already exists. Must run on the UI thread
         /// </summary>
         public static void ImportLempSave(Window window, string lempSavePath)

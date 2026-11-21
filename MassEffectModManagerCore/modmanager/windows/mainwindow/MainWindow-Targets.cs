@@ -33,6 +33,25 @@ namespace ME3TweaksModManager
         internal GameTargetWPF GetME3TargetForProfileMigration() =>
             InternalLoadedTargets.FirstOrDefault(x => x.Game == MEGame.ME3);
 
+        /// <summary>
+        /// Shows the LMP profile import menu
+        /// </summary>
+        public bool HasLMPTarget { get; private set; }
+
+        /// <summary>
+        /// Installs the dumper ASI and launches ME3 so its MP profile can be pulled into LMP
+        /// </summary>
+        internal void MigrateMe3ProfileToLMP()
+        {
+            var me3Target = GetME3TargetForProfileMigration();
+            if (me3Target == null)
+            {
+                M3L.ShowDialog(this, "No Mass Effect 3 target available.", "ME3 target not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            _ = Me3ProfileMigration.StartAsync(this, me3Target);
+        }
+
         public GameTargetWPF SelectedGameTarget { get; set; }
 
         /// <summary>
@@ -343,6 +362,7 @@ namespace ME3TweaksModManager
         {
             // Populate the list of available games, for menus
             MenuAvailableGames.ReplaceAll(InstallationTargets.Where(x => x.Game.IsMEGame()).Select(x => x.Game).Distinct().OrderBy(x => x));
+            HasLMPTarget = InstallationTargets.Any(x => x.Game == MEGame.LMP);
         }
 
         /// <summary>

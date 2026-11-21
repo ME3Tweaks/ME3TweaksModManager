@@ -783,6 +783,9 @@ namespace ME3TweaksModManager
         public ICommand AddStarterKitContentCommand { get; set; }
         public ICommand ConvertMEMToTOCommand { get; set; }
         public ICommand OpenModMakerEditorCommand { get; set; }
+        public ICommand ImportN7HqProfileCommand { get; set; }
+        public ICommand ImportLempProfileCommand { get; set; }
+        public ICommand MigrateMe3ProfileCommand { get; set; }
 
 
         /// <summary>
@@ -851,6 +854,9 @@ namespace ME3TweaksModManager
             GenerateStarterKitCommand = new RelayCommand(GenerateStarterKit);
             ConvertMEMToTOCommand = new GenericCommand(ConvertMEMToTextureOverride, () => M3LoadedMods.Instance.ModsLoaded);
             OpenModMakerEditorCommand = new GenericCommand(OpenModMakerEditor, () => ModMakerLauncher.PreferredTarget(InstallationTargets) != null);
+            ImportN7HqProfileCommand = new GenericCommand(() => modmanager.helpers.n7hq.N7HqProfileImport.Import(this), () => HasLMPTarget);
+            ImportLempProfileCommand = new GenericCommand(() => LmpProfileImport.PromptAndImportLempSave(this), () => HasLMPTarget);
+            MigrateMe3ProfileCommand = new GenericCommand(MigrateMe3ProfileToLMP, () => HasLMPTarget && GetME3TargetForProfileMigration() != null);
             LoadNexusCommands();
             LoadHeadmorphCommands();
             LoadMergeCommands();
@@ -2174,6 +2180,7 @@ namespace ME3TweaksModManager
                     lmpTarget.ReloadGameTarget(false);
                     InstallationTargets.Add(lmpTarget);
                     SelectedGameTarget = lmpTarget;
+                    UpdateMenuTargets();
                 }
 
                 // Update selected target so start game button updates for it
@@ -2440,8 +2447,7 @@ namespace ME3TweaksModManager
                             new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath)
-                                .ToList());
+                            MUtilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
                         }
                         catch (Exception e)
                         {
