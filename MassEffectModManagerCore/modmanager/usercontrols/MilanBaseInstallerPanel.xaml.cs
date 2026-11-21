@@ -246,6 +246,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return false;
             }
 
+            // Ask for ME3 permissions now rather than after a long install
+            if (MigrateMe3Profile)
+            {
+                var me3Target = MainWindow.Instance.GetME3TargetForProfileMigration();
+                if (me3Target != null && !Me3ProfileMigration.EnsureTargetWritable(me3Target))
+                {
+                    M3L.ShowDialog(window, $"Unable to write to your ME3 installation, which is required for ME3 profile migration:\n\n{me3Target.TargetPath}\n\nIf you cancelled the administrator prompt, try again and allow it, or choose a different profile option.", "ME3 not writable", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+            }
+
             if (!Directory.Exists(InstallLocation))
             {
                 M3Log.Error($"Installation path '{InstallLocation}' does not exist.");
