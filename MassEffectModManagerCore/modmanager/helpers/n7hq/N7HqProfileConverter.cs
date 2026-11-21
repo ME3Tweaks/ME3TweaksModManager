@@ -55,10 +55,6 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             ["Operation Impact"] = 731,
         };
 
-        // Alliance Mastery was cut from ME3 (no accomplishment data anywhere), but N7HQ still lists it.
-        // Nobody can have progress on it, so skip it without a warning
-        private const int AllianceMasteryGroup = 675;
-
         private static readonly Regex CountLine = new(@"^(?<name>.*?)(?:\s+(?<tier>IV|III|II|I))?\s+-\s+(?<count>\d+)$", RegexOptions.Compiled);
 
         public class Result
@@ -173,7 +169,13 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
                 yield break;
             }
             var key = item.Icon[(item.Icon.LastIndexOf('/') + 1)..];
-            // Unowned cards have no level; owned ones without a level bar still count as one copy
+            if (item.Section == "inventory_characters" && item.Level == null)
+            {
+                // The Krogan Shaman never has a level bar, so N7HQ doesn't say if you have it
+                warnings.Add($"N7HQ doesn't show whether you have the {item.Lines.FirstOrDefault() ?? key} kit - it will remain locked");
+                yield break;
+            }
+            // A level 0 bar is a locked kit or an item you don't have
             var level = item.Owned ? Math.Max(item.Level ?? 1, 1) : 0;
             switch (item.Section)
             {
@@ -258,10 +260,19 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
                 return $"{c.Name} {id} 1.0000 0 0 0 0 0 0 {c.Wheel} False";
             }).ToList();
 
+            // N7HQ marks kits as deployed even when the inventory has them at 0, so those stay locked with no record.
+            // Kits a new profile starts with are never locked
+            var defaultKits = data.DefaultPlayerVariables.Keys.Select(k => k[(k.LastIndexOf('.') + 1)..]).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var lockedKits = scrape.Inventory
+                .Where(i => i.Section == "inventory_characters" && i.Icon != null && (i.Level ?? 0) == 0)
+                .Select(i => i.Icon[(i.Icon.LastIndexOf('/') + 1)..])
+                .Where(k => !defaultKits.Contains(k))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
             foreach (var character in scrape.Characters)
             {
                 // The game makes the record the first time a kit is deployed
-                if (!character.Deployed)
+                if (!character.Deployed || lockedKits.Contains(character.Kit ?? ""))
                 {
                     continue;
                 }
@@ -275,7 +286,8 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
                 foreach (var power in kit.Powers)
                 {
                     var scraped = character.Powers.FirstOrDefault(p => string.Equals(p.Name, power.Name, StringComparison.OrdinalIgnoreCase));
-                    if (scraped == null)
+                    // No powers at all on N7HQ just means none were ranked up yet
+                    if (scraped == null && character.Powers.Count > 0)
                     {
                         warnings.Add($"{character.Kit}: {power.Name} wasn't on N7HQ, so it starts unranked.");
                     }
@@ -310,10 +322,6 @@ namespace ME3TweaksModManager.modmanager.helpers.n7hq
             {
                 if (!table.Groups.TryGetValue(group.Id, out var groupData))
                 {
-                    if (group.Id == AllianceMasteryGroup)
-                    {
-                        continue;
-                    }
                     warnings.Add($"LMP has no challenge group {group.Id} ({group.Title}).");
                     continue;
                 }

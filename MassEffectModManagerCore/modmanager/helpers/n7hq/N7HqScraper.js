@@ -71,15 +71,15 @@
                 const imgs = Array.from(el.querySelectorAll('img'));
                 const icon = imgs.map(i => iconKey(i.getAttribute('src'))).find(k => k && !k.startsWith('levels/'));
                 const levelImg = imgs.map(i => iconKey(i.getAttribute('src'))).find(k => k && k.startsWith('levels/'));
+                // levels/<max>-<current>: 10-3 is a level III weapon, 5-0 is a kit you don't have
                 const levels = levelImg ? /levels\/(\d+)-(\d+)/.exec(levelImg) : null;
                 items.push({
                     section: section,
                     group: group,
                     icon: icon,
-                    // Owned cards use the "-on" card background
-                    owned: !/-off-/.test(el.getAttribute('style') || ''),
-                    level: levels ? +levels[1] : null,
-                    maxLevel: levels ? +levels[2] : null,
+                    owned: levels ? +levels[2] > 0 : !/-off-/.test(el.getAttribute('style') || ''),
+                    level: levels ? +levels[2] : null,
+                    maxLevel: levels ? +levels[1] : null,
                     lines: Array.from(el.querySelectorAll('span')).map(text)
                 });
             });

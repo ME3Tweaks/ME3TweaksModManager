@@ -2579,7 +2579,7 @@
   "version": 22,
   "maxIndex": 748,
   "maxProgressIndex": 744,
-  "maxRewardId": 220,
+  "maxRewardId": 259,
   "groups": {
    "100": {
     "name": "MASSEFFECT",
@@ -5106,6 +5106,37 @@
       "title": "M-11 Suppressor Use",
       "goal": 200000,
       "progress": 703
+     }
+    ]
+   },
+   "675": {
+    "name": "ALLIANCEMASTERY",
+    "progress": 675,
+    "reward": 259,
+    "children": [
+     {
+      "index": 689,
+      "title": "Alliance Infiltrator Waves Completed",
+      "goal": 200,
+      "progress": 689
+     },
+     {
+      "index": 676,
+      "title": "Human Waves Completed",
+      "goal": 500,
+      "progress": 676
+     },
+     {
+      "index": 677,
+      "title": "Alliance Weapon Use",
+      "goal": 500000,
+      "progress": 677
+     },
+     {
+      "index": 678,
+      "title": "Earth Systems Defense",
+      "goal": 200,
+      "progress": 678
      }
     ]
    },
