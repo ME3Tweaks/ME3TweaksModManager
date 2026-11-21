@@ -108,7 +108,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // ME1 uses ini that doesn't get backed up
                 // ME2 uses ini that is 1:1
                 // LE1/LE2 use coalesced ini that is 1:1
-                if (Game != MEGame.ME1 && !BackupService.GetBackupStatus(Game).BackedUp)
+                // 11/21/2026 - LMP doesn't use backup system
+                if (Game != MEGame.ME1 && Game != MEGame.LMP && !BackupService.GetBackupStatus(Game).BackedUp)
                 {
                     // Ask user if they want to edit game without a backup.
                     var result = M3L.ShowDialog(Application.Current.MainWindow,
@@ -170,7 +171,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // ME1 uses ini that doesn't get backed up
                 // ME2 uses ini that is 1:1
                 // LE1/LE2 use coalesced ini that is 1:1
-                if (!BackupService.GetBackupStatus(Game).BackedUp)
+                if (Game != MEGame.LMP && !BackupService.GetBackupStatus(Game).BackedUp)
                 {
                     // Ask user if they want to edit game without a backup.
                     var result = M3L.ShowDialog(Application.Current.MainWindow,
