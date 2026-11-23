@@ -157,4 +157,28 @@
     </list>
     <nonlocalizedhelpmenu name="changelogs" title="Changelog" />
   </helpmenu>
+  <helpmenu lang="fra">
+    <helpitem icon="Brands_Discord" title="Discord ME3Tweaks" url="https://discord.gg/s8HA6dc" tooltip="Serveur de discussion pour une assistance rapide concernant les produits et services ME3Tweaks (" />
+    <helpitem icon="Brands_Discord" title="Discord Mass Effect Modding" url="https://discord.gg/su8XjdUQPw" tooltip="Serveur dédié au modding de Mass Effect en général" />
+    <helpitem icon="Brands_Discord" title="Discord N7 Squad Multiplayer" url="https://discord.gg/n7squad" tooltip="Serveur de discussion pour trouver d'autres joueurs pour le multijoueur de Mass Effect 3" />
+  <list title="Obtenir des Mods">
+    <helpitem title="Liste de Mods sélectionnés par ME3Tweaks" url="https://me3tweaks.com/mods" tooltip="Parcourir les mods sélectionnés par ME3Tweaks" />
+    <helpitem title="NexusMods (Legendary Edition)" url="http://www.nexusmods.com/masseffectlegendaryedition/" tooltip="Parcourir les mods développés pour les jeux Mass Effect Legendary Edition sur NexusMods" />
+    <helpitem title="NexusMods (ME1, Trilogie Originale)" url="http://www.nexusmods.com/masseffect/" tooltip="Parcourir les mods développés pour Mass Effect sur NexusMods" />
+    <helpitem title="NexusMods (ME2, Trilogie Originale)" url="http://www.nexusmods.com/masseffect2/" tooltip="Parcourir les mods développés pour Mass Effect 2 sur NexusMods" />
+    <helpitem title="NexusMods (ME3, Trilogie Originale)" url="http://www.nexusmods.com/masseffect3/" tooltip="Parcourir les mods développés pour Mass Effect 3 sur NexusMods" />
+  </list>
+  <list title="Comment">
+    <helpitem title="Ajouter un mod" modaltitle="Ajouter des mods à Mod Manager" icon="INFO">Pour ajouter un mod à Mod Manager, glisser-déposer son fichier zip/rar/7z/exe/me2mod dans l'interface principale de Mod Manager.&lt;br&gt;&lt;br&gt;Pour télécharger et ajouter un mod ModMaker, entrer son code dans la fenêtre de Gestion des Mods &gt; Importer un mod &gt; Télécharger un Mod ModMaker.</helpitem>
+    <helpitem title="Supprimer un mod" modaltitle="Supprimer des mods de la bibliotèque" modalicon="INFO">Pour supprimer un mod de la bibliotèque (pas du jeu), supprimer son dossier du répetoire mods/&lt;game&gt; , ou sélectionnez-le et allez dans le menu Utilitaires pour Mod and sélectionnez Supprimer un mod.</helpitem>
+    <helpitem title="Installer un mod" modaltitle="Installation d'un mod" modalicon="INFO">Sélectionner un mod dans la liste de gauche et cliquer sur Appliquer le Mod pour l'installer dans le jeu. Si le mod a des éléments optionnels, ils vous seront proposés avant l'installation.</helpitem>
+    <helpitem title="Désinstaller un mod" modaltitle="Désinstallation de mods" modalicon="INFO">Vous pouvez supprimer des mods de DLC via le bouton "Gérer la Cible" sur l'écran principal de Mod Manager. Vous pouvez supprimer des mods de DLC Personnalisés (aussi appelés mods de DLC), ainsi que restaurer des fichiers individuels ou des SFAR (archives DLC pour ME3).</helpitem>
+    <helpitem title="Signaler des problèmes" modaltitle="Comment signaler des problèmes" modalicon="INFO">Si vous rencontrez des problèmes avec Mod Manager, vous pouvez les signaler à Mgamerz sur le Discord ME3Tweaks. Vous trouverez un lien en haut du menu d'aide. Veuillez joindre un journal via le menu d'aide Générer un Journal de Diagnostic. Seul les copies officielles des jeux sont prises en charge.</helpitem>
+  </list>
+  <list title="Foire aux Questions">
+    <helpitem title="L'ordre d'installation a-t-il de l'importance" modaltitle="Ordre d'Installation" modalicon="INFO">Pour la plupart des mods, l'ordre d'installation n'a pas d'importance car l'ordre de chargement est controllé par un fichier nommé mount.dlc. Certains mods de Mod Manager peuvent modifier automatiquement leur mode d'installation en fonction de ce qui est déjà installé, donc vous devez typiquement les installer en dernier. Les mods de Texture, comme MEUITM ou ALOT, doivent toujours être installés en tout dernier. Mod Manager refusera d'installer des mods contenant des fichiers de paquets après que les mods de texture auront été installés, afin d'éviter l'introduction de pointeurs de textures invalides dans le jeu.</helpitem>
+    <helpitem title="Puis-je être banni du Multijoueur de ME3 si j'utilise des mods" modalicon="INFO" modaltitle="Mods and Multijoueur">BioWare a abandonné Mass Effect 3 (Trilogie Originale) depuis 2013, Il n'y a plus de ban ni de surveillance dans Mass Effect 3. Cela dit, si vous moddé le multijoueur de Mass Effect 3, vous devriez le faire uniquement dans des salles privées par respect pour les autres joueurs.</helpitem>
+  </list>
+  <nonlocalizedhelpmenu name="changelogs" title="Journal des modifications" />
+</helpmenu>
 </localizations>
